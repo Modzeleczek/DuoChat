@@ -3,10 +3,52 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Client"
+        xmlns:local="clr-namespace:Client" xmlns:viewmodel="clr-namespace:Client.MVVM.ViewModel"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        
-    </Grid>
+        Title="MainWindow"
+        Height="650"
+        Width="1200"
+        WindowStyle="None"
+        Background="Transparent"
+        AllowsTransparency="True"
+        ResizeMode="CanResize"
+        FontFamily="/Fonts/RedHatDisplay">
+    <Window.DataContext>
+        <viewmodel:MainViewModel/>
+    </Window.DataContext>
+    <Border CornerRadius="10"
+            Background="#4A4E69">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200" MinWidth="70"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Border Grid.ColumnSpan="2"
+                    Background="#22223B"
+                    CornerRadius="10,10,0,0"
+                    MouseLeftButtonDown="Border_MouseLeftButtonDown">
+                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                    <Label Content="SafeChat"
+                           FontSize="14"
+                           Foreground="#9A8C98"
+                           FontWeight="SemiBold"
+                           Margin="15,0,0,0"/>
+                    <StackPanel HorizontalAlignment="Right"
+                                Orientation="Horizontal">
+                        <Button Width="20" Height="20" Margin="4,1,0,2" Content="🗕" Background="Transparent" BorderThickness="0" Foreground="#9A8C98" FontWeight="Bold" Click="Button_Minimize_Click" FontSize="15"/>
+                        <Button Width="20" Height="20" Margin="4,1,2,2" Content="🗖" Background="Transparent" BorderThickness="0" Foreground="#9A8C98" FontWeight="Bold" Click="Button_Maximize_Click" FontSize="15"/>
+                        <Button Width="20" Height="20" Margin="4,1,16,0" Content="✕" Background="Transparent" BorderThickness="0" Foreground="#9A8C98" FontWeight="Bold" Click="Button_Close_Click" FontSize="15"/>
+
+
+                    </StackPanel>
+
+                </Grid>
+            </Border>
+        </Grid>
+
+    </Border>
 </Window>
