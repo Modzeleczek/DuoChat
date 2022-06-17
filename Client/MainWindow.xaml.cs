@@ -36,7 +36,7 @@ namespace Client
 
         private void Button_Close_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            Application.Current.Shutdown();
         }
         private void Button_Minimize_Click(object sender, RoutedEventArgs e)
         {
@@ -44,7 +44,14 @@ namespace Client
         }
         private void Button_Maximize_Click(object sender, RoutedEventArgs e)
         {
-            this.WindowState=WindowState.Maximized;
+            if(this.WindowState != WindowState.Maximized)
+            {
+                this.WindowState = WindowState.Maximized;
+            }
+            else
+            {
+                this.WindowState= WindowState.Normal;
+            }
         }
 
 

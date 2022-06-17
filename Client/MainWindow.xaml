@@ -12,7 +12,8 @@
         Background="Transparent"
         AllowsTransparency="True"
         ResizeMode="CanResize"
-        FontFamily="/Fonts/RedHatDisplay">
+        FontFamily="/Fonts/RedHatDisplay"
+        Icon="/Icons/logo.png">
     <Window.DataContext>
         <viewmodel:MainViewModel/>
     </Window.DataContext>
@@ -48,6 +49,19 @@
 
                 </Grid>
             </Border>
+            <Grid Background="#3b3e54" Grid.Row="1" >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition/>
+                    <RowDefinition Height="60"/>
+                </Grid.RowDefinitions>
+                <Label Content="Friends"
+                       FontFamily="/Fonts/RedHatDisplay"
+                       Margin="8,0,0,0"
+                       FontSize="20"
+                       Foreground="#9A8C98"
+                       FontWeight="SemiBold"/>
+            </Grid>
         </Grid>
 
     </Border>
