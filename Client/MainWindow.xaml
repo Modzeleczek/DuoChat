@@ -57,10 +57,15 @@
                 </Grid.RowDefinitions>
                 <Label Content="Friends"
                        FontFamily="/Fonts/RedHatDisplay"
-                       Margin="8,0,0,0"
+                       Margin="8,5,0,0"
                        FontSize="20"
                        Foreground="#9A8C98"
                        FontWeight="SemiBold"/>
+                <ListView ItemsSource="{Binding Friends}"
+                          Background="Transparent"
+                          BorderThickness="0"
+                          Grid.Row="1"
+                          ItemContainerStyle="{StaticResource FriendsCard}"/>
             </Grid>
         </Grid>
 
