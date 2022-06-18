@@ -15,10 +15,10 @@
                 <ControlTemplate TargetType="ListViewItem">
                     <Border Background="{TemplateBinding Background}"
                             Height="60"
-                            CornerRadius="5"
                             Margin="8,2,8,2"
                             Padding="5"
-                            MaxWidth="180">
+                            MaxWidth="180"
+                            CornerRadius="5">
 
 
                         <StackPanel Orientation="Horizontal"
@@ -35,13 +35,13 @@
                                 <Label Content="{Binding Username}"
                                        FontFamily="/Fonts/RedHatDisplay"
                                        FontWeight="SemiBold"
-                                       Foreground="#F2E9E4"
+                                       Foreground="#C9ADA7"
                                        FontSize="15"
                                        Margin="5,10,0,0"
                                        Padding="2"/>
                                 <Label Content="{Binding LastMessage}"
                                        FontFamily="/Fonts/RedHatDisplay"
-                                       Foreground="#dbd1cc"
+                                       Foreground="#F2E9E4"
                                        FontSize="12"
                                        FontWeight="Normal"
                                        Margin="5,0,0,10"

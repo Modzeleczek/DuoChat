@@ -42,18 +42,19 @@
                            Margin="15,0,0,0"/>
                     <StackPanel HorizontalAlignment="Right"
                                 Orientation="Horizontal">
-                        <Button Width="20" Height="20" Margin="4,1,0,2" Content="🗕" Background="Transparent" BorderThickness="0" Foreground="#9A8C98" FontWeight="Bold" Click="Button_Minimize_Click" FontSize="15"/>
-                        <Button Width="20" Height="20" Margin="4,1,2,2" Content="🗖" Background="Transparent" BorderThickness="0" Foreground="#9A8C98" FontWeight="Bold" Click="Button_Maximize_Click" FontSize="15"/>
-                        <Button Width="20" Height="20" Margin="4,1,16,0" Content="✕" Background="Transparent" BorderThickness="0" Foreground="#9A8C98" FontWeight="Bold" Click="Button_Close_Click" FontSize="15"/>
+                        <Button Width="25" Height="25" Margin="4,1,0,2" Content="🗕" Background="Transparent" BorderThickness="0" Foreground="#9A8C98" FontWeight="Bold" Click="Button_Minimize_Click" FontSize="15"/>
+                        <Button Width="25" Height="25" Margin="4,1,2,2" Content="🗖" Background="Transparent" BorderThickness="0" Foreground="#9A8C98" FontWeight="Bold" Click="Button_Maximize_Click" FontSize="15"/>
+                        <Button Width="25" Height="25" Margin="4,1,16,0" Content="✕" Background="Transparent" BorderThickness="0" Foreground="#9A8C98" FontWeight="Bold" Click="Button_Close_Click" FontSize="15"/>
 
 
                     </StackPanel>
 
                 </Grid>
             </Border>
-            <Grid Background="#3b3e54" Grid.Row="1">
+            <Grid Background="#3b3e54"
+                  Grid.Row="1">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="50"/>
                     <RowDefinition/>
                     <RowDefinition Height="60"/>
                 </Grid.RowDefinitions>
@@ -61,18 +62,19 @@
                        FontFamily="/Fonts/RedHatDisplay"
                        Margin="8,5,0,0"
                        FontSize="20"
-                       Foreground="#9A8C98"
+                       Foreground="#C9ADA7"
                        FontWeight="SemiBold"/>
                 <ListView ItemsSource="{Binding Friends}"
                           Background="Transparent"
-                          BorderThickness="0"
+
                           Grid.Row="1"
-                          ItemContainerStyle="{StaticResource FriendsCard}"/>
+                          ItemContainerStyle="{StaticResource FriendsCard}"
+                          BorderBrush="#4A4E69"
+                          BorderThickness="0,0,0,4"/>
 
                 <StackPanel Grid.Row="2"
                             Orientation="Horizontal"
-                            Background="#22223B"
-                            >
+                            Background="#3b3e54">
                     <Border CornerRadius="25"
                             Width="45"
                             Height="45"
@@ -81,14 +83,52 @@
                     <StackPanel Orientation="Vertical" VerticalAlignment="Center">
                         <Label Content="Username"
                                FontWeight="SemiBold"
-                               Foreground="#9A8C98"
+                               Foreground="#C9ADA7"
                                FontSize="15"/>
                         <Label Content="#123456789"
                                
-                               Foreground="#9A8C98"
+                               Foreground="#C9ADA7"
                                FontSize="11"/>
                     </StackPanel>
                 </StackPanel>
+            </Grid>
+            <Grid Grid.Column="1"
+                  Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="60"/>
+                </Grid.RowDefinitions>
+                <Border Background="#3b3e54"
+
+                        Grid.Row="0">
+                    <Grid HorizontalAlignment="Stretch"
+                          Margin="8">
+                        <Label Content="@Username"
+                               Foreground="#C9ADA7"
+                               FontSize="18"
+                               FontWeight="SemiBold"
+                               Margin="5,0,5,0"
+                               VerticalAlignment="Center"
+                               FontFamily="/Fonts/RedHatDisplay"/>
+                        <StackPanel Orientation="Horizontal"
+                                    HorizontalAlignment="Right">
+
+                        </StackPanel>
+
+                    </Grid>
+
+                </Border>
+                <Border Grid.Row="1"
+>
+
+                </Border>
+                <Border Grid.Row="2"
+                        Background="#3b3e54"
+                        BorderBrush="#4A4E69"
+                        BorderThickness="4,0,0,0">
+
+                </Border>
             </Grid>
         </Grid>
 
