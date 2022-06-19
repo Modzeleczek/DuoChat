@@ -15,6 +15,20 @@ namespace Client.MVVM.ViewModel
         public ObservableCollection<FriendModel> Friends { get; set; }
 
 
+        /* Commands */
+
+        public FriendModel SelectedFriend { get; set; }
+
+        private string _message;
+
+        public string Message
+        {
+            get { return _message; }
+            set { _message = value; }
+        }
+
+
+
         public MainViewModel()
         {
             Messages = new ObservableCollection<MessageModel>();

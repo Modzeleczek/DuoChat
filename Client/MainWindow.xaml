@@ -97,38 +97,80 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="50"/>
                     <RowDefinition Height="*"/>
-                    <RowDefinition Height="60"/>
+                    <RowDefinition Height="70"/>
                 </Grid.RowDefinitions>
                 <Border Background="#3b3e54"
 
                         Grid.Row="0">
                     <Grid HorizontalAlignment="Stretch"
                           Margin="8">
-                        <Label Content="@Username"
+                        <StackPanel Orientation="Horizontal"
+                                    HorizontalAlignment="Left">
+                            <Label Content="@Username"
                                Foreground="#C9ADA7"
                                FontSize="18"
                                FontWeight="SemiBold"
                                Margin="5,0,5,0"
                                VerticalAlignment="Center"
                                FontFamily="/Fonts/RedHatDisplay"/>
+                            <Image Width="25"
+                                   Height="25"
+                                   RenderOptions.BitmapScalingMode="Fant"
+                                   Margin="10,0,5,0"
+                                   Source="./Icons/add.png"/>
+                        </StackPanel>
+                       
                         <StackPanel Orientation="Horizontal"
                                     HorizontalAlignment="Right">
+                            <Image Width="25"
+                                   Height="25"
+                                   RenderOptions.BitmapScalingMode="Fant"
+                                   Margin="5,0,5,0"
+                                   Source="./Icons/phone.png"/>
+                            <Image Width="25"
+                                   Height="25"
+                                   RenderOptions.BitmapScalingMode="Fant"
+                                   Margin="5,0,5,0"
+                                   Source="./Icons/settings.png"/>
+
 
                         </StackPanel>
 
                     </Grid>
 
                 </Border>
-                <Border Grid.Row="1"
->
+                <ListView ItemsSource="{Binding SelectedFriend.Messages}"
+                          Background="Transparent"
+                          BorderThickness="0"
+                          ItemContainerStyle="{StaticResource ChatItem}"
+                          Margin="8,0,0,0"
+                          Grid.Row="1" SelectionChanged="ListView_SelectionChanged">
+                </ListView>
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="90"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.Row="1"
+                             Height="50"
+                             Text="Message @Username"
+                             Style="{StaticResource MessageBox}"
+                             Grid.ColumnSpan="2"/>
+                    
+                    <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Right"
+                                Grid.Column="1"
+                                Margin="0,0,16,0">
+                        
+                        <Image Width="25"
+                                   Height="25"
+                                   RenderOptions.BitmapScalingMode="Fant"
+                                   Margin="5,0,10,0"
+                                   Source="./Icons/send.png"/>
 
-                </Border>
-                <Border Grid.Row="2"
-                        Background="#3b3e54"
-                        BorderBrush="#4A4E69"
-                        BorderThickness="4,0,0,0">
-
-                </Border>
+                        
+                    </StackPanel>
+                </Grid>
             </Grid>
         </Grid>
 
