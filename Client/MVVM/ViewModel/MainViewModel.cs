@@ -1,4 +1,5 @@
-﻿using Client.MVVM.Model;
+﻿using Client.Core;
+using Client.MVVM.Model;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -9,22 +10,35 @@ using System.Windows;
 
 namespace Client.MVVM.ViewModel
 {
-    internal class MainViewModel : Window
+    internal class MainViewModel : ObservableObject
     {
         public ObservableCollection<MessageModel> Messages {get; set;}
         public ObservableCollection<FriendModel> Friends { get; set; }
 
 
         /* Commands */
+        public RelayCommand SendCommand { get; set; }
 
-        public FriendModel SelectedFriend { get; set; }
+        private FriendModel _selectedFriend;   
+
+        public FriendModel SelectedFriend
+        {
+            get { return _selectedFriend; }
+            set {
+                _selectedFriend = value;
+                OnPropertyChanged();
+            }
+        }
+
 
         private string _message;
 
         public string Message
         {
             get { return _message; }
-            set { _message = value; }
+            set { _message = value;
+                OnPropertyChanged();
+            }
         }
 
 
@@ -33,6 +47,16 @@ namespace Client.MVVM.ViewModel
         {
             Messages = new ObservableCollection<MessageModel>();
             Friends = new ObservableCollection<FriendModel>();
+
+            SendCommand = new RelayCommand(o => 
+            {
+                Messages.Add(new MessageModel
+                {
+                    Message = Message,
+                    FirstMessage = false
+                });
+                Message = "";
+            });
 
             Messages.Add(new MessageModel
             {
@@ -46,14 +70,14 @@ namespace Client.MVVM.ViewModel
             });
             Friends.Add(new FriendModel
             {
-                Username = "ProWoj",
+                Nickname = "ProWoj",
                 ImageSource = "https://i.imgur.com/LZFX9Hx.png",
-                Messeges = Messages
+                Messages = Messages
             });
             Messages.Add(new MessageModel
             {
                 Username = "RL9",
-                UsernameColor = "Red",
+                UsernameColor = "Gray",
                 ImageSource = "https://i.imgur.com/bYBKzxY.png",
                 Message = "Teraz to już przesadziła",
                 Time = DateTime.Now,
@@ -62,9 +86,9 @@ namespace Client.MVVM.ViewModel
             });
             Friends.Add(new FriendModel
             {
-                Username = "RL9",
+                Nickname = "RL9",
                 ImageSource = "https://i.imgur.com/bYBKzxY.png",
-                Messeges = Messages
+                Messages = Messages
             });
         }
 

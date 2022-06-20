@@ -9,9 +9,9 @@ namespace Client.MVVM.Model
 {
     internal class FriendModel
     {   
-        public string Username { get; set; }
+        public string Nickname { get; set; }
         public string ImageSource { get; set; }
-        public ObservableCollection<MessageModel> Messeges { get; set; }
-        public string LastMessage => Messeges.Last().Message;
+        public ObservableCollection<MessageModel> Messages { get; set; }
+        public string LastMessage => Messages.Last().Message;
     }
 }

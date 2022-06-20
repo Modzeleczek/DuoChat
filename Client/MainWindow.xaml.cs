@@ -53,10 +53,5 @@ namespace Client
                 this.WindowState= WindowState.Normal;
             }
         }
-
-        private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
     }
 }

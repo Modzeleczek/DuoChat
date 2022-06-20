@@ -32,7 +32,7 @@
                                 </Ellipse.Fill>
                             </Ellipse>
                             <StackPanel VerticalAlignment="Center" Orientation="Vertical" CanHorizontallyScroll="False">
-                                <Label Content="{Binding Username}"
+                                <Label Content="{Binding Nickname}"
                                        FontFamily="/Fonts/RedHatDisplay"
                                        FontWeight="SemiBold"
                                        Foreground="#C9ADA7"

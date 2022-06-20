@@ -65,8 +65,8 @@
                        Foreground="#C9ADA7"
                        FontWeight="SemiBold"/>
                 <ListView ItemsSource="{Binding Friends}"
+                          SelectedItem="{Binding SelectedFriend}"
                           Background="Transparent"
-
                           Grid.Row="1"
                           ItemContainerStyle="{StaticResource FriendsCard}"
                           BorderBrush="#4A4E69"
@@ -78,10 +78,10 @@
                     <Border CornerRadius="25"
                             Width="45"
                             Height="45"
-                            Background="Green"
+                            Background="Gray"
                             Margin="12,0,0,0"/>
                     <StackPanel Orientation="Vertical" VerticalAlignment="Center">
-                        <Label Content="Username"
+                        <Label Content="Nickname"
                                FontWeight="SemiBold"
                                Foreground="#C9ADA7"
                                FontSize="15"/>
@@ -106,7 +106,7 @@
                           Margin="8">
                         <StackPanel Orientation="Horizontal"
                                     HorizontalAlignment="Left">
-                            <Label Content="@Username"
+                            <Label Content="{Binding SelectedFriend.Nickname}"
                                Foreground="#C9ADA7"
                                FontSize="18"
                                FontWeight="SemiBold"
@@ -144,7 +144,7 @@
                           BorderThickness="0"
                           ItemContainerStyle="{StaticResource ChatItem}"
                           Margin="8,0,0,0"
-                          Grid.Row="1" SelectionChanged="ListView_SelectionChanged">
+                          Grid.Row="1">
                 </ListView>
                 <Grid Grid.Row="2">
                     <Grid.ColumnDefinitions>

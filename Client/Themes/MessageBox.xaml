@@ -3,7 +3,7 @@
     <Style TargetType="TextBox" x:Key="MessageBox">
         <Setter Property="Foreground" Value="Gray"/>
         <Setter Property="FontWeight" Value="Medium"/>
-        <Setter Property="Margin" Value="8"/>
+        <Setter Property="Margin" Value="12,8,12,8"/>
 
         <Setter Property="Template">
             <Setter.Value>
