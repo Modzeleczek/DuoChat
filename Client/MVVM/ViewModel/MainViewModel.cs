@@ -60,7 +60,7 @@ namespace Client.MVVM.ViewModel
 
             Messages.Add(new MessageModel
             {
-                Username = "ProWoj",
+                Nickname = "ProWoj",
                 UsernameColor = "Red",
                 ImageSource = "https://i.imgur.com/LZFX9Hx.png",
                 Message = "Jaki priv?",
@@ -76,7 +76,7 @@ namespace Client.MVVM.ViewModel
             });
             Messages.Add(new MessageModel
             {
-                Username = "RL9",
+                Nickname = "RL9",
                 UsernameColor = "Gray",
                 ImageSource = "https://i.imgur.com/bYBKzxY.png",
                 Message = "Teraz to już przesadziła",

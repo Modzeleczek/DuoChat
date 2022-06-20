@@ -8,7 +8,7 @@ namespace Client.MVVM.Model
 {
     internal class MessageModel
     {
-        public string Username { get; set; }
+        public string Nickname { get; set; }
         public string UsernameColor { get; set; }
         public string ImageSource { get; set; }
         public string Message { get; set; }

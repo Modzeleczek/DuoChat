@@ -17,7 +17,7 @@
                         </Ellipse>
                         <StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <Label Content="{Binding UserName}"
+                                <Label Content="{Binding Nickname}"
                                    Foreground="{Binding UsernameColor}"
                                    FontWeight="SemiBold"
                                    VerticalAlignment="Center"
@@ -25,7 +25,7 @@
                                 <Label Content="{Binding Time}"
                                    Foreground="Gray"
                                    FontWeight="Normal"
-                                   FontSize="8"
+                                   FontSize="9"
                                    VerticalAlignment="Center"/>
                             </StackPanel>
                             <Label Content="{Binding Message}"
