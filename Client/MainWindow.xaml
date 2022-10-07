@@ -3,7 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Client" xmlns:viewmodel="clr-namespace:Client.MVVM.ViewModel"
+        xmlns:viewmodel="clr-namespace:Client.MVVM.ViewModel"
+        xmlns:c="clr-namespace:Client.MVVM.View.Converters"
         mc:Ignorable="d"
         Title="MainWindow"
         Height="650"
@@ -58,7 +59,7 @@
                     <RowDefinition/>
                     <RowDefinition Height="60"/>
                 </Grid.RowDefinitions>
-                <Label Content="Friends"
+                <Label Content="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='Friends'}"
                        FontFamily="/Fonts/RedHatDisplay"
                        Margin="8,5,0,0"
                        FontSize="20"
