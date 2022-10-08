@@ -76,7 +76,7 @@ namespace Client.MVVM.ViewModel
                 Nickname = "RL9",
                 UsernameColor = "Gray",
                 ImageSource = "https://i.imgur.com/bYBKzxY.png",
-                Content_ = "Teraz to już przesadziła",
+                Content_ = "Teraz to już przesadziłaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
                 Time = DateTime.Now,
                 IsNativeOrigin = false,
                 FirstMessage = false

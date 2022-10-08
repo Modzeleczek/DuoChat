@@ -24,10 +24,10 @@
         <viewmodel:MainViewModel/>
     </Window.DataContext>
     <intr:Interaction.Triggers>
-      <intr:EventTrigger EventName="Loaded">
-        <intr:InvokeCommandAction Command="{Binding Path=WindowLoaded}"
+        <intr:EventTrigger EventName="Loaded">
+            <intr:InvokeCommandAction Command="{Binding Path=WindowLoaded}"
           CommandParameter="{Binding ElementName=window}"/>
-      </intr:EventTrigger>
+        </intr:EventTrigger>
     </intr:Interaction.Triggers>
 
     <Border CornerRadius="10"
@@ -55,9 +55,9 @@
                            Margin="15,0,0,0"/>
                     <StackPanel HorizontalAlignment="Right"
                                 Orientation="Horizontal">
-                        <Button Width="25" Height="25" Margin="4,1,0,2" Content="🗕" Background="Transparent" BorderThickness="0" Foreground="#9A8C98" FontWeight="Bold" Click="Button_Minimize_Click" FontSize="15"/>
-                        <Button Width="25" Height="25" Margin="4,1,2,2" Content="🗖" Background="Transparent" BorderThickness="0" Foreground="#9A8C98" FontWeight="Bold" Click="Button_Maximize_Click" FontSize="15"/>
-                        <Button Width="25" Height="25" Margin="4,1,16,0" Content="✕" Background="Transparent" BorderThickness="0" Foreground="#9A8C98" FontWeight="Bold" Click="Button_Close_Click" Command="{Binding Path=Close}" FontSize="15"/>
+                        <Button Style="{StaticResource TransparentStyle}" Width="25" Height="25" Margin="4,1,0,2" Content="🗕"  BorderThickness="0" Foreground="#9A8C98" FontWeight="Bold" Click="Button_Minimize_Click" FontSize="15"/>
+                        <Button Style="{StaticResource TransparentStyle}" Width="25" Height="25" Margin="4,1,2,2" Content="🗖"  BorderThickness="0" Foreground="#9A8C98" FontWeight="Bold" Click="Button_Maximize_Click" FontSize="15"/>
+                        <Button Style="{StaticResource TransparentStyle}" Width="25" Height="25" Margin="4,1,16,0" Content="✕"  BorderThickness="0" Foreground="#9A8C98" FontWeight="Bold" Click="Button_Close_Click" Command="{Binding Path=Close}" FontSize="15"/>
 
 
                     </StackPanel>
@@ -95,7 +95,7 @@
                     <RowDefinition Height="60"/>
                 </Grid.RowDefinitions>
                 <StackPanel Orientation="Horizontal">
-                    <Button Width="25" Content="&gt;" Background="Transparent" BorderThickness="0" Foreground="#9A8C98" FontWeight="Bold" Click="Button_ToggleServers_Click" FontSize="40" VerticalContentAlignment="Center" x:Name="ToggleServersButton"/>
+                    <Button Width="25" Content="&gt;" Background="Transparent" BorderThickness="0" Foreground="#C9ADA7" FontWeight="Bold" Click="Button_ToggleServers_Click" FontSize="40" VerticalContentAlignment="Center" x:Name="ToggleServersButton"/>
                     <Label Content="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='Friends'}"
                            FontFamily="/Fonts/RedHatDisplay"
                            Margin="8,5,0,0"
@@ -112,25 +112,39 @@
                           BorderBrush="#4A4E69"
                           BorderThickness="0,0,0,4"/>
 
-                <StackPanel Grid.Row="2"
-                            Orientation="Horizontal"
+                <DockPanel Grid.Row="2"
+                           
                             Background="#3b3e54">
-                    <Border CornerRadius="25"
+                    <Border DockPanel.Dock="Left"
+                         CornerRadius="25"
                             Width="45"
                             Height="45"
                             Background="Gray"
-                            Margin="12,0,0,0"/>
-                    <StackPanel Orientation="Vertical" VerticalAlignment="Center">
-                        <Label Content="Nickname"
+                            Margin="10,0,0,0"/>
+                    <TextBlock Text="Nicknaddmddddddddddddde"
+                            TextTrimming="CharacterEllipsis"
+                           DockPanel.Dock="Left"
                                FontWeight="SemiBold"
                                Foreground="#C9ADA7"
-                               FontSize="15"/>
-                        <Label Content="#123456789"
-                               
-                               Foreground="#C9ADA7"
-                               FontSize="11"/>
-                    </StackPanel>
-                </StackPanel>
+                               FontSize="12"
+                               Width="105"
+                               Margin="5,0,0,0"
+                           
+                           VerticalAlignment="Center"/>
+
+
+
+                    <Button        Style="{StaticResource TransparentStyle}" 
+                                    Width="25"
+                                   DockPanel.Dock="Right"
+                                   Height="25"
+                                  BorderThickness="0" Foreground="#9A8C98" FontWeight="Bold" Click="Button_Close_Click" Command="{Binding Path=Close}" FontSize="15"
+                                   Margin="0,0,10,0"
+                                   HorizontalAlignment="Right"
+                                    Background="Transparent">
+                        <Image Source="./Icons/settings.png"/>
+                    </Button>
+                </DockPanel>
             </Grid>
             <Grid Grid.Column="2"
                   Grid.Row="1">
@@ -146,7 +160,8 @@
                           Margin="8">
                         <StackPanel Orientation="Horizontal"
                                     HorizontalAlignment="Left">
-                            <Label Content="{Binding SelectedFriend.Nickname}"
+                            <Label 
+                               Content='{Binding SelectedFriend.Nickname, FallbackValue="User&apos;s nickname"}'
                                Foreground="#C9ADA7"
                                FontSize="18"
                                FontWeight="SemiBold"
@@ -159,7 +174,7 @@
                                    Margin="10,0,5,0"
                                    Source="./Icons/add.png"/>
                         </StackPanel>
-                       
+
                         <StackPanel Orientation="Horizontal"
                                     HorizontalAlignment="Right">
                             <Image Width="25"
@@ -195,19 +210,19 @@
                              Text="Message @Username"
                              Style="{StaticResource MessageBox}"
                              Grid.ColumnSpan="2"/>
-                    
+
                     <StackPanel Orientation="Horizontal"
                                 HorizontalAlignment="Right"
                                 Grid.Column="1"
                                 Margin="0,0,16,0">
-                        
+
                         <Image Width="25"
                                    Height="25"
                                    RenderOptions.BitmapScalingMode="Fant"
                                    Margin="5,0,10,0"
                                    Source="./Icons/send.png"/>
 
-                        
+
                     </StackPanel>
                 </Grid>
             </Grid>
