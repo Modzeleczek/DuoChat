@@ -1,96 +1,97 @@
 ﻿using Client.Core;
 using Client.MVVM.Model;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 
 namespace Client.MVVM.ViewModel
 {
-    internal class MainViewModel : ObservableObject
+    public class MainViewModel : ObservableObject
     {
-        public ObservableCollection<MessageModel> Messages {get; set;}
-        public ObservableCollection<FriendModel> Friends { get; set; }
+        public ObservableCollection<Server> Servers { get; }
+        public ObservableCollection<Friend> Friends { get; }
+        public ObservableCollection<Message> Messages { get; }
 
+        public RelayCommand Send { get; }
+        public RelayCommand WindowLoaded { get; }
+        public RelayCommand Close { get; }
 
-        /* Commands */
-        public RelayCommand SendCommand { get; set; }
-
-        private FriendModel _selectedFriend;   
-
-        public FriendModel SelectedFriend
+        private Server selectedServer;
+        public Server SelectedServer
         {
-            get { return _selectedFriend; }
-            set {
-                _selectedFriend = value;
-                OnPropertyChanged();
-            }
+            get { return selectedServer; }
+            set { selectedServer = value; OnPropertyChanged(nameof(SelectedServer)); }
         }
 
-
-        private string _message;
-
-        public string Message
+        private Friend selectedFriend;
+        public Friend SelectedFriend
         {
-            get { return _message; }
-            set { _message = value;
-                OnPropertyChanged();
-            }
+            get { return selectedFriend; }
+            set { selectedFriend = value; OnPropertyChanged(nameof(SelectedFriend)); }
         }
 
-
+        private string messageContent;
+        public string MessageContent
+        {
+            get { return messageContent; }
+            set { messageContent = value; OnPropertyChanged(nameof(MessageContent)); }
+        }
 
         public MainViewModel()
         {
-            Messages = new ObservableCollection<MessageModel>();
-            Friends = new ObservableCollection<FriendModel>();
+            Servers = new ObservableCollection<Server>();
+            Messages = new ObservableCollection<Message>();
+            Friends = new ObservableCollection<Friend>();
 
-            SendCommand = new RelayCommand(o => 
+            Send = new RelayCommand(o => 
             {
-                Messages.Add(new MessageModel
+                Messages.Add(new Message
                 {
-                    Message = Message,
+                    Content_ = MessageContent,
                     FirstMessage = false
                 });
-                Message = "";
+                MessageContent = "";
             });
 
-            Messages.Add(new MessageModel
+            Servers.Add(new Server{ IPAddress = "127.0.0.1", Name = "lokalny1" });
+            Servers.Add(new Server{ IPAddress = "127.0.0.2", Name = "lokalny2" });
+
+            Messages.Add(new Message
             {
                 Nickname = "ProWoj",
                 UsernameColor = "Red",
                 ImageSource = "https://i.imgur.com/LZFX9Hx.png",
-                Message = "Jaki priv?",
+                Content_ = "Jaki priv?",
                 Time = DateTime.Now,
-                isNativeOrigin = false,
+                IsNativeOrigin = false,
                 FirstMessage = true
             });
-            Friends.Add(new FriendModel
+            Friends.Add(new Friend
             {
                 Nickname = "ProWoj",
                 ImageSource = "https://i.imgur.com/LZFX9Hx.png",
                 Messages = Messages
             });
-            Messages.Add(new MessageModel
+            Messages.Add(new Message
             {
                 Nickname = "RL9",
                 UsernameColor = "Gray",
                 ImageSource = "https://i.imgur.com/bYBKzxY.png",
-                Message = "Teraz to już przesadziła",
+                Content_ = "Teraz to już przesadziła",
                 Time = DateTime.Now,
-                isNativeOrigin = false,
+                IsNativeOrigin = false,
                 FirstMessage = false
             });
-            Friends.Add(new FriendModel
+            Friends.Add(new Friend
             {
                 Nickname = "RL9",
                 ImageSource = "https://i.imgur.com/bYBKzxY.png",
                 Messages = Messages
             });
-        }
 
+            Close = new RelayCommand(e =>
+            {
+                // przed faktycznym zamknięciem MainWindow, co powoduje zakończenie programu
+            });
+        }
     }
 }

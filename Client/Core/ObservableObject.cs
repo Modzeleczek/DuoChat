@@ -7,10 +7,9 @@ namespace Client.Core
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public void OnPropertyChanged([CallerMemberName] string propertyname = null)
+        public void OnPropertyChanged([CallerMemberName] string name = null)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyname));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
-
     }
 }

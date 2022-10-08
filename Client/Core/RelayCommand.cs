@@ -12,7 +12,6 @@ namespace Client.Core
         {
             add { CommandManager.RequerySuggested += value; }
             remove { CommandManager.RequerySuggested -= value; }
-
         }
 
         public RelayCommand(Action<object> execute, Func<object, bool> canExecute = null)
@@ -23,12 +22,12 @@ namespace Client.Core
 
         public bool CanExecute(object parameter)
         {
-            return this.canExecute == null || this.canExecute(parameter);
+            return canExecute == null || canExecute(parameter);
         }
 
-        public void Execute(object parameter)
+        public void Execute(object parameter = null)
         {
-            this.execute(parameter);
+            execute(parameter);
         }
     }
 }

@@ -47,6 +47,9 @@ namespace Client.MVVM.View.Converters
             languages[0] = new Dictionary<string, string>();
             var d = languages[0];
             d["Friends"] = "Znajomi";
+            d["Servers"] = "Serwery";
+            d["@message"] = "@wiadomość";
+            d["Users"] = "Użytkownicy";
             d["Create user"] = "Stwórz użytkownika";
         }
     }

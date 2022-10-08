@@ -4,9 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewmodel="clr-namespace:Client.MVVM.ViewModel"
+        xmlns:intr="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:c="clr-namespace:Client.MVVM.View.Converters"
         mc:Ignorable="d"
-        Title="MainWindow"
+        Title="DuoChat"
         Height="650"
         MinHeight="300"
         Width="1200"
@@ -16,22 +17,33 @@
         AllowsTransparency="True"
         ResizeMode="CanResizeWithGrip"
         FontFamily="/Fonts/RedHatDisplay"
-        Icon="/Icons/logo.png">
+        Icon="/Icons/logo.png"
+        x:Name="window"
+        Closing="Window_Closing">
     <Window.DataContext>
         <viewmodel:MainViewModel/>
     </Window.DataContext>
+    <intr:Interaction.Triggers>
+      <intr:EventTrigger EventName="Loaded">
+        <intr:InvokeCommandAction Command="{Binding Path=WindowLoaded}"
+          CommandParameter="{Binding ElementName=window}"/>
+      </intr:EventTrigger>
+    </intr:Interaction.Triggers>
+
     <Border CornerRadius="10"
             Background="#4A4E69">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="40"/>
-                <RowDefinition/>
+                <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0" x:Name="ServersColumn"/>
                 <ColumnDefinition Width="200" MinWidth="70"/>
-                <ColumnDefinition/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Border Grid.ColumnSpan="2"
+            <Border Grid.Row="0"
+                    Grid.ColumnSpan="3"
                     Background="#22223B"
                     CornerRadius="10,10,0,0"
                     MouseLeftButtonDown="Border_MouseLeftButtonDown">
@@ -45,7 +57,7 @@
                                 Orientation="Horizontal">
                         <Button Width="25" Height="25" Margin="4,1,0,2" Content="🗕" Background="Transparent" BorderThickness="0" Foreground="#9A8C98" FontWeight="Bold" Click="Button_Minimize_Click" FontSize="15"/>
                         <Button Width="25" Height="25" Margin="4,1,2,2" Content="🗖" Background="Transparent" BorderThickness="0" Foreground="#9A8C98" FontWeight="Bold" Click="Button_Maximize_Click" FontSize="15"/>
-                        <Button Width="25" Height="25" Margin="4,1,16,0" Content="✕" Background="Transparent" BorderThickness="0" Foreground="#9A8C98" FontWeight="Bold" Click="Button_Close_Click" FontSize="15"/>
+                        <Button Width="25" Height="25" Margin="4,1,16,0" Content="✕" Background="Transparent" BorderThickness="0" Foreground="#9A8C98" FontWeight="Bold" Click="Button_Close_Click" Command="{Binding Path=Close}" FontSize="15"/>
 
 
                     </StackPanel>
@@ -53,23 +65,50 @@
                 </Grid>
             </Border>
             <Grid Background="#3b3e54"
+                  Grid.Column="0"
                   Grid.Row="1">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="50"/>
-                    <RowDefinition/>
+                    <RowDefinition Height="*"/>
                     <RowDefinition Height="60"/>
                 </Grid.RowDefinitions>
-                <Label Content="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='Friends'}"
+                <Label Content="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='Servers'}"
                        FontFamily="/Fonts/RedHatDisplay"
                        Margin="8,5,0,0"
                        FontSize="20"
                        Foreground="#C9ADA7"
                        FontWeight="SemiBold"/>
+                <ListView ItemsSource="{Binding Servers}"
+                          SelectedItem="{Binding SelectedServer}"
+                          Background="Transparent"
+                          Grid.Row="1"
+                          ItemContainerStyle="{StaticResource ServerCard}"
+                          BorderBrush="#4A4E69"
+                          BorderThickness="0,0,0,4"/>
+            </Grid>
+            <Grid Background="#3b3e54"
+                  Grid.Column="1"
+                  Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="60"/>
+                </Grid.RowDefinitions>
+                <StackPanel Orientation="Horizontal">
+                    <Button Width="25" Content="&gt;" Background="Transparent" BorderThickness="0" Foreground="#9A8C98" FontWeight="Bold" Click="Button_ToggleServers_Click" FontSize="40" VerticalContentAlignment="Center" x:Name="ToggleServersButton"/>
+                    <Label Content="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='Friends'}"
+                           FontFamily="/Fonts/RedHatDisplay"
+                           Margin="8,5,0,0"
+                           FontSize="20"
+                           Foreground="#C9ADA7"
+                           FontWeight="SemiBold"
+                           VerticalAlignment="Center"/>
+                </StackPanel>
                 <ListView ItemsSource="{Binding Friends}"
                           SelectedItem="{Binding SelectedFriend}"
                           Background="Transparent"
                           Grid.Row="1"
-                          ItemContainerStyle="{StaticResource FriendsCard}"
+                          ItemContainerStyle="{StaticResource FriendCard}"
                           BorderBrush="#4A4E69"
                           BorderThickness="0,0,0,4"/>
 
@@ -93,7 +132,7 @@
                     </StackPanel>
                 </StackPanel>
             </Grid>
-            <Grid Grid.Column="1"
+            <Grid Grid.Column="2"
                   Grid.Row="1">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="50"/>
@@ -145,8 +184,7 @@
                           BorderThickness="0"
                           ItemContainerStyle="{StaticResource ChatItem}"
                           Margin="8,0,0,0"
-                          Grid.Row="1">
-                </ListView>
+                          Grid.Row="1"/>
                 <Grid Grid.Row="2">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>

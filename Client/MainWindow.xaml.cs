@@ -1,25 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
+﻿using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Client
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
+        private bool serversVisible = false;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -28,30 +15,46 @@ namespace Client
         private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed)
+                DragMove();
+        }
+
+        private void Button_ToggleServers_Click(object sender, RoutedEventArgs e)
+        {
+            if (serversVisible)
             {
-                this.DragMove();
+                ServersColumn.Width = new GridLength(0, GridUnitType.Pixel);
+                ToggleServersButton.Content = ">";
             }
-                
+            else
+            {
+                ServersColumn.Width = new GridLength(200, GridUnitType.Pixel);
+                ToggleServersButton.Content = "<";
+            }
+            serversVisible = !serversVisible;
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            e.Cancel = true;
         }
 
         private void Button_Close_Click(object sender, RoutedEventArgs e)
         {
-            Application.Current.Shutdown();
+            Closing -= Window_Closing;
+            Close();
         }
+
         private void Button_Minimize_Click(object sender, RoutedEventArgs e)
         {
-            this.WindowState = WindowState.Minimized;
+            WindowState = WindowState.Minimized;
         }
+
         private void Button_Maximize_Click(object sender, RoutedEventArgs e)
         {
-            if(this.WindowState != WindowState.Maximized)
-            {
-                this.WindowState = WindowState.Maximized;
-            }
+            if (WindowState != WindowState.Maximized)
+                WindowState = WindowState.Maximized;
             else
-            {
-                this.WindowState= WindowState.Normal;
-            }
+                WindowState = WindowState.Normal;
         }
     }
 }

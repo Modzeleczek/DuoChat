@@ -28,7 +28,7 @@
                                    FontSize="9"
                                    VerticalAlignment="Center"/>
                             </StackPanel>
-                            <Label Content="{Binding Message}"
+                            <Label Content="{Binding Content_}"
                                    Foreground="#F2E9E4"
                                    FontWeight="Normal"
                                    FontSize="12"
@@ -42,7 +42,7 @@
         <Style.Resources>
             <ControlTemplate x:Key="CustomRow">
                 <StackPanel Orientation="Horizontal">
-                    <Label Content="{Binding Message}"
+                    <Label Content="{Binding Content_}"
                            Foreground="#F2E9E4"
                            Margin="40,-2,0,-2"/>
                 </StackPanel>
