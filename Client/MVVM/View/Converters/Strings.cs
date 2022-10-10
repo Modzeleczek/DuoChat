@@ -49,8 +49,8 @@ namespace Client.MVVM.View.Converters
             d["Friends"] = "Znajomi";
             d["Servers"] = "Serwery";
             d["@message"] = "@wiadomość";
-            d["Users"] = "Użytkownicy";
-            d["Create user"] = "Stwórz użytkownika";
+            d["Local users"] = "Lokalni użytkownicy";
+            d["Create"] = "Stwórz";
         }
     }
 }
