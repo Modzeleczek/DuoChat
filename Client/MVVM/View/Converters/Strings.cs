@@ -51,6 +51,7 @@ namespace Client.MVVM.View.Converters
             d["@message"] = "@wiadomość";
             d["Local users"] = "Lokalni użytkownicy";
             d["Create"] = "Stwórz";
+            d["User`apos;s nickname"] = "Nazwa użytkownika";
         }
     }
 }
