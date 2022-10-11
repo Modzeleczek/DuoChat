@@ -51,6 +51,8 @@ namespace Client.MVVM.View.Converters
             d["@message"] = "@wiadomość";
             d["Users"] = "Użytkownicy";
             d["Create user"] = "Stwórz użytkownika";
-        }
+            d["Settings"] = "Ustawienia";
+            d["User&apos;s nickname"] = "Nazwa użytkownika";
+        }   
     }
 }

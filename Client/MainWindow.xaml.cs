@@ -1,5 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Input;
+using System.Windows.Controls;
+using Client.MVVM.View.Converters;
 
 namespace Client
 {
@@ -10,6 +12,7 @@ namespace Client
         public MainWindow()
         {
             InitializeComponent();
+            nicknameLabel.Content = "User's Nickname";
         }
 
         private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

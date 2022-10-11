@@ -161,7 +161,8 @@
                         <StackPanel Orientation="Horizontal"
                                     HorizontalAlignment="Left">
                             <Label 
-                               Content='{Binding SelectedFriend.Nickname, FallbackValue="User&apos;s nickname"}'
+                                Name="nicknameLabel"
+                               Content='{Binding SelectedFriend.Nickname}'
                                Foreground="#C9ADA7"
                                FontSize="18"
                                FontWeight="SemiBold"
@@ -221,7 +222,6 @@
                                    RenderOptions.BitmapScalingMode="Fant"
                                    Margin="5,0,10,0"
                                    Source="./Icons/send.png"/>
-
 
                     </StackPanel>
                 </Grid>
