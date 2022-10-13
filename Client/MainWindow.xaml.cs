@@ -12,7 +12,6 @@ namespace Client
         public MainWindow()
         {
             InitializeComponent();
-            nicknameLabel.Content = "User's Nickname";
         }
 
         private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

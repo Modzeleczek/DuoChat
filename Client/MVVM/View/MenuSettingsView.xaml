@@ -22,6 +22,25 @@
                            Foreground="#C9ADA7"
                            FontWeight="SemiBold"
                            VerticalAlignment="Center"/>
+            <StackPanel Grid.Row="1">
+                <Label 
+                Content="Profile"
+                           FontFamily="/Fonts/RedHatDisplay"
+                           Margin="8,5,0,0"
+                           FontSize="20"
+                           Foreground="#C9ADA7"
+                           FontWeight="SemiBold"
+                           VerticalAlignment="Center"/>
+                <Label 
+                Content="Display"
+                           FontFamily="/Fonts/RedHatDisplay"
+                           Margin="8,5,0,0"
+                           FontSize="20"
+                           Foreground="#C9ADA7"
+                           FontWeight="SemiBold"
+                           VerticalAlignment="Center"/>
+
+            </StackPanel>
         </Grid>
     </Border>
 </UserControl>

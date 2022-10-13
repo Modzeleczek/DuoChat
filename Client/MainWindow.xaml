@@ -160,15 +160,19 @@
                           Margin="8">
                         <StackPanel Orientation="Horizontal"
                                     HorizontalAlignment="Left">
-                            <Label 
-                                Name="nicknameLabel"
-                               Content='{Binding SelectedFriend.Nickname}'
-                               Foreground="#C9ADA7"
+                            <Label Foreground="#C9ADA7"
                                FontSize="18"
                                FontWeight="SemiBold"
                                Margin="5,0,5,0"
                                VerticalAlignment="Center"
-                               FontFamily="/Fonts/RedHatDisplay"/>
+                               FontFamily="/Fonts/RedHatDisplay">
+                                <Label.Content>
+                                    <PriorityBinding>
+                                        <Binding Path="SelectedFriend.Nickname"/>
+                                        <Binding Converter="{x:Static c:Strings.Instance}" ConverterParameter='User`apos;s nickname'/>
+                                    </PriorityBinding>
+                                </Label.Content>
+                            </Label>
                             <Image Width="25"
                                    Height="25"
                                    RenderOptions.BitmapScalingMode="Fant"
