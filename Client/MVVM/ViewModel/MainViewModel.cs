@@ -7,6 +7,16 @@ namespace Client.MVVM.ViewModel
 {
     public class MainViewModel : ObservableObject
     {
+        private object currentView;
+        public RelayCommand SwitchToSettings { get; set; }
+        public object CurrentModeVM
+        {
+            get { return currentView; }
+            set { currentView = value; OnPropertyChanged(nameof(CurrentModeVM)); }
+        }
+
+
+
         public ObservableCollection<Server> Servers { get; }
         public ObservableCollection<Friend> Friends { get; }
         public ObservableCollection<Message> Messages { get; }
@@ -38,10 +48,17 @@ namespace Client.MVVM.ViewModel
 
         public MainViewModel()
         {
+
+
             Servers = new ObservableCollection<Server>();
             Messages = new ObservableCollection<Message>();
             Friends = new ObservableCollection<Friend>();
 
+            var defaultVM = new MainViewModel();
+            var settingsVM = new MenuSettingsViewModel();
+
+            currentView = defaultVM;
+            SwitchToSettings = new RelayCommand(o => { if (CurrentModeVM != settingsVM) CurrentModeVM = settingsVM; });
             Send = new RelayCommand(o => 
             {
                 Messages.Add(new Message

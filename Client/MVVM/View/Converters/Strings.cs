@@ -53,6 +53,9 @@ namespace Client.MVVM.View.Converters
             d["Create user"] = "Stwórz użytkownika";
             d["Settings"] = "Ustawienia";
             d["User&apos;s nickname"] = "Nazwa użytkownika";
+            d["Display"] = "Wyświetlanie";
+            d["Profile"] = "Profil";
+            d["Language"] = "Język";
         }   
     }
 }
