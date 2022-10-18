@@ -104,6 +104,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="MVVM\View\SettingsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Themes\Buttons.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -130,14 +134,19 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MVVM\Model\Account.cs" />
     <Compile Include="MVVM\Model\Friend.cs" />
     <Compile Include="MVVM\Model\Message.cs" />
     <Compile Include="MVVM\Model\Server.cs" />
     <Compile Include="MVVM\ViewModel\MainViewModel.cs" />
     <Compile Include="MVVM\ViewModel\MenuSettingsViewModel.cs" />
+    <Compile Include="MVVM\ViewModel\SettingsViewModel.cs" />
     <Compile Include="MVVM\View\Converters\Strings.cs" />
     <Compile Include="MVVM\View\MenuSettingsView.xaml.cs">
       <DependentUpon>MenuSettingsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MVVM\View\SettingsView.xaml.cs">
+      <DependentUpon>SettingsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

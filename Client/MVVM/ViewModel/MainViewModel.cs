@@ -7,6 +7,8 @@ namespace Client.MVVM.ViewModel
 {
     public class MainViewModel : ObservableObject
     {
+        public Account Account { get; set; }
+
         public ObservableCollection<Server> Servers { get; }
         public ObservableCollection<Friend> Friends { get; }
         public ObservableCollection<Message> Messages { get; }
@@ -38,6 +40,9 @@ namespace Client.MVVM.ViewModel
 
         public MainViewModel()
         {
+            Account = new Account();
+            Account.Nickname = "XD";
+            
             Servers = new ObservableCollection<Server>();
             Messages = new ObservableCollection<Message>();
             Friends = new ObservableCollection<Friend>();

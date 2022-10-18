@@ -2,6 +2,7 @@
 using System.Windows.Input;
 using System.Windows.Controls;
 using Client.MVVM.View.Converters;
+using Client.MVVM.View;
 
 namespace Client
 {
@@ -62,6 +63,12 @@ namespace Client
         private void ListView_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
 
+        }
+        private void Button_Settings_Click(object sender, RoutedEventArgs e)
+        {
+            SettingsView sv = new SettingsView(); 
+            sv.Owner = Application.Current.MainWindow;
+            sv.Show();
         }
     }
 }

@@ -15,7 +15,7 @@
         WindowStyle="None"
         Background="Transparent"
         AllowsTransparency="True"
-        ResizeMode="CanResizeWithGrip"
+        ResizeMode="CanResize"
         FontFamily="/Fonts/RedHatDisplay"
         Icon="/Icons/logo.png"
         x:Name="window"
@@ -31,7 +31,9 @@
     </intr:Interaction.Triggers>
 
     <Border CornerRadius="10"
-            Background="#4A4E69">
+            Background="#4A4E69"
+            BorderBrush="#9A8C98"
+            BorderThickness="1">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="40"/>
@@ -86,7 +88,8 @@
                           BorderBrush="#4A4E69"
                           BorderThickness="0,0,0,4"/>
             </Grid>
-            <Grid Background="#3b3e54"
+            <Grid Background="Transparent"
+                  
                   Grid.Column="1"
                   Grid.Row="1">
                 <Grid.RowDefinitions>
@@ -94,16 +97,19 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="60"/>
                 </Grid.RowDefinitions>
-                <StackPanel Orientation="Horizontal">
-                    <Button Width="25" Content="&gt;" Background="Transparent" BorderThickness="0" Foreground="#C9ADA7" FontWeight="Bold" Click="Button_ToggleServers_Click" FontSize="40" VerticalContentAlignment="Center" x:Name="ToggleServersButton"/>
-                    <Label Content="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='Friends'}"
+                <Border Background="#3b3e54" Grid.Row="0">
+                    <StackPanel Orientation="Horizontal">
+                        <Button Width="25" Content="&gt;" Background="Transparent" BorderThickness="0" Foreground="#C9ADA7" FontWeight="Bold" Click="Button_ToggleServers_Click" FontSize="40" VerticalContentAlignment="Center" x:Name="ToggleServersButton" Style="{StaticResource TransparentStyle}"/>
+                        <Label Content="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='Friends'}"
                            FontFamily="/Fonts/RedHatDisplay"
                            Margin="8,5,0,0"
                            FontSize="20"
                            Foreground="#C9ADA7"
                            FontWeight="SemiBold"
                            VerticalAlignment="Center"/>
-                </StackPanel>
+                    </StackPanel>
+                </Border>
+                <Border Grid.Row="1" Background="#3b3e54">
                 <ListView ItemsSource="{Binding Friends}"
                           SelectedItem="{Binding SelectedFriend}"
                           Background="Transparent"
@@ -111,17 +117,20 @@
                           ItemContainerStyle="{StaticResource FriendCard}"
                           BorderBrush="#4A4E69"
                           BorderThickness="0,0,0,4"/>
-
-                <DockPanel Grid.Row="2"
-                           
-                            Background="#3b3e54">
+                </Border>
+                <Border Grid.Row="2"
+                        Background="#3b3e54"
+                        BorderBrush="#9A8C98"
+                        CornerRadius="0,0,0,10"
+                        >
+                <DockPanel >
                     <Border DockPanel.Dock="Left"
                          CornerRadius="25"
                             Width="45"
                             Height="45"
                             Background="Gray"
                             Margin="10,0,0,0"/>
-                    <TextBlock Text="Nicknaddmddddddddddddde"
+                    <TextBlock
                             TextTrimming="CharacterEllipsis"
                            DockPanel.Dock="Left"
                                FontWeight="SemiBold"
@@ -130,7 +139,14 @@
                                Width="105"
                                Margin="5,0,0,0"
                            
-                           VerticalAlignment="Center"/>
+                           VerticalAlignment="Center">
+                        <TextBlock.Text>
+                                    <PriorityBinding>
+                                        <Binding Path="Account.Nickname"/>
+                                        <Binding Converter="{x:Static c:Strings.Instance}" ConverterParameter='Nickname'/>
+                                    </PriorityBinding>
+                                </TextBlock.Text>
+                    </TextBlock>
 
 
 
@@ -138,13 +154,14 @@
                                     Width="25"
                                    DockPanel.Dock="Right"
                                    Height="25"
-                                  BorderThickness="0" Foreground="#9A8C98" FontWeight="Bold" Click="Button_Close_Click" Command="{Binding Path=Close}" FontSize="15"
+                                  BorderThickness="0" Foreground="#9A8C98" FontWeight="Bold" Click="Button_Settings_Click" FontSize="15"
                                    Margin="0,0,10,0"
                                    HorizontalAlignment="Right"
                                     Background="Transparent">
                         <Image Source="./Icons/settings.png"/>
                     </Button>
                 </DockPanel>
+                </Border>
             </Grid>
             <Grid Grid.Column="2"
                   Grid.Row="1">

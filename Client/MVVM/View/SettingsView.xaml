@@ -1,0 +1,60 @@
+﻿<Window x:Class="Client.MVVM.View.SettingsView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Client.MVVM.View"
+        xmlns:c="clr-namespace:Client.MVVM.View.Converters"
+        mc:Ignorable="d"
+        Title="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='DuoChat - settings'}" Height="450" Width="800"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        Icon="/Icons/logo.png"
+        FontFamily="/Fonts/RedHatDisplay"
+        WindowStartupLocation="CenterOwner"
+        MinHeight="200"
+        MinWidth="400"
+        MouseLeftButtonDown="Window_MouseDown"
+        ResizeMode="CanResize"
+        >
+    <Border Background="#3b3e54"
+            CornerRadius="10"
+            BorderBrush="#9A8C98"
+            BorderThickness="1">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0" Background="#22223B" CornerRadius="10,10,0,0">
+                <Grid VerticalAlignment="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Content="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='DuoChat - settings'}"
+                           FontSize="14"
+                           Foreground="#9A8C98"
+                           FontWeight="SemiBold"
+                           Margin="15,0,0,0"/>
+                    <StackPanel Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal">
+                        <Button
+                        Style="{StaticResource TransparentStyle}"
+                            Width="25" 
+                            Height="25" 
+                            Margin="4,1,16,0" 
+                            Content="✕"  
+                            BorderThickness="0" 
+                            Foreground="#9A8C98" 
+                            FontWeight="Bold" 
+                            Click="Button_Close_Click" 
+                            FontSize="15"/>
+                        
+                    </StackPanel>
+
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</Window>
