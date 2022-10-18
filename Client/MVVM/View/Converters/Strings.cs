@@ -55,6 +55,9 @@ namespace Client.MVVM.View.Converters
             d["User&apos;s nickname"] = "Nazwa użytkownika";
             d["Nickname"] = "Nazwa użytkownika";
             d["DuoChat - settings"] = "DuoChat - ustawienia";
+            d["Display"] = "Wyświetlanie";
+            d["Profile"] = "Profil";
+            d["Language"] = "Język";
         }   
     }
 }
