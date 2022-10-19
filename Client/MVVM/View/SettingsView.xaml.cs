@@ -32,5 +32,10 @@ namespace Client.MVVM.View
             if (e.ChangedButton == MouseButton.Left)
                 this.DragMove();
         }
+
+        private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
     }
 }

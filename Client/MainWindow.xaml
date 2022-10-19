@@ -15,7 +15,7 @@
         WindowStyle="None"
         Background="Transparent"
         AllowsTransparency="True"
-        ResizeMode="CanResize"
+        ResizeMode="CanResizeWithGrip"
         FontFamily="/Fonts/RedHatDisplay"
         Icon="/Icons/logo.png"
         x:Name="window"

@@ -47,11 +47,7 @@ namespace Client.MVVM.ViewModel
             Messages = new ObservableCollection<Message>();
             Friends = new ObservableCollection<Friend>();
 
-            var defaultVM = new MainViewModel();
-            var settingsVM = new MenuSettingsViewModel();
-
-            currentView = defaultVM;
-            SwitchToSettings = new RelayCommand(o => { if (CurrentModeVM != settingsVM) CurrentModeVM = settingsVM; });
+         
             Send = new RelayCommand(o => 
             {
                 Messages.Add(new Message
