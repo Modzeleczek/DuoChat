@@ -32,8 +32,12 @@ namespace Client.MVVM.View
             if (e.ChangedButton == MouseButton.Left)
                 this.DragMove();
         }
+        private void Button_Minimize_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
 
-        private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void Save_Button(object sender, RoutedEventArgs e)
         {
 
         }

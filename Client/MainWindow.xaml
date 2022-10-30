@@ -15,7 +15,7 @@
         WindowStyle="None"
         Background="Transparent"
         AllowsTransparency="True"
-        ResizeMode="CanResizeWithGrip"
+        ResizeMode="CanResize"
         FontFamily="/Fonts/RedHatDisplay"
         Icon="/Icons/logo.png"
         x:Name="window"
@@ -29,11 +29,84 @@
           CommandParameter="{Binding ElementName=window}" />
         </intr:EventTrigger>
     </intr:Interaction.Triggers>
+    <Window.Resources>
+        <Style x:Key="RectBorderStyle" TargetType="Rectangle">
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="Fill" Value="#9A8C98" />
+            <Setter Property="Tag" Value="{Binding RelativeSource={RelativeSource AncestorType=Window}}" />
+            <EventSetter Event="MouseLeftButtonDown" Handler="Resize_Init"/>
+            <EventSetter Event="MouseLeftButtonUp" Handler="Resize_End"/>
+            <EventSetter Event="MouseMove" Handler="Resizeing_Form"/>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        
+            <Rectangle x:Name="leftSizeGrip"
+    Width="7"
+    HorizontalAlignment="Left"
+    Cursor="SizeWE"
+                       Margin="0,20,0,20"
+    Style="{StaticResource RectBorderStyle}" />
+            <Rectangle x:Name="rightSizeGrip"
+    Width="7"
+    HorizontalAlignment="Right"
+                       Margin="0,20,0,20"
+    Cursor="SizeWE"
+    Style="{StaticResource RectBorderStyle}" />
+            <Rectangle x:Name="topSizeGrip"
+    Height="7"
+                       Margin="20,0,20,0"
+    VerticalAlignment="Top"
+    Cursor="SizeNS"
+    Style="{StaticResource RectBorderStyle}" />
+            <Rectangle x:Name="bottomSizeGrip"
+    Height="7"
+    VerticalAlignment="Bottom"
+                       Margin="20,0,20,0"
+    Cursor="SizeNS"
+    Style="{StaticResource RectBorderStyle}" />
+            <!--  Corners  -->
+            <Rectangle Name="topLeftSizeGrip"
+    Width="50"
+    Height="50"
+    HorizontalAlignment="Left"
+                       RadiusX="10"
+                       RadiusY="10"
+    VerticalAlignment="Top"
+    Cursor="SizeNWSE"
+    Style="{StaticResource RectBorderStyle}" />
+            <Rectangle Name="bottomRightSizeGrip"
+    Width="50"
+    Height="50"
+                       RadiusX="10"
+                       RadiusY="10"
+    HorizontalAlignment="Right"
+    VerticalAlignment="Bottom"
+    Cursor="SizeNWSE"
+    Style="{StaticResource RectBorderStyle}" />
+            <Rectangle Name="topRightSizeGrip"
+    Width="50"
+    Height="50"
+                       RadiusX="10"
+                       RadiusY="10"
+    HorizontalAlignment="Right"
+    VerticalAlignment="Top"
+    Cursor="SizeNESW"
+    Style="{StaticResource RectBorderStyle}" />
+            <Rectangle Name="bottomLeftSizeGrip"
+    Width="50"
+    Height="50"
+                       RadiusX="10"
+                       RadiusY="10"
+    HorizontalAlignment="Left"
+    VerticalAlignment="Bottom"
+    Cursor="SizeNESW"
+    Style="{StaticResource RectBorderStyle}" />
 
-    <Border CornerRadius="10"
+        <Border CornerRadius="10"
             Background="#4A4E69"
-            BorderBrush="#9A8C98"
-            BorderThickness="1">
+            
+                Margin="2">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="40" />
@@ -48,7 +121,7 @@
                     Grid.ColumnSpan="3"
                     Background="#22223B"
                     CornerRadius="10,10,0,0"
-                    MouseLeftButtonDown="Border_MouseLeftButtonDown">
+                     c:EnableDragHelper.EnableDrag="True">
                 <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
                     <Label Content="DuoChat"
                            FontSize="14"
@@ -118,6 +191,7 @@
                 <Border Grid.Row="2"
                         Background="#3b3e54"
                         BorderBrush="#9A8C98"
+                        
                         CornerRadius="0,0,0,10"
                         >
                 <DockPanel >
@@ -241,4 +315,6 @@
             </Grid>
         </Grid>
     </Border>
+    </Grid>
+    
 </Window>

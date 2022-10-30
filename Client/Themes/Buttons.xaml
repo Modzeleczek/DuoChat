@@ -2,6 +2,9 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Style x:Key="TransparentStyle" TargetType="{x:Type Button}">
+        <Setter Property="FontSize" Value="15"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        
         <Setter Property="Background" Value="#22223B" />
         <Setter Property="Template">
             <Setter.Value>
@@ -18,48 +21,21 @@
             </Trigger>
         </Style.Triggers>
     </Style>
-
-    <Style BasedOn="{StaticResource {x:Type ToggleButton}}"
-           TargetType="{x:Type RadioButton}"
-           x:Key="SettingsButtonTheme">
-        <Style.Setters>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="RadioButton">
-                        <Border
-                            BorderBrush="#9A8C98"
-                            BorderThickness="0,1,0,1"
-                            Margin="0,-1,0,0">
+    <!--<Style x:Key="CustomButton" TargetType="Button">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border>
+                        <Button Background="Transparent"
+                                BorderBrush="Transparent"
+                                BorderThickness="0">
                             
-                            <Grid VerticalAlignment="Stretch"
-                              HorizontalAlignment="Stretch"
+                        </Button>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+-        </Setter>
+        
 
-                              Background="{TemplateBinding Background}">
-
-                                <TextBlock Text="{TemplateBinding Property=Content}"
-                                       Padding="15,7,0,7"
-                           FontFamily="/Fonts/RedHatDisplay"
-                           Margin="0,-1,0,0"
-                           FontSize="15"
-                           Foreground="#C9ADA7"
-                           FontWeight="SemiBold"
-
-                           VerticalAlignment="Center" />
-                            </Grid>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="0" />
-        </Style.Setters>
-        <Style.Triggers>
-            <Trigger Property="IsChecked" Value="True">
-                <Setter Property="Background" Value="#202020" />
-            </Trigger>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="#202020" />
-            </Trigger>
-        </Style.Triggers>
-    </Style>
+    </Style>-->
 </ResourceDictionary>

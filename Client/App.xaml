@@ -12,6 +12,7 @@
                 <ResourceDictionary Source="./Themes/MessageBox.xaml"/>
                 <ResourceDictionary Source="./Themes/StylishScrollbar.xaml"/>
                 <ResourceDictionary Source="./Themes/Buttons.xaml"/>
+                <ResourceDictionary Source="./Themes/ResizableWindow.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
