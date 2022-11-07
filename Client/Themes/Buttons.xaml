@@ -2,21 +2,40 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Style x:Key="TransparentStyle" TargetType="{x:Type Button}">
-        <Setter Property="Background" Value="#22223B"/>
+        <Setter Property="FontSize" Value="15"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        
+        <Setter Property="Background" Value="#22223B" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
                     <Border Background="{TemplateBinding Background}">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="#4A4E69"/>
+                <Setter Property="Background" Value="#4A4E69" />
             </Trigger>
         </Style.Triggers>
     </Style>
-    
+    <!--<Style x:Key="CustomButton" TargetType="Button">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border>
+                        <Button Background="Transparent"
+                                BorderBrush="Transparent"
+                                BorderThickness="0">
+                            
+                        </Button>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+-        </Setter>
+        
+
+    </Style>-->
 </ResourceDictionary>
