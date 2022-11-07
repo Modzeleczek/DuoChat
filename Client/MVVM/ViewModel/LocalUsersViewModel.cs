@@ -1,4 +1,4 @@
-﻿using Client.Core;
+﻿using Client.MVVM.Core;
 using System;
 using System.Windows;
 

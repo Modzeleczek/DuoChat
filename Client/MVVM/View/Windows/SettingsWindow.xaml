@@ -9,8 +9,8 @@
         WindowStyle="None"
         AllowsTransparency="True"
         Background="Transparent"
-        Icon="/Icons/logo.png"
-        FontFamily="/Fonts/RedHatDisplay"
+        Icon="/MVVM/View/Icons/logo.png"
+        FontFamily="/MVVM/View/Fonts/RedHatDisplay"
         WindowStartupLocation="CenterOwner"
         MinHeight="100"
         MinWidth="300"
@@ -86,7 +86,7 @@
                                FontWeight="SemiBold"
                                Margin="5,5,5,5"
                                VerticalAlignment="Center"
-                               FontFamily="/Fonts/RedHatDisplay" />
+                               FontFamily="/MVVM/View/Fonts/RedHatDisplay" />
                         <Border Grid.Column="1"
                                     BorderBrush="#9A8C98"
                                     BorderThickness="1"
@@ -104,7 +104,7 @@
                                     BorderThickness="0"
                                     Foreground="White"
                                     VerticalAlignment="Center"
-                                    FontFamily="/Fonts/RedHatDisplay"
+                                    FontFamily="/MVVM/View/Fonts/RedHatDisplay"
                                     FontSize="16"
                                     VerticalScrollBarVisibility="Disabled"
                                     HorizontalScrollBarVisibility="Disabled"
@@ -120,7 +120,7 @@
                                FontWeight="SemiBold"
                                Margin="5,5,5,5"
                                VerticalAlignment="Center"
-                               FontFamily="/Fonts/RedHatDisplay" />
+                               FontFamily="/MVVM/View/Fonts/RedHatDisplay" />
                 </Border>
             </Grid>
 
@@ -132,7 +132,7 @@
                     Foreground="#C9ADA7"
                     FontSize="18"
                     FontWeight="SemiBold"
-                    FontFamily="/Fonts/RedHatDisplay"
+                    FontFamily="/MVVM/View/Fonts/RedHatDisplay"
                     Style="{StaticResource TransparentStyle}" />
             </Border>
         </Grid>

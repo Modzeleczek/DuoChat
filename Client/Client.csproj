@@ -86,7 +86,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="MainWindow.xaml">
+    <Page Include="MVVM\View\Windows\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -94,9 +94,9 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Core\ObservableObject.cs" />
-    <Compile Include="Core\RelayCommand.cs" />
-    <Compile Include="MainWindow.xaml.cs">
+    <Compile Include="MVVM\Core\ObservableObject.cs" />
+    <Compile Include="MVVM\Core\RelayCommand.cs" />
+    <Compile Include="MVVM\View\Windows\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
@@ -108,31 +108,31 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Themes\Buttons.xaml">
+    <Page Include="MVVM\View\Themes\Buttons.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Themes\ChatItem.xaml">
+    <Page Include="MVVM\View\Themes\ChatItem.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Themes\FriendCard.xaml">
+    <Page Include="MVVM\View\Themes\FriendCard.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Themes\MessageBox.xaml">
+    <Page Include="MVVM\View\Themes\MessageBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Themes\ResizableWindow.xaml">
+    <Page Include="MVVM\View\Themes\ResizableWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Themes\ServerCard.xaml">
+    <Page Include="MVVM\View\Themes\ServerCard.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Themes\StylishScrollbar.xaml">
+    <Page Include="MVVM\View\Themes\StylishScrollbar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -171,8 +171,8 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Resource Include="Fonts\RedHatDisplay-Italic-VariableFont_wght.ttf" />
-    <Resource Include="Fonts\RedHatDisplay-VariableFont_wght.ttf" />
+    <Resource Include="MVVM\View\Fonts\RedHatDisplay-Italic-VariableFont_wght.ttf" />
+    <Resource Include="MVVM\View\Fonts\RedHatDisplay-VariableFont_wght.ttf" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -184,25 +184,25 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <Resource Include="Icons\logo.png">
+    <Resource Include="MVVM\View\Icons\logo.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Icons\phone.png">
+    <Resource Include="MVVM\View\Icons\phone.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Icons\send.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Icons\settings.png">
+    <Resource Include="MVVM\View\Icons\send.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Icons\add.png">
+    <Resource Include="MVVM\View\Icons\settings.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="MVVM\View\Icons\add.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>

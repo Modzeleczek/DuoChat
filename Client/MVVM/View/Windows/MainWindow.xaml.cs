@@ -2,7 +2,7 @@
 using System.Windows.Input;
 using System.Windows.Shapes;
 
-namespace Client
+namespace Client.MVVM.View.Windows
 {
     public partial class MainWindow : Window
     {
