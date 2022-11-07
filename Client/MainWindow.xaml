@@ -18,7 +18,7 @@
         ResizeMode="CanResize"
         FontFamily="/Fonts/RedHatDisplay"
         Icon="/Icons/logo.png"
-        x:Name="window"
+        x:Name="MainWindowName"
         Closing="Window_Closing">
     <Window.DataContext>
         <viewmodel:MainViewModel />
@@ -26,7 +26,7 @@
     <intr:Interaction.Triggers>
         <intr:EventTrigger EventName="Loaded">
             <intr:InvokeCommandAction Command="{Binding Path=WindowLoaded}"
-          CommandParameter="{Binding ElementName=window}" />
+          CommandParameter="{Binding ElementName=MainWindowName}" />
         </intr:EventTrigger>
     </intr:Interaction.Triggers>
     <Window.Resources>
@@ -221,15 +221,16 @@
 
 
 
-                    <Button        Style="{StaticResource TransparentStyle}"
-                                    Width="25"
-                                   DockPanel.Dock="Right"
-                                   Height="25"
-                                  BorderThickness="0" Foreground="#9A8C98" FontWeight="Bold" Click="Button_Settings_Click" FontSize="15"
-                                   Margin="0,0,10,0"
-                                   HorizontalAlignment="Right"
-                                    Background="Transparent">
-                        <Image Source="./Icons/settings.png" />
+                    <Button Style="{StaticResource TransparentStyle}"
+                      Width="25"
+                      DockPanel.Dock="Right"
+                      Height="25"
+                      BorderThickness="0" Foreground="#9A8C98" FontWeight="Bold"
+                      Command="{Binding OpenSettings}" FontSize="15"
+                      Margin="0,0,10,0"
+                      HorizontalAlignment="Right"
+                      Background="Transparent">
+                      <Image Source="./Icons/settings.png" />
                     </Button>
                 </DockPanel>
                 </Border>

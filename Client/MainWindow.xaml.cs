@@ -1,8 +1,5 @@
 ﻿using System.Windows;
 using System.Windows.Input;
-using System.Windows.Controls;
-using Client.MVVM.View.Converters;
-using Client.MVVM.View;
 using System.Windows.Shapes;
 
 namespace Client
@@ -15,7 +12,6 @@ namespace Client
         {
             InitializeComponent();
         }
-
 
         private void Button_ToggleServers_Click(object sender, RoutedEventArgs e)
         {
@@ -54,17 +50,6 @@ namespace Client
                 WindowState = WindowState.Maximized;
             else
                 WindowState = WindowState.Normal;
-        }
-
-        private void ListView_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        {
-
-        }
-        private void Button_Settings_Click(object sender, RoutedEventArgs e)
-        {
-            SettingsView sv = new SettingsView(); 
-            sv.Owner = Application.Current.MainWindow;
-            sv.Show();
         }
 
         #region ResizeWindow
@@ -137,5 +122,4 @@ namespace Client
         }
         #endregion
     }
-
 }
