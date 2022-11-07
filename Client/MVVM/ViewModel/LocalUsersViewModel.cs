@@ -4,16 +4,20 @@ using System.Windows;
 
 namespace Client.MVVM.ViewModel
 {
-    public class UsersViewModel : ObservableObject
+    public class LocalUsersViewModel : ObservableObject
     {
-        private Window window;
-
+        #region Commands
         public RelayCommand WindowLoaded { get; }
         public RelayCommand Create { get; }
+        #endregion
 
+        #region Properties
+        #endregion
+
+        private Window window;
         public event EventHandler OnRequestClose;
 
-        public UsersViewModel()
+        public LocalUsersViewModel()
         {
             WindowLoaded = new RelayCommand(e => window = (Window)e);
         }

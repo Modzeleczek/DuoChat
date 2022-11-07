@@ -1,6 +1,6 @@
 ﻿using Client.Core;
 using Client.MVVM.Model;
-using Client.MVVM.View;
+using Client.MVVM.View.Windows;
 using System;
 using System.Collections.ObjectModel;
 using System.Windows;
@@ -16,12 +16,7 @@ namespace Client.MVVM.ViewModel
             get => send;
             private set { send = value; OnPropertyChanged(); }
         }
-        private RelayCommand windowLoaded;
-        public RelayCommand WindowLoaded
-        {
-            get => windowLoaded;
-            private set { windowLoaded = value; OnPropertyChanged(); }
-        }
+        public RelayCommand WindowLoaded { get; }
         private RelayCommand close;
         public RelayCommand Close
         {
@@ -149,7 +144,9 @@ namespace Client.MVVM.ViewModel
                 });
                 OpenSettings = new RelayCommand(e =>
                 {
-                    new SettingsView { Owner = mainWindow }.Show();
+                    var vm = new SettingsViewModel();
+                    var win = new SettingsWindow { DataContext = vm, Owner = mainWindow };
+                    win.Show();
                 });
             });
         }
