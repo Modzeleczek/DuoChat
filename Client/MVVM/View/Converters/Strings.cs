@@ -52,12 +52,14 @@ namespace Client.MVVM.View.Converters
             d["Users"] = "Użytkownicy";
             d["Create user"] = "Stwórz użytkownika";
             d["Settings"] = "Ustawienia";
-            d["User&apos;s nickname"] = "Nazwa użytkownika";
+            d["User`apos;s nickname"] = "Nazwa użytkownika";
             d["Nickname"] = "Nazwa użytkownika";
             d["DuoChat - settings"] = "DuoChat - ustawienia";
             d["Display"] = "Wyświetlanie";
             d["Profile"] = "Profil";
             d["Language"] = "Język";
-        }   
+            d["Local users"] = "Lokalni użytkownicy";
+            d["Create"] = "Stwórz";
+        }
     }
 }

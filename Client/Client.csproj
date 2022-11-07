@@ -104,6 +104,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="MVVM\View\Windows\LocalUsersWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Themes\Buttons.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -136,6 +140,7 @@
   <ItemGroup>
     <Compile Include="MVVM\Model\Account.cs" />
     <Compile Include="MVVM\Model\Friend.cs" />
+    <Compile Include="MVVM\Model\LoggedUser.cs" />
     <Compile Include="MVVM\Model\Message.cs" />
     <Compile Include="MVVM\Model\Server.cs" />
     <Compile Include="MVVM\ViewModel\MainViewModel.cs" />
@@ -144,6 +149,11 @@
     <Compile Include="MVVM\View\Converters\Strings.cs" />
     <Compile Include="MVVM\View\SettingsView.xaml.cs">
       <DependentUpon>SettingsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MVVM\ViewModel\UsersViewModel.cs" />
+    <Compile Include="MVVM\View\Converters\Strings.cs" />
+    <Compile Include="MVVM\View\Windows\LocalUsersWindow.xaml.cs">
+      <DependentUpon>LocalUsersWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
