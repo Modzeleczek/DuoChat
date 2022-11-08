@@ -3,6 +3,7 @@ using Client.MVVM.Model;
 using Client.MVVM.View.Windows;
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Windows;
 
 namespace Client.MVVM.ViewModel
@@ -16,13 +17,16 @@ namespace Client.MVVM.ViewModel
             get => send;
             private set { send = value; OnPropertyChanged(); }
         }
+
         public RelayCommand WindowLoaded { get; }
+
         private RelayCommand close;
         public RelayCommand Close
         {
             get => close;
             private set { close = value; OnPropertyChanged(); }
         }
+
         private RelayCommand openSettings;
         public RelayCommand OpenSettings
         {
@@ -45,12 +49,14 @@ namespace Client.MVVM.ViewModel
             get => servers;
             private set { servers = value; OnPropertyChanged(); }
         }
+
         private ObservableCollection<Friend> friends;
         public ObservableCollection<Friend> Friends
         {
             get => friends;
             private set { friends = value; OnPropertyChanged(); }
         }
+
         private ObservableCollection<Message> messages;
         public ObservableCollection<Message> Messages
         {
@@ -148,7 +154,28 @@ namespace Client.MVVM.ViewModel
                     var win = new SettingsWindow { DataContext = vm, Owner = mainWindow };
                     win.Show();
                 });
+
+                ShowLocalUsersDialog(mainWindow);
             });
+        }
+
+        private void ShowLocalUsersDialog(Window owner)
+        {
+            var vm = new LocalUsersViewModel();
+            var win = new LocalUsersWindow { DataContext = vm, Owner = owner };
+            CancelEventHandler handler = (s, e) =>
+            {
+                // użytkownik zamknął okno logowania
+                Application.Current.Shutdown();
+            };
+            win.Closing += handler;
+            vm.OnRequestClose += (s, e) =>
+            {
+                win.Closing -= handler;
+                win.Close();
+            };
+            win.ShowDialog();
+            // użytkownik się zalogował
         }
     }
 }

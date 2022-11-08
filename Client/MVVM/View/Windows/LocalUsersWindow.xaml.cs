@@ -2,9 +2,9 @@
 
 namespace Client.MVVM.View.Windows
 {
-    public partial class UsersWindow : Window
+    public partial class LocalUsersWindow : Window
     {
-        public UsersWindow()
+        public LocalUsersWindow()
         {
             InitializeComponent();
         }

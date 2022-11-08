@@ -96,6 +96,7 @@
     </Compile>
     <Compile Include="MVVM\Core\ObservableObject.cs" />
     <Compile Include="MVVM\Core\RelayCommand.cs" />
+    <Compile Include="MVVM\Model\LocalUser.cs" />
     <Compile Include="MVVM\View\Windows\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

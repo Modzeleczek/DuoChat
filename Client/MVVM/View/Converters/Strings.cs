@@ -60,6 +60,8 @@ namespace Client.MVVM.View.Converters
             d["Language"] = "Język";
             d["Local users"] = "Lokalni użytkownicy";
             d["Create"] = "Stwórz";
+            d["Edit"] = "Edytuj";
+            d["Delete"] = "Usuń";
         }
     }
 }

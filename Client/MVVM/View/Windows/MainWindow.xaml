@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:c="clr-namespace:Client.MVVM.View.Converters"
         xmlns:viewmodel="clr-namespace:Client.MVVM.ViewModel"
-        xmlns:intr="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         mc:Ignorable="d"
         Title="DuoChat"
         Height="650"
@@ -23,12 +23,12 @@
     <Window.DataContext>
         <viewmodel:MainViewModel />
     </Window.DataContext>
-    <intr:Interaction.Triggers>
-        <intr:EventTrigger EventName="Loaded">
-            <intr:InvokeCommandAction Command="{Binding Path=WindowLoaded}"
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding WindowLoaded}"
           CommandParameter="{Binding ElementName=MainWindowName}" />
-        </intr:EventTrigger>
-    </intr:Interaction.Triggers>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
     <Window.Resources>
         <Style x:Key="RectBorderStyle" TargetType="Rectangle">
             <Setter Property="Focusable" Value="False" />
