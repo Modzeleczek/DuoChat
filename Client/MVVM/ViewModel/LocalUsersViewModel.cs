@@ -31,7 +31,8 @@ namespace Client.MVVM.ViewModel
                 LocalUsers.Add(new LocalUser { Name = new string('a', i), PasswordDigest = null });
             UserDoubleClick = new RelayCommand(e =>
             {
-                MessageBox.Show($"clicked {(string)e}");
+                var user = (LocalUser)e;
+                MessageBox.Show($"clicked {user.Name}");
             });
         }
     }
