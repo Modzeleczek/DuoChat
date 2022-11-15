@@ -33,12 +33,12 @@
               <i:Interaction.Triggers>
                 <i:EventTrigger EventName="MouseLeftButtonDown">
                   <!--bindujemy obiekt LocalUser, a nie jego któreś pole, więc wystarczy samo "CommandParameter={Binding}"-->
-                  <i:InvokeCommandAction Command="{Binding Path=DataContext.UserDoubleClick,
+                  <!--<i:InvokeCommandAction Command="{Binding Path=DataContext.Login,
                     RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"
-                    CommandParameter="{Binding}"/>
-                  <!--równoważne, bo okno ma nadaną nazwę (LocalUsersWindowName)
-                  <i:InvokeCommandAction Command="{Binding Path=DataContext.UserDoubleClick,
-                    ElementName=LocalUsersWindowName}" CommandParameter="{Binding}" />-->
+                    CommandParameter="{Binding}"/>-->
+                  <!--równoważne, bo okno ma nadaną nazwę (LocalUsersWindowName)-->
+                  <i:InvokeCommandAction Command="{Binding Path=DataContext.Login,
+                    ElementName=LocalUsersWindowName}" CommandParameter="{Binding}" />
                 </i:EventTrigger>
               </i:Interaction.Triggers>
               <Grid.Style>
@@ -65,9 +65,18 @@
                   </Style>
                 </StackPanel.Style>
                 <Button Grid.Column="1" Content="{Binding Converter={x:Static c:Strings.Instance},
-                  ConverterParameter='Edit'}"/>
+                  ConverterParameter='Change name'}"
+                  Command="{Binding Path=DataContext.ChangeName, ElementName=LocalUsersWindowName}"
+                  CommandParameter="{Binding}"/>
                 <Button Grid.Column="1" Content="{Binding Converter={x:Static c:Strings.Instance},
-                  ConverterParameter='Delete'}"/>
+                  ConverterParameter='Change password'}"
+                  Command="{Binding Path=DataContext.ChangePassword,
+                  ElementName=LocalUsersWindowName}"
+                  CommandParameter="{Binding}"/>
+                <Button Grid.Column="1" Content="{Binding Converter={x:Static c:Strings.Instance},
+                  ConverterParameter='Delete'}"
+                  Command="{Binding Path=DataContext.Delete, ElementName=LocalUsersWindowName}"
+                  CommandParameter="{Binding}"/>
               </StackPanel>
             </Grid>
           </DataTemplate>

@@ -163,19 +163,11 @@ namespace Client.MVVM.ViewModel
         {
             var vm = new LocalUsersViewModel();
             var win = new LocalUsersWindow { DataContext = vm, Owner = owner };
-            CancelEventHandler handler = (s, e) =>
-            {
-                // użytkownik zamknął okno logowania
-                Application.Current.Shutdown();
-            };
-            win.Closing += handler;
-            vm.OnRequestClose += (s, e) =>
-            {
-                win.Closing -= handler;
-                win.Close();
-            };
+            vm.RequestClose += (s, e) => win.Close();
             win.ShowDialog();
-            // użytkownik się zalogował
+            // jeżeli użytkownik się zalogował, to vm.Status.Code == 0
+            if (vm.Status.Code != 0) // jeżeli użytkownik zamknął okno bez zalogowania się
+                Application.Current.Shutdown();
         }
     }
 }

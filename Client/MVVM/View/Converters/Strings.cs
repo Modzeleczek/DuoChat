@@ -30,17 +30,25 @@ namespace Client.MVVM.View.Converters
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (parameter == null) throw new ArgumentException("Parameter is null.");
-            var key = (string)parameter;
-            if (activeLanguageId == 0) return key;
-            var activeDict = languages[activeLanguageId - 1];
-            if (activeDict.TryGetValue(key, out string translated)) return translated;
-            else return "no translation";
+            return TrnslWthActDct((string)parameter);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }
+
+        private string TrnslWthActDct(string key)
+        {
+            if (activeLanguageId == 0) return key;
+            var activeDict = languages[activeLanguageId - 1];
+            if (activeDict.TryGetValue(key, out string translated)) return translated;
+            else return "no translation";
+        }
+
+        public static string Translate(string key) => Instance.TrnslWthActDct(key);
+
+        public string this[string key] { get => TrnslWthActDct(key); }
 
         private void InitializePolish()
         {
@@ -53,7 +61,7 @@ namespace Client.MVVM.View.Converters
             d["Create user"] = "Stwórz użytkownika";
             d["Settings"] = "Ustawienia";
             d["User`apos;s nickname"] = "Nazwa użytkownika";
-            d["Nickname"] = "Nazwa użytkownika";
+            d["Nickname"] = d["Username"] = "Nazwa użytkownika";
             d["DuoChat - settings"] = "DuoChat - ustawienia";
             d["Display"] = "Wyświetlanie";
             d["Profile"] = "Profil";
@@ -62,6 +70,27 @@ namespace Client.MVVM.View.Converters
             d["Create"] = "Stwórz";
             d["Edit"] = "Edytuj";
             d["Delete"] = "Usuń";
+            d["Password"] = "Hasło";
+            d["Login"] = "Zaloguj";
+            d["Cancel"] = "Anuluj";
+            d["Create local user"] = "Stwórz lokalnego użytkownika";
+            d["Confirm password"] = "Potwierdź hasło";
+            d["Change name"] = "Zmień nazwę";
+            d["Change password"] = "Zmień hasło";
+            d["Delete local user"] = "Usuń lokalnego użytkownika";
+            d["Username cannot be empty."] = "Nazwa użytkownika nie może być pusta.";
+            d["Passwords do not match."] = "Hasła nie są zgodne.";
+            d["User with name"] = "Użytkownik o nazwie";
+            d["already exists."] = "już istnieje.";
+            d["does not exist."] = "nie istnieje.";
+            d["Specify a password."] = "Określ hasło.";
+            d["Password should be at least 8 characters long."] = "Hasło powinno mieć przynajmniej 8 znaków.";
+            d["Password should contain at least one digit."] = "Hasło powinno zawierać przynajmniej jedną cyfrę.";
+            d["Password should contain at least one special character (not a letter or a digit)."] = "Hasło powinno zawierać przynajmniej jeden znak specjalny (nie literę ani cyfrę).";
+            d["Save"] = "Zapisz";
+            d["New password"] = "Nowe hasło";
+            d["Wrong password."] = "Nieprawidłowe hasło.";
+            d["Log local user out"] = "Wyloguj lokalnego użytkownika";
         }
     }
 }

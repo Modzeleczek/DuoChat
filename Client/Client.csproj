@@ -38,6 +38,12 @@
     <Reference Include="Microsoft.Expression.Interactions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Windows.Interactivity.WPF.2.0.20525\lib\net40\Microsoft.Expression.Interactions.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json.Bson, Version=1.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.Bson.1.0.2\lib\net45\Newtonsoft.Json.Bson.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -65,6 +71,10 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="MVVM\View\Controls\PreviewablePasswordBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MVVM\View\Themes\Buttons.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -93,6 +103,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="MVVM\View\Windows\AlertWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\View\Windows\FormWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MVVM\View\Windows\LocalUsersWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -110,16 +128,36 @@
     <Compile Include="MVVM\Core\ObservableObject.cs" />
     <Compile Include="MVVM\Core\RelayCommand.cs" />
     <Compile Include="MVVM\Model\Account.cs" />
+    <Compile Include="MVVM\Model\Cryptography.cs" />
     <Compile Include="MVVM\Model\Friend.cs" />
     <Compile Include="MVVM\Model\LocalUser.cs" />
+    <Compile Include="MVVM\Model\LocalUsersStorage.cs" />
     <Compile Include="MVVM\Model\LoggedUser.cs" />
     <Compile Include="MVVM\Model\Message.cs" />
     <Compile Include="MVVM\Model\Server.cs" />
+    <Compile Include="MVVM\Model\Status.cs" />
+    <Compile Include="MVVM\ViewModel\AlertViewModel.cs" />
+    <Compile Include="MVVM\ViewModel\ChangeLocalUserNameViewModel.cs" />
+    <Compile Include="MVVM\ViewModel\ChangeLocalUserPasswordViewModel.cs" />
+    <Compile Include="MVVM\ViewModel\CreateLocalUserViewModel.cs" />
+    <Compile Include="MVVM\ViewModel\DialogViewModel.cs" />
+    <Compile Include="MVVM\ViewModel\FormViewModel.cs" />
+    <Compile Include="MVVM\ViewModel\LocalLoginViewModel.cs" />
     <Compile Include="MVVM\ViewModel\LocalUsersViewModel.cs" />
     <Compile Include="MVVM\ViewModel\MainViewModel.cs" />
+    <Compile Include="MVVM\ViewModel\PasswordFormViewModel.cs" />
     <Compile Include="MVVM\ViewModel\SettingsViewModel.cs" />
+    <Compile Include="MVVM\View\Controls\PreviewablePasswordBox.xaml.cs">
+      <DependentUpon>PreviewablePasswordBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MVVM\View\Converters\EnableDragHelper.cs" />
     <Compile Include="MVVM\View\Converters\Strings.cs" />
+    <Compile Include="MVVM\View\Windows\AlertWindow.xaml.cs">
+      <DependentUpon>AlertWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MVVM\View\Windows\FormWindow.xaml.cs">
+      <DependentUpon>FormWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MVVM\View\Windows\LocalUsersWindow.xaml.cs">
       <DependentUpon>LocalUsersWindow.xaml</DependentUpon>
     </Compile>
