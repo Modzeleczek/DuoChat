@@ -5,15 +5,12 @@ using System.Windows.Media;
 
 namespace Client.MVVM.View.Windows
 {
-    public partial class AlertWindow : Window
+    public partial class AlertWindow : DialogWindow
     {
-        public AlertWindow(Window owner, object dataContext)
-        {
-            InitializeComponent();
-            DataContext = dataContext;
-            Owner = owner;
-            WindowStartupLocation = WindowStartupLocation.CenterOwner;
-        }
+        protected override void Initialize() => InitializeComponent();
+
+        public AlertWindow(Window owner, DialogViewModel dataContext)
+            : base(owner, dataContext) { }
 
         public static void GoodDialog(Window owner, string text = "")
         {

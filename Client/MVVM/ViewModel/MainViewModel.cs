@@ -148,11 +148,14 @@ namespace Client.MVVM.ViewModel
                 {
                     // przed faktycznym zamknięciem MainWindow, co powoduje zakończenie programu
                 });
-                OpenSettings = new RelayCommand(e =>
+                OpenSettings = new RelayCommand(_ =>
                 {
                     var vm = new SettingsViewModel();
-                    var win = new SettingsWindow { DataContext = vm, Owner = mainWindow };
-                    win.Show();
+                    var win = new SettingsWindow(mainWindow, vm);
+                    vm.RequestClose += (s, e) => win.Close();
+                    win.ShowDialog();
+                    if (vm.Status.Code != 0)
+                        ShowLocalUsersDialog(mainWindow);
                 });
 
                 ShowLocalUsersDialog(mainWindow);
@@ -162,7 +165,7 @@ namespace Client.MVVM.ViewModel
         private void ShowLocalUsersDialog(Window owner)
         {
             var vm = new LocalUsersViewModel();
-            var win = new LocalUsersWindow { DataContext = vm, Owner = owner };
+            var win = new LocalUsersWindow(owner, vm);
             vm.RequestClose += (s, e) => win.Close();
             win.ShowDialog();
             // jeżeli użytkownik się zalogował, to vm.Status.Code == 0

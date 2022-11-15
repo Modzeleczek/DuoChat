@@ -1,15 +1,17 @@
 ﻿using Client.MVVM.View.Controls;
+using Client.MVVM.ViewModel;
 using System.Windows;
 using System.Windows.Controls;
 
 namespace Client.MVVM.View.Windows
 {
-    public partial class FormWindow : Window
+    public partial class FormWindow : DialogWindow
     {
         public class Field
         {
             public string Name { get; set; }
             public string InitialValue { get; set; }
+            // public string BindingPath { get; set; }
             public bool IsPassword { get; set; } // do haseł
 
             public Field(string name = "", string initialValue = "", bool isPassword = false)
@@ -20,13 +22,12 @@ namespace Client.MVVM.View.Windows
             }
         }
 
-        public FormWindow(Window owner, object dataContext, string windowTitle,
+        protected override void Initialize() => InitializeComponent();
+
+        public FormWindow(Window owner, FormViewModel dataContext, string windowTitle,
             Field[] fields, string confirmationButtonText = "Ok")
+            : base(owner, dataContext)
         {
-            InitializeComponent();
-            DataContext = dataContext;
-            Owner = owner;
-            WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
             var inpCtrls = new Control[fields.Length];
             var chn = FieldsStackPanel.Children;
@@ -43,10 +44,23 @@ namespace Client.MVVM.View.Windows
                 }); */
                 chn.Add(lbl);
                 Control ctrl;
+                /* robimy bindingi jeżeli w viewmodelu chcemy mieć dostęp (pobierać i ewentualnie ustawiać) dane z formularza (FormWindow)
+                var bnd = new Binding();
+                // jako bnd.Source jak zwykle ma być DataContext, czyli viewmodel ustawiony na górze konstruktora FormWindow
+                bnd.Path = new PropertyPath(f.BindingPath);
+                bnd.Mode = BindingMode.TwoWay;
                 if (f.IsPassword)
-                    // ctrl = new PasswordBox();
-                    // TODO: pole do hasła jako UserControl (poziomy StackPanel z PasswordBoxem i przyciskiem (albo czymś innym co reaguje na hover) do odkrywania)
-                    ctrl = new PreviewablePasswordBox { Password = f.InitialValue };
+                {
+                    var ppb = ctrl = new PreviewablePasswordBox { Password = f.InitialValue };
+                    // dependecy property stworzone we własnej kontrolce może być targetem bindingu
+                    ppb.SetBinding(PreviewablePasswordBox.PasswordProperty, bnd);
+                }
+                else
+                {
+                    var tb = ctrl = new TextBox { Text = f.InitialValue };
+                    tb.SetBinding(TextBox.TextProperty, bnd);
+                } */
+                if (f.IsPassword) ctrl = new PreviewablePasswordBox { Password = f.InitialValue };
                 else ctrl = new TextBox { Text = f.InitialValue };
                 chn.Add(ctrl);
                 inpCtrls[i] = ctrl;

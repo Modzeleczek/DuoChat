@@ -1,23 +1,26 @@
-﻿using System.Windows;
+﻿using Client.MVVM.ViewModel;
+using System.Windows;
 using System.Windows.Input;
 
 namespace Client.MVVM.View.Windows
 {
-    public partial class SettingsWindow : Window
+    public partial class SettingsWindow : DialogWindow
     {
-        public SettingsWindow()
-        {
-            InitializeComponent();
-        }
+        protected override void Initialize() => InitializeComponent();
+
+        public SettingsWindow(Window owner, DialogViewModel dataContext)
+            : base(owner, dataContext) { }
+
         private void Button_Close_Click( object sender, RoutedEventArgs e)
         {
-            this.Close();
+            Close();
         }
-        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
+
+        private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (e.ChangedButton == MouseButton.Left)
-                this.DragMove();
+            DragMove();
         }
+
         private void Button_Minimize_Click(object sender, RoutedEventArgs e)
         {
             WindowState = WindowState.Minimized;

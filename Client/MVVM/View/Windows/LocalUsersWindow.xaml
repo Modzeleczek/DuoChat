@@ -1,14 +1,15 @@
-﻿<Window x:Class="Client.MVVM.View.Windows.LocalUsersWindow"
+﻿<windows:DialogWindow x:Class="Client.MVVM.View.Windows.LocalUsersWindow"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
   xmlns:c="clr-namespace:Client.MVVM.View.Converters"
+  xmlns:windows="clr-namespace:Client.MVVM.View.Windows"
   mc:Ignorable="d"
   Title="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='Local users'}"
   Height="450" Width="800"
-  Name="LocalUsersWindowName">
+  x:Name="LocalUsersWindowName">
   <i:Interaction.Triggers>
     <i:EventTrigger EventName="Loaded">
       <i:InvokeCommandAction Command="{Binding WindowLoaded}"
@@ -87,4 +88,4 @@
       Content="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='Create'}"
       Command="{Binding Path=Create}"/>
   </Grid>
-</Window>
+</windows:DialogWindow>

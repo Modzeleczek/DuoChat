@@ -1,12 +1,13 @@
-﻿using System.Windows;
+﻿using Client.MVVM.ViewModel;
+using System.Windows;
 
 namespace Client.MVVM.View.Windows
 {
-    public partial class LocalUsersWindow : Window
+    public partial class LocalUsersWindow : DialogWindow
     {
-        public LocalUsersWindow()
-        {
-            InitializeComponent();
-        }
+        protected override void Initialize() => InitializeComponent();
+
+        public LocalUsersWindow(Window owner, DialogViewModel dataContext)
+            : base(owner, dataContext) { }
     }
 }

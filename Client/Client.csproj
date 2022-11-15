@@ -155,6 +155,7 @@
     <Compile Include="MVVM\View\Windows\AlertWindow.xaml.cs">
       <DependentUpon>AlertWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MVVM\View\Windows\DialogWindow.cs" />
     <Compile Include="MVVM\View\Windows\FormWindow.xaml.cs">
       <DependentUpon>FormWindow.xaml</DependentUpon>
     </Compile>
