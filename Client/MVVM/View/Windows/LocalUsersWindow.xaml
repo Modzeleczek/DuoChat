@@ -107,7 +107,8 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </ScrollViewer>
-            <Button
+            <Border Grid.Row="2" Margin="100,5,100,15" BorderBrush="#9A8C98" BorderThickness="1" CornerRadius="10" Padding="1" Width="100" Height="35">
+                <Button
                     Grid.Row="2"
                     Content="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='Create'}"
       Command="{Binding Path=Create}"
@@ -119,7 +120,8 @@
                     FontWeight="SemiBold"
                     FontFamily="/MVVM/View/Fonts/RedHatDisplay"
                     Style="{StaticResource TransparentStyle}" />
-            
+            </Border>
+
         </Grid>
     </Border>
   
