@@ -7,33 +7,33 @@
   xmlns:c="clr-namespace:Client.MVVM.View.Converters"
   xmlns:windows="clr-namespace:Client.MVVM.View.Windows"
   mc:Ignorable="d"
-  Height="auto" Width="auto"
+  Height="395" Width="590"
   x:Name="FormWindowName">
-  <i:Interaction.Triggers>
-    <i:EventTrigger EventName="Loaded">
-      <i:InvokeCommandAction Command="{Binding Path=WindowLoaded}"
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding Path=WindowLoaded}"
         CommandParameter="{Binding ElementName=FormWindowName}"/>
-    </i:EventTrigger>
-  </i:Interaction.Triggers>
-  <Grid>
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="*"/>
-      <ColumnDefinition Width="*"/>
-    </Grid.ColumnDefinitions>
-    <Grid.RowDefinitions>
-      <RowDefinition Height="*"/>
-      <RowDefinition Height="auto"/>
-    </Grid.RowDefinitions>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
 
-    <StackPanel x:Name="FieldsStackPanel" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0"/>
+        <StackPanel x:Name="FieldsStackPanel" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="0"/>
 
-    <Button Grid.Column="0" Grid.Row="2"
+        <Button Grid.Column="0" Grid.Row="2"
       Content="{Binding Converter={x:Static c:Strings.Instance},
         ConverterParameter='Cancel'}"
       Command="{Binding Path=Cancel}"
       Style="{StaticResource TransparentStyle}"/>
-    <Button x:Name="ConfirmationButton" Grid.Column="1" Grid.Row="2"
+        <Button x:Name="ConfirmationButton" Grid.Column="1" Grid.Row="2"
         Command="{Binding Path=Confirm}"
       Style="{StaticResource TransparentStyle}"/>
-  </Grid>
+    </Grid>
 </windows:DialogWindow>
