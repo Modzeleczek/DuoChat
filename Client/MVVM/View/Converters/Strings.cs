@@ -91,6 +91,7 @@ namespace Client.MVVM.View.Converters
             d["New password"] = "Nowe hasło";
             d["Wrong password."] = "Nieprawidłowe hasło.";
             d["Log local user out"] = "Wyloguj lokalnego użytkownika";
+            d["Dark theme"] = "Ciemny motyw";
         }
     }
 }

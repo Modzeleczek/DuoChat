@@ -6,34 +6,34 @@
   xmlns:windows="clr-namespace:Client.MVVM.View.Windows"
   mc:Ignorable="d"
   Title="Alert" MaxHeight="200" MaxWidth="400"
-  MouseLeftButtonDown="Window_MouseLeftButtonDown">
-  <Grid>
-    <Grid.RowDefinitions>
-      <RowDefinition Height="*"/>
-      <RowDefinition Height="auto"/>
-    </Grid.RowDefinitions>
-    <TextBlock Text="{Binding Path=AlertText}"
+  MouseLeftButtonDown="Window_MouseLeftButtonDown" Height="190" Width="290">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <TextBlock Text="{Binding Path=AlertText}"
       Grid.Row="0"
       HorizontalAlignment="Center"
       VerticalAlignment="Center"
       FontSize="{Binding Path=AlertFontSize}"
       TextWrapping="Wrap"/>
-    <Button
+        <Button
       Grid.Row="1"
       Click="ButtonClose_Click"
       Content="{Binding Path=ButtonText}"
       FontSize="{Binding Path=ButtonFontSize}"
       Background="{Binding Path=ButtonBackground}">
-      <Button.Resources>
-        <Style TargetType="Border">
-          <Setter Property="CornerRadius" Value="20"/>
-          <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-              <Setter Property="Background" Value="#333533"/>
-            </Trigger>
-          </Style.Triggers>
-        </Style>
-      </Button.Resources>
-    </Button>
-  </Grid>
+            <Button.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="20"/>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#333533"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Resources>
+        </Button>
+    </Grid>
 </windows:DialogWindow>
