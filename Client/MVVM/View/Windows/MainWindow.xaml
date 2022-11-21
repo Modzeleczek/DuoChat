@@ -313,6 +313,7 @@
                     </StackPanel>
                 </Grid>
             </Grid>
+          </Grid>
         </Border>
     </Grid>
 </Window>
