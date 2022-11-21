@@ -6,7 +6,13 @@
   xmlns:windows="clr-namespace:Client.MVVM.View.Windows"
   mc:Ignorable="d"
   Title="Alert" MaxHeight="200" MaxWidth="400"
+                      AllowsTransparency="True"
+                      WindowStyle="None"
+                      Background="Transparent"
   MouseLeftButtonDown="Window_MouseLeftButtonDown" Height="190" Width="290">
+    <Border Background="#4A4E69" BorderBrush="#9A8C98" BorderThickness="2" CornerRadius="10">
+        
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -18,22 +24,19 @@
       VerticalAlignment="Center"
       FontSize="{Binding Path=AlertFontSize}"
       TextWrapping="Wrap"/>
-        <Button
-      Grid.Row="1"
-      Click="ButtonClose_Click"
+            <Border Grid.Row="2" Margin="5,5,5,15" BorderBrush="#9A8C98" BorderThickness="1" CornerRadius="10" Padding="1" Width="100" Height="35">
+                <Button
+                Grid.Row="1"
+                    Click="ButtonClose_Click"
       Content="{Binding Path=ButtonText}"
-      FontSize="{Binding Path=ButtonFontSize}"
-      Background="{Binding Path=ButtonBackground}">
-            <Button.Resources>
-                <Style TargetType="Border">
-                    <Setter Property="CornerRadius" Value="20"/>
-                    <Style.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="#333533"/>
-                        </Trigger>
-                    </Style.Triggers>
-                </Style>
-            </Button.Resources>
-        </Button>
-    </Grid>
+                    Background="Transparent"
+                    BorderBrush="Transparent"
+                    Foreground="#C9ADA7"
+                    FontSize="18"
+                    FontWeight="SemiBold"
+                    FontFamily="/MVVM/View/Fonts/RedHatDisplay"
+                    Style="{StaticResource TransparentStyle}" />
+            </Border>
+        </Grid>
+    </Border>
 </windows:DialogWindow>
