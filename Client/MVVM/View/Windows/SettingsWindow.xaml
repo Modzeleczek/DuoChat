@@ -39,16 +39,7 @@
                            FontWeight="SemiBold"
                            Margin="15,0,0,0" />
                     <StackPanel Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal">
-                        <Button Style="{StaticResource TransparentStyle}"
-                                Width="25"
-                                Height="25"
-                                Margin="4,1,0,2"
-                                Content="🗕"
-                                BorderThickness="0"
-                                Foreground="#9A8C98"
-                                FontWeight="Bold"
-                                Click="Button_Minimize_Click"
-                                FontSize="15" />
+                       
                         <Button
                         Style="{StaticResource TransparentStyle}"
                             Width="25"

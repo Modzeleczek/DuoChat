@@ -21,9 +21,5 @@ namespace Client.MVVM.View.Windows
             DragMove();
         }
 
-        private void Button_Minimize_Click(object sender, RoutedEventArgs e)
-        {
-            WindowState = WindowState.Minimized;
-        }
     }
 }

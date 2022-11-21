@@ -14,6 +14,7 @@ namespace Client.MVVM.ViewModel
         public RelayCommand ChangeName { get; }
         public RelayCommand ChangePassword { get; }
         public RelayCommand Delete { get; }
+        public RelayCommand Close { get; }
         #endregion
 
         #region Properties
@@ -80,6 +81,10 @@ namespace Client.MVVM.ViewModel
                 if (!ShowLoginDialog(user)) return;
                 LocalUsersStorage.Delete(user.Name);
                 LocalUsers = new ObservableCollection<LocalUser>(LocalUsersStorage.GetAll());
+            });
+            Close = new RelayCommand(e =>
+            {
+                OnRequestClose(new Status(1));
             });
         }
 

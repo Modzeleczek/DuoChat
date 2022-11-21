@@ -39,7 +39,7 @@
                            Margin="15,0,0,0" />
                     <StackPanel HorizontalAlignment="Right"
                                 Orientation="Horizontal">
-                        
+                        <Button Style="{StaticResource TransparentStyle}" Width="25" Height="25" Margin="4,1,16,0" Content="✕"  BorderThickness="0" Foreground="#9A8C98" FontWeight="Bold" Command="{Binding Path=Close}" FontSize="15" />
                     </StackPanel>
                 </Grid>
             </Border>
