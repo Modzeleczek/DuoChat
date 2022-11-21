@@ -23,14 +23,14 @@
                                         Orientation="Vertical"
                                         CanHorizontallyScroll="False">
                                 <Label Content="{Binding Name}"
-                                       FontFamily="/Fonts/RedHatDisplay"
+                                       FontFamily="/MVVM/View/Fonts/RedHatDisplay"
                                        FontWeight="SemiBold"
                                        Foreground="#C9ADA7"
                                        FontSize="15"
                                        Margin="5,10,0,0"
                                        Padding="2"/>
                                 <Label Content="{Binding IPAddress}"
-                                       FontFamily="/Fonts/RedHatDisplay"
+                                       FontFamily="/MVVM/View/Fonts/RedHatDisplay"
                                        Foreground="#F2E9E4"
                                        FontSize="12"
                                        FontWeight="Normal"

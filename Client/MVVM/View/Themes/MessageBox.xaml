@@ -21,7 +21,7 @@
                                      TextWrapping="NoWrap"
                                      BorderThickness="0"
                                      Foreground="#F2E9E4"
-                                     FontFamily="/Fonts/RedHatDisplay"
+                                     FontFamily="/MVVM/View/Fonts/RedHatDisplay"
                                      FontWeight="SemiBold"
                                      FontSize="15"
                                      CaretBrush="Gray"
