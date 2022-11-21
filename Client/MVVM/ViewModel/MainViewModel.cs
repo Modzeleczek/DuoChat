@@ -3,7 +3,6 @@ using Client.MVVM.Model;
 using Client.MVVM.View.Windows;
 using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Windows;
 
 namespace Client.MVVM.ViewModel
@@ -92,8 +91,6 @@ namespace Client.MVVM.ViewModel
             {
                 var mainWindow = (Window)windowLoadedE;
 
-                Account = new Account { Nickname = "XD" };
-
                 Servers = new ObservableCollection<Server>();
                 Messages = new ObservableCollection<Message>();
                 Friends = new ObservableCollection<Friend>();
@@ -108,42 +105,6 @@ namespace Client.MVVM.ViewModel
                     MessageContent = "";
                 });
 
-                Servers.Add(new Server { IPAddress = "127.0.0.1", Name = "lokalny1" });
-                Servers.Add(new Server { IPAddress = "127.0.0.2", Name = "lokalny2" });
-
-                Messages.Add(new Message
-                {
-                    Nickname = "ProWoj",
-                    UsernameColor = "Red",
-                    ImageSource = "https://i.imgur.com/LZFX9Hx.png",
-                    Content_ = "Jaki priv?",
-                    Time = DateTime.Now,
-                    IsNativeOrigin = false,
-                    FirstMessage = true
-                });
-                Friends.Add(new Friend
-                {
-                    Nickname = "ProWoj",
-                    ImageSource = "https://i.imgur.com/LZFX9Hx.png",
-                    Messages = Messages
-                });
-                Messages.Add(new Message
-                {
-                    Nickname = "RL9",
-                    UsernameColor = "Gray",
-                    ImageSource = "https://i.imgur.com/bYBKzxY.png",
-                    Content_ = "Teraz to już przesadziłaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-                    Time = DateTime.Now,
-                    IsNativeOrigin = false,
-                    FirstMessage = false
-                });
-                Friends.Add(new Friend
-                {
-                    Nickname = "RL9",
-                    ImageSource = "https://i.imgur.com/bYBKzxY.png",
-                    Messages = Messages
-                });
-
                 Close = new RelayCommand(e =>
                 {
                     // przed faktycznym zamknięciem MainWindow, co powoduje zakończenie programu
@@ -154,7 +115,7 @@ namespace Client.MVVM.ViewModel
                     var win = new SettingsWindow(mainWindow, vm);
                     vm.RequestClose += (s, e) => win.Close();
                     win.ShowDialog();
-                    if (vm.Status.Code != 0)
+                    if (vm.Status.Code == 2) // wylogowanie
                         ShowLocalUsersDialog(mainWindow);
                 });
 
@@ -164,13 +125,64 @@ namespace Client.MVVM.ViewModel
 
         private void ShowLocalUsersDialog(Window owner)
         {
+            Reset();
             var vm = new LocalUsersViewModel();
             var win = new LocalUsersWindow(owner, vm);
             vm.RequestClose += (s, e) => win.Close();
             win.ShowDialog();
+            Reset();
+            Set();
             // jeżeli użytkownik się zalogował, to vm.Status.Code == 0
             if (vm.Status.Code != 0) // jeżeli użytkownik zamknął okno bez zalogowania się
                 Application.Current.Shutdown();
+        }
+
+        private void Reset()
+        {
+            var lu = LoggedUser.Instance;
+            Account = new Account { Nickname = lu.LocalName };
+            Servers.Clear();
+            Messages.Clear();
+            Friends.Clear();
+        }
+
+        private void Set()
+        {
+            Servers.Add(new Server { IPAddress = "127.0.0.1", Name = "lokalny1" });
+            Servers.Add(new Server { IPAddress = "127.0.0.2", Name = "lokalny2" });
+
+            Messages.Add(new Message
+            {
+                Nickname = "ProWoj",
+                UsernameColor = "Red",
+                ImageSource = "https://i.imgur.com/LZFX9Hx.png",
+                Content_ = "Jaki priv?",
+                Time = DateTime.Now,
+                IsNativeOrigin = false,
+                FirstMessage = true
+            });
+            Friends.Add(new Friend
+            {
+                Nickname = "ProWoj",
+                ImageSource = "https://i.imgur.com/LZFX9Hx.png",
+                Messages = Messages
+            });
+            Messages.Add(new Message
+            {
+                Nickname = "RL9",
+                UsernameColor = "Gray",
+                ImageSource = "https://i.imgur.com/bYBKzxY.png",
+                Content_ = "Teraz to już przesadziłaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                Time = DateTime.Now,
+                IsNativeOrigin = false,
+                FirstMessage = false
+            });
+            Friends.Add(new Friend
+            {
+                Nickname = "RL9",
+                ImageSource = "https://i.imgur.com/bYBKzxY.png",
+                Messages = Messages
+            });
         }
     }
 }

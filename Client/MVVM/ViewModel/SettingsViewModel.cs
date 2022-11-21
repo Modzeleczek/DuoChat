@@ -17,7 +17,7 @@ namespace Client.MVVM.ViewModel
                 var lu = LoggedUser.Instance;
                 lu.LocalName = null;
                 lu.LocalPassword = null;
-                OnRequestClose(new Status(1));
+                OnRequestClose(new Status(2));
             });
         }
     }
