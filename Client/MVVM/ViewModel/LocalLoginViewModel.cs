@@ -1,12 +1,11 @@
 ﻿using Client.MVVM.Core;
 using Client.MVVM.Model;
-using Client.MVVM.View.Controls;
 using System.Windows;
 using System.Windows.Controls;
 
 namespace Client.MVVM.ViewModel
 {
-    public class LocalLoginViewModel : FormViewModel
+    public class LocalLoginViewModel : PasswordFormViewModel
     {
         public LocalLoginViewModel(LocalUser user)
         {
@@ -14,26 +13,22 @@ namespace Client.MVVM.ViewModel
             Confirm = new RelayCommand(e =>
             {
                 var inpCtrls = (Control[])e;
-                var box = (PreviewablePasswordBox)inpCtrls[0];
-                var password = box.Password;
-                /* var status = LocalUsersStorage.Get(userName, out LocalUser user);
-                if (status.Code != 0)
-                {
-                    Error(status.Message);
-                    return;
-                } */
-                // implementacja PBKDF2
-                if (!Cryptography.Compare(password, user.Salt, user.Digest))
+                var password = ((PasswordBox)inpCtrls[0]).SecurePassword;
+                if (!DigestsEqual(password, user.Salt, user.Digest))
                 {
                     Error(d["Wrong password."]);
-                    box.Password = "";
+                    password.Clear();
                     return;
                 }
-                var lu = LoggedUser.Instance;
-                lu.LocalName = user.Name;
-                lu.LocalPassword = password;
-                OnRequestClose(new Status(0));
+                password.Dispose();
+                var ret = new LoggedUser(user);
+                OnRequestClose(new Status(0, null, ret));
             });
+        }
+
+        protected override void DisposePasswords(Control[] controls)
+        {
+            ((PasswordBox)controls[0]).SecurePassword.Dispose();
         }
     }
 }

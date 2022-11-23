@@ -1,5 +1,4 @@
-﻿using Client.MVVM.View.Controls;
-using Client.MVVM.ViewModel;
+﻿using Client.MVVM.ViewModel;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -60,7 +59,7 @@ namespace Client.MVVM.View.Windows
                     var tb = ctrl = new TextBox { Text = f.InitialValue };
                     tb.SetBinding(TextBox.TextProperty, bnd);
                 } */
-                if (f.IsPassword) ctrl = new PreviewablePasswordBox { Password = f.InitialValue };
+                if (f.IsPassword) ctrl = new PasswordBox { Password = f.InitialValue };
                 else ctrl = new TextBox { Text = f.InitialValue };
                 chn.Add(ctrl);
                 inpCtrls[i] = ctrl;
@@ -72,7 +71,8 @@ namespace Client.MVVM.View.Windows
             /* if (confirmationButtonText != null)
                 ConfirmationButton.SetBinding(Button.CommandProperty, new Binding
                 { Path = new PropertyPath(confirmationButtonText) }); */
-            ConfirmationButton.CommandParameter = inpCtrls;
+            ConfirmationButton.CommandParameter =
+                CancellationButton.CommandParameter = inpCtrls;
         }
     }
 }

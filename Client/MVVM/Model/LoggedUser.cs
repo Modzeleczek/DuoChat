@@ -1,11 +1,15 @@
-﻿namespace Client.MVVM.Model
-{
-    public class LoggedUser
-    {
-        public string LocalName { get; set; }
-        public string LocalPassword { get; set; }
-        public static LoggedUser Instance { get; set; } = new LoggedUser();
+﻿using System.Collections.ObjectModel;
 
-        private LoggedUser() { }
+namespace Client.MVVM.Model
+{
+    public class LoggedUser : LocalUser
+    {
+        public ObservableCollection<Server> Servers { get; set; } // array list
+
+        public LoggedUser(LocalUser user) :
+            base(user.Name, user.Salt, user.Digest)
+        {
+
+        }
     }
 }

@@ -4,6 +4,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:c="clr-namespace:Client.MVVM.View.Converters"
+        xmlns:h="clr-namespace:Client.MVVM.View.Helpers"
         xmlns:viewmodel="clr-namespace:Client.MVVM.ViewModel"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         mc:Ignorable="d"
@@ -120,7 +121,7 @@
                     Grid.ColumnSpan="3"
                     Background="#22223B"
                     CornerRadius="10,10,0,0"
-                     c:EnableDragHelper.EnableDrag="True">
+                     h:EnableDragHelper.EnableDrag="True">
                     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
                         <Label Content="DuoChat"
                            FontSize="14"

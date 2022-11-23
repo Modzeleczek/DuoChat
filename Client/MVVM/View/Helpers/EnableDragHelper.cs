@@ -2,10 +2,9 @@
 using System.Windows.Input;
 using System.Windows.Media;
 
-
-namespace Client.MVVM.View.Converters
+namespace Client.MVVM.View.Helpers
 {
-    internal class EnableDragHelper
+    public class EnableDragHelper
     {
         public static readonly DependencyProperty EnableDragProperty = DependencyProperty.RegisterAttached(
             "EnableDrag",

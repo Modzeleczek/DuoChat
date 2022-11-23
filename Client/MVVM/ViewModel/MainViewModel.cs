@@ -84,6 +84,8 @@ namespace Client.MVVM.ViewModel
             set { messageContent = value; OnPropertyChanged(); }
         }
         #endregion
+
+        private LoggedUser loggedUser;
         
         public MainViewModel()
         {
@@ -111,12 +113,14 @@ namespace Client.MVVM.ViewModel
                 });
                 OpenSettings = new RelayCommand(_ =>
                 {
-                    var vm = new SettingsViewModel();
+                    var vm = new SettingsViewModel(loggedUser);
                     var win = new SettingsWindow(mainWindow, vm);
                     vm.RequestClose += (s, e) => win.Close();
                     win.ShowDialog();
                     if (vm.Status.Code == 2) // wylogowanie
+                    {
                         ShowLocalUsersDialog(mainWindow);
+                    }
                 });
 
                 ShowLocalUsersDialog(mainWindow);
@@ -139,8 +143,8 @@ namespace Client.MVVM.ViewModel
 
         private void Reset()
         {
-            var lu = LoggedUser.Instance;
-            Account = new Account { Nickname = lu.LocalName };
+            loggedUser = null;
+            // Account = 
             Servers.Clear();
             Messages.Clear();
             Friends.Clear();

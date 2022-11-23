@@ -1,6 +1,5 @@
 ﻿using Client.MVVM.Core;
 using Client.MVVM.Model;
-using Client.MVVM.View.Controls;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -14,17 +13,20 @@ namespace Client.MVVM.ViewModel
             Confirm = new RelayCommand(e =>
             {
                 var inpCtrls = (Control[])e;
-                var password = ((PreviewablePasswordBox)inpCtrls[0]).Password;
-                var confirmedPasswordBox = (PreviewablePasswordBox)inpCtrls[1];
-                if (password != confirmedPasswordBox.Password)
+                var password = ((PasswordBox)inpCtrls[0]).SecurePassword;
+                var confirmedPassword = ((PasswordBox)inpCtrls[1]).SecurePassword;
+                if (!SecureStringsEqual(password, confirmedPassword))
                 {
                     Error(d["Passwords do not match."]);
-                    confirmedPasswordBox.Password = "";
+                    password.Clear();
+                    confirmedPassword.Clear();
                     return;
                 }
-                // if (!Validate(password)) return;
-                var salt = Cryptography.GenerateSalt();
-                var digest = Cryptography.ComputeDigest(password, salt);
+                if (!Validate(password)) return;
+                var salt = GenerateSalt();
+                var digest = ComputeDigest(password, salt);
+                password.Dispose();
+                confirmedPassword.Dispose();
                 var status = LocalUsersStorage.Update(user.Name,
                     new LocalUser(user.Name, salt, digest));
                 if (status.Code != 0)
@@ -36,6 +38,12 @@ namespace Client.MVVM.ViewModel
                 user.Digest = digest; */
                 OnRequestClose(new Status(0));
             });
+        }
+
+        protected override void DisposePasswords(Control[] controls)
+        {
+            ((PasswordBox)controls[0]).SecurePassword.Dispose();
+            ((PasswordBox)controls[1]).SecurePassword.Dispose();
         }
     }
 }

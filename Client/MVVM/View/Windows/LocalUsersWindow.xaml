@@ -5,6 +5,7 @@
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
   xmlns:c="clr-namespace:Client.MVVM.View.Converters"
+  xmlns:h="clr-namespace:Client.MVVM.View.Helpers"
   xmlns:windows="clr-namespace:Client.MVVM.View.Windows"
   mc:Ignorable="d"
   Title="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='Local users'}"
@@ -30,7 +31,7 @@
             <Border Grid.Row="0"
                     Background="#22223B"
                     CornerRadius="9,9,0,0"
-                    c:EnableDragHelper.EnableDrag="True">
+                    h:EnableDragHelper.EnableDrag="True">
                 <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
                     <Label Content="DuoChat - Użytkownicy"
                            FontSize="14"

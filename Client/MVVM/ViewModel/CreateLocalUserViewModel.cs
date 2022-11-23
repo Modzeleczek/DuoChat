@@ -1,6 +1,5 @@
 ﻿using Client.MVVM.Core;
 using Client.MVVM.Model;
-using Client.MVVM.View.Controls;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -15,29 +14,33 @@ namespace Client.MVVM.ViewModel
             {
                 var inpCtrls = (Control[])e;
                 var userName = ((TextBox)inpCtrls[0]).Text;
-                var password = ((PreviewablePasswordBox)inpCtrls[1]).Password;
-                var confirmedPasswordBox = (PreviewablePasswordBox)inpCtrls[2];
+                var password = ((PasswordBox)inpCtrls[1]).SecurePassword;
+                var confirmedPassword = ((PasswordBox)inpCtrls[2]).SecurePassword;
                 /* if (userName == "")
                 {
                     Error(d["Username cannot be empty."]);
-                    confirmedPasswordBox.Password = "";
+                    password.Clear();
+                    confirmedPassword.Clear();
                     return;
                 } */
-                if (password != confirmedPasswordBox.Password)
+                if (!SecureStringsEqual(password, confirmedPassword))
                 {
                     Error(d["Passwords do not match."]);
-                    confirmedPasswordBox.Password = "";
+                    password.Clear();
+                    confirmedPassword.Clear();
                     return;
                 }
-                // if (!Validate(password)) return;
+                if (!Validate(password)) return;
                 if (LocalUsersStorage.Exists(userName))
                 {
                     Error(d["User with name"] + $" {userName} " + d["already exists."]);
                     return;
                 }
-                var salt = Cryptography.GenerateSalt();
-                var status = LocalUsersStorage.Add(new LocalUser(userName, salt,
-                    Cryptography.ComputeDigest(password, salt)));
+                var salt = GenerateSalt();
+                var digest = ComputeDigest(password, salt);
+                password.Dispose();
+                confirmedPassword.Dispose();
+                var status = LocalUsersStorage.Add(new LocalUser(userName, salt, digest));
                 if (status.Code != 0)
                 {
                     Error(status.Message);
@@ -45,6 +48,12 @@ namespace Client.MVVM.ViewModel
                 }
                 OnRequestClose(new Status(0));
             });
+        }
+
+        protected override void DisposePasswords(Control[] controls)
+        {
+            ((PasswordBox)controls[1]).SecurePassword.Dispose();
+            ((PasswordBox)controls[2]).SecurePassword.Dispose();
         }
     }
 }

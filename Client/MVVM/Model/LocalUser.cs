@@ -8,7 +8,7 @@ namespace Client.MVVM.Model
         // nazwa jest obserwowalna przez UI, dlatego setter z OnPropertyChanged
         public string Name { get => name; set { name = value; OnPropertyChanged(); } }
 
-        public byte[] Salt { get; set; }
+        public byte[] Salt { get; set; } // sól do skrótu hasła nie jest obserwowalna
         public byte[] Digest { get; set; } // skrót hasła nie jest obserwowalny
 
         public LocalUser(string name, byte[] salt, byte[] digest)

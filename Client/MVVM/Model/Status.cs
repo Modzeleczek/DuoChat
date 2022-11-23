@@ -6,7 +6,7 @@
         public string Message { get; set; }
         public object Data { get; set; } // ewentualne dodatkowe dane
 
-        public Status(int code = 0, string message = "", object data = null)
+        public Status(int code = 0, string message = null, object data = null)
         {
             Code = code;
             Message = message;

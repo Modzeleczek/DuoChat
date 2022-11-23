@@ -86,7 +86,7 @@ namespace Client.MVVM.View.Converters
             d["Specify a password."] = "Określ hasło.";
             d["Password should be at least 8 characters long."] = "Hasło powinno mieć przynajmniej 8 znaków.";
             d["Password should contain at least one digit."] = "Hasło powinno zawierać przynajmniej jedną cyfrę.";
-            d["Password should contain at least one special character (not a letter or a digit)."] = "Hasło powinno zawierać przynajmniej jeden znak specjalny (nie literę ani cyfrę).";
+            d["Password should contain at least one special character (not a letter or digit)."] = "Hasło powinno zawierać przynajmniej jeden znak specjalny (nie literę ani cyfrę).";
             d["Save"] = "Zapisz";
             d["New password"] = "Nowe hasło";
             d["Wrong password."] = "Nieprawidłowe hasło.";

@@ -1,9 +1,12 @@
-﻿namespace Client.MVVM.Model
+﻿using System.Collections.ObjectModel;
+
+namespace Client.MVVM.Model
 {
     public class Server
     {
         public string IPAddress { get; set; }
         public ushort Port { get; set; }
         public string Name { get; set; }
+        public ObservableCollection<Account> Account { get; set; }
     }
 }
