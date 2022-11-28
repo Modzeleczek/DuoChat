@@ -1,6 +1,5 @@
 ﻿using Client.MVVM.Core;
 using Client.MVVM.Model;
-using Client.MVVM.View.Windows;
 
 namespace Client.MVVM.ViewModel
 {
@@ -21,7 +20,5 @@ namespace Client.MVVM.ViewModel
             // domyślnie ustawiony przy konstrukcji viewmodelu status ma kod 1, ale OnRequestClose przyjmuje i nadpisuje status
             OnRequestClose(new Status(1));
         }
-
-        protected void Error(string text) => AlertWindow.BadDialog(window, text);
     }
 }

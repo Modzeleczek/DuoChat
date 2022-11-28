@@ -60,8 +60,9 @@ namespace Client.MVVM.View.Converters
             d["Users"] = "Użytkownicy";
             d["Create user"] = "Stwórz użytkownika";
             d["Settings"] = "Ustawienia";
-            d["User`apos;s nickname"] = "Nazwa użytkownika";
-            d["Nickname"] = d["Username"] = "Nazwa użytkownika";
+            d["User`apos;s nickname"] = "Pseudonim użytkownika";
+            d["Nickname"] = "Pseudonim";
+            d["Username"] = "Nazwa użytkownika";
             d["DuoChat - settings"] = "DuoChat - ustawienia";
             d["Display"] = "Wyświetlanie";
             d["Profile"] = "Profil";
@@ -93,6 +94,21 @@ namespace Client.MVVM.View.Converters
             d["Log local user out"] = "Wyloguj lokalnego użytkownika";
             d["Dark theme"] = "Ciemny motyw";
             d["Confirm"] = "Zatwierdź";
+            d["Decryption"] = "Odszyfrowywanie";
+            d["Decrypting user's database."] = "Odszyfrowywanie bazy danych użytkownika.";
+            d["User's database decrypted."] = "Baza danych użytkownika odszyfrowana.";
+            d["No user is logged."] = "Żaden użytkownik nie jest zalogowany.";
+            d["Database already exists and will be removed."] = "Baza danych już istnieje i zostanie usunięta.";
+            d["File read timed out."] = "Przekroczono czas oczekiwania na odczyt pliku.";
+            d["Error occured while reading file."] = "Wystąpił błąd podczas odczytywania pliku.";
+            d["Error occured while writing file."] = "Wystąpił błąd podczas zapisywania pliku.";
+            d["User's database does not exist. An empty database will be created."] = "Baza danych użytkownika nie istnieje. Stworzona zostanie pusta baza danych.";
+            d["Encryption"] = "Szyfrowanie";
+            d["Encrypting user's database."] = "Szyfrowanie bazy danych użytkownika.";
+            d["Database encryption and user creation canceled."] = "Szyfrowanie bazy danych i tworzenie użytkownika anulowane.";
+            d["Logged user does not exist."] = "Zalogowany użytkownik nie istnieje.";
+            d["User's database is corrupted. An empty database will be created."] = "Baza danych użytkownika jest uszkodzona. Stworzona zostanie pusta baza danych.";
+            d["Database decryption and password change canceled."] = "Odszyfrowywanie bazy danych i zmiana hasła anulowana.";
         }
     }
 }

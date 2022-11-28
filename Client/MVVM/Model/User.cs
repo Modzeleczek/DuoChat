@@ -1,21 +1,17 @@
 ﻿using Client.MVVM.Core;
+using System.Numerics;
 
 namespace Client.MVVM.Model
 {
-    public class Friend : ObservableObject
+    public class User : ObservableObject
     {
+        public BigInteger PublicKey { get; set; }
+
         private string nickname;
         public string Nickname
         {
             get => nickname;
             set { nickname = value; OnPropertyChanged(); }
-        }
-
-        private string alias;
-        public string Alias
-        {
-            get => alias;
-            set { alias = value; OnPropertyChanged(); }
         }
 
         private string imagePath;

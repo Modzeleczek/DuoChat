@@ -21,13 +21,10 @@ namespace Client.MVVM.View.Windows
             }
         }
 
-        protected override void Initialize() => InitializeComponent();
-
         public FormWindow(Window owner, FormViewModel dataContext, string windowTitle,
-            Field[] fields, string confirmationButtonText = "Ok")
+            Field[] fields, string cancelButtonText = "Cancel", string confirmationButtonText = "OK")
             : base(owner, dataContext)
         {
-
             var inpCtrls = new Control[fields.Length];
             var chn = FieldsStackPanel.Children;
             for (int i = 0; i < fields.Length; ++i)
@@ -65,8 +62,9 @@ namespace Client.MVVM.View.Windows
                 inpCtrls[i] = ctrl;
             }
 
-            FormWindowName.Title = windowTitle;
+            Title = windowTitle;
 
+            CancellationButton.Content = cancelButtonText;
             ConfirmationButton.Content = confirmationButtonText;
             /* if (confirmationButtonText != null)
                 ConfirmationButton.SetBinding(Button.CommandProperty, new Binding
@@ -74,5 +72,7 @@ namespace Client.MVVM.View.Windows
             ConfirmationButton.CommandParameter =
                 CancellationButton.CommandParameter = inpCtrls;
         }
+
+        protected override void Initialize() => InitializeComponent();
     }
 }

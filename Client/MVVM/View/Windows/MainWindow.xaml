@@ -284,7 +284,8 @@
                         </StackPanel>
                     </Grid>
                 </Border>
-                <ListView ItemsSource="{Binding SelectedFriend.Messages}"
+          <!--to powinno być w ListView: ItemsSource="{Binding SelectedConversation.Messages}", ale możliwe, że tu dam ItemsControl zamiast ListView-->
+                <ListView
                           Background="Transparent"
                           BorderThickness="0"
                           ItemContainerStyle="{StaticResource ChatItem}"

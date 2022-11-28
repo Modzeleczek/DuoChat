@@ -22,7 +22,6 @@
       Grid.Row="0"
       HorizontalAlignment="Center"
       VerticalAlignment="Center"
-      FontSize="{Binding Path=AlertFontSize}"
       TextWrapping="Wrap"/>
             <Border Grid.Row="2" Margin="5,5,5,15" BorderBrush="#9A8C98" BorderThickness="1" CornerRadius="10" Padding="1" Width="100" Height="35">
                 <Button

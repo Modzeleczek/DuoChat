@@ -7,9 +7,8 @@ namespace Client.MVVM.View.Windows
     {
         protected override void Initialize() => InitializeComponent();
 
-        public LocalUsersWindow(Window owner, DialogViewModel dataContext)
+        public LocalUsersWindow(Window owner, LocalUsersViewModel dataContext)
             : base(owner, dataContext) { }
-
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
@@ -20,11 +19,6 @@ namespace Client.MVVM.View.Windows
         {
             Closing -= Window_Closing;
             Close();
-        }
-
-        private void Button_Minimize_Click(object sender, RoutedEventArgs e)
-        {
-            this.WindowState = WindowState.Minimized;
         }
     }
 }

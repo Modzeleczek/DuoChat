@@ -3,32 +3,40 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Bson;
 using System;
 using System.Collections.Generic;
+using System.Data.SQLite;
 using System.IO;
 
 namespace Client.MVVM.Model
 {
-    public static class LocalUsersStorage
+    public class LocalUsersStorage
     {
         private const string path = "local_users.bson";
         private static readonly Strings d = Strings.Instance;
 
-        private static List<LocalUser> Load()
+        private class FileStructure
         {
-            List<LocalUser> ret;
+            public bool IsLogged { get; set; } = false;
+            public string LoggedUserName { get; set; } = "";
+            public List<LocalUser> Users { get; set; } = new List<LocalUser>();
+        }
+
+        private FileStructure Load()
+        {
+            FileStructure ret;
             if (File.Exists(path))
             {
                 using (var br = new BinaryReader(File.OpenRead(path)))
-                using (var bdr = new BsonDataReader(br, true, DateTimeKind.Utc))
+                using (var bdr = new BsonDataReader(br, false, DateTimeKind.Utc))
                 {
                     var ser = new JsonSerializer();
-                    ret = ser.Deserialize<List<LocalUser>>(bdr);
+                    ret = ser.Deserialize<FileStructure>(bdr);
                 }
             }
-            else ret = new List<LocalUser>();
+            else ret = new FileStructure();
             return ret;
         }
 
-        private static void Save(List<LocalUser> users)
+        private void Save(FileStructure users)
         {
             // jeżeli plik nie istnieje, to zostanie stworzony
             using (var bw = new BinaryWriter(File.OpenWrite(path)))
@@ -39,20 +47,20 @@ namespace Client.MVVM.Model
             }
         }
 
-        public static Status Add(LocalUser user)
+        public Status Add(LocalUser user)
         {
-            var users = Load();
+            var fileStr = Load();
+            var users = fileStr.Users;
             if (Exists(user.Name, users))
-                return new Status(1, d["User with name"] + $" '{user.Name}' " +
-                    d["already exists."]);
+                return new Status(1, d["User with name"] + $" '{user.Name}' " + d["already exists."]);
             users.Add(user);
-            Save(users);
+            Save(fileStr);
             return new Status(0);
         }
 
-        public static List<LocalUser> GetAll() => Load();
+        public List<LocalUser> GetAll() => Load().Users;
 
-        private static bool Exists(string userName, List<LocalUser> users)
+        private bool Exists(string userName, List<LocalUser> users)
         {
             for (int i = 0; i < users.Count; ++i)
                 if (users[i].Name == userName)
@@ -60,28 +68,26 @@ namespace Client.MVVM.Model
             return false;
         }
 
-        public static bool Exists(string userName) => Exists(userName, Load());
+        public bool Exists(string userName) => Exists(userName, Load().Users);
 
-        public static Status Get(string userName, out LocalUser user)
+        public Status Get(string userName)
         {
-            user = null;
-            var users = Load();
+            var users = Load().Users;
             for (int i = 0; i < users.Count; ++i)
             {
                 var u = users[i];
                 if (u.Name == userName)
-                {
-                    user = u;
-                    return new Status(0);
-                }
+                    return new Status(0, null, u);
             }
-            return new Status(1, d["User with name"] + $" '{userName}' " + d["does not exist."]);
+            return new Status(1,
+                d["User with name"] + $" '{userName}' " + d["does not exist."], null);
         }
 
-        public static Status Update(string userName, LocalUser user)
+        public Status Update(string userName, LocalUser user)
         {
             // w obiekcie user może być nowa nazwa użytkownika, ale nie może być zajęta
-            var users = Load();
+            var fileStr = Load();
+            var users = fileStr.Users;
             for (int i = 0; i < users.Count; ++i)
             {
                 if (users[i].Name == userName)
@@ -95,27 +101,44 @@ namespace Client.MVVM.Model
                         if (users[j].Name == user.Name)
                             return new Status(2, error);
                     users[i] = user;
-                    Save(users);
+                    Save(fileStr);
                     return new Status(0);
                 }
             }
             return new Status(1, d["User with name"] + $" '{userName}' " + d["does not exist."]);
         }
 
-        public static Status Delete(string userName)
+        public Status Delete(string userName)
         {
-            var users = Load();
+            var fileStr = Load();
+            var users = fileStr.Users;
             for (int i = 0; i < users.Count; ++i)
             {
                 var u = users[i];
                 if (u.Name == userName)
                 {
                     users.RemoveAt(i);
-                    Save(users);
+                    Save(fileStr);
                     return new Status(0);
                 }
             }
             return new Status(1, d["User with name"] + $" '{userName}' " + d["does not exist."]);
+        }
+
+        public Status SetLogged(bool isLogged, string userName = "")
+        {
+            var fileStr = Load();
+            fileStr.IsLogged = isLogged;
+            fileStr.LoggedUserName = userName;
+            Save(fileStr);
+            return new Status(0);
+        }
+
+        public Status GetLogged()
+        {
+            var fileStr = Load();
+            if (!fileStr.IsLogged) return new Status(1, d["No user is logged."]);
+            return new Status(0, null, fileStr.LoggedUserName);
         }
     }
 }

@@ -59,8 +59,6 @@
                     Margin="5"
                     FontWeight="SemiBold"
                     FontFamily="/MVVM/View/Fonts/RedHatDisplay"
-      Content="{Binding Converter={x:Static c:Strings.Instance},
-        ConverterParameter='Cancel'}"
       Command="{Binding Path=Cancel}"
       Style="{StaticResource TransparentStyle}" />
             </Border>

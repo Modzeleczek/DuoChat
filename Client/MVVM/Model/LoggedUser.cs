@@ -4,12 +4,16 @@ namespace Client.MVVM.Model
 {
     public class LoggedUser : LocalUser
     {
-        public ObservableCollection<Server> Servers { get; set; } // array list
+        private ObservableCollection<Server> servers;
+        public ObservableCollection<Server> Servers
+        {
+            get => servers;
+            private set { servers = value; OnPropertyChanged(); }
+        }
 
         public LoggedUser(LocalUser user) :
-            base(user.Name, user.Salt, user.Digest)
-        {
-
-        }
+            base(user.Name, user.PasswordSalt, user.PasswordDigest,
+                user.DBInitializationVector, user.DBSalt)
+        { }
     }
 }

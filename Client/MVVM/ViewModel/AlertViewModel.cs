@@ -1,19 +1,22 @@
-﻿using System.Windows.Media;
+﻿using Client.MVVM.View.Windows;
+using System.Windows;
 
 namespace Client.MVVM.ViewModel
 {
     public class AlertViewModel : DialogViewModel
     {
         public string AlertText { get; }
-        public int AlertFontSize { get; } = 16;
-        public string ButtonText { get; } = "OK";
-        public int ButtonFontSize { get; } = 16;
-        public SolidColorBrush ButtonBackground { get; }
+        public string ButtonText { get; }
 
-        public AlertViewModel(string text, Color buttonBackground)
+        public AlertViewModel(string alertText, string buttonText = "OK")
         {
-            AlertText = text;
-            ButtonBackground = new SolidColorBrush(buttonBackground);
+            AlertText = alertText;
+            ButtonText = buttonText;
+        }
+
+        public static void ShowDialog(Window owner, string alertText, string buttonText = "OK")
+        {
+            new AlertWindow(owner, new AlertViewModel(alertText, buttonText)).ShowDialog();
         }
     }
 }
