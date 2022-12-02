@@ -1,14 +1,23 @@
-﻿namespace Client.MVVM.Model
+﻿using System;
+
+namespace Client.MVVM.Model
 {
     public class Attachment
     {
-        public byte[] Content_ { get; set; }
-        public AttachmentType Type { get; set; }
+        public string Name { get; set; }
+        public string Type { get; set; }
+        public byte[] PlainContent { get; set; }
 
-        public enum AttachmentType
+        public static Attachment Random(Random rng)
         {
-            // TODO: klasy (lub jedna klasa), które będą tworzyły podglądy znanych typów załączników
-            ZIP, PNG, BMP, JPG, MP3, WAV
+            var bytes = new byte[rng.Next(0, 20)];
+            rng.NextBytes(bytes);
+            return new Attachment
+            {
+                Name = rng.Next().ToString(),
+                Type = rng.Next().ToString(),
+                PlainContent = bytes
+            };
         }
     }
 }

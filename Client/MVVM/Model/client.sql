@@ -29,6 +29,7 @@ CREATE TABLE "Friendship" (
 CREATE TABLE "Conversation" (
   "id" INTEGER,
   "owner_id" INTEGER,
+  "name" TEXT,
   PRIMARY KEY("id"),
   FOREIGN KEY("owner_id") REFERENCES "User"("id") ON DELETE SET NULL
 ) WITHOUT ROWID;

@@ -152,7 +152,7 @@
                            Foreground="#C9ADA7"
                            FontWeight="SemiBold" />
                     <ListView ItemsSource="{Binding Servers}"
-                          SelectedItem="{Binding SelectedServer}"
+                          SelectedItem="{Binding SelectedServer, Mode=TwoWay}"
                           Background="Transparent"
                           Grid.Row="1"
                           ItemContainerStyle="{StaticResource ServerCard}"
@@ -174,7 +174,7 @@
                            Foreground="#C9ADA7"
                            FontWeight="SemiBold" />
                     <ListView ItemsSource="{Binding Accounts}"
-                          SelectedItem="{Binding SelectedAccount}"
+                          SelectedItem="{Binding SelectedAccount, Mode=TwoWay}"
                           Background="Transparent"
                           Grid.Row="1"
                           ItemContainerStyle="{StaticResource AccountCard}"
@@ -203,7 +203,7 @@
                     </Border>
                     <Border Grid.Row="1" Background="#3b3e54">
                         <ListView ItemsSource="{Binding Conversations}"
-                          SelectedItem="{Binding SelectedConversation}"
+                          SelectedItem="{Binding SelectedConversation, Mode=TwoWay}"
                           Background="Transparent"
                           Grid.Row="1"
                           ItemContainerStyle="{StaticResource ConversationCard}"
@@ -322,7 +322,12 @@
                              Height="50"
                              Text="Message @Username"
                              Style="{StaticResource MessageBox}"
-                             Grid.ColumnSpan="2" />
+                             Grid.ColumnSpan="2">
+                            <!--obsługa przycisków w textboxie-->
+                            <TextBox.InputBindings>
+                                <KeyBinding Key="Return" Command="{Binding Send}"/>
+                            </TextBox.InputBindings>
+                        </TextBox>
 
                         <StackPanel Orientation="Horizontal"
                                 HorizontalAlignment="Right"

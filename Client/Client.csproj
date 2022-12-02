@@ -164,6 +164,7 @@
     <Compile Include="MVVM\Model\DataAccessObject.cs" />
     <Compile Include="MVVM\Model\LocalUser.cs" />
     <Compile Include="MVVM\Model\Message.cs" />
+    <Compile Include="MVVM\Model\Participant.cs" />
     <Compile Include="MVVM\Model\PasswordCryptography.cs" />
     <Compile Include="MVVM\Model\Server.cs" />
     <Compile Include="MVVM\Model\Status.cs" />

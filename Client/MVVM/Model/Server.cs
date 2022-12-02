@@ -1,6 +1,7 @@
 ﻿using Client.MVVM.Core;
 using Shared.Cryptography;
 using System;
+using System.Net;
 
 namespace Client.MVVM.Model
 {
@@ -8,27 +9,37 @@ namespace Client.MVVM.Model
     {
         public Guid GUID { get; set; }
 
-        public Rsa.Key<int> PublicKey { get; set; }
+        public RSA.Key<int> PublicKey { get; set; }
 
-        public string ipAddress;
-        public string IpAddress
+        private IPAddress ipAddress;
+        public IPAddress IpAddress
         {
             get => ipAddress;
             set { ipAddress = value; OnPropertyChanged(); }
         }
 
-        public ushort port;
+        private ushort port;
         public ushort Port
         {
             get => port;
             set { port = value; OnPropertyChanged(); }
         }
 
-        public string name;
+        private string name;
         public string Name
         {
             get => name;
             set { name = value; OnPropertyChanged(); }
         }
+
+        public static Server Random(Random rng) =>
+            new Server
+            {
+                GUID = Guid.NewGuid(),
+                PublicKey = new RSA.Key<int>(rng.Next(), rng.Next()),
+                IpAddress = new IPAddress(rng.Next()),
+                Port = (ushort)rng.Next(),
+                Name = rng.Next().ToString()
+            };
     }
 }

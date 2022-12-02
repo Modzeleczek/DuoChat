@@ -2,6 +2,7 @@
 using Client.MVVM.Model;
 using Client.MVVM.Model.BsonStorages;
 using Client.MVVM.View.Windows;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Security;
@@ -48,12 +49,21 @@ namespace Client.MVVM.ViewModel
             get => selectedServer;
             set
             {
-                selectedServer = value; OnPropertyChanged();
+                selectedServer = value;
+                SelectedAccount = null;
+                Accounts.Clear();
+                if (value != null)
+                {
+                    var accCnt = rng.Next(0, 5);
+                    for (int i = 0; i < accCnt; ++i)
+                        Accounts.Add(Account.Random(rng));
+                }
+                OnPropertyChanged();
             }
         }
 
         private ObservableCollection<Account> accounts;
-        public ObservableCollection<Account> Account
+        public ObservableCollection<Account> Accounts
         {
             get => accounts;
             set { accounts = value; OnPropertyChanged(); }
@@ -63,7 +73,19 @@ namespace Client.MVVM.ViewModel
         public Account SelectedAccount
         {
             get => selectedAccount;
-            set { selectedAccount = value; OnPropertyChanged(); }
+            set
+            {
+                selectedAccount = value;
+                SelectedConversation = null;
+                Conversations.Clear();
+                if (value != null)
+                {
+                    var cnvCnt = rng.Next(0, 5);
+                    for (int i = 0; i < cnvCnt; ++i)
+                        Conversations.Add(Conversation.Random(rng));
+                }
+                OnPropertyChanged();
+            }
         }
 
         private ObservableCollection<Conversation> conversations;
@@ -89,6 +111,7 @@ namespace Client.MVVM.ViewModel
         #endregion
 
         private LocalUser loggedUser = null;
+        private Random rng = new Random();
         
         public MainViewModel()
         {
@@ -99,7 +122,12 @@ namespace Client.MVVM.ViewModel
 
                 Send = new RelayCommand(o =>
                 {
-                    
+                    if (SelectedConversation == null ||
+                        WrittenMessage.Length == 0) return;
+                    var rnd = Message.Random(rng);
+                    rnd.PlainContent = WrittenMessage;
+                    SelectedConversation.Messages.Add(rnd);
+                    WrittenMessage = "";
                 });
 
                 Close = new RelayCommand(e =>
@@ -114,8 +142,7 @@ namespace Client.MVVM.ViewModel
                     win.ShowDialog();
                     if (vm.Status.Code == 2) // wylogowanie
                     {
-                        /* var userRef = loggedUser;
-                        loggedUser = null; // usunięcie użytkownika z UI */
+                        Clear();
                         var logSta = LocalLoginViewModel.Dialog(window, loggedUser, true);
                         if (logSta.Code != 0) return;
                         var curPas = (SecureString)((dynamic)logSta.Data).Password;
@@ -146,6 +173,10 @@ namespace Client.MVVM.ViewModel
                     }
                 });
 
+                Servers = new ObservableCollection<Server>();
+                Accounts = new ObservableCollection<Account>();
+                Conversations = new ObservableCollection<Conversation>();
+                Randomize();
                 var getLogSta = lus.GetLogged();
                 if (getLogSta.Code == 0)
                 {
@@ -176,9 +207,8 @@ namespace Client.MVVM.ViewModel
             {
                 var dat = (dynamic)status.Data;
                 var curPas = (SecureString)dat.Password;
-                loggedUser = (LocalUser)dat.LoggedUser;
-                lus.SetLogged(true, loggedUser.Name);
-                var db = loggedUser.GetDatabase();
+                var user = (LocalUser)dat.LoggedUser;
+                var db = user.GetDatabase();
 
                 var pc = new PasswordCryptography();
                 status = ProgressBarViewModel.ShowDialog(window,
@@ -186,16 +216,39 @@ namespace Client.MVVM.ViewModel
                     (worker, args) =>
                     pc.DecryptDirectory(new BackgroundProgress((BackgroundWorker)worker, args),
                         db.DirectoryPath,
-                        pc.ComputeDigest(curPas, loggedUser.DBSalt),
-                        loggedUser.DBInitializationVector));
+                        pc.ComputeDigest(curPas, user.DBSalt),
+                        user.DBInitializationVector));
                 curPas.Dispose();
                 if (status.Code == 1)
                     Error(d["User's database decryption canceled. Logging out."]);
                 else if (status.Code != 0)
                     Error(status.Message);
                 // decSta.Code == 0
+                lus.SetLogged(true, user.Name);
+                loggedUser = user;
+                Randomize();
             }
             return status;
+        }
+        
+        private void Clear()
+        {
+            SelectedConversation = null;
+            SelectedAccount = null;
+            SelectedServer = null;
+            Conversations.Clear();
+            Accounts.Clear();
+            Servers.Clear();
+        }
+
+        private void Randomize()
+        {
+            Servers.Clear();
+            Accounts.Clear();
+            Conversations.Clear();
+            var srvCnt = rng.Next(0, 5);
+            for (int i = 0; i < srvCnt; ++i)
+                Servers.Add(Server.Random(rng));
         }
     }
 }

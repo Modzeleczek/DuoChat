@@ -10,25 +10,24 @@
                                  Height="30"
                                  Margin="10,0,0,-5">
                             <Ellipse.Fill>
-                                <ImageBrush ImageSource="{Binding ImageSource}"
+                                <ImageBrush ImageSource="{Binding Sender.Image}"
                                             RenderOptions.BitmapScalingMode="Fant"/>
                             </Ellipse.Fill>
                         
                         </Ellipse>
                         <StackPanel>
                             <StackPanel Orientation="Horizontal">
-                                <Label Content="{Binding Nickname}"
-                                   Foreground="{Binding UsernameColor}"
+                                <Label Content="{Binding Sender.Nickname}"
                                    FontWeight="SemiBold"
                                    VerticalAlignment="Center"
                                    Margin="0,0,-5,0"/>
-                                <Label Content="{Binding Time}"
+                                <Label Content="{Binding SendTime}"
                                    Foreground="Gray"
                                    FontWeight="Normal"
                                    FontSize="9"
                                    VerticalAlignment="Center"/>
                             </StackPanel>
-                            <Label Content="{Binding Content_}"
+                            <Label Content="{Binding PlainContent}"
                                    Foreground="#F2E9E4"
                                    FontWeight="Normal"
                                    FontSize="12"
@@ -42,14 +41,14 @@
         <Style.Resources>
             <ControlTemplate x:Key="CustomRow">
                 <StackPanel Orientation="Horizontal">
-                    <Label Content="{Binding Content_}"
+                    <Label Content="{Binding PlainContent}"
                            Foreground="#F2E9E4"
                            Margin="40,-2,0,-2"/>
                 </StackPanel>
             </ControlTemplate>
         </Style.Resources>
         <Style.Triggers>
-            <DataTrigger Binding="{Binding FirstMessage}" Value="False">
+            <DataTrigger Binding="{Binding IsDeleted}" Value="False">
                 <Setter Property="Template" Value="{StaticResource CustomRow}"/>
             </DataTrigger>
         </Style.Triggers>

@@ -26,7 +26,7 @@
                                      FontSize="15"
                                      CaretBrush="Gray"
                                      Margin="10,0,0,0"
-                                     Text="{Binding MessageContent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                     Text="{Binding WrittenMessage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                                 <TextBox.InputBindings>
                                     <KeyBinding Command="{Binding Send}" Key="Return"/>
                                 </TextBox.InputBindings>

@@ -1,11 +1,14 @@
 ﻿using Client.MVVM.Core;
-using System.Numerics;
+using Shared.Cryptography;
+using System;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace Client.MVVM.Model
 {
     public class User : ObservableObject
     {
-        public BigInteger PublicKey { get; set; }
+        public RSA.Key<int> PublicKey { get; set; }
 
         private string nickname;
         public string Nickname
@@ -14,11 +17,19 @@ namespace Client.MVVM.Model
             set { nickname = value; OnPropertyChanged(); }
         }
 
-        private string imagePath;
-        public string ImagePath
+        private WriteableBitmap image;
+        public WriteableBitmap Image
         {
-            get => imagePath;
-            set { imagePath = value; OnPropertyChanged(); }
+            get => image;
+            set { image = value; OnPropertyChanged(); }
         }
+
+        public static User Random(Random rng) =>
+            new User
+            {
+                PublicKey = new RSA.Key<int>(rng.Next(), rng.Next()),
+                Nickname = rng.Next().ToString(),
+                Image = new WriteableBitmap(100, 100, 96, 96, PixelFormats.Bgra32, null)
+            };
     }
 }
