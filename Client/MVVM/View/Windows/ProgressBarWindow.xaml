@@ -6,115 +6,118 @@
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
   xmlns:local="clr-namespace:Client.MVVM.View.Windows"
+  xmlns:h="clr-namespace:Client.MVVM.View.Helpers"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:windows="clr-namespace:Client.MVVM.View.Windows"
-  Width="800"
-  Height="450"
-  mc:Ignorable="d"
   x:Name="ProgressBarWindowName"
-  Title="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='Progress'}">
-  <i:Interaction.Triggers>
-    <i:EventTrigger EventName="Loaded">
-      <i:InvokeCommandAction Command="{Binding Path=WindowLoaded}" CommandParameter="{Binding ElementName=ProgressBarWindowName}" />
-    </i:EventTrigger>
-  </i:Interaction.Triggers>
-  <Window.Resources>
-    <ControlTemplate x:Key="ProgressBarPath" TargetType="ProgressBar">
-      <Viewbox Stretch="Fill">
-        <Grid Margin="-5,0" HorizontalAlignment="Left">
-          <Path
-            x:Name="PART_Track"
-            Data="M 0,0 l 150,0 10,10 -150,0 z"
-            Fill="#0C0B0B"
-            RenderTransformOrigin="0,0.5"
-            Stretch="None"
-            StrokeMiterLimit="1">
-            <Path.RenderTransform>
-              <SkewTransform AngleX="-45" />
-            </Path.RenderTransform>
-          </Path>
-          <Path
-            x:Name="PART_Indicator"
-            HorizontalAlignment="Left"
-            Data="M 0,0 l 150,0 10,10 -150,0 z"
-            Fill="#FFD100"
-            RenderTransformOrigin="0,0.5"
-            Stretch="None"
-            StrokeMiterLimit="1">
-            <Path.RenderTransform>
-              <SkewTransform AngleX="-45" />
-            </Path.RenderTransform>
-          </Path>
+  Title="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='Progress'}"
+  Width="500"
+  Height="300"
+  AllowsTransparency="True"
+  Background="Transparent"
+  WindowStyle="None"
+  mc:Ignorable="d">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding Path=WindowLoaded}" CommandParameter="{Binding ElementName=ProgressBarWindowName}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    <Window.Resources>
+        <ControlTemplate x:Key="ProgressBarPath" TargetType="ProgressBar">
+            <Viewbox Stretch="Fill">
+                <Grid Margin="-5,0" HorizontalAlignment="Left">
+                    <Path
+                      x:Name="PART_Track"
+                      Data="M 0,0 l 150,0 10,10 -150,0 z"
+                      Fill="#0C0B0B"
+                      RenderTransformOrigin="0,0.5"
+                      Stretch="None"
+                      StrokeMiterLimit="1">
+                        <Path.RenderTransform>
+                            <SkewTransform AngleX="-45" />
+                        </Path.RenderTransform>
+                    </Path>
+                    <Path
+                      x:Name="PART_Indicator"
+                      HorizontalAlignment="Left"
+                      Data="M 0,0 l 150,0 10,10 -150,0 z"
+                      Fill="#C9ADA7"
+                      RenderTransformOrigin="0,0.5"
+                      Stretch="None"
+                      StrokeMiterLimit="1">
+                        <Path.RenderTransform>
+                            <SkewTransform AngleX="-45" />
+                        </Path.RenderTransform>
+                    </Path>
+                </Grid>
+            </Viewbox>
+        </ControlTemplate>
+
+    </Window.Resources>
+    <Border
+      Background="#4A4E69"
+      BorderBrush="#9A8C98"
+      BorderThickness="1"
+      CornerRadius="20">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Border
+              Grid.Row="0"
+              Background="#22223B"
+                h:EnableDragHelper.EnableDrag="True"
+              CornerRadius="19,19,0,0">
+                <Grid VerticalAlignment="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Label
+                      Margin="15,0,0,0"
+                      Content="DuoChat"
+                      FontSize="14"
+                      FontWeight="SemiBold"
+                      Foreground="#9A8C98" />
+
+                </Grid>
+            </Border>
+            <TextBlock
+              Grid.Row="1"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center"
+              Foreground="#D6D6D6"
+              Text="{Binding Description}" />
+            <Grid
+              Grid.Row="2"
+              Margin="20,4,20,20"
+              HorizontalAlignment="Center">
+                <ProgressBar
+                  Height="32"
+                  Template="{StaticResource ProgressBarPath}"
+                  Value="{Binding Progress}" />
+
+                <Label
+                  Margin="0,0,10,0"
+                  Padding="0"
+                  HorizontalAlignment="Right"
+                  VerticalAlignment="Center"
+                  Content="{Binding Progress}"
+                  ContentStringFormat="{}{0} %"
+                  FontStyle="Italic"
+                  Foreground="#808080" />
+            </Grid>
+            <Button
+              Grid.Row="3"
+              Margin="120,10,120,10"
+              BorderThickness="3"
+              Command="{Binding Cancel}"
+              Content="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='Cancel'}"
+              IsEnabled="{Binding Cancelable}"
+              Style="{StaticResource CornerRadiusButton}" />
         </Grid>
-      </Viewbox>
-    </ControlTemplate>
-
-  </Window.Resources>
-  <Border
-    Background="#333533"
-    BorderBrush="#202020"
-    BorderThickness="3px"
-    CornerRadius="20">
-    <Grid>
-      <Grid.RowDefinitions>
-        <RowDefinition Height="*" />
-        <RowDefinition Height="Auto" />
-        <RowDefinition Height="Auto" />
-      </Grid.RowDefinitions>
-      <TextBlock
-        Grid.Row="0"
-        HorizontalAlignment="Center"
-        VerticalAlignment="Center"
-        Foreground="#D6D6D6"
-        Text="{Binding Description}"/>
-      <Grid
-        Grid.Row="1"
-        Margin="20,4,20,20"
-        HorizontalAlignment="Center">
-        <ProgressBar
-          Height="32"
-          Template="{StaticResource ProgressBarPath}"
-          Value="{Binding Progress}" />
-
-        <Label
-          Margin="0,0,10,0"
-          Padding="0"
-          HorizontalAlignment="Right"
-          VerticalAlignment="Center"
-          Content="{Binding Progress}"
-          ContentStringFormat="{}{0} %"
-          FontStyle="Italic"
-          Foreground="#808080" />
-      </Grid>
-      <Button
-        IsEnabled="{Binding Cancelable}"
-        Grid.Row="2"
-        Margin="40,5,40,5"
-        Padding="5"
-        BorderBrush="#202020"
-        BorderThickness="3"
-        Command="{Binding Cancel}"
-        Content="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='Cancel'}"
-        Foreground="#202020">
-
-        <Button.Resources>
-          <Style TargetType="{x:Type Border}">
-            <Setter Property="CornerRadius" Value="20" />
-            <Style.Triggers>
-              <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="#333533" />
-              </Trigger>
-            </Style.Triggers>
-          </Style>
-        </Button.Resources>
-        <Button.Background>
-          <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-            <GradientStop Offset="0" Color="#ebc102" />
-            <GradientStop Offset="1" Color="#c4a204" />
-          </LinearGradientBrush>
-        </Button.Background>
-
-      </Button>
-    </Grid>
-  </Border>
+    </Border>
 </windows:DialogWindow>
