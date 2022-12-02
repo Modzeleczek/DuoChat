@@ -11,7 +11,8 @@
   Width="800"
   Height="450"
   mc:Ignorable="d"
-  x:Name="ProgressBarWindowName">
+  x:Name="ProgressBarWindowName"
+  Title="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='Progress'}">
   <i:Interaction.Triggers>
     <i:EventTrigger EventName="Loaded">
       <i:InvokeCommandAction Command="{Binding Path=WindowLoaded}" CommandParameter="{Binding ElementName=ProgressBarWindowName}" />
@@ -60,11 +61,12 @@
         <RowDefinition Height="Auto" />
         <RowDefinition Height="Auto" />
       </Grid.RowDefinitions>
-      <TextBlock x:Name="OperationDescriptionTextBlock"
+      <TextBlock
         Grid.Row="0"
         HorizontalAlignment="Center"
         VerticalAlignment="Center"
-        Foreground="#D6D6D6" />
+        Foreground="#D6D6D6"
+        Text="{Binding Description}"/>
       <Grid
         Grid.Row="1"
         Margin="20,4,20,20"
@@ -72,19 +74,20 @@
         <ProgressBar
           Height="32"
           Template="{StaticResource ProgressBarPath}"
-          Value="{Binding Path=Progress}" />
+          Value="{Binding Progress}" />
 
         <Label
           Margin="0,0,10,0"
           Padding="0"
           HorizontalAlignment="Right"
           VerticalAlignment="Center"
-          Content="{Binding Path=Progress}"
+          Content="{Binding Progress}"
           ContentStringFormat="{}{0} %"
           FontStyle="Italic"
           Foreground="#808080" />
       </Grid>
       <Button
+        IsEnabled="{Binding Cancelable}"
         Grid.Row="2"
         Margin="40,5,40,5"
         Padding="5"

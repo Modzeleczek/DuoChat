@@ -1,6 +1,8 @@
 ﻿using Client.MVVM.Core;
 using Client.MVVM.Model;
+using Client.MVVM.Model.BsonStorages;
 using Client.MVVM.View.Windows;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Security;
 using System.Windows;
@@ -33,36 +35,60 @@ namespace Client.MVVM.ViewModel
         #endregion
 
         #region Properties
-        private Account account;
-        public Account Account
+        private ObservableCollection<Server> servers;
+        public ObservableCollection<Server> Servers
         {
-            get => account;
-            private set { account = value; OnPropertyChanged(); }
+            get => servers;
+            set { servers = value; OnPropertyChanged(); }
         }
 
         private Server selectedServer;
         public Server SelectedServer
         {
-            get { return selectedServer; }
-            set { selectedServer = value; OnPropertyChanged(); }
+            get => selectedServer;
+            set
+            {
+                selectedServer = value; OnPropertyChanged();
+            }
         }
 
-        private Friend selectedFriend;
-        public Friend SelectedFriend
+        private ObservableCollection<Account> accounts;
+        public ObservableCollection<Account> Account
         {
-            get { return selectedFriend; }
-            set { selectedFriend = value; OnPropertyChanged(); }
+            get => accounts;
+            set { accounts = value; OnPropertyChanged(); }
         }
 
-        private string messageContent;
-        public string MessageContent
+        private Account selectedAccount;
+        public Account SelectedAccount
         {
-            get { return messageContent; }
-            set { messageContent = value; OnPropertyChanged(); }
+            get => selectedAccount;
+            set { selectedAccount = value; OnPropertyChanged(); }
+        }
+
+        private ObservableCollection<Conversation> conversations;
+        public ObservableCollection<Conversation> Conversations
+        {
+            get => conversations;
+            set { conversations = value; OnPropertyChanged(); }
+        }
+
+        private Conversation selectedConversation;
+        public Conversation SelectedConversation
+        {
+            get => selectedConversation;
+            set { selectedConversation = value; OnPropertyChanged(); }
+        }
+
+        private string writtenMessage;
+        public string WrittenMessage
+        {
+            get => writtenMessage;
+            set { writtenMessage= value; OnPropertyChanged(); }
         }
         #endregion
 
-        private LoggedUser loggedUser = null;
+        private LocalUser loggedUser = null;
         
         public MainViewModel()
         {
@@ -97,15 +123,26 @@ namespace Client.MVVM.ViewModel
                         lus.SetLogged(false);
 
                         var pc = new PasswordCryptography();
-                        var decSta = ProgressBarViewModel.ShowDialog(window,
-                            d["Encryption"],
-                            d["Encrypting user's database."],
-                            (sender, args) =>
-                            pc.EncryptDatabase((BackgroundWorker)sender, args, loggedUser, curPas));
-
+                        var encSta = ProgressBarViewModel.ShowDialog(window,
+                            d["Encrypting user's database."], true,
+                            (worker, args) =>
+                            pc.EncryptDirectory(new BackgroundProgress((BackgroundWorker)worker, args),
+                                loggedUser.GetDatabase().DirectoryPath,
+                                pc.ComputeDigest(curPas, loggedUser.DBSalt),
+                                loggedUser.DBInitializationVector));
                         curPas.Dispose();
+                        if (encSta.Code == 1)
+                        {
+                            Error(d["User's database encryption canceled. Not logging out."]);
+                            return;
+                        }
+                        else if (encSta.Code != 0)
+                        {
+                            Error(encSta.Message);
+                            return;
+                        }
                         loggedUser = null;
-                        ShowLocalUsersDialog(lus);
+                        while (ShowLocalUsersDialog(lus).Code < 0) ;
                     }
                 });
 
@@ -116,12 +153,12 @@ namespace Client.MVVM.ViewModel
                     var getSta = lus.Get(userName);
                     if (getSta.Code == 0)
                     {
-                        loggedUser = new LoggedUser((LocalUser)getSta.Data);
+                        loggedUser = (LocalUser)getSta.Data;
                         return;
                     }
                     Error(d["Logged user does not exist."]);
                 }
-                ShowLocalUsersDialog(lus);
+                while (ShowLocalUsersDialog(lus).Code < 0) ;
             });
         }
 
@@ -139,25 +176,24 @@ namespace Client.MVVM.ViewModel
             {
                 var dat = (dynamic)status.Data;
                 var curPas = (SecureString)dat.Password;
-                loggedUser = (LoggedUser)dat.LoggedUser;
+                loggedUser = (LocalUser)dat.LoggedUser;
                 lus.SetLogged(true, loggedUser.Name);
-                var dao = loggedUser.GetDataAccessObject();
+                var db = loggedUser.GetDatabase();
 
                 var pc = new PasswordCryptography();
-                var decSta = ProgressBarViewModel.ShowDialog(window,
-                        d["Decryption"],
-                        d["Decrypting user's database."],
-                        (sender, args) =>
-                        pc.DecryptDatabase((BackgroundWorker)sender, args, loggedUser, curPas));
-
-                if (!dao.DatabaseFileHealthy())
-                {
-                    // TODO: pytamy użytkownika, czy chce pusty plik z bazą, czy chce się wylogować
-                    Error(d["User's database is corrupted. An empty database will be created."]);
-                    dao.DeleteDatabaseFile();
-                    dao.InitializeDatabaseFile();
-                }
+                status = ProgressBarViewModel.ShowDialog(window,
+                    d["Decrypting user's database."], true,
+                    (worker, args) =>
+                    pc.DecryptDirectory(new BackgroundProgress((BackgroundWorker)worker, args),
+                        db.DirectoryPath,
+                        pc.ComputeDigest(curPas, loggedUser.DBSalt),
+                        loggedUser.DBInitializationVector));
                 curPas.Dispose();
+                if (status.Code == 1)
+                    Error(d["User's database decryption canceled. Logging out."]);
+                else if (status.Code != 0)
+                    Error(status.Message);
+                // decSta.Code == 0
             }
             return status;
         }

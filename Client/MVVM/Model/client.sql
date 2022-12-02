@@ -1,80 +1,68 @@
-CREATE TABLE "Server" (
-  "public_key" BLOB,
-  "ip_address" BLOB,
-  "port" INTEGER,
-  "name" TEXT,
-  PRIMARY KEY("public_key")
-) WITHOUT ROWID;
-
 CREATE TABLE "Account" ( -- account on a server
-  "server_public_key" BLOB,
+  "id" INTEGER,
   "login" TEXT,
   "password" TEXT,
   "public_key" BLOB,
   "private_key" BLOB,
   "nickname" TEXT,
   "image" BLOB,
-  PRIMARY KEY("server_public_key","login"),
-  FOREIGN KEY("server_public_key") REFERENCES "Server"("public_key") ON DELETE CASCADE
+  PRIMARY KEY("id")
 ) WITHOUT ROWID;
 
 CREATE TABLE "User" (
-  "server_public_key" BLOB,
-  "login" TEXT, -- user's login
+  "id" INTEGER,
   "public_key" BLOB, -- user's public key
   "nickname" TEXT,
   "image" BLOB,
-  PRIMARY KEY("server_public_key","login"),
-  FOREIGN KEY("server_public_key") REFERENCES "Server"("public_key") ON DELETE CASCADE
+  PRIMARY KEY("id")
 ) WITHOUT ROWID;
 
 CREATE TABLE "Friendship" (
-  "server_public_key" BLOB,
-  "account_login" TEXT,
-  "friend_login" TEXT,
-  "friend_alias" TEXT,
-  PRIMARY KEY("server_public_key","account_login","friend_login"),
-  FOREIGN KEY("server_public_key","account_login") REFERENCES "Account"("server_public_key","login") ON DELETE CASCADE,
-  FOREIGN KEY("friend_login") REFERENCES "User"("login") ON DELETE CASCADE
+  "account_id" INTEGER,
+  "friend_id" INTEGER,
+  "alias" TEXT,
+  PRIMARY KEY("account_id","friend_id"),
+  FOREIGN KEY("account_id") REFERENCES "Account"("id") ON DELETE CASCADE,
+  FOREIGN KEY("friend_id") REFERENCES "User"("id") ON DELETE CASCADE
 ) WITHOUT ROWID;
 
 CREATE TABLE "Conversation" (
-  "server_public_key" BLOB,
   "id" INTEGER,
-  "owner_login" TEXT,
-  PRIMARY KEY("server_public_key","id"),
-  FOREIGN KEY("server_public_key") REFERENCES "Server"("public_key") ON DELETE CASCADE
+  "owner_id" INTEGER,
+  PRIMARY KEY("id"),
+  FOREIGN KEY("owner_id") REFERENCES "User"("id") ON DELETE SET NULL
 ) WITHOUT ROWID;
 
 CREATE TABLE "ConversationParticipation" (
-  "server_public_key" BLOB,
   "conversation_id" INTEGER,
-  "participant_login" TEXT,
-  PRIMARY KEY("server_public_key","conversation_id","participant_login"),
-  FOREIGN KEY("server_public_key","conversation_id") REFERENCES "Conversation"("server_public_key","id") ON DELETE CASCADE,
-  FOREIGN KEY("participant_login") REFERENCES "User"("login") ON DELETE CASCADE
+  "participant_id" INTEGER,
+  "join_time" INTEGER,
+  "is_administrator" INTEGER,
+  PRIMARY KEY("conversation_id","participant_id"),
+  FOREIGN KEY("conversation_id") REFERENCES "Conversation"("id") ON DELETE CASCADE,
+  FOREIGN KEY("participant_id") REFERENCES "User"("id") ON DELETE CASCADE
 ) WITHOUT ROWID;
 
 CREATE TABLE "Message" (
-  "server_public_key" BLOB,
+  "id" INTEGER,
   "conversation_id" INTEGER,
-  "id" INTEGER, -- message's id in its conversation
-  "plain_content" TEXT, -- decrypted content
+  "sender_id" INTEGER,
   "send_time" INTEGER,
   "receive_time" INTEGER,
   "display_time" INTEGER,
   "deleted" INTEGER,
-  PRIMARY KEY("server_public_key","conversation_id","id"),
-  FOREIGN KEY("server_public_key","conversation_id") REFERENCES "Conversation"("server_public_key","id") ON DELETE CASCADE
+  "plain_content" TEXT, -- decrypted content
+  PRIMARY KEY("id"),
+  FOREIGN KEY("conversation_id") REFERENCES "Conversation"("id") ON DELETE CASCADE,
+  FOREIGN KEY("sender_id") REFERENCES "User"("id") ON DELETE SET NULL
 ) WITHOUT ROWID;
 
 CREATE TABLE "Attachment" (
-  "server_public_key" BLOB,
-  "conversation_id" INTEGER,
-  "message_id" INTEGER, -- message's id in its conversation
-  "id" INTEGER, -- attachment's id in its message
+  "id" INTEGER,
+  "message_id" INTEGER,
+  "name" TEXT,
+  "type" TEXT,
   "plain_content" BLOB, -- decrypted content
-  "type_id" INTEGER,
-  PRIMARY KEY("server_public_key","conversation_id","id"),
-  FOREIGN KEY("server_public_key","conversation_id") REFERENCES "Conversation"("server_public_key","id") ON DELETE CASCADE
+  PRIMARY KEY("id"),
+  FOREIGN KEY("message_id") REFERENCES "Message"("id") ON DELETE CASCADE
 ) WITHOUT ROWID;

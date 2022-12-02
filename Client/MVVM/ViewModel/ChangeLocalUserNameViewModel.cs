@@ -1,5 +1,6 @@
 ﻿using Client.MVVM.Core;
 using Client.MVVM.Model;
+using Client.MVVM.Model.BsonStorages;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -22,11 +23,11 @@ namespace Client.MVVM.ViewModel
                 }
                 var newUser = new LocalUser(userName, user.PasswordSalt, user.PasswordDigest,
                     user.DBInitializationVector, user.DBSalt);
-                var dao = newUser.GetDataAccessObject();
-                if (!dao.DatabaseFileExists())
+                var db = newUser.GetDatabase();
+                if (!db.Exists())
                 {
                     Error(d["User's database does not exist. An empty database will be created."]);
-                    dao.InitializeDatabaseFile();
+                    db.Create();
                 }
                 var status = lus.Update(user.Name, newUser);
                 if (status.Code != 0)
@@ -34,7 +35,7 @@ namespace Client.MVVM.ViewModel
                     Error(status.Message);
                     return;
                 }
-                dao.RenameDatabaseFile(newUser.Name);
+                db.Rename(newUser.Name);
                 // user.Name = userName;
                 OnRequestClose(new Status(0));
             });

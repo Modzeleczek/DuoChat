@@ -54,7 +54,7 @@ namespace Client.MVVM.View.Converters
         {
             languages[0] = new Dictionary<string, string>();
             var d = languages[0];
-            d["Friends"] = "Znajomi";
+            d["Conversations"] = "Konwersacje";
             d["Servers"] = "Serwery";
             d["@message"] = "@wiadomość";
             d["Users"] = "Użytkownicy";
@@ -109,6 +109,14 @@ namespace Client.MVVM.View.Converters
             d["Logged user does not exist."] = "Zalogowany użytkownik nie istnieje.";
             d["User's database is corrupted. An empty database will be created."] = "Baza danych użytkownika jest uszkodzona. Stworzona zostanie pusta baza danych.";
             d["Database decryption and password change canceled."] = "Odszyfrowywanie bazy danych i zmiana hasła anulowana.";
+            d["Server with GUID"] = "Serwer z GUIDem";
+            d["Progress"] = "Postęp";
+            d["User's database decryption canceled. Logging out."] = "Odszyfrowywanie bazy danych użytkownika anulowane. Wylogowuję.";
+            d["Server list may have been corrupted."] = "Lista serwerów mogła zostać uszkodzona.";
+            d["You should not have canceled database decryption. It may have been corrupted."] = "Nie powinieneś anulować szyfrowania bazy danych. Mogła zostać uszkodzona.";
+            d["Encrypting server's database."] = "Szyfrowanie bazy danych serwera.";
+            d["User's database encryption canceled. Not logging out."] = "Szyfrowanie bazy danych użytkownika anulowane. Nie wylogowuję.";
+            d["Accounts"] = "Konta";
         }
     }
 }

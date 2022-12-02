@@ -1,9 +1,6 @@
 ﻿using Client.MVVM.Core;
 using Client.MVVM.Model;
-using Client.MVVM.View.Windows;
-using System.ComponentModel;
-using System.Data.SQLite;
-using System.IO;
+using Client.MVVM.Model.BsonStorages;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -22,11 +19,6 @@ namespace Client.MVVM.ViewModel
                 var userName = ((TextBox)inpCtrls[0]).Text;
                 var password = ((PasswordBox)inpCtrls[1]).SecurePassword;
                 var confirmedPassword = ((PasswordBox)inpCtrls[2]).SecurePassword;
-                /* if (userName == "")
-                {
-                    Error(d["Username cannot be empty."]);
-                    return;
-                } */
                 if (!pc.SecureStringsEqual(password, confirmedPassword))
                 {
                     Error(d["Passwords do not match."]);
@@ -44,32 +36,13 @@ namespace Client.MVVM.ViewModel
                     return;
                 }
                 var newUser = pc.CreateLocalUser(userName, password);
-                var dao = newUser.GetDataAccessObject();
-                if (dao.DatabaseFileExists())
+                var db = newUser.GetDatabase();
+                if (db.Exists())
                 {
                     Error(d["Database already exists and will be removed."]);
-                    dao.DeleteDatabaseFile();
+                    db.Delete();
                 }
-                dao.InitializeDatabaseFile();
-
-                var encSta = ProgressBarViewModel.ShowDialog(window,
-                    d["Encryption"],
-                    d["Encrypting user's database."],
-                    (sender, args) =>
-                    pc.EncryptDatabase((BackgroundWorker)sender, args, newUser, password));
-                if (encSta.Code == 1)
-                {
-                    dao.DeleteDatabaseFile();
-                    Error(d["Database encryption and user creation canceled."]);
-                    return;
-                }
-                if (encSta.Code < 0)
-                {
-                    dao.DeleteDatabaseFile();
-                    Error(encSta.Message);
-                    return;
-                }
-
+                db.Create();
                 var addSta = lus.Add(newUser);
                 if (addSta.Code != 0)
                 {

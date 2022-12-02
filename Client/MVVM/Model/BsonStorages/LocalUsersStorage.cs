@@ -1,51 +1,25 @@
-﻿using Client.MVVM.View.Converters;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Bson;
-using System;
-using System.Collections.Generic;
-using System.Data.SQLite;
+﻿using System.Collections.Generic;
 using System.IO;
 
-namespace Client.MVVM.Model
+namespace Client.MVVM.Model.BsonStorages
 {
-    public class LocalUsersStorage
+    public class LocalUsersStorage : BsonStorage
     {
-        private const string path = "local_users.bson";
-        private static readonly Strings d = Strings.Instance;
+        public const string USERS_DIRECTORY_PATH = "databases";
 
-        private class FileStructure
+        public LocalUsersStorage()
+            : base(Path.Combine(USERS_DIRECTORY_PATH, "local_users.bson")) { }
+
+        private class BsonStructure
         {
             public bool IsLogged { get; set; } = false;
             public string LoggedUserName { get; set; } = "";
             public List<LocalUser> Users { get; set; } = new List<LocalUser>();
         }
 
-        private FileStructure Load()
-        {
-            FileStructure ret;
-            if (File.Exists(path))
-            {
-                using (var br = new BinaryReader(File.OpenRead(path)))
-                using (var bdr = new BsonDataReader(br, false, DateTimeKind.Utc))
-                {
-                    var ser = new JsonSerializer();
-                    ret = ser.Deserialize<FileStructure>(bdr);
-                }
-            }
-            else ret = new FileStructure();
-            return ret;
-        }
+        private BsonStructure Load() => Load<BsonStructure>();
 
-        private void Save(FileStructure users)
-        {
-            // jeżeli plik nie istnieje, to zostanie stworzony
-            using (var bw = new BinaryWriter(File.OpenWrite(path)))
-            using (var bdw = new BsonDataWriter(bw))
-            {
-                var ser = new JsonSerializer();
-                ser.Serialize(bdw, users);
-            }
-        }
+        private void Save(BsonStructure users) => Save<BsonStructure>(users);
 
         public Status Add(LocalUser user)
         {

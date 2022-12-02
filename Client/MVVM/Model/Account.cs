@@ -1,5 +1,6 @@
 ﻿using Client.MVVM.Core;
-using System.Collections.ObjectModel;
+using Shared.Cryptography;
+using System.Windows.Media.Imaging;
 
 namespace Client.MVVM.Model
 {
@@ -12,12 +13,9 @@ namespace Client.MVVM.Model
             set { login = value; OnPropertyChanged(); }
         }
 
-        public string password;
-        public string Password
-        {
-            get => password;
-            set { password = value; OnPropertyChanged(); }
-        }
+        public string Password { get; set; }
+
+        public Rsa.KeyPair Keys { get; set; }
 
         public string nickname;
         public string Nickname
@@ -26,18 +24,6 @@ namespace Client.MVVM.Model
             set { nickname = value; OnPropertyChanged(); }
         }
 
-        private ObservableCollection<Friend> friends;
-        public ObservableCollection<Friend> Friends
-        {
-            get => friends;
-            private set { friends = value; OnPropertyChanged(); }
-        }
-
-        public ObservableCollection<Conversation> conversations;
-        public ObservableCollection<Conversation> Conversations
-        {
-            get => conversations;
-            set { conversations = value; OnPropertyChanged(); }
-        }
+        public WriteableBitmap Avatar { get; set; }
     }
 }

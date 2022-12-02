@@ -1,6 +1,6 @@
 ﻿using Client.MVVM.View.Converters;
 using System;
-using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Security;
@@ -155,38 +155,46 @@ namespace Client.MVVM.Model
             return new LocalUser(userName, passSalt, passDigest, dbIv, dbSalt);
         }
 
-        public void EncryptDatabase(BackgroundWorker worker, DoWorkEventArgs args,
-            LocalUser user, SecureString password)
+        public void EncryptFile(BackgroundProgress progress,
+            string path, byte[] key, byte[] initializationVector)
         {
-            string userDBPath = user.GetDatabasePath();
-            string tempNewPath = userDBPath + ".new";
-            Status status = null;
-            using (var aes = CreateAes())
-            using (var enc = aes.CreateEncryptor(
-                ComputeDigest(password, user.DBSalt), user.DBInitializationVector))
-            using (var inFS = File.OpenRead(userDBPath))
-            using (var outFS = File.OpenWrite(tempNewPath))
-            using (var cs = new CryptoStream(outFS, enc, CryptoStreamMode.Write))
-                status = TransformDatabase(worker, userDBPath, tempNewPath, inFS.Length, inFS, cs);
-            if (status != null)
-                TransformationCleanup(worker, args, status, userDBPath, tempNewPath);
+            var status = EncryptSingleFile(progress, path, key, initializationVector);
+            FileTransformationCleanup(progress, status, path);
         }
 
-        public void DecryptDatabase(BackgroundWorker worker, DoWorkEventArgs args,
-            LocalUser user, SecureString password)
+        public void DecryptFile(BackgroundProgress progress,
+            string path, byte[] key, byte[] initializationVector)
         {
-            string userDBPath = user.GetDatabasePath();
-            string tempNewPath = userDBPath + ".new";
-            Status status = null;
+            var status = EncryptSingleFile(progress, path, key, initializationVector);
+            FileTransformationCleanup(progress, status, path);
+        }
+        
+        private Status EncryptSingleFile(BackgroundProgress progress,
+            string path, byte[] key, byte[] initializationVector)
+        {
             using (var aes = CreateAes())
-            using (var dec = aes.CreateDecryptor(
-                ComputeDigest(password, user.DBSalt), user.DBInitializationVector))
-            using (var inFS = File.OpenRead(userDBPath))
-            using (var outFS = File.OpenWrite(tempNewPath))
+            using (var enc = aes.CreateEncryptor(key, initializationVector))
+            using (var inFS = File.OpenRead(path))
+            using (var outFS = File.OpenWrite(path + ".temp"))
+            using (var cs = new CryptoStream(outFS, enc, CryptoStreamMode.Write))
+            {
+                progress.FineMax = inFS.Length;
+                return TransformFile(progress, inFS, cs);
+            }
+        }
+            
+        private Status DecryptSingleFile(BackgroundProgress progress,
+            string path, byte[] key, byte[] initializationVector)
+        {
+            using (var aes = CreateAes())
+            using (var dec = aes.CreateDecryptor(key, initializationVector))
+            using (var inFS = File.OpenRead(path))
+            using (var outFS = File.OpenWrite(path + ".temp"))
             using (var cs = new CryptoStream(inFS, dec, CryptoStreamMode.Read))
-                status = TransformDatabase(worker, userDBPath, tempNewPath, inFS.Length, cs, outFS);
-            if (status != null)
-                TransformationCleanup(worker, args, status, userDBPath, tempNewPath);
+            {
+                progress.FineMax = inFS.Length;
+                return TransformFile(progress, cs, outFS);
+            }
         }
 
         protected Aes CreateAes()
@@ -198,12 +206,10 @@ namespace Client.MVVM.Model
         }
 
         // https://stackoverflow.com/a/32437759/14357934
-        private Status TransformDatabase(BackgroundWorker worker,
-            string userDBPath, string tempNewPath, long inStreamSize,
-            Stream readFrom, Stream writeTo)
+        private Status TransformFile(BackgroundProgress progress, Stream readFrom, Stream writeTo)
         {
             const int bufferSize = 4096;
-            long bytesProcessed = 0;
+            progress.FineProgress = 0;
             byte[] buffer = new byte[bufferSize];
             while (true)
             {
@@ -237,10 +243,9 @@ namespace Client.MVVM.Model
                 { writeTo.Write(buffer, position, remainingBytes); }
                 catch (Exception)
                 { return new Status(-3, d["Error occured while writing file."]); }
-                bytesProcessed += remainingBytes;
-                int progress = (int)(((double)bytesProcessed / inStreamSize) * 100.0);
-                worker.ReportProgress(progress);
-                if (worker.CancellationPending)
+                progress.FineProgress += remainingBytes;
+                // int progress = (int)(((double)bytesProcessed / inStreamSize) * 100.0);
+                if (progress.CancellationPending)
                     return new Status(1);
                 // Jeżeli bez problemów doszliśmy do końca pliku (EOF)
                 // Przerywamy pętlę while (true).
@@ -249,24 +254,88 @@ namespace Client.MVVM.Model
             }
         }
 
-        private void TransformationCleanup(BackgroundWorker worker, DoWorkEventArgs args,
-            Status status, string userDBPath, string tempNewPath)
+        private void FileTransformationCleanup(BackgroundProgress progress,
+            Status status, string path)
         {
-            if (worker.CancellationPending)
+            if (progress.CancellationPending)
             {
-                args.Cancel = true;
+                progress.Cancel = true;
+                status.Code = 1;
+            }
+            var tempPath = path + ".temp";
+            if (status.Code == 0)
+            {
+                File.Delete(path); // usuwamy stary plik
+                // zmieniamy tymczasową nazwę nowego na nazwę starego
+                File.Move(tempPath, path);
+            }
+            // jeżeli użytkownik anulował lub wystąpił błąd, usuwamy nowy plik
+            else if (File.Exists(tempPath))
+                File.Delete(tempPath);
+            progress.Result = status;
+        }
+
+        public void EncryptDirectory(BackgroundProgress progress,
+            string path, byte[] key, byte[] initializationVector) =>
+            TransformDirectory(progress, path, key, initializationVector, EncryptSingleFile);
+
+        public void DecryptDirectory(BackgroundProgress progress,
+            string path, byte[] key, byte[] initializationVector) =>
+            TransformDirectory(progress, path, key, initializationVector, DecryptSingleFile);
+
+        private delegate Status FileTransformation(BackgroundProgress progress,
+            string path, byte[] key, byte[] initializationVector);
+
+        private void TransformDirectory(BackgroundProgress progress,
+            string path, byte[] key, byte[] initializationVector,
+            FileTransformation transformation)
+        {
+            var files = Directory.GetFiles(path);
+            foreach (var f in files)
+                Debug.WriteLine(f);
+            progress.CoarseMax = files.Length - 1;
+            progress.CoarseProgress = 0;
+            var status = new Status(0);
+            for (int i = 0; i < files.Length; ++i)
+            {
+                if (progress.CancellationPending) // nie ustawiamy tu status.Code = 1, bo zostanie ustawione w DirectoryTransformationCleanup
+                    goto DIRECTORY_CLEANUP;
+                status = transformation(progress, files[i], key, initializationVector);
+                if (status.Code != 0)
+                    goto DIRECTORY_CLEANUP;
+                progress.CoarseProgress += 1;
+            }
+        DIRECTORY_CLEANUP:
+            DirectoryTransformationCleanup(progress, status, files);
+        }
+
+        private void DirectoryTransformationCleanup(BackgroundProgress progress,
+            Status status, string[] files)
+        {
+            if (progress.CancellationPending)
+            {
+                progress.Cancel = true;
                 status.Code = 1;
             }
             if (status.Code == 0)
             {
-                File.Delete(userDBPath); // usuwamy stary plik
-                // zmieniamy tymczasową nazwę nowego na nazwę starego
-                File.Move(tempNewPath, userDBPath);
+                foreach (var f in files)
+                {
+                    var temp = f + ".temp";
+                    File.Delete(f); // usuwamy stary plik
+                    // zmieniamy tymczasową nazwę nowego na nazwę starego
+                    File.Move(temp, f);
+                }
             }
-            // jeżeli użytkownik anulował lub wystąpił błąd, usuwamy nowy plik
-            else if (File.Exists(tempNewPath))
-                File.Delete(tempNewPath);
-            args.Result = status;
+            // jeżeli użytkownik anulował lub wystąpił błąd, usuwamy nowe pliki
+            else
+                foreach (var f in files)
+                {
+                    var temp = f + ".temp";
+                    if (File.Exists(temp))
+                        File.Delete(temp);
+                }
+            progress.Result = status;
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Client.MVVM.Core;
 using Client.MVVM.Model;
+using Client.MVVM.Model.BsonStorages;
 using System.ComponentModel;
 using System.Security;
 using System.Windows;
@@ -31,19 +32,21 @@ namespace Client.MVVM.ViewModel
                     return;
                 }
                 var newUser = pc.CreateLocalUser(user.Name, password);
-                var dao = newUser.GetDataAccessObject();
-                if (!dao.DatabaseFileExists())
+                var db = newUser.GetDatabase();
+                if (!db.Exists())
                 {
                     Error(d["User's database does not exist. An empty database will be created."]);
-                    dao.InitializeDatabaseFile();
+                    db.Exists();
                 }
-                else // jeżeli plik bazy danych istnieje, to odszyfrowujemy go starym hasłem
+                else // jeżeli katalog z plikami bazy danych istnieje, to odszyfrowujemy je starym hasłem
                 {
                     var decSta = ProgressBarViewModel.ShowDialog(window,
-                        d["Decryption"],
-                        d["Decrypting user's database."],
-                        (sender, args) =>
-                        pc.DecryptDatabase((BackgroundWorker)sender, args, user, oldPassword));
+                        d["Decrypting user's database."], true,
+                        (worker, args) =>
+                        pc.DecryptDirectory(new BackgroundProgress((BackgroundWorker)worker, args),
+                            db.DirectoryPath,
+                            pc.ComputeDigest(oldPassword, user.DBSalt),
+                            user.DBInitializationVector));
                     if (decSta.Code == 1)
                     {
                         Error(d["Database decryption and password change canceled."]);
@@ -57,20 +60,20 @@ namespace Client.MVVM.ViewModel
                 }
                 // zaszyfrowujemy plik bazy danych nowym hasłem
                 var encSta = ProgressBarViewModel.ShowDialog(window,
-                    d["Encryption"],
-                    d["Encrypting user's database."],
-                    (sender, args) =>
-                    pc.EncryptDatabase((BackgroundWorker)sender, args, newUser, password));
+                    d["Encrypting user's database."], false,
+                    (worker, args) =>
+                    pc.EncryptDirectory(new BackgroundProgress((BackgroundWorker)worker, args),
+                        db.DirectoryPath,
+                        pc.ComputeDigest(password, newUser.DBSalt),
+                        newUser.DBInitializationVector));
                 if (encSta.Code == 1)
                 {
-                    dao.DeleteDatabaseFile();
-                    Error(d["Database encryption and password change canceled."]);
+                    Error(d["You should not have canceled database decryption. It may have been corrupted."]);
                     return;
                 }
-                if (encSta.Code < 0)
+                if (encSta.Code != 0)
                 {
-                    dao.DeleteDatabaseFile();
-                    Error(encSta.Message);
+                    Error(encSta.Message + " " + d["Database may have been corrupted."]);
                     return;
                 }
 

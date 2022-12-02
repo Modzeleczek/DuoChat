@@ -1,15 +1,20 @@
 ﻿using Client.MVVM.Core;
-using System.Collections.ObjectModel;
+using Shared.Cryptography;
+using System;
 
 namespace Client.MVVM.Model
 {
     public class Server : ObservableObject
     {
-        public string iPAddress;
-        public string IPAddress
+        public Guid GUID { get; set; }
+
+        public Rsa.Key<int> PublicKey { get; set; }
+
+        public string ipAddress;
+        public string IpAddress
         {
-            get => iPAddress;
-            set { iPAddress = value; OnPropertyChanged(); }
+            get => ipAddress;
+            set { ipAddress = value; OnPropertyChanged(); }
         }
 
         public ushort port;
@@ -24,13 +29,6 @@ namespace Client.MVVM.Model
         {
             get => name;
             set { name = value; OnPropertyChanged(); }
-        }
-
-        public ObservableCollection<Account> accounts;
-        public ObservableCollection<Account> Account
-        {
-            get => accounts;
-            set { accounts = value; OnPropertyChanged(); }
         }
     }
 }

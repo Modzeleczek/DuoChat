@@ -7,8 +7,6 @@ namespace Client.MVVM.Model
 {
     public class DataAccessObject
     {
-        public const string DATABASES_DIRECTORY_PATH = "databases";
-
         private string path;
 
         public DataAccessObject(string path)
@@ -18,8 +16,9 @@ namespace Client.MVVM.Model
 
         private SQLiteConnection CreateConnection()
         {
-            var conStr = $"Data Source={path}; Version = 3; New = True; Compress = True;";
-            return new SQLiteConnection(conStr);
+            var connectionString =
+                $"Data Source={path}; Version = 3; New = True; Compress = True; foreign keys=true";
+            return new SQLiteConnection(connectionString);
         }
 
         public bool DatabaseFileExists() => File.Exists(path);
@@ -37,7 +36,6 @@ namespace Client.MVVM.Model
         private string ReadEmbeddedResource(string path)
         {
             var assembly = Assembly.GetExecutingAssembly();
-            var all = assembly.GetManifestResourceNames();
             // Format: "{Namespace}.{Folder}.{filename}.{Extension}"
             using (Stream stream = assembly.GetManifestResourceStream(path))
             {
@@ -47,7 +45,7 @@ namespace Client.MVVM.Model
             }
         }
 
-        public void InitializeDatabaseFile()
+        public void CreateDatabaseFile()
         {
             string ddl = ReadEmbeddedResource("Client.MVVM.Model.client.sql");
             if (ddl == null)
@@ -55,12 +53,10 @@ namespace Client.MVVM.Model
                     $"Embedded assembly with client database SQL code does not exist.");
             SQLiteConnection.CreateFile(path);
             using (var con = CreateConnection())
+            using (var cmd = new SQLiteCommand(ddl, con))
             {
-                using (var cmd = new SQLiteCommand(ddl, con))
-                {
-                    con.Open();
-                    cmd.ExecuteNonQuery();
-                }
+                con.Open();
+                cmd.ExecuteNonQuery();
             }
         }
 

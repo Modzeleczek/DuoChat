@@ -1,7 +1,6 @@
 ﻿using Client.MVVM.Core;
 using Client.MVVM.Model;
 using Client.MVVM.View.Windows;
-using System;
 using System.ComponentModel;
 using System.Windows;
 
@@ -20,8 +19,10 @@ namespace Client.MVVM.ViewModel
             get => progress;
             set { progress = value; OnPropertyChanged(); }
         }
+        public string Description { get; }
+        public bool Cancelable { get; }
 
-        public ProgressBarViewModel(DoWorkEventHandler work)
+        public ProgressBarViewModel(DoWorkEventHandler work, string description, bool cancelable)
         {
             Cancel = new RelayCommand(e => worker.CancelAsync());
             worker = new BackgroundWorker
@@ -32,16 +33,13 @@ namespace Client.MVVM.ViewModel
             worker.DoWork += work;
             worker.ProgressChanged += Worker_ProgressChanged;
             worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
+            Description = description;
+            Cancelable = cancelable;
         }
 
         public void BeginWorking()
         {
             worker.RunWorkerAsync();
-        }
-
-        public class BackgroundWorkError : Exception
-        {
-            public BackgroundWorkError(string message) : base(message) { }
         }
 
         // wywoływane co wywołanie worker.ReportProgress
@@ -61,11 +59,11 @@ namespace Client.MVVM.ViewModel
             OnRequestClose(status); // we wszystkich 3 przypadkach (błąd, anulowanie, powodzenie) informacja dla wywołującego viewmodelu jest w statusie
         }
 
-        public static Status ShowDialog(Window owner,
-            string windowTitle, string operationDescriptionText, DoWorkEventHandler work)
+        public static Status ShowDialog(Window owner, string operationDescriptionText,
+            bool cancelable, DoWorkEventHandler work)
         {
-            var vm = new ProgressBarViewModel(work);
-            var win = new ProgressBarWindow(owner, vm, windowTitle, operationDescriptionText);
+            var vm = new ProgressBarViewModel(work, operationDescriptionText, cancelable);
+            var win = new ProgressBarWindow(owner, vm);
             // zapobiegamy ALT + F4 w oknie z progress barem
             CancelEventHandler cancelHandler = (sender, args) => args.Cancel = true;
             win.Closing += cancelHandler;

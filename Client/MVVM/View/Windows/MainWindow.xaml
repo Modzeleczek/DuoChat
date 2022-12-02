@@ -114,11 +114,12 @@
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="0" x:Name="ServersColumn" />
+                    <ColumnDefinition Width="0" x:Name="AccountsColumn" />
                     <ColumnDefinition Width="200" MinWidth="70" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <Border Grid.Row="0"
-                    Grid.ColumnSpan="3"
+                    Grid.ColumnSpan="4"
                     Background="#22223B"
                     CornerRadius="10,10,0,0"
                      h:EnableDragHelper.EnableDrag="True">
@@ -139,17 +140,17 @@
                 <Grid Background="#3b3e54"
                   Grid.Column="0"
                   Grid.Row="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="50" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="60" />
-                </Grid.RowDefinitions>
-                <Label Content="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='Servers'}"
-                       FontFamily="/MVVM/View/Fonts/RedHatDisplay"
-                       Margin="8,5,0,0"
-                       FontSize="20"
-                       Foreground="#C9ADA7"
-                       FontWeight="SemiBold" />
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="60" />
+                    </Grid.RowDefinitions>
+                    <Label Content="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='Servers'}"
+                           FontFamily="/MVVM/View/Fonts/RedHatDisplay"
+                           Margin="8,5,0,0"
+                           FontSize="20"
+                           Foreground="#C9ADA7"
+                           FontWeight="SemiBold" />
                     <ListView ItemsSource="{Binding Servers}"
                           SelectedItem="{Binding SelectedServer}"
                           Background="Transparent"
@@ -158,9 +159,30 @@
                           BorderBrush="#4A4E69"
                           BorderThickness="0,0,0,4" />
                 </Grid>
-                <Grid Background="Transparent"
-
+                <Grid Background="#3b3e54"
                   Grid.Column="1"
+                  Grid.Row="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="60" />
+                    </Grid.RowDefinitions>
+                    <Label Content="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='Accounts'}"
+                           FontFamily="/MVVM/View/Fonts/RedHatDisplay"
+                           Margin="8,5,0,0"
+                           FontSize="20"
+                           Foreground="#C9ADA7"
+                           FontWeight="SemiBold" />
+                    <ListView ItemsSource="{Binding Accounts}"
+                          SelectedItem="{Binding SelectedAccount}"
+                          Background="Transparent"
+                          Grid.Row="1"
+                          ItemContainerStyle="{StaticResource AccountCard}"
+                          BorderBrush="#4A4E69"
+                          BorderThickness="0,0,0,4" />
+                </Grid>
+                <Grid Background="Transparent"
+                  Grid.Column="2"
                   Grid.Row="1">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="50" />
@@ -169,8 +191,8 @@
                 </Grid.RowDefinitions>
                 <Border Background="#3b3e54" Grid.Row="0">
                     <StackPanel Orientation="Horizontal">
-                        <Button Width="25" Content="&gt;" Background="Transparent" BorderThickness="0" Foreground="#C9ADA7" FontWeight="Bold" Click="Button_ToggleServers_Click" FontSize="40" VerticalContentAlignment="Center" x:Name="ToggleServersButton" Style="{StaticResource TransparentStyle}"/>
-                        <Label Content="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='Friends'}"
+                        <Button Width="25" Content="&gt;" Background="Transparent" BorderThickness="0" Foreground="#C9ADA7" FontWeight="Bold" Click="Button_ToggleServersAccounts_Click" FontSize="40" VerticalContentAlignment="Center" x:Name="ToggleServersAccountsButton" Style="{StaticResource TransparentStyle}"/>
+                        <Label Content="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='Conversations'}"
                            FontFamily="/MVVM/View/Fonts/RedHatDisplay"
                            Margin="8,5,0,0"
                            FontSize="20"
@@ -180,11 +202,11 @@
                         </StackPanel>
                     </Border>
                     <Border Grid.Row="1" Background="#3b3e54">
-                        <ListView ItemsSource="{Binding Friends}"
-                          SelectedItem="{Binding SelectedFriend}"
+                        <ListView ItemsSource="{Binding Conversations}"
+                          SelectedItem="{Binding SelectedConversation}"
                           Background="Transparent"
                           Grid.Row="1"
-                          ItemContainerStyle="{StaticResource FriendCard}"
+                          ItemContainerStyle="{StaticResource ConversationCard}"
                           BorderBrush="#4A4E69"
                           BorderThickness="0,0,0,4" />
                     </Border>
@@ -213,7 +235,7 @@
                            VerticalAlignment="Center">
                                 <TextBlock.Text>
                                     <PriorityBinding>
-                                        <Binding Path="Account.Nickname" />
+                                        <Binding Path="SelectedAccount.Nickname" />
                                         <Binding Converter="{x:Static c:Strings.Instance}" ConverterParameter='Nickname' />
                                     </PriorityBinding>
                                 </TextBlock.Text>
@@ -235,7 +257,7 @@
                 </DockPanel>
                 </Border>
             </Grid>
-            <Grid Grid.Column="2"
+            <Grid Grid.Column="3"
                   Grid.Row="1">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="50" />
@@ -284,8 +306,8 @@
                         </StackPanel>
                     </Grid>
                 </Border>
-          <!--to powinno być w ListView: ItemsSource="{Binding SelectedConversation.Messages}", ale możliwe, że tu dam ItemsControl zamiast ListView-->
-                <ListView
+          <!--możliwe, że tu dam ItemsControl zamiast ListView-->
+                <ListView ItemsSource="{Binding SelectedConversation.Messages}"
                           Background="Transparent"
                           BorderThickness="0"
                           ItemContainerStyle="{StaticResource ChatItem}"

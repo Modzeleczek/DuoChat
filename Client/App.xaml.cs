@@ -1,4 +1,4 @@
-﻿using Client.MVVM.Model;
+﻿using Client.MVVM.Model.BsonStorages;
 using System.IO;
 using System.Windows;
 
@@ -8,7 +8,7 @@ namespace Client
     {
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            var path = DataAccessObject.DATABASES_DIRECTORY_PATH;
+            var path = LocalUsersStorage.USERS_DIRECTORY_PATH;
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
         }

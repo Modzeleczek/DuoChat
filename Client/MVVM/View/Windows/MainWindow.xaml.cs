@@ -6,26 +6,28 @@ namespace Client.MVVM.View.Windows
 {
     public partial class MainWindow : Window
     {
-        private bool serversVisible = false;
+        private bool serversAccountsVisible = false;
 
         public MainWindow()
         {
             InitializeComponent();
         }
 
-        private void Button_ToggleServers_Click(object sender, RoutedEventArgs e)
+        private void Button_ToggleServersAccounts_Click(object sender, RoutedEventArgs e)
         {
-            if (serversVisible)
+            if (serversAccountsVisible)
             {
                 ServersColumn.Width = new GridLength(0, GridUnitType.Pixel);
-                ToggleServersButton.Content = ">";
+                AccountsColumn.Width = new GridLength(0, GridUnitType.Pixel);
+                ToggleServersAccountsButton.Content = ">";
             }
             else
             {
                 ServersColumn.Width = new GridLength(200, GridUnitType.Pixel);
-                ToggleServersButton.Content = "<";
+                AccountsColumn.Width = new GridLength(200, GridUnitType.Pixel);
+                ToggleServersAccountsButton.Content = "<";
             }
-            serversVisible = !serversVisible;
+            serversAccountsVisible = !serversAccountsVisible;
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

@@ -22,14 +22,13 @@ namespace Client.MVVM.ViewModel
                     Error(d["Wrong password."]);
                     return;
                 }
-                var loggedUser = new LoggedUser(user);
                 object retDat = null;
                 if (returnEnteredPassword)
-                    retDat = new { LoggedUser = loggedUser, Password = password };
+                    retDat = new { LoggedUser = user, Password = password };
                 else
                 {
                     password.Dispose();
-                    retDat = loggedUser;
+                    retDat = user;
                 }
                 OnRequestClose(new Status(0, null, retDat));
             });
