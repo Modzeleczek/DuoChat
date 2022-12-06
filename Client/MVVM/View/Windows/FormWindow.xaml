@@ -9,6 +9,7 @@
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:windows="clr-namespace:Client.MVVM.View.Windows"
   x:Name="FormWindowName"
+    FontFamily="/MVVM/View/Fonts/RedHatDisplay"
   Width="600"
   Height="400"
   AllowsTransparency="True"

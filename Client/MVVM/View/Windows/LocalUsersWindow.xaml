@@ -14,6 +14,7 @@
   Height="450"
   AllowsTransparency="True"
   Background="Transparent"
+  FontFamily="/MVVM/View/Fonts/RedHatDisplay"
   Icon="/MVVM/View/Icons/logo.png"
   WindowStyle="None"
   mc:Ignorable="d">
@@ -74,60 +75,86 @@
                 <ItemsControl ItemsSource="{Binding LocalUsers}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Grid x:Name="ItemGrid">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <i:Interaction.Triggers>
-                                    <i:EventTrigger EventName="MouseLeftButtonDown">
-                                        <!--  bindujemy obiekt LocalUser, a nie jego któreś pole, więc wystarczy samo "CommandParameter={Binding}"  -->
-                                        <!--<i:InvokeCommandAction Command="{Binding Path=DataContext.Login,
+                            <Border BorderBrush="#9A8C98" BorderThickness="0,1,0,1">
+                                <Grid x:Name="ItemGrid">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="MouseLeftButtonDown">
+                                            <!--  bindujemy obiekt LocalUser, a nie jego któreś pole, więc wystarczy samo "CommandParameter={Binding}"  -->
+                                            <!--<i:InvokeCommandAction Command="{Binding Path=DataContext.Login,
                     RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"
                     CommandParameter="{Binding}" />-->
-                                        <!--  równoważne, bo okno ma nadaną nazwę (LocalUsersWindowName)  -->
-                                        <i:InvokeCommandAction Command="{Binding Path=DataContext.Login, ElementName=LocalUsersWindowName}" CommandParameter="{Binding}" />
-                                    </i:EventTrigger>
-                                </i:Interaction.Triggers>
-                                <Grid.Style>
-                                    <Style TargetType="Grid">
-                                        <Setter Property="Background" Value="Transparent" />
-                                        <Style.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="Red" />
-                                            </Trigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Grid.Style>
-                                <TextBlock Grid.Column="0" Text="{Binding Name}" />
-                                <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-                                    <StackPanel.Style>
-                                        <Style TargetType="StackPanel">
-                                            <Setter Property="Visibility" Value="Hidden" />
+                                            <!--  równoważne, bo okno ma nadaną nazwę (LocalUsersWindowName)  -->
+                                            <i:InvokeCommandAction Command="{Binding Path=DataContext.Login, ElementName=LocalUsersWindowName}" CommandParameter="{Binding}" />
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                    <Grid.Style>
+                                        <Style TargetType="Grid">
+                                            <Setter Property="Background" Value="Transparent" />
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding ElementName=ItemGrid, Path=IsMouseOver}" Value="True">
-                                                    <Setter Property="Visibility" Value="Visible" />
-                                                </DataTrigger>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#22223B" />
+                                                </Trigger>
                                             </Style.Triggers>
                                         </Style>
-                                    </StackPanel.Style>
-                                    <Button
-                                      Grid.Column="1"
-                                      Command="{Binding Path=DataContext.ChangeName, ElementName=LocalUsersWindowName}"
-                                      CommandParameter="{Binding}"
-                                      Content="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='Change name'}" />
-                                    <Button
-                                      Grid.Column="1"
-                                      Command="{Binding Path=DataContext.ChangePassword, ElementName=LocalUsersWindowName}"
-                                      CommandParameter="{Binding}"
-                                      Content="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='Change password'}" />
-                                    <Button
-                                      Grid.Column="1"
-                                      Command="{Binding Path=DataContext.Delete, ElementName=LocalUsersWindowName}"
-                                      CommandParameter="{Binding}"
-                                      Content="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='Delete'}" />
-                                </StackPanel>
-                            </Grid>
+                                    </Grid.Style>
+                                    <TextBlock
+                                      Grid.Column="0"
+                                      Margin="20,0,0,0"
+                                      VerticalAlignment="Center"
+                                      FontSize="15"
+                                      FontWeight="SemiBold"
+                                      Foreground="#C9ADA7"
+                                      Text="{Binding Name}" />
+                                    <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                                        <StackPanel.Style>
+                                            <Style TargetType="StackPanel">
+                                                <Setter Property="Visibility" Value="Hidden" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding ElementName=ItemGrid, Path=IsMouseOver}" Value="True">
+                                                        <Setter Property="Visibility" Value="Visible" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </StackPanel.Style>
+                                        <Button
+                                          Grid.Column="1"
+                                          Margin="7"
+                                          Command="{Binding Path=DataContext.ChangeName, ElementName=LocalUsersWindowName}"
+                                          CommandParameter="{Binding}"
+                                          Content="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='Change name'}"
+                                          FontWeight="SemiBold"
+                                          Foreground="#C9ADA7"
+                                          Style="{StaticResource CornerRadiusButton}" />
+                                        <Button
+                                          Grid.Column="1"
+                                          Margin="7"
+                                          Padding="5"
+                                          Command="{Binding Path=DataContext.ChangePassword, ElementName=LocalUsersWindowName}"
+                                          CommandParameter="{Binding}"
+                                          Content="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='Change password'}"
+                                          FontWeight="SemiBold"
+                                          Foreground="#C9ADA7"
+                                          Style="{StaticResource CornerRadiusButton}" />
+                                        <Button
+                                          Grid.Column="1"
+                                          Margin="7,7,20,7"
+                                          Command="{Binding Path=DataContext.Delete, ElementName=LocalUsersWindowName}"
+                                          CommandParameter="{Binding}"
+                                          Content="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='Delete'}"
+                                          FontWeight="SemiBold"
+                                          Foreground="#C9ADA7"
+                                          Style="{StaticResource CornerRadiusButton}" />
+
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
