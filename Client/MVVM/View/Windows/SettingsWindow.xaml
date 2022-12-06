@@ -7,7 +7,8 @@
   xmlns:h="clr-namespace:Client.MVVM.View.Helpers"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:windows="clr-namespace:Client.MVVM.View.Windows"
-  Title="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='DuoChat - settings'}"
+  x:Name="SettingsWindowName"
+  Title="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='Settings'}"
   Width="500"
   Height="300"
   MinWidth="300"
@@ -44,7 +45,7 @@
                     </Grid.ColumnDefinitions>
                     <Label
                       Margin="15,0,0,0"
-                      Content="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='DuoChat - settings'}"
+                      Content="{Binding ElementName=SettingsWindowName, Path=Title}"
                       FontSize="14"
                       FontWeight="SemiBold"
                       Foreground="#9A8C98" />
@@ -58,7 +59,7 @@
                           Height="25"
                           Margin="4,1,16,0"
                           BorderThickness="0"
-                          Click="Button_Close_Click"
+                          Command="{Binding Path=Close}"
                           Content="✕"
                           FontSize="15"
                           FontWeight="Bold"
@@ -157,16 +158,6 @@
                       Style="{StaticResource MenuButtonStyle}" />
                 </Border>
             </Grid>
-
-            <Button
-              Grid.Row="2"
-              Margin="200,10,200,10"
-              Content="Save"
-              FontFamily="/MVVM/View/Fonts/RedHatDisplay"
-              FontSize="18"
-              FontWeight="SemiBold"
-              Foreground="#C9ADA7"
-              Style="{StaticResource CornerRadiusButton}" />
         </Grid>
     </Border>
 </windows:DialogWindow>

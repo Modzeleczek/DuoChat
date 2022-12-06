@@ -1,6 +1,5 @@
 ﻿using Client.MVVM.Core;
 using Client.MVVM.View.Converters;
-using Client.MVVM.View.Windows;
 using System.Windows;
 
 namespace Client.MVVM.ViewModel

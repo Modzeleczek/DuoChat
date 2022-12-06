@@ -11,11 +11,6 @@ namespace Client.MVVM.View.Windows
 
         protected override void Initialize() => InitializeComponent();
 
-        private void Button_Close_Click( object sender, RoutedEventArgs e)
-        {
-            Close();
-        }
-
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             DragMove();

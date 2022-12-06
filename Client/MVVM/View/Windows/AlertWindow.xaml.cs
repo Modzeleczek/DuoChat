@@ -6,15 +6,10 @@ namespace Client.MVVM.View.Windows
 {
     public partial class AlertWindow : DialogWindow
     {
-        protected override void Initialize() => InitializeComponent();
-
         public AlertWindow(Window owner, DialogViewModel dataContext)
             : base(owner, dataContext) { }
 
-        private void ButtonClose_Click(object sender, RoutedEventArgs e)
-        {
-            Close();
-        }
+        protected override void Initialize() => InitializeComponent();
 
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {

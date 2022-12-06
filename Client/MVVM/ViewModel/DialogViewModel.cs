@@ -1,10 +1,20 @@
-﻿using Client.MVVM.Model;
+﻿using Client.MVVM.Core;
+using Client.MVVM.Model;
 using System;
 
 namespace Client.MVVM.ViewModel
 {
     public class DialogViewModel : ViewModel
     {
+        #region Commands
+        public RelayCommand Close { get; protected set; }
+        #endregion
+
+        protected DialogViewModel()
+        {
+            Close = new RelayCommand(e => OnRequestClose(new Status(1)));
+        }
+
         public Status Status { get; protected set; } = new Status(1);
         public event EventHandler RequestClose = null;
 

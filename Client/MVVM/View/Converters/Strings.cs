@@ -63,7 +63,6 @@ namespace Client.MVVM.View.Converters
             d["User`apos;s nickname"] = "Pseudonim użytkownika";
             d["Nickname"] = "Pseudonim";
             d["Username"] = "Nazwa użytkownika";
-            d["DuoChat - settings"] = "DuoChat - ustawienia";
             d["Display"] = "Wyświetlanie";
             d["Profile"] = "Profil";
             d["Language"] = "Język";
@@ -117,6 +116,9 @@ namespace Client.MVVM.View.Converters
             d["Encrypting server's database."] = "Szyfrowanie bazy danych serwera.";
             d["User's database encryption canceled. Not logging out."] = "Szyfrowanie bazy danych użytkownika anulowane. Nie wylogowuję.";
             d["Accounts"] = "Konta";
+            d["OK"] = "OK";
+            d["Alert"] = "Alert";
+            d["DuoChat"] = "DuoChat";
         }
     }
 }

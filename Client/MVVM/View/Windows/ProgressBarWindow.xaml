@@ -16,7 +16,8 @@
   AllowsTransparency="True"
   Background="Transparent"
   WindowStyle="None"
-  mc:Ignorable="d">
+  mc:Ignorable="d"
+  Icon="/MVVM/View/Icons/logo.png">
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding Path=WindowLoaded}" CommandParameter="{Binding ElementName=ProgressBarWindowName}" />
@@ -78,7 +79,7 @@
                     </Grid.ColumnDefinitions>
                     <Label
                       Margin="15,0,0,0"
-                      Content="DuoChat"
+                      Content="{Binding ElementName=ProgressBarWindowName, Path=Title}"
                       FontSize="14"
                       FontWeight="SemiBold"
                       Foreground="#9A8C98" />
@@ -114,7 +115,7 @@
               Grid.Row="3"
               Margin="120,10,120,10"
               BorderThickness="3"
-              Command="{Binding Cancel}"
+              Command="{Binding Path=Close}"
               Content="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='Cancel'}"
               IsEnabled="{Binding Cancelable}"
               Style="{StaticResource CornerRadiusButton}" />

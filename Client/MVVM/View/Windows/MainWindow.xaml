@@ -9,7 +9,7 @@
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:viewmodel="clr-namespace:Client.MVVM.ViewModel"
   x:Name="MainWindowName"
-  Title="DuoChat"
+  Title="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='DuoChat'}"
   Width="1200"
   Height="650"
   MinWidth="600"
@@ -135,7 +135,7 @@
                     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
                         <Label
                           Margin="15,0,0,0"
-                          Content="DuoChat"
+                          Content="{Binding ElementName=MainWindowName, Path=Title}"
                           FontSize="14"
                           FontWeight="SemiBold"
                           Foreground="#9A8C98" />

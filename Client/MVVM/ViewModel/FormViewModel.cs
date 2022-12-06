@@ -6,13 +6,12 @@ namespace Client.MVVM.ViewModel
     public class FormViewModel : DialogViewModel
     {
         #region Commands
-        public RelayCommand Cancel { get; protected set; }
         public RelayCommand Confirm { get; protected set; }
         #endregion
 
         protected FormViewModel()
         {
-            Cancel = new RelayCommand(e => CancelHandler(e));
+            Close = new RelayCommand(e => CancelHandler(e));
         }
 
         protected virtual void CancelHandler(object e)

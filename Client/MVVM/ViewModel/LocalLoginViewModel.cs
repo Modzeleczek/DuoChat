@@ -39,7 +39,7 @@ namespace Client.MVVM.ViewModel
             ((PasswordBox)controls[0]).SecurePassword.Dispose();
         }
 
-        public static Status Dialog(Window owner,
+        public static Status ShowDialog(Window owner,
             LocalUser user, bool returnEnteredPassword)
         {
             var d = Strings.Instance;
@@ -47,7 +47,7 @@ namespace Client.MVVM.ViewModel
             var win = new FormWindow(owner, vm, d["Login"], new FormWindow.Field[]
             {
                 new FormWindow.Field(d["Password"], "", true)
-            }, d["Cancel"], d["Login"]);
+            }, d["Cancel"], d["OK"]);
             vm.RequestClose += (s, e) => win.Close();
             win.ShowDialog();
             return vm.Status;

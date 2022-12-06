@@ -16,7 +16,10 @@ namespace Client.MVVM.ViewModel
 
         public static void ShowDialog(Window owner, string alertText, string buttonText = "OK")
         {
-            new AlertWindow(owner, new AlertViewModel(alertText, buttonText)).ShowDialog();
+            var vm = new AlertViewModel(alertText, buttonText);
+            var win = new AlertWindow(owner, vm);
+            vm.RequestClose += (sender, args) => win.Close();
+            win.ShowDialog();
         }
     }
 }

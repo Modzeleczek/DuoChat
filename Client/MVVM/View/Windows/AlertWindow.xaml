@@ -2,11 +2,13 @@
   x:Class="Client.MVVM.View.Windows.AlertWindow"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:c="clr-namespace:Client.MVVM.View.Converters"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:h="clr-namespace:Client.MVVM.View.Helpers"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:windows="clr-namespace:Client.MVVM.View.Windows"
-  Title="Alert"
+  x:Name="AlertWindowName"
+  Title="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='Alert'}"
   Width="290"
   Height="190"
   MaxWidth="400"
@@ -15,7 +17,8 @@
   Background="Transparent"
   MouseLeftButtonDown="Window_MouseLeftButtonDown"
   WindowStyle="None"
-  mc:Ignorable="d">
+  mc:Ignorable="d"
+  Icon="/MVVM/View/Icons/logo.png">
     <Border
       Background="#4A4E69"
       BorderBrush="#9A8C98"
@@ -36,7 +39,7 @@
                 <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
                     <Label
                       Margin="15,0,0,0"
-                      Content="DuoChat"
+                      Content="{Binding ElementName=AlertWindowName, Path=Title}"
                       FontSize="14"
                       FontWeight="SemiBold"
                       Foreground="#9A8C98" />
@@ -59,7 +62,7 @@
             <Button
               Grid.Row="2"
               Margin="70,10,70,10"
-              Click="ButtonClose_Click"
+              Command="{Binding Path=Close}"
               Content="{Binding Path=ButtonText}"
               FontFamily="/MVVM/View/Fonts/RedHatDisplay"
               FontSize="18"

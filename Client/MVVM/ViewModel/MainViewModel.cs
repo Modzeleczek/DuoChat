@@ -143,7 +143,7 @@ namespace Client.MVVM.ViewModel
                     if (vm.Status.Code == 2) // wylogowanie
                     {
                         Clear();
-                        var logSta = LocalLoginViewModel.Dialog(window, loggedUser, true);
+                        var logSta = LocalLoginViewModel.ShowDialog(window, loggedUser, true);
                         if (logSta.Code != 0) return;
                         var curPas = (SecureString)((dynamic)logSta.Data).Password;
 

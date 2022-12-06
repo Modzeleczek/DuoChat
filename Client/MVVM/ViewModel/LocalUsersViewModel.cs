@@ -16,7 +16,6 @@ namespace Client.MVVM.ViewModel
         public RelayCommand ChangeName { get; }
         public RelayCommand ChangePassword { get; }
         public RelayCommand Delete { get; }
-        public RelayCommand Close { get; }
         #endregion
 
         #region Properties
@@ -50,14 +49,14 @@ namespace Client.MVVM.ViewModel
             Login = new RelayCommand(clickedUser =>
             {
                 var user = (LocalUser)clickedUser;
-                var status = LocalLoginViewModel.Dialog(window, user, true);
+                var status = LocalLoginViewModel.ShowDialog(window, user, true);
                 if (status.Code != 0) return;
                 OnRequestClose(status);
             });
             ChangeName = new RelayCommand(clickedUser =>
             {
                 var user = (LocalUser)clickedUser;
-                if (LocalLoginViewModel.Dialog(window, user, false).Code != 0) return; // nie udało się zalogować
+                if (LocalLoginViewModel.ShowDialog(window, user, false).Code != 0) return; // nie udało się zalogować
                 // udało się zalogować
                 var vm = new ChangeLocalUserNameViewModel(user);
                 var win = new FormWindow(window, vm, d["Change name"],
@@ -72,7 +71,7 @@ namespace Client.MVVM.ViewModel
             ChangePassword = new RelayCommand(clickedUser =>
             {
                 var user = (LocalUser)clickedUser;
-                var logSta = LocalLoginViewModel.Dialog(window, user, true);
+                var logSta = LocalLoginViewModel.ShowDialog(window, user, true);
                 if (logSta.Code != 0) return;
                 var curPas = (SecureString)((dynamic)logSta.Data).Password;
                 var vm = new ChangeLocalUserPasswordViewModel(user, curPas);
@@ -90,7 +89,7 @@ namespace Client.MVVM.ViewModel
             Delete = new RelayCommand(clickedUser =>
             {
                 var user = (LocalUser)clickedUser;
-                if (LocalLoginViewModel.Dialog(window, user, false).Code != 0) return;
+                if (LocalLoginViewModel.ShowDialog(window, user, false).Code != 0) return;
                 var sta = lus.Delete(user.Name);
                 if (sta.Code != 0)
                 {
@@ -99,10 +98,6 @@ namespace Client.MVVM.ViewModel
                 }
                 user.GetDatabase().Delete();
                 LocalUsers = new ObservableCollection<LocalUser>(lus.GetAll());
-            });
-            Close = new RelayCommand(e =>
-            {
-                OnRequestClose(new Status(1));
             });
         }
     }
