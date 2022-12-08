@@ -1,4 +1,4 @@
-﻿using Client.MVVM.Core;
+﻿using Shared.MVVM.Core;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

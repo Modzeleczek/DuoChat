@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace Client.MVVM.Core
+namespace Shared.MVVM.Core
 {
     public class ObservableObject : INotifyPropertyChanged
     {

@@ -1,5 +1,5 @@
-﻿using Client.MVVM.Core;
-using Shared.Cryptography;
+﻿using Shared.Cryptography;
+using Shared.MVVM.Core;
 using System;
 using System.Net;
 

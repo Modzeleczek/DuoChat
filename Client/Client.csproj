@@ -152,8 +152,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MVVM\Core\ObservableObject.cs" />
-    <Compile Include="MVVM\Core\RelayCommand.cs" />
     <Compile Include="MVVM\Model\Account.cs" />
     <Compile Include="MVVM\Model\Attachment.cs" />
     <Compile Include="MVVM\Model\BackgroundProgress.cs" />

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Numerics;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 
 namespace Shared.Cryptography
 {
@@ -10,6 +11,7 @@ namespace Shared.Cryptography
 
         public static BigInteger OctetsToInt(byte[] octets)
         {
+            // octets w kolejności big-endian
             BigInteger integer = 0;
             for (int i = 0; i < octets.Length; i++)
                 integer = (integer << 8) | octets[i];
@@ -67,7 +69,7 @@ namespace Shared.Cryptography
             }
         }
 
-        public static KeyPair GenerateKeyPair(BigInteger p, BigInteger q)
+        public static KeyPair CreateKeyPair(BigInteger p, BigInteger q)
         {
             // p, q - duże liczby pierwsze o długości około 1024 bitów, aby ich iloczyn miał długość około 2048 bitów
             if (!IsProbablePrime(p)) throw new ArgumentException($"p = {p} is not prime.");
@@ -104,6 +106,7 @@ namespace Shared.Cryptography
 
         private static BigInteger ModularInverse(BigInteger a, BigInteger m)
         {
+            // https://stackoverflow.com/a/38198477/14357934
             /* https://www.geeksforgeeks.org/multiplicative-inverse-under-modulo-m/
             złożoność czasowa log(m); zwraca rozwiązanie x równania a*x = 1 (mod m)
             odwrotność liczby a w mnożeniu modulo m istnieje tylko, gdy a i m są względnie pierwsze (NWD(a, m) = 1)
@@ -151,38 +154,73 @@ namespace Shared.Cryptography
             return res;
         }
 
-        unsafe public static BigInteger GenerateProbablePrime(uint minByteLength)
+        public static BigInteger FirstProbablePrimeGreaterThan(BigInteger min)
         {
             /* test pierwszości Millera-Rabina stwierdza, że liczba jest złożona lub prawdopodobnie (ale nie na pewno) pierwsza; trzeci parametr mpz_probable_prime_p równy np. 100 oznacza, że chcemy, aby prawdopodobieństwo, że liczba złożona jest nazwana pierwszą, wynosiło 2^(-100) */
-            byte* bytePointer;
-            uint length;
-            if (generate_probable_prime(minByteLength, &bytePointer, &length) < 0)
-                throw new ExternalException("Cannot generate probable prime number.");
-            // jeżeli najbardziej znaczący bit ostatniego bajtu liczby jest 1, to dodanie ostatniego bajtu równego 0, którego najbardziej znaczący bit jest 0, powoduje, że BigInteger jest nieujemny
-            byte[] bytes = new byte[length + 1];
-            // kopiujemy bajty liczby z pamięci niezarządzanej do zarządzanej
-            Marshal.Copy((IntPtr)bytePointer, bytes, 0, (int)length); // length jest zawsze dużo mniejsze niż 2^31-1 (int.MaxValue)
-            free_unmanaged(bytePointer);
+            byte[] bytes;
+            unsafe
+            {
+                byte[] minBytes = min.ToByteArray();
+                byte* primePtr;
+                uint length;
+                // blokujemy pozycję tablicy minBytes w pamięci na czas wywołania funkcji, aby w tym czasie GC nie przesunął tablicy w inne miejsce, przez co wskaźnik minPtr przestałby poprawnie wskazywać na tablicę
+                fixed (byte* minPtr = minBytes)
+                if (first_probable_prime_greater_than(minPtr, (uint)minBytes.Length, -1,
+                    &primePtr, &length) < 0)
+                    throw new ExternalException("Cannot generate random probable prime number.");
+                // jeżeli najbardziej znaczący bit ostatniego bajtu liczby jest 1, to dodanie ostatniego bajtu równego 0, którego najbardziej znaczący bit jest 0, powoduje, że BigInteger jest nieujemny
+                bytes = new byte[length + 1];
+                // kopiujemy bajty liczby z pamięci niezarządzanej do zarządzanej
+                // length jest zawsze dużo mniejsze niż 2^31-1 (int.MaxValue)
+                Marshal.Copy((IntPtr)primePtr, bytes, 0, (int)length);
+                free_unmanaged(primePtr);
+            }
             return new BigInteger(bytes);
         }
 
-        unsafe public static bool IsProbablePrime(BigInteger number)
+        public static bool IsProbablePrime(BigInteger number)
         {
             int result;
-            byte[] bytes = number.ToByteArray();
-            if (is_probable_prime(bytes, (uint)bytes.Length, &result) < 0)
-                throw new ExternalException($"Cannot check if {number} is prime.");
-            return result == 1;
+            byte[] numberBytes = number.ToByteArray();
+            unsafe
+            {
+                fixed (byte* numberPtr = numberBytes)
+                if (is_probable_prime(numberPtr, (uint)numberBytes.Length, -1,
+                    &result) < 0)
+                    throw new ExternalException($"Cannot check if {number} is prime.");
+                return result == 1;
+            }
+        }
+
+        public static BigInteger GenerateRandom(int byteCount, bool sign)
+        {
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                byte[] bytes = new byte[byteCount];
+                rng.GetBytes(bytes);
+                // losowe są bity o indeksach od 0 do byteCount*8-2, bo ostatni ustawiamy w zależności od pożądanego znaku liczby
+                if (sign == false) // nieujemna
+                    bytes[bytes.Length - 1] &= 0b0111_1111;
+                else // ujemna
+                    bytes[bytes.Length - 1] |= 0b1000_0000;
+                return new BigInteger(bytes);
+            }
         }
 
         private const string DLL_PATH = "Prime.dll";
         private const CallingConvention CONVENTION = CallingConvention.Cdecl;
         [DllImport(DLL_PATH, CallingConvention = CONVENTION)]
-        unsafe private static extern int generate_probable_prime(uint min_byte_length, byte** number_bytes, uint* final_byte_length);
+        unsafe private static extern
+            int first_probable_prime_greater_than
+            (byte* min_bytes, uint min_length, sbyte endian,
+            byte** prime_bytes, uint* prime_length);
+
         [DllImport(DLL_PATH, CallingConvention = CONVENTION)]
-        unsafe private static extern void free_unmanaged(byte* array);
+        unsafe private static extern
+            void free_unmanaged(void* array);
+
         [DllImport(DLL_PATH, CallingConvention = CONVENTION)]
-        // unsafe private static extern int is_probable_prime(byte[] decimal_digits, int* result);
-        unsafe private static extern int is_probable_prime(byte[] number_bytes, uint byte_length, int* result);
+        unsafe private static extern
+            int is_probable_prime(byte* bytes, uint length, sbyte endian, int* result);
     }
 }

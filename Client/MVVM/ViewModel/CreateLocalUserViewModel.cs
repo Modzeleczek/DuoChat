@@ -1,6 +1,6 @@
-﻿using Client.MVVM.Core;
-using Client.MVVM.Model;
+﻿using Client.MVVM.Model;
 using Client.MVVM.Model.BsonStorages;
+using Shared.MVVM.Core;
 using System.Windows;
 using System.Windows.Controls;
 

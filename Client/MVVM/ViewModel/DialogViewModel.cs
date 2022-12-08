@@ -1,5 +1,5 @@
-﻿using Client.MVVM.Core;
-using Client.MVVM.Model;
+﻿using Client.MVVM.Model;
+using Shared.MVVM.Core;
 using System;
 
 namespace Client.MVVM.ViewModel

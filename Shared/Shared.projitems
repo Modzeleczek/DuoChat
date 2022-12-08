@@ -10,5 +10,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Cryptography\RSA.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\Core\ObservableObject.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\Core\RelayCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\View\Converters\Translator.cs" />
   </ItemGroup>
 </Project>

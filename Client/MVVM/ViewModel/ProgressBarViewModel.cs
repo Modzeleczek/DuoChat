@@ -1,6 +1,6 @@
-﻿using Client.MVVM.Core;
-using Client.MVVM.Model;
+﻿using Client.MVVM.Model;
 using Client.MVVM.View.Windows;
+using Shared.MVVM.Core;
 using System.ComponentModel;
 using System.Windows;
 

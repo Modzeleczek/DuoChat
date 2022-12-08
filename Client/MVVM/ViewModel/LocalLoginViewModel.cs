@@ -1,7 +1,7 @@
-﻿using Client.MVVM.Core;
-using Client.MVVM.Model;
+﻿using Client.MVVM.Model;
 using Client.MVVM.View.Converters;
 using Client.MVVM.View.Windows;
+using Shared.MVVM.Core;
 using System.Windows;
 using System.Windows.Controls;
 

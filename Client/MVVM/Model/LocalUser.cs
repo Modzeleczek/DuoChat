@@ -1,5 +1,5 @@
-﻿using Client.MVVM.Core;
-using Client.MVVM.Model.BsonStorages;
+﻿using Client.MVVM.Model.BsonStorages;
+using Shared.MVVM.Core;
 using System;
 using System.IO;
 
