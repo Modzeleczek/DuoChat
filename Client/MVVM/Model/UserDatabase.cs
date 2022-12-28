@@ -6,13 +6,16 @@ namespace Client.MVVM.Model
 {
     public class UserDatabase
     {
-        public string DirectoryPath { get; private set; }
+        public string DirectoryPath
+        { get => Path.Combine(LocalUsersStorage.USERS_DIRECTORY_PATH, UserName); }
+        public string UserName { get; private set; }
 
-        public string ServersStoragePath { get => Path.Combine(DirectoryPath, "servers.bson"); }
+        public string ServersStoragePath
+        { get => Path.Combine(DirectoryPath, "servers.bson"); }
 
-        public UserDatabase(string directoryPath)
+        public UserDatabase(string userName)
         {
-            DirectoryPath = directoryPath;
+            UserName = userName;
         }
 
         public bool Exists() => Directory.Exists(DirectoryPath);
@@ -21,19 +24,19 @@ namespace Client.MVVM.Model
 
         public void Create() => Directory.CreateDirectory(DirectoryPath);
 
-        public void Rename(string newPath)
+        public void Rename(string newUserName)
         {
-            string oldPath = DirectoryPath;
-            DirectoryPath = newPath;
-            Directory.Move(oldPath, newPath);
+            string oldDirPat = DirectoryPath;
+            UserName = newUserName;
+            Directory.Move(oldDirPat, DirectoryPath);
         }
 
         public ServersStorage GetServersStorage() => new ServersStorage(ServersStoragePath);
 
-        public Status GetServerDatabase(Guid serverGuid)
+        public Status GetServerDatabase(Guid guid)
         {
             var serStor = new ServersStorage(ServersStoragePath);
-            var getSta = serStor.Get(serverGuid);
+            var getSta = serStor.Get(guid);
             if (getSta.Code != 0) return getSta;
             var server = (Server)getSta.Data;
             var daoPath = Path.Combine(DirectoryPath, server.GUID.ToString());

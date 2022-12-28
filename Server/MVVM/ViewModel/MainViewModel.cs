@@ -2,7 +2,7 @@
 
 namespace Server.MVVM.ViewModel
 {
-    public class MainViewModel : ObservableObject
+    public class MainViewModel : ViewModel
     {
         #region Commands
         // setujemy te właściwości w konstruktorze MainViewModel, a nie w callbacku (RelayCommandzie) zdarzenia WindowLoaded, więc nie potrzeba setterów z wywołaniami OnPropertyChanged
@@ -21,16 +21,21 @@ namespace Server.MVVM.ViewModel
 
         public MainViewModel()
         {
+            var server = new Model.Server();
+
             Close = new RelayCommand(e => { });
-            var tabs = new ViewModel[]
+            var setVM = new SettingsViewModel();
+            setVM.ServerStart += () =>
             {
-                new SettingsViewModel(),
-                new ConnectedClientsViewModel(),
-                new AccountsViewModel()
+                
             };
+
+            var conCliVM = new ConnectedClientsViewModel();
+            var accVM = new AccountsViewModel();
+            var tabs = new ViewModel[] { setVM,  conCliVM, accVM };
             SelectTab = new RelayCommand(e =>
             {
-                int index = (int)e;
+                int index = int.Parse((string)e);
                 if (SelectedTab == tabs[index]) return;
                 SelectedTab = tabs[index];
             });

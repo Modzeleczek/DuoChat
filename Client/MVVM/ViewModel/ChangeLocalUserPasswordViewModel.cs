@@ -36,7 +36,7 @@ namespace Client.MVVM.ViewModel
                 if (!db.Exists())
                 {
                     Error(d["User's database does not exist. An empty database will be created."]);
-                    db.Exists();
+                    db.Create();
                 }
                 else // jeżeli katalog z plikami bazy danych istnieje, to odszyfrowujemy je starym hasłem
                 {

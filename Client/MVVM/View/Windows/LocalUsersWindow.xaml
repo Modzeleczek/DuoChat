@@ -18,147 +18,141 @@
   Icon="/MVVM/View/Icons/logo.png"
   WindowStyle="None"
   mc:Ignorable="d">
-    <i:Interaction.Triggers>
-        <i:EventTrigger EventName="Loaded">
-            <i:InvokeCommandAction Command="{Binding WindowLoaded}" CommandParameter="{Binding ElementName=LocalUsersWindowName}" />
-        </i:EventTrigger>
-    </i:Interaction.Triggers>
-    <Border
-      Background="#4A4E69"
-      BorderBrush="#9A8C98"
-      BorderThickness="2"
-      CornerRadius="10">
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="40" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="auto" />
-            </Grid.RowDefinitions>
-            <Border
-              Grid.Row="0"
-              h:EnableDragHelper.EnableDrag="True"
-              Background="#22223B"
-              CornerRadius="9,9,0,0">
-                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
-                    <Label
-                      Margin="15,0,0,0"
-                      Content="{Binding ElementName=LocalUsersWindowName, Path=Title}"
-                      FontSize="14"
-                      FontWeight="SemiBold"
-                      Foreground="#9A8C98" />
-                    <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-                        <Button
-                          Width="25"
-                          Height="25"
-                          Margin="4,1,16,0"
-                          BorderThickness="0"
-                          Command="{Binding Path=Close}"
-                          Content="✕"
-                          FontSize="15"
-                          FontWeight="Bold"
-                          Foreground="#9A8C98"
-                          Style="{StaticResource TitleBarButtonStyle}" />
-                    </StackPanel>
-                </Grid>
-            </Border>
-            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-                <!--  https://stackoverflow.com/a/33765748/14357934  -->
-                <ItemsControl ItemsSource="{Binding LocalUsers}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Border BorderBrush="#9A8C98" BorderThickness="0,1,0,1">
-                                <Grid x:Name="ItemGrid">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="*" />
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
-                                    <i:Interaction.Triggers>
-                                        <i:EventTrigger EventName="MouseLeftButtonDown">
-                                            <!--  bindujemy obiekt LocalUser, a nie jego któreś pole, więc wystarczy samo "CommandParameter={Binding}"  -->
-                                            <!--<i:InvokeCommandAction Command="{Binding Path=DataContext.Login,
+  <i:Interaction.Triggers>
+    <i:EventTrigger EventName="Loaded">
+      <i:InvokeCommandAction Command="{Binding WindowLoaded}" CommandParameter="{Binding ElementName=LocalUsersWindowName}" />
+    </i:EventTrigger>
+  </i:Interaction.Triggers>
+  <Border
+    Background="#4A4E69"
+    BorderBrush="#9A8C98"
+    BorderThickness="2"
+    CornerRadius="10">
+    <Grid>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="40" />
+        <RowDefinition Height="*" />
+        <RowDefinition Height="auto" />
+      </Grid.RowDefinitions>
+      <Border
+        Grid.Row="0"
+        h:EnableDragHelper.EnableDrag="True"
+        Background="#22223B"
+        CornerRadius="9,9,0,0">
+        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
+          <Label
+            Margin="15,0,0,0"
+            Content="{Binding ElementName=LocalUsersWindowName, Path=Title}"
+            FontSize="14"
+            FontWeight="SemiBold"
+            Foreground="#9A8C98" />
+          <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+            <Button
+              Width="25"
+              Height="25"
+              Margin="4,1,16,0"
+              BorderThickness="0"
+              Command="{Binding Path=Close}"
+              Content="✕"
+              FontSize="15"
+              FontWeight="Bold"
+              Foreground="#9A8C98"
+              Style="{StaticResource TitleBarButtonStyle}" />
+          </StackPanel>
+        </Grid>
+      </Border>
+      <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+        <!-- https://stackoverflow.com/a/33765748/14357934 -->
+        <ItemsControl ItemsSource="{Binding LocalUsers}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate>
+              <Border BorderBrush="#9A8C98" BorderThickness="0,1,0,1">
+                <Grid x:Name="ItemGrid">
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                  </Grid.ColumnDefinitions>
+                  <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseLeftButtonDown">
+                      <!-- bindujemy obiekt LocalUser, a nie jego któreś pole, więc wystarczy samo "CommandParameter={Binding}" -->
+                      <!--<i:InvokeCommandAction Command="{Binding Path=DataContext.Login,
                     RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"
                     CommandParameter="{Binding}" />-->
-                                            <!--  równoważne, bo okno ma nadaną nazwę (LocalUsersWindowName)  -->
-                                            <i:InvokeCommandAction Command="{Binding Path=DataContext.Login, ElementName=LocalUsersWindowName}" CommandParameter="{Binding}" />
-                                        </i:EventTrigger>
-                                    </i:Interaction.Triggers>
-                                    <Grid.Style>
-                                        <Style TargetType="Grid">
-                                            <Setter Property="Background" Value="Transparent" />
-                                            <Style.Triggers>
-                                                <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter Property="Background" Value="#22223B" />
-                                                </Trigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Grid.Style>
-                                    <TextBlock
-                                      Grid.Column="0"
-                                      Margin="20,0,0,0"
-                                      VerticalAlignment="Center"
-                                      FontSize="15"
-                                      FontWeight="SemiBold"
-                                      Foreground="#C9ADA7"
-                                      Text="{Binding Name}" />
-                                    <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-                                        <StackPanel.Style>
-                                            <Style TargetType="StackPanel">
-                                                <Setter Property="Visibility" Value="Hidden" />
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding ElementName=ItemGrid, Path=IsMouseOver}" Value="True">
-                                                        <Setter Property="Visibility" Value="Visible" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </StackPanel.Style>
-                                        <Button
-                                          Grid.Column="1"
-                                          Margin="7"
-                                          Command="{Binding Path=DataContext.ChangeName, ElementName=LocalUsersWindowName}"
-                                          CommandParameter="{Binding}"
-                                          Content="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='Change name'}"
-                                          FontWeight="SemiBold"
-                                          Foreground="#C9ADA7"
-                                          Style="{StaticResource CornerRadiusButton}" />
-                                        <Button
-                                          Grid.Column="1"
-                                          Margin="7"
-                                          Padding="5"
-                                          Command="{Binding Path=DataContext.ChangePassword, ElementName=LocalUsersWindowName}"
-                                          CommandParameter="{Binding}"
-                                          Content="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='Change password'}"
-                                          FontWeight="SemiBold"
-                                          Foreground="#C9ADA7"
-                                          Style="{StaticResource CornerRadiusButton}" />
-                                        <Button
-                                          Grid.Column="1"
-                                          Margin="7,7,20,7"
-                                          Command="{Binding Path=DataContext.Delete, ElementName=LocalUsersWindowName}"
-                                          CommandParameter="{Binding}"
-                                          Content="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='Delete'}"
-                                          FontWeight="SemiBold"
-                                          Foreground="#C9ADA7"
-                                          Style="{StaticResource CornerRadiusButton}" />
+                      <!-- równoważne, bo okno ma nadaną nazwę (LocalUsersWindowName) -->
+                      <i:InvokeCommandAction Command="{Binding Path=DataContext.Login, ElementName=LocalUsersWindowName}" CommandParameter="{Binding}" />
+                    </i:EventTrigger>
+                  </i:Interaction.Triggers>
+                  <Grid.Style>
+                    <Style TargetType="Grid">
+                      <Setter Property="Background" Value="Transparent" />
+                      <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                          <Setter Property="Background" Value="#22223B" />
+                        </Trigger>
+                      </Style.Triggers>
+                    </Style>
+                  </Grid.Style>
+                  <TextBlock
+                    Grid.Column="0"
+                    Margin="20,0,0,0"
+                    VerticalAlignment="Center"
+                    FontSize="15"
+                    FontWeight="SemiBold"
+                    Foreground="#C9ADA7"
+                    Text="{Binding Name}" />
+                  <StackPanel HorizontalAlignment="Right" Orientation="Horizontal"
+                    Grid.Column="0">
+                    <StackPanel.Style>
+                      <Style TargetType="StackPanel">
+                        <Setter Property="Visibility" Value="Hidden" />
+                        <Style.Triggers>
+                          <DataTrigger Binding="{Binding ElementName=ItemGrid, Path=IsMouseOver}" Value="True">
+                            <Setter Property="Visibility" Value="Visible" />
+                          </DataTrigger>
+                        </Style.Triggers>
+                      </Style>
+                    </StackPanel.Style>
+                    <Button
+                      Margin="7"
+                      Command="{Binding Path=DataContext.ChangeName, ElementName=LocalUsersWindowName}"
+                      CommandParameter="{Binding}"
+                      Content="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='Change name'}"
+                      FontWeight="SemiBold"
+                      Foreground="#C9ADA7"
+                      Style="{StaticResource CornerRadiusButtonStyle}" />
+                    <Button
+                      Margin="7"
+                      Padding="5"
+                      Command="{Binding Path=DataContext.ChangePassword, ElementName=LocalUsersWindowName}"
+                      CommandParameter="{Binding}"
+                      Content="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='Change password'}"
+                      FontWeight="SemiBold"
+                      Foreground="#C9ADA7"
+                      Style="{StaticResource CornerRadiusButtonStyle}" />
+                    <Button
+                      Margin="7,7,20,7"
+                      Command="{Binding Path=DataContext.Delete, ElementName=LocalUsersWindowName}"
+                      CommandParameter="{Binding}"
+                      Content="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='Delete'}"
+                      FontWeight="SemiBold"
+                      Foreground="#C9ADA7"
+                      Style="{StaticResource CornerRadiusButtonStyle}" />
 
-                                    </StackPanel>
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
+                  </StackPanel>
+                </Grid>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </ScrollViewer>
 
-            <Button
-              Grid.Row="2"
-              Margin="330,10,330,10"
-              Command="{Binding Path=Create}"
-              Content="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='Create'}"
-              FontFamily="/MVVM/View/Fonts/RedHatDisplay"
-              FontSize="18"
-              Style="{StaticResource CornerRadiusButton}" />
-        </Grid>
-    </Border>
+      <Button
+        Grid.Row="2"
+        Margin="330,10,330,10"
+        Command="{Binding Path=Create}"
+        Content="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='Create'}"
+        FontFamily="/MVVM/View/Fonts/RedHatDisplay"
+        FontSize="18"
+        Style="{StaticResource CornerRadiusButtonStyle}" />
+    </Grid>
+  </Border>
 </windows:DialogWindow>

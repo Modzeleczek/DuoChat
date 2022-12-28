@@ -1,57 +1,66 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Style TargetType="ListViewItem" x:Key="ChatItem">
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate>
-                    <StackPanel Orientation="Horizontal">
+﻿<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  
+  <Style x:Key="ChatItemStyle" TargetType="ListViewItem">
 
-                        <Ellipse Width="30"
-                                 Height="30"
-                                 Margin="10,0,0,-5">
-                            <Ellipse.Fill>
-                                <ImageBrush ImageSource="{Binding Sender.Image}"
-                                            RenderOptions.BitmapScalingMode="Fant"/>
-                            </Ellipse.Fill>
-                        
-                        </Ellipse>
-                        <StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <Label Content="{Binding Sender.Nickname}"
-                                   FontWeight="SemiBold"
-                                   VerticalAlignment="Center"
-                                   Margin="0,0,-5,0"/>
-                                <Label Content="{Binding SendTime}"
-                                   Foreground="Gray"
-                                   FontWeight="Normal"
-                                   FontSize="9"
-                                   VerticalAlignment="Center"/>
-                            </StackPanel>
-                            <Label Content="{Binding PlainContent}"
-                                   Foreground="#F2E9E4"
-                                   FontWeight="Normal"
-                                   FontSize="12"
-                                   VerticalAlignment="Center"/>
-                        </StackPanel>
-                       
-                    </StackPanel>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-        <Style.Resources>
-            <ControlTemplate x:Key="CustomRow">
-                <StackPanel Orientation="Horizontal">
-                    <Label Content="{Binding PlainContent}"
-                           Foreground="#F2E9E4"
-                           Margin="40,-2,0,-2"/>
-                </StackPanel>
-            </ControlTemplate>
-        </Style.Resources>
-        <Style.Triggers>
-            <DataTrigger Binding="{Binding IsDeleted}" Value="False">
-                <Setter Property="Template" Value="{StaticResource CustomRow}"/>
-            </DataTrigger>
-        </Style.Triggers>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate>
+          <StackPanel Orientation="Horizontal">
 
-    </Style>
+            <Ellipse
+              Width="30"
+              Height="30"
+              Margin="10,0,0,-5">
+              <Ellipse.Fill>
+                <ImageBrush ImageSource="{Binding Sender.Image}" RenderOptions.BitmapScalingMode="Fant" />
+              </Ellipse.Fill>
+
+            </Ellipse>
+            <StackPanel>
+              <StackPanel Orientation="Horizontal">
+                <Label
+                  Margin="0,0,-5,0"
+                  VerticalAlignment="Center"
+                  Content="{Binding Sender.Nickname}"
+                  FontWeight="SemiBold" />
+                <Label
+                  VerticalAlignment="Center"
+                  Content="{Binding SendTime}"
+                  FontSize="9"
+                  FontWeight="Normal"
+                  Foreground="Gray" />
+              </StackPanel>
+              <Label
+                VerticalAlignment="Center"
+                Content="{Binding PlainContent}"
+                FontSize="12"
+                FontWeight="Normal"
+                Foreground="#F2E9E4" />
+            </StackPanel>
+
+          </StackPanel>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+
+    <Style.Resources>
+      <ControlTemplate x:Key="CustomRow">
+        <StackPanel Orientation="Horizontal">
+          <Label
+            Margin="40,-2,0,-2"
+            Content="{Binding PlainContent}"
+            Foreground="#F2E9E4" />
+        </StackPanel>
+      </ControlTemplate>
+    </Style.Resources>
+
+    <Style.Triggers>
+      <DataTrigger Binding="{Binding IsDeleted}" Value="False">
+        <Setter Property="Template" Value="{StaticResource CustomRow}" />
+      </DataTrigger>
+    </Style.Triggers>
+
+  </Style>
 </ResourceDictionary>

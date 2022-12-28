@@ -29,7 +29,7 @@ namespace Shared.MVVM.View.Converters
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (parameter == null) throw new ArgumentException("Parameter is null.");
+            if (!(parameter is string)) throw new ArgumentException("Parameter is not string.");
             return TranslateWithActiveDictionary((string)parameter);
         }
 

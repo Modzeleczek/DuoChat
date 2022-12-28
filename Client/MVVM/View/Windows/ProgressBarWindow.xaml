@@ -118,7 +118,7 @@
               Command="{Binding Path=Close}"
               Content="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='Cancel'}"
               IsEnabled="{Binding Cancelable}"
-              Style="{StaticResource CornerRadiusButton}" />
+              Style="{StaticResource CornerRadiusButtonStyle}" />
         </Grid>
     </Border>
 </windows:DialogWindow>

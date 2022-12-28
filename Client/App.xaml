@@ -12,7 +12,7 @@
                 <ResourceDictionary Source="/MVVM/View/Themes/AccountCard.xaml"/>
                 <ResourceDictionary Source="/MVVM/View/Themes/ChatItem.xaml"/>
                 <ResourceDictionary Source="/MVVM/View/Themes/MessageBox.xaml"/>
-                <ResourceDictionary Source="/MVVM/View/Themes/StylishScrollbar.xaml"/>
+                <ResourceDictionary Source="/MVVM/View/Themes/ScrollBar.xaml"/>
                 <ResourceDictionary Source="/MVVM/View/Themes/Buttons.xaml"/>
                 <ResourceDictionary Source="/MVVM/View/Themes/ResizableWindow.xaml"/>
             </ResourceDictionary.MergedDictionaries>

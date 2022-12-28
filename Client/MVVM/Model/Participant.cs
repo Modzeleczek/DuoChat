@@ -13,7 +13,7 @@ namespace Client.MVVM.Model
         new public static Participant Random(Random rng) =>
             new Participant
             {
-                PublicKey = new RSA.Key<int>(rng.Next(), rng.Next()),
+                PublicKey = new HybridCryptosystem.PublicKey(rng.Next()),
                 Nickname = rng.Next().ToString(),
                 Image = new WriteableBitmap(100, 100, 96, 96, PixelFormats.Bgra32, null),
                 JoinTime = DateTime.Now.AddTicks(rng.Next()),

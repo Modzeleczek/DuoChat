@@ -81,7 +81,7 @@
               Command="{Binding Path=Close}"
               FontFamily="/MVVM/View/Fonts/RedHatDisplay"
               FontSize="18"
-              Style="{StaticResource CornerRadiusButton}" />
+              Style="{StaticResource CornerRadiusButtonStyle}" />
 
             <Button
               x:Name="ConfirmationButton"
@@ -94,7 +94,7 @@
               FontSize="18"
               FontWeight="SemiBold"
               Foreground="#C9ADA7"
-              Style="{StaticResource CornerRadiusButton}" />
+              Style="{StaticResource CornerRadiusButtonStyle}" />
         </Grid>
     </Border>
 </windows:DialogWindow>

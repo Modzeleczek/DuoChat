@@ -49,7 +49,7 @@ namespace Client.MVVM.ViewModel
             Login = new RelayCommand(clickedUser =>
             {
                 var user = (LocalUser)clickedUser;
-                var status = LocalLoginViewModel.ShowDialog(window, user, true);
+                var status = LocalLoginViewModel.ShowDialog(window, user, true, d["Login"]);
                 if (status.Code != 0) return;
                 OnRequestClose(status);
             });

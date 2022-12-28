@@ -33,6 +33,13 @@ namespace Client.MVVM.ViewModel
             get => openSettings;
             private set { openSettings = value; OnPropertyChanged(); }
         }
+
+        private RelayCommand addServer;
+        public RelayCommand AddServer
+        {
+            get => addServer;
+            private set { addServer = value; OnPropertyChanged(); }
+        }
         #endregion
 
         #region Properties
@@ -54,7 +61,7 @@ namespace Client.MVVM.ViewModel
                 Accounts.Clear();
                 if (value != null)
                 {
-                    var accCnt = rng.Next(0, 5);
+                    var accCnt = rng.Next(3, 8);
                     for (int i = 0; i < accCnt; ++i)
                         Accounts.Add(Account.Random(rng));
                 }
@@ -120,6 +127,21 @@ namespace Client.MVVM.ViewModel
             {
                 window = (Window)windowLoadedE;
 
+                AddServer = new RelayCommand(_ =>
+                {
+                    var vm = new CreateServerViewModel(loggedUser);
+                    var win = new FormWindow(window, vm, d["Add server"], new FormWindow.Field[]
+                    {
+                        new FormWindow.Field(d["IP address"], "", false),
+                        new FormWindow.Field(d["Port"], "", false)
+                    }, d["Cancel"], d["Add"]);
+                    vm.RequestClose += (s, e) => win.Close();
+                    win.ShowDialog();
+                    var status = vm.Status;
+                    if (status.Code == 0)
+                        Servers.Add((Server)status.Data);
+                });
+
                 Send = new RelayCommand(o =>
                 {
                     if (SelectedConversation == null ||
@@ -176,7 +198,6 @@ namespace Client.MVVM.ViewModel
                 Servers = new ObservableCollection<Server>();
                 Accounts = new ObservableCollection<Account>();
                 Conversations = new ObservableCollection<Conversation>();
-                Randomize();
                 var getLogSta = lus.GetLogged();
                 if (getLogSta.Code == 0)
                 {
@@ -185,6 +206,7 @@ namespace Client.MVVM.ViewModel
                     if (getSta.Code == 0)
                     {
                         loggedUser = (LocalUser)getSta.Data;
+                        Randomize();
                         return;
                     }
                     Error(d["Logged user does not exist."]);
@@ -246,9 +268,12 @@ namespace Client.MVVM.ViewModel
             Servers.Clear();
             Accounts.Clear();
             Conversations.Clear();
-            var srvCnt = rng.Next(0, 5);
-            for (int i = 0; i < srvCnt; ++i)
-                Servers.Add(Server.Random(rng));
+            var db = loggedUser.GetDatabase();
+            var serSto = db.GetServersStorage();
+            var servers = serSto.GetAll();
+            // var srvCnt = rng.Next(8, 15);
+            for (int i = 0; i < servers.Count; ++i)
+                Servers.Add(servers[i]);
         }
     }
 }

@@ -1,7 +1,5 @@
-﻿using Client.MVVM.Model.BsonStorages;
-using Shared.MVVM.Core;
+﻿using Shared.MVVM.Core;
 using System;
-using System.IO;
 
 namespace Client.MVVM.Model
 {
@@ -37,9 +35,6 @@ namespace Client.MVVM.Model
 
         public LocalUser() { }
 
-        private string GetDirectoryPath() =>
-            Path.Combine(LocalUsersStorage.USERS_DIRECTORY_PATH, Name);
-
-        public UserDatabase GetDatabase() => new UserDatabase(GetDirectoryPath());
+        public UserDatabase GetDatabase() => new UserDatabase(Name);
     }
 }

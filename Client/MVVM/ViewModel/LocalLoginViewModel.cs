@@ -23,6 +23,12 @@ namespace Client.MVVM.ViewModel
                     return;
                 }
                 object retDat = null;
+                var db = user.GetDatabase();
+                if (!db.Exists())
+                {
+                    Error(d["User's database does not exist. An empty database will be created."]);
+                    db.Create();
+                }
                 if (returnEnteredPassword)
                     retDat = new { LoggedUser = user, Password = password };
                 else
@@ -40,11 +46,12 @@ namespace Client.MVVM.ViewModel
         }
 
         public static Status ShowDialog(Window owner,
-            LocalUser user, bool returnEnteredPassword)
+            LocalUser user, bool returnEnteredPassword, string title = null)
         {
             var d = Strings.Instance;
+            string finalTitle = title != null ? title : d["Enter your password"];
             var vm = new LocalLoginViewModel(user, returnEnteredPassword);
-            var win = new FormWindow(owner, vm, d["Login"], new FormWindow.Field[]
+            var win = new FormWindow(owner, vm, finalTitle, new FormWindow.Field[]
             {
                 new FormWindow.Field(d["Password"], "", true)
             }, d["Cancel"], d["OK"]);

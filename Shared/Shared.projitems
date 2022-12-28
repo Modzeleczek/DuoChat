@@ -9,9 +9,12 @@
     <Import_RootNamespace>Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Cryptography\RSA.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Cryptography\HybridCryptosystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Core\ObservableObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Core\RelayCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\View\Converters\Translator.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)MVVM\Model\" />
   </ItemGroup>
 </Project>

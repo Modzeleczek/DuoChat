@@ -22,6 +22,11 @@ namespace Server.MVVM.View.Converters
             d["Settings"] = "Ustawienia";
             d["Connected clients"] = "Połączone klienty";
             d["Accounts"] = "Konta";
+            d["Capacity"] = "Pojemność";
+            d["Start"] = "Uruchom";
+            d["Stop"] = "Zatrzymaj";
+            d["Port"] = "Port";
+            d["Name"] = "Nazwa";
         }
     }
 }

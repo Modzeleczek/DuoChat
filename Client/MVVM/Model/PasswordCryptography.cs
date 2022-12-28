@@ -119,6 +119,7 @@ namespace Client.MVVM.Model
                     // implementacja PBKDF2
                     using (var rfc2898 = new Rfc2898DeriveBytes(passwordByteArray,
                         salt, 10000, HashAlgorithmName.SHA256))
+                        // z hasła i soli uzyskujemy 128-bitowy klucz
                         return rfc2898.GetBytes(128 / 8);
                 }
                 finally
@@ -133,25 +134,20 @@ namespace Client.MVVM.Model
             }
         }
 
-        private void GenerateRandom(byte[] bytes)
-        {
-            using (var rng = RandomNumberGenerator.Create())
-                rng.GetBytes(bytes);
-        }
-
-        public byte[] GenerateRandom(int byteCount)
+        private byte[] GenerateRandom(int byteCount)
         {
             var bytes = new byte[byteCount];
-            GenerateRandom(bytes);
+            using (var rng = RandomNumberGenerator.Create())
+                rng.GetBytes(bytes);
             return bytes;
         }
 
         public LocalUser CreateLocalUser(string userName, SecureString password)
         {
-            var passSalt = GenerateRandom(128 / 8);
-            var passDigest = ComputeDigest(password, passSalt);
-            var dbIv = GenerateRandom(128 / 8);
-            var dbSalt = GenerateRandom(128 / 8);
+            var passSalt = GenerateRandom(128 / 8); // 128 b sól
+            var passDigest = ComputeDigest(password, passSalt); // 128 b - rozmiar klucza AESa
+            var dbIv = GenerateRandom(128 / 8); // 128 b - rozmiar bloku AESa
+            var dbSalt = GenerateRandom(128 / 8); // 128 b sól
             return new LocalUser(userName, passSalt, passDigest, dbIv, dbSalt);
         }
 
@@ -197,7 +193,7 @@ namespace Client.MVVM.Model
             }
         }
 
-        protected Aes CreateAes()
+        private Aes CreateAes()
         {
             var aes = Aes.Create();
             aes.Padding = PaddingMode.PKCS7;

@@ -8,7 +8,7 @@ namespace Client.MVVM.Model
 {
     public class User : ObservableObject
     {
-        public RSA.Key<int> PublicKey { get; set; }
+        public HybridCryptosystem.PublicKey PublicKey { get; set; }
 
         private string nickname;
         public string Nickname
@@ -27,7 +27,7 @@ namespace Client.MVVM.Model
         public static User Random(Random rng) =>
             new User
             {
-                PublicKey = new RSA.Key<int>(rng.Next(), rng.Next()),
+                PublicKey = new HybridCryptosystem.PublicKey(rng.Next()),
                 Nickname = rng.Next().ToString(),
                 Image = new WriteableBitmap(100, 100, 96, 96, PixelFormats.Bgra32, null)
             };

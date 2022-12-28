@@ -83,6 +83,17 @@ namespace Client.MVVM.View.Converters
             d["OK"] = "OK";
             d["Alert"] = "Alert";
             d["DuoChat"] = "DuoChat";
+            d["Add server"] = "Dodaj serwer";
+            d["Server with IP address"] = "Serwer o adresie IP";
+            d["and port"] = "i porcie";
+            d["Invalid IP address format."] = "Nieprawidłowy format adresu IP.";
+            d["Invalid port format."] = "Nieprawidłowy format portu.";
+            d["IP address"] = "Adres IP";
+            d["Port"] = "Port";
+            d["Add"] = "Dodaj";
+            d["Conversation name"] = "Nazwa konwersacji";
+            d["Welcome to DuoChat"] = "Witaj w DuoChat";
+            d["Enter your password"] = "Podaj hasło";
         }
     }
 }
