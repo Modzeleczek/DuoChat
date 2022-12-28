@@ -183,15 +183,16 @@
     <Compile Include="MVVM\Model\BsonStorages\ServersStorage.cs" />
     <Compile Include="MVVM\Model\Conversation.cs" />
     <Compile Include="MVVM\Model\DataAccessObject.cs" />
-    <Compile Include="MVVM\Model\JsonConverters\IPAddressConverter.cs" />
+    <Compile Include="MVVM\Model\IPv4Address.cs" />
+    <Compile Include="MVVM\Model\JsonConvertibles\Server.cs" />
     <Compile Include="MVVM\Model\LocalUser.cs" />
     <Compile Include="MVVM\Model\Message.cs" />
     <Compile Include="MVVM\Model\Participant.cs" />
     <Compile Include="MVVM\Model\PasswordCryptography.cs" />
-    <Compile Include="MVVM\Model\Server.cs" />
     <Compile Include="MVVM\Model\Status.cs" />
     <Compile Include="MVVM\Model\User.cs" />
     <Compile Include="MVVM\Model\UserDatabase.cs" />
+    <Compile Include="MVVM\Model\XamlObservables\Server.cs" />
     <Compile Include="MVVM\ViewModel\AlertViewModel.cs" />
     <Compile Include="MVVM\ViewModel\ChangeLocalUserNameViewModel.cs" />
     <Compile Include="MVVM\ViewModel\ChangeLocalUserPasswordViewModel.cs" />
@@ -206,7 +207,7 @@
     <Compile Include="MVVM\ViewModel\ServerActions\CreateServerViewModel.cs" />
     <Compile Include="MVVM\ViewModel\SettingsViewModel.cs" />
     <Compile Include="MVVM\ViewModel\ViewModel.cs" />
-    <Compile Include="MVVM\View\Converters\IPAddressToStringConverter.cs" />
+    <Compile Include="MVVM\View\Converters\IPv4AddressToStringConverter.cs" />
     <Compile Include="MVVM\View\Converters\Strings.cs" />
     <Compile Include="MVVM\View\Helpers\EnableDragHelper.cs" />
     <Compile Include="MVVM\View\Windows\AlertWindow.xaml.cs">

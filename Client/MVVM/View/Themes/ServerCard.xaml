@@ -43,7 +43,7 @@
                 FontWeight="Normal"
                 Foreground="#F2E9E4" >
                 <TextBlock.Resources>
-                  <c:IPAddressToStringConverter x:Key="ConvInstance"/>
+                  <c:IPv4AddressToStringConverter x:Key="ConvInstance"/>
                 </TextBlock.Resources>
                 <Run Text="{Binding IpAddress, Converter={StaticResource ConvInstance}}"/>
                 <Run Text=":"/>

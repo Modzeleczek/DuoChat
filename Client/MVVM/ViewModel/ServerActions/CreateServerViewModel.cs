@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Net;
 using System;
+using Client.MVVM.Model.XamlObservables;
 
 namespace Client.MVVM.ViewModel
 {
@@ -18,7 +19,7 @@ namespace Client.MVVM.ViewModel
             {
                 var inpCtrls = (Control[])e;
                 var ipAddressStr = ((TextBox)inpCtrls[0]).Text;
-                if (!IPAddress.TryParse(ipAddressStr, out IPAddress ipAddress))
+                if (!IPv4Address.TryParse(ipAddressStr, out IPv4Address ipAddress))
                 {
                     Error(d["Invalid IP address format."]);
                     return;
@@ -50,7 +51,7 @@ namespace Client.MVVM.ViewModel
                     Port = port,
                     Name = "przykładowa nazwa"
                 };
-                var status = serSto.Add(newServer);
+                var status = serSto.Add(newServer.ToSerializable());
                 if (status.Code != 0)
                 {
                     Error(status.Message);

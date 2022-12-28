@@ -1,5 +1,6 @@
 ﻿using Client.MVVM.Model;
 using Client.MVVM.Model.BsonStorages;
+using Client.MVVM.Model.XamlObservables;
 using Client.MVVM.View.Windows;
 using Shared.MVVM.Core;
 using System;
@@ -273,7 +274,7 @@ namespace Client.MVVM.ViewModel
             var servers = serSto.GetAll();
             // var srvCnt = rng.Next(8, 15);
             for (int i = 0; i < servers.Count; ++i)
-                Servers.Add(servers[i]);
+                Servers.Add(servers[i].ToObservable());
         }
     }
 }

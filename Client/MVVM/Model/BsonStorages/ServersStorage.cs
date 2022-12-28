@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Client.MVVM.Model.JsonConvertibles;
+using System;
 using System.Collections.Generic;
 
 namespace Client.MVVM.Model.BsonStorages

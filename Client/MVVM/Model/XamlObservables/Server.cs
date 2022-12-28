@@ -1,11 +1,8 @@
-﻿using Client.MVVM.Model.JsonConverters;
-using Newtonsoft.Json;
-using Shared.MVVM.Core;
+﻿using Shared.MVVM.Core;
 using System;
-using System.Net;
 using System.Numerics;
 
-namespace Client.MVVM.Model
+namespace Client.MVVM.Model.XamlObservables
 {
     public class Server : ObservableObject
     {
@@ -13,9 +10,8 @@ namespace Client.MVVM.Model
 
         public BigInteger PublicKey { get; set; }
 
-        private IPAddress ipAddress;
-        [JsonConverter(typeof(IPAddressConverter))]
-        public IPAddress IpAddress
+        private IPv4Address ipAddress;
+        public IPv4Address IpAddress
         {
             get => ipAddress;
             set { ipAddress = value; OnPropertyChanged(); }
@@ -40,28 +36,19 @@ namespace Client.MVVM.Model
             {
                 GUID = Guid.NewGuid(),
                 PublicKey = new BigInteger(rng.Next()),
-                IpAddress = new IPAddress(rng.Next()),
+                IpAddress = new IPv4Address(rng.Next()),
                 Port = (ushort)rng.Next(),
                 Name = rng.Next().ToString()
             };
 
-        public override bool Equals(object obj)
-        {
-            if (!(obj is Server)) return base.Equals(obj);
-            var ser = (Server)obj;
-            // return KeyEquals(ser.IpAddress, ser.Port);
-            return KeyEquals(ser.GUID);
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
-
-        public bool KeyEquals(Guid guid)
-        {
-            // return IpAddress.Equals(ipAddress) && Port == port;
-            return GUID == guid;
-        }
+        public JsonConvertibles.Server ToSerializable() =>
+            new JsonConvertibles.Server
+            {
+                GUID = GUID,
+                PublicKey = PublicKey,
+                IpAddress = IpAddress.BinaryRepresentation,
+                Port = Port,
+                Name = Name
+            };
     }
 }
