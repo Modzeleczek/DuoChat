@@ -1,22 +1,29 @@
-﻿using Client.MVVM.View.Windows;
+﻿using Client.MVVM.View.Converters;
+using Client.MVVM.View.Windows;
 using System.Windows;
 
 namespace Client.MVVM.ViewModel
 {
     public class AlertViewModel : DialogViewModel
     {
-        public string AlertText { get; }
+        public string Title { get; }
+        public string Description { get; }
         public string ButtonText { get; }
 
-        public AlertViewModel(string alertText, string buttonText = "OK")
+        public AlertViewModel(string title, string description, string buttonText)
         {
-            AlertText = alertText;
+            Title = title;
+            Description = description;
             ButtonText = buttonText;
         }
 
-        public static void ShowDialog(Window owner, string alertText, string buttonText = "OK")
+        public static void ShowDialog(Window owner, string description, string title = null,
+            string buttonText = null)
         {
-            var vm = new AlertViewModel(alertText, buttonText);
+            var d = Strings.Instance;
+            string finalTitle = title ?? d["Alert"];
+            string finalButTxt = buttonText ?? d["OK"];
+            var vm = new AlertViewModel(finalTitle, description, finalButTxt);
             var win = new AlertWindow(owner, vm);
             vm.RequestClose += (sender, args) => win.Close();
             win.ShowDialog();

@@ -41,6 +41,13 @@ namespace Client.MVVM.ViewModel
             get => addServer;
             private set { addServer = value; OnPropertyChanged(); }
         }
+
+        private RelayCommand deleteServer;
+        public RelayCommand DeleteServer
+        {
+            get => deleteServer;
+            private set { deleteServer = value; OnPropertyChanged(); }
+        }
         #endregion
 
         #region Properties
@@ -141,6 +148,23 @@ namespace Client.MVVM.ViewModel
                     var status = vm.Status;
                     if (status.Code == 0)
                         Servers.Add((Server)status.Data);
+                });
+                DeleteServer = new RelayCommand(obj =>
+                {
+                    var server = (Server)obj;
+                    var status = ConfirmationViewModel.ShowDialog(window,
+                        d["Do you want to delete server '"] + server.Name + d["'?"],
+                        d["Delete server"], d["No"], d["Yes"]);
+                    if (status.Code == 0)
+                    {
+                        if (SelectedServer == server)
+                        {
+                            // rozłączamy z serwerem
+                        }
+                        Servers.Remove(server);
+                        loggedUser.GetDatabase().GetServersStorage()
+                            .Delete(server.ToSerializable().GUID);
+                    }
                 });
 
                 Send = new RelayCommand(o =>

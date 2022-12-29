@@ -13,7 +13,7 @@ namespace Client.MVVM.ViewModel
         protected Window window;
         protected readonly Strings d = Strings.Instance;
 
-        protected void Error(string alertText, string buttonText = "OK") =>
-            AlertViewModel.ShowDialog(window, alertText, buttonText);
+        protected void Error(string description) =>
+            AlertViewModel.ShowDialog(window, description);
     }
 }

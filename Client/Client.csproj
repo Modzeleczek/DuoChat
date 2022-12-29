@@ -153,6 +153,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="MVVM\View\Windows\ConfirmationWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MVVM\View\Windows\FormWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -196,6 +200,7 @@
     <Compile Include="MVVM\ViewModel\AlertViewModel.cs" />
     <Compile Include="MVVM\ViewModel\ChangeLocalUserNameViewModel.cs" />
     <Compile Include="MVVM\ViewModel\ChangeLocalUserPasswordViewModel.cs" />
+    <Compile Include="MVVM\ViewModel\ConfirmationViewModel.cs" />
     <Compile Include="MVVM\ViewModel\CreateLocalUserViewModel.cs" />
     <Compile Include="MVVM\ViewModel\DialogViewModel.cs" />
     <Compile Include="MVVM\ViewModel\FormViewModel.cs" />
@@ -212,6 +217,9 @@
     <Compile Include="MVVM\View\Helpers\EnableDragHelper.cs" />
     <Compile Include="MVVM\View\Windows\AlertWindow.xaml.cs">
       <DependentUpon>AlertWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MVVM\View\Windows\ConfirmationWindow.xaml.cs">
+      <DependentUpon>ConfirmationWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="MVVM\View\Windows\DialogWindow.cs" />
     <Compile Include="MVVM\View\Windows\FormWindow.xaml.cs">

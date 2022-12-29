@@ -9,92 +9,90 @@
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:windows="clr-namespace:Client.MVVM.View.Windows"
   x:Name="FormWindowName"
-    FontFamily="/MVVM/View/Fonts/RedHatDisplay"
   Width="600"
   Height="400"
   AllowsTransparency="True"
   Background="Transparent"
+  FontFamily="/MVVM/View/Fonts/RedHatDisplay"
+  Icon="/MVVM/View/Icons/logo.png"
   WindowStyle="None"
-  mc:Ignorable="d"
-  Icon="/MVVM/View/Icons/logo.png">
-    <i:Interaction.Triggers>
-        <i:EventTrigger EventName="Loaded">
-            <i:InvokeCommandAction Command="{Binding Path=WindowLoaded}" CommandParameter="{Binding ElementName=FormWindowName}" />
-        </i:EventTrigger>
-    </i:Interaction.Triggers>
-    <Border
-      Background="#4A4E69"
-      BorderBrush="#9A8C98"
-      BorderThickness="2"
-      CornerRadius="10">
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="40" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="auto" />
-            </Grid.RowDefinitions>
-            <Border
-              Grid.Row="0"
-              Grid.ColumnSpan="2"
-              h:EnableDragHelper.EnableDrag="True"
-              Background="#22223B"
-              CornerRadius="9,9,0,0">
-                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
-                    <Label
-                      Margin="15,0,0,0"
-                      Content="{Binding ElementName=FormWindowName, Path=Title}"
-                      FontSize="14"
-                      FontWeight="SemiBold"
-                      Foreground="#9A8C98" />
-                    <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" />
-                </Grid>
-            </Border>
-            <StackPanel
-              x:Name="FieldsStackPanel"
-              Grid.Row="1"
-              Grid.Column="0"
-              Grid.ColumnSpan="2" >
-              <StackPanel.Resources>
-                <Style TargetType="Label">
-                  <Setter Property="FontFamily" Value="/MVVM/View/Fonts/RedHatDisplay"/>
-                  <Setter Property="FontSize" Value="15"/>
-                  <Setter Property="FontWeight" Value="SemiBold"/>
-                  <Setter Property="Foreground" Value="#C9ADA7"/>
-                </Style>
-                <Style TargetType="TextBox">
-                  <Setter Property="FontFamily" Value="/MVVM/View/Fonts/RedHatDisplay"/>
-                </Style>
-                <Style TargetType="PasswordBox">
-                  
-                </Style>
-              </StackPanel.Resources>
-            </StackPanel>
-            <Button
-              x:Name="CancellationButton"
-              Grid.Row="2"
-              Grid.Column="0"
-              Margin="50,10,50,10"
-              Command="{Binding Path=Close}"
-              FontFamily="/MVVM/View/Fonts/RedHatDisplay"
-              FontSize="18"
-              Style="{StaticResource CornerRadiusButtonStyle}" />
+  mc:Ignorable="d">
+  <i:Interaction.Triggers>
+    <i:EventTrigger EventName="Loaded">
+      <i:InvokeCommandAction Command="{Binding Path=WindowLoaded}" CommandParameter="{Binding ElementName=FormWindowName}" />
+    </i:EventTrigger>
+  </i:Interaction.Triggers>
+  <Border
+    Background="#4A4E69"
+    BorderBrush="#9A8C98"
+    BorderThickness="2"
+    CornerRadius="10">
 
-            <Button
-              x:Name="ConfirmationButton"
-              Grid.Row="2"
-              Grid.Column="1"
-              Margin="50,10,50,10"
-              Command="{Binding Path=Confirm}"
-              Content="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='Confirm'}"
-              FontFamily="/MVVM/View/Fonts/RedHatDisplay"
-              FontSize="18"
-              FontWeight="SemiBold"
-              Foreground="#C9ADA7"
-              Style="{StaticResource CornerRadiusButtonStyle}" />
+    <Grid>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="40" />
+        <RowDefinition Height="*" />
+        <RowDefinition Height="auto" />
+      </Grid.RowDefinitions>
+      <Border
+        Grid.Row="0"
+        Grid.ColumnSpan="2"
+        h:EnableDragHelper.EnableDrag="True"
+        Background="#22223B"
+        CornerRadius="9,9,0,0">
+        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
+          <Label
+            Margin="15,0,0,0"
+            Content="{Binding ElementName=FormWindowName, Path=Title}"
+            FontSize="14"
+            FontWeight="SemiBold"
+            Foreground="#9A8C98" />
+          <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" />
         </Grid>
-    </Border>
+      </Border>
+      <StackPanel
+        x:Name="FieldsStackPanel"
+        Grid.Row="1"
+        Grid.Column="0"
+        Grid.ColumnSpan="2">
+        <StackPanel.Resources>
+          <Style TargetType="Label">
+            <Setter Property="FontFamily" Value="/MVVM/View/Fonts/RedHatDisplay" />
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="#C9ADA7" />
+          </Style>
+          <Style TargetType="TextBox">
+            <Setter Property="FontFamily" Value="/MVVM/View/Fonts/RedHatDisplay" />
+          </Style>
+          <Style TargetType="PasswordBox" />
+        </StackPanel.Resources>
+      </StackPanel>
+      <Button
+        x:Name="CancellationButton"
+        Grid.Row="2"
+        Grid.Column="0"
+        Margin="50,10,50,10"
+        Command="{Binding Path=Close}"
+        FontFamily="/MVVM/View/Fonts/RedHatDisplay"
+        FontSize="18"
+        Style="{StaticResource CornerRadiusButtonStyle}" />
+
+      <Button
+        x:Name="ConfirmationButton"
+        Grid.Row="2"
+        Grid.Column="1"
+        Margin="50,10,50,10"
+        Command="{Binding Path=Confirm}"
+        FontFamily="/MVVM/View/Fonts/RedHatDisplay"
+        FontSize="18"
+        FontWeight="SemiBold"
+        Foreground="#C9ADA7"
+        Style="{StaticResource CornerRadiusButtonStyle}" />
+    </Grid>
+  </Border>
 </windows:DialogWindow>

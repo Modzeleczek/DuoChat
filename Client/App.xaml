@@ -1,21 +1,23 @@
-﻿<Application x:Class="Client.App"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:Client"
-             StartupUri="/MVVM/View/Windows/MainWindow.xaml"
-             Startup="Application_Startup">
-    <Application.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/MVVM/View/Themes/ServerCard.xaml"/>
-                <ResourceDictionary Source="/MVVM/View/Themes/ConversationCard.xaml"/>
-                <ResourceDictionary Source="/MVVM/View/Themes/AccountCard.xaml"/>
-                <ResourceDictionary Source="/MVVM/View/Themes/ChatItem.xaml"/>
-                <ResourceDictionary Source="/MVVM/View/Themes/MessageBox.xaml"/>
-                <ResourceDictionary Source="/MVVM/View/Themes/ScrollBar.xaml"/>
-                <ResourceDictionary Source="/MVVM/View/Themes/Buttons.xaml"/>
-                <ResourceDictionary Source="/MVVM/View/Themes/ResizableWindow.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </Application.Resources>
+﻿<Application
+  x:Class="Client.App"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:local="clr-namespace:Client"
+  Startup="Application_Startup"
+  StartupUri="/MVVM/View/Windows/MainWindow.xaml">
+  <Application.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <!-- ServerCard musi być po Buttons, bo go używa -->
+        <ResourceDictionary Source="/MVVM/View/Themes/Buttons.xaml" />
+        <ResourceDictionary Source="/MVVM/View/Themes/ServerCard.xaml" />
+        <ResourceDictionary Source="/MVVM/View/Themes/ConversationCard.xaml" />
+        <ResourceDictionary Source="/MVVM/View/Themes/AccountCard.xaml" />
+        <ResourceDictionary Source="/MVVM/View/Themes/ChatItem.xaml" />
+        <ResourceDictionary Source="/MVVM/View/Themes/MessageBox.xaml" />
+        <ResourceDictionary Source="/MVVM/View/Themes/ScrollBar.xaml" />
+        <ResourceDictionary Source="/MVVM/View/Themes/ResizableWindow.xaml" />
+      </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+  </Application.Resources>
 </Application>

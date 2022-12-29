@@ -1,4 +1,5 @@
-﻿using Shared.MVVM.View.Converters;
+﻿using Shared.MVVM.Core;
+using Shared.MVVM.View.Converters;
 using System.Collections.Generic;
 
 namespace Client.MVVM.View.Converters
@@ -94,6 +95,12 @@ namespace Client.MVVM.View.Converters
             d["Conversation name"] = "Nazwa konwersacji";
             d["Welcome to DuoChat"] = "Witaj w DuoChat";
             d["Enter your password"] = "Podaj hasło";
+            d["Confirm"] = "Zatwierdź";
+            d["Delete server"] = "Usuń serwer";
+            d["Do you want to delete server '"] = "Czy chcesz usunąć serwer \"";
+            d["'?"] = "\"?";
+            d["Yes"] = "Tak";
+            d["No"] = "Nie";
         }
     }
 }

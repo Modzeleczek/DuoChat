@@ -22,34 +22,66 @@
             Padding="5"
             Background="{TemplateBinding Background}"
             CornerRadius="5">
-            <StackPanel
-              Margin="5,0,0,0"
-              VerticalAlignment="Center"
-              CanHorizontallyScroll="False"
-              Orientation="Vertical">
-              <TextBlock
-                Margin="5,10,0,0"
-                Padding="2"
-                Text="{Binding Name}"
-                FontFamily="/MVVM/View/Fonts/RedHatDisplay"
-                FontSize="15"
-                FontWeight="SemiBold"
-                Foreground="#C9ADA7" />
-              <TextBlock
-                Margin="5,0,0,10"
-                Padding="0"
-                FontFamily="/MVVM/View/Fonts/RedHatDisplay"
-                FontSize="12"
-                FontWeight="Normal"
-                Foreground="#F2E9E4" >
-                <TextBlock.Resources>
-                  <c:IPv4AddressToStringConverter x:Key="ConvInstance"/>
-                </TextBlock.Resources>
-                <Run Text="{Binding IpAddress, Converter={StaticResource ConvInstance}}"/>
-                <Run Text=":"/>
-                <Run Text="{Binding Port}"/>
-              </TextBlock>
-            </StackPanel>
+            <Grid x:Name="ItemGrid">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+              </Grid.ColumnDefinitions>
+              <StackPanel
+                Grid.Column="0"
+                Margin="5,0,0,0"
+                VerticalAlignment="Center"
+                CanHorizontallyScroll="False"
+                Orientation="Vertical">
+                <TextBlock
+                  Margin="5,10,0,0"
+                  Padding="2"
+                  FontFamily="/MVVM/View/Fonts/RedHatDisplay"
+                  FontSize="15"
+                  FontWeight="SemiBold"
+                  Foreground="#C9ADA7"
+                  Text="{Binding Name}" />
+                <TextBlock
+                  Margin="5,0,0,10"
+                  Padding="0"
+                  FontFamily="/MVVM/View/Fonts/RedHatDisplay"
+                  FontSize="12"
+                  FontWeight="Normal"
+                  Foreground="#F2E9E4">
+                  <TextBlock.Resources>
+                    <c:IPv4AddressToStringConverter x:Key="ConvInstance" />
+                  </TextBlock.Resources>
+                  <Run Text="{Binding IpAddress, Converter={StaticResource ConvInstance}}" />
+                  <Run Text=":" />
+                  <Run Text="{Binding Port}" />
+                </TextBlock>
+              </StackPanel>
+              <StackPanel
+                Grid.Column="0"
+                HorizontalAlignment="Right"
+                Orientation="Horizontal">
+                <StackPanel.Style>
+                  <Style TargetType="StackPanel">
+                    <Setter Property="Visibility" Value="Hidden" />
+                    <Style.Triggers>
+                      <DataTrigger Binding="{Binding ElementName=ItemGrid, Path=IsMouseOver}" Value="True">
+                        <Setter Property="Visibility" Value="Visible" />
+                      </DataTrigger>
+                    </Style.Triggers>
+                  </Style>
+                </StackPanel.Style>
+                <!-- ElementName=MainWindowName odnosi się do MainWindow.xaml, w którym używamy stylu ServerCardStyle -->
+                <Button
+                  Grid.Column="0"
+                  Margin="7,7,20,7"
+                  HorizontalAlignment="Right"
+                  Command="{Binding Path=DataContext.DeleteServer, ElementName=MainWindowName}"
+                  CommandParameter="{Binding}"
+                  Content="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='Delete'}"
+                  FontWeight="SemiBold"
+                  Foreground="#C9ADA7"
+                  Style="{StaticResource CornerRadiusButtonStyle}" />
+              </StackPanel>
+            </Grid>
           </Border>
         </ControlTemplate>
       </Setter.Value>
