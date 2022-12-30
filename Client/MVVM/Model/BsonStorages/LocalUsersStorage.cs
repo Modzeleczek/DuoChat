@@ -14,6 +14,7 @@ namespace Client.MVVM.Model.BsonStorages
         {
             public bool IsLogged { get; set; } = false;
             public string LoggedUserName { get; set; } = "";
+            public int ActiveLanguageId { get; set; } = 0;
             public List<LocalUser> Users { get; set; } = new List<LocalUser>();
         }
 
@@ -113,6 +114,20 @@ namespace Client.MVVM.Model.BsonStorages
             var fileStr = Load();
             if (!fileStr.IsLogged) return new Status(1, d["No user is logged."]);
             return new Status(0, null, fileStr.LoggedUserName);
+        }
+
+        public Status SetActiveLanguage(int id)
+        {
+            var fileStr = Load();
+            fileStr.ActiveLanguageId = id;
+            Save(fileStr);
+            return new Status(0);
+        }
+
+        public Status GetActiveLanguage()
+        {
+            var fileStr = Load();
+            return new Status(0, null, fileStr.ActiveLanguageId);
         }
     }
 }

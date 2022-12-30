@@ -1,4 +1,5 @@
 ﻿using Client.MVVM.Model;
+using Client.MVVM.Model.BsonStorages;
 using Shared.MVVM.Core;
 
 namespace Client.MVVM.ViewModel
@@ -21,6 +22,7 @@ namespace Client.MVVM.ViewModel
             ToggleLanguage = new RelayCommand(_ =>
             {
                 d.ToggleLanguage();
+                new LocalUsersStorage().SetActiveLanguage(d.ActiveLanguageId);
             });
         }
     }

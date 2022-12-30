@@ -223,6 +223,7 @@ namespace Client.MVVM.ViewModel
                 Servers = new ObservableCollection<Server>();
                 Accounts = new ObservableCollection<Account>();
                 Conversations = new ObservableCollection<Conversation>();
+                d.ActiveLanguageId = (int)lus.GetActiveLanguage().Data;
                 var getLogSta = lus.GetLogged();
                 if (getLogSta.Code == 0)
                 {

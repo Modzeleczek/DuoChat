@@ -8,7 +8,19 @@ namespace Shared.MVVM.View.Localization
     public class Translator
     {
         public static Translator Instance { get; } = new Translator();
-        private int _activeLanguageId = 1;
+        private int _activeLanguageId = 0;
+        public int ActiveLanguageId
+        {
+            get => _activeLanguageId;
+            set
+            {
+                if (!(value >= 0 && value <= 1))
+                    throw new ArgumentOutOfRangeException(
+                        $"Active language id must be in range <0,1>.");
+                _activeLanguageId = value;
+                FillDictionary();
+            }
+        }
         public dynamic D { get; } = new ExpandoObject();
 
         private Translator()
@@ -33,11 +45,10 @@ namespace Shared.MVVM.View.Localization
 
         public void ToggleLanguage()
         {
-            if (_activeLanguageId == 1) // max
-                _activeLanguageId = 0;
+            if (ActiveLanguageId == 1) // max
+                ActiveLanguageId = 0;
             else
-                _activeLanguageId += 1;
-            FillDictionary();
+                ActiveLanguageId += 1;
         }
 
         private void FillDictionary()
@@ -51,7 +62,7 @@ namespace Shared.MVVM.View.Localization
                 if (!(resDict[k] is Entry entry))
                     throw new InvalidCastException($"Key {k} is not of type Entry.");
                 // nie można używać indeksera na referencji typu ExpandoObject - trzeba jawnie zrzutować na IDictionary
-                activeDict[k] = _activeLanguageId == 0 ? entry.EN : entry.PL;
+                activeDict[k] = ActiveLanguageId == 0 ? entry.EN : entry.PL;
             }
         }
     }
