@@ -1,5 +1,5 @@
 ﻿using Client.MVVM.Model;
-using Client.MVVM.View.Converters;
+using Client.MVVM.View.Localization;
 using Client.MVVM.View.Windows;
 using Shared.MVVM.Core;
 using System.Windows;
@@ -48,7 +48,7 @@ namespace Client.MVVM.ViewModel
         public static Status ShowDialog(Window owner,
             LocalUser user, bool returnEnteredPassword, string title = null)
         {
-            var d = Strings.Instance;
+            var d = ClientTranslator.Instance;
             string finalTitle = title != null ? title : d["Enter your password"];
             var vm = new LocalLoginViewModel(user, returnEnteredPassword);
             var win = new FormWindow(owner, vm, finalTitle, new FormWindow.Field[]

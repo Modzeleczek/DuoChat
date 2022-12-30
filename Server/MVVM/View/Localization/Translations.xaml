@@ -1,0 +1,20 @@
+﻿<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:l="clr-namespace:Shared.MVVM.View.Localization">
+
+  <!-- nie używać tu automatycznego formatowania XAMLa -->
+  <!-- klucze używane w plikach .xaml - muszą być prawidłowymi nazwami zmiennych -->
+  <l:Entry x:Key="Server" EN="Server" PL="Serwer"/>
+  <l:Entry x:Key="Settings" EN="Settings" PL="Ustawienia"/>
+  <l:Entry x:Key="Connected_clients" EN="Connected clients" PL="Połączone klienty"/>
+  <l:Entry x:Key="Accounts" EN="Accounts" PL="Konta"/>
+  <l:Entry x:Key="Capacity" EN="Capacity" PL="Pojemność"/>
+  <l:Entry x:Key="Start" EN="Start" PL="Uruchom"/>
+  <l:Entry x:Key="Stop" EN="Stop" PL="Zatrzymaj"/>
+  <l:Entry x:Key="Port" EN="Port" PL="Port"/>
+  <l:Entry x:Key="Name" EN="Name" PL="Nazwa"/>
+
+  <!-- klucze używane w plikach .cs - nie muszą być prawidłowymi nazwami zmiennych -->
+  
+</ResourceDictionary>

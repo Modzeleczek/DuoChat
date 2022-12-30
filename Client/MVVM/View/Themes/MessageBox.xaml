@@ -1,7 +1,7 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:c="clr-namespace:Client.MVVM.View.Converters">
+  xmlns:l="clr-namespace:Client.MVVM.View.Localization">
   <Style x:Key="MessageBoxStyle" TargetType="TextBox">
     <Setter Property="Foreground" Value="Gray" />
     
@@ -41,7 +41,7 @@
                 VerticalAlignment="Center"
                 Foreground="Gray"
                 IsHitTestVisible="False"
-                Text="{Binding Converter={x:Static c:Strings.Instance}, ConverterParameter='@message'}">
+                Text="{Binding Source={x:Static l:ClientTranslator.Instance}, Path=D.At_message}">
                 <TextBlock.Style>
                   <Style TargetType="TextBlock">
                     <Setter Property="Visibility" Value="Collapsed" />

@@ -12,9 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Cryptography\HybridCryptosystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Core\ObservableObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Core\RelayCommand.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MVVM\View\Converters\Translator.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)MVVM\Model\" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\View\Localization\Entry.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\View\Localization\Translator.cs" />
   </ItemGroup>
 </Project>

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Client.MVVM.Model
+﻿namespace Client.MVVM.Model
 {
     public class IPv4Address
     {

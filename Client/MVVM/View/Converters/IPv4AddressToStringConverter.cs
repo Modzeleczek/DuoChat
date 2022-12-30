@@ -5,7 +5,7 @@ using System.Windows.Data;
 
 namespace Client.MVVM.View.Converters
 {
-    internal class IPv4AddressToStringConverter : IValueConverter
+    public class IPv4AddressToStringConverter : IValueConverter
     {
         public IPv4AddressToStringConverter() { }
 

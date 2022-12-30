@@ -1,0 +1,125 @@
+﻿<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:l="clr-namespace:Shared.MVVM.View.Localization">
+
+  <!-- nie używać tu automatycznego formatowania XAMLa -->
+  <!-- klucze używane w plikach .xaml - muszą być prawidłowymi nazwami zmiennych -->
+  <l:Entry x:Key="At_message" EN="@message" PL="@wiadomość"/>
+  <l:Entry x:Key="Delete" EN="Delete" PL="Usuń"/>
+  <l:Entry x:Key="Local_users" EN="Local users" PL="Lokalni użytkownicy"/>
+  <l:Entry x:Key="Change_name" EN="Change name" PL="Zmień nazwę"/>
+  <l:Entry x:Key="Change_password" EN="Change password" PL="Zmień hasło"/>
+  <l:Entry x:Key="DuoChat" EN="DuoChat" PL="DuoChat"/>
+  <l:Entry x:Key="Servers" EN="Servers" PL="Serwery"/>
+  <l:Entry x:Key="Add_server" EN="Add server" PL="Dodaj serwer"/>
+  <l:Entry x:Key="Accounts" EN="Accounts" PL="Konta"/>
+  <l:Entry x:Key="Conversations" EN="Conversations" PL="Konwersacje"/>
+  <l:Entry x:Key="Nickname" EN="Nickname" PL="Pseudonim"/>
+  <l:Entry x:Key="Welcome_to_DuoChat" EN="Welcome to DuoChat" PL="Witaj w DuoChat"/>
+  <l:Entry x:Key="Conversation_name" EN="Conversation name" PL="Nazwa konwersacji"/>
+  <l:Entry x:Key="Progress" EN="Progress" PL="Postęp"/>
+  <l:Entry x:Key="Cancel" EN="Cancel" PL="Anuluj"/>
+  <l:Entry x:Key="Settings" EN="Settings" PL="Ustawienia"/>
+  <l:Entry x:Key="Dark_theme" EN="Dark theme" PL="Ciemny motyw"/>
+  <l:Entry x:Key="Log_local_user_out" EN="Log local user out" PL="Wyloguj lokalnego użytkownika"/>
+  <l:Entry x:Key="Toggle_language" EN="Toggle language" PL="Przełącz język"/>
+
+  <!-- klucze używane w plikach .cs - nie muszą być prawidłowymi nazwami zmiennych -->
+  <l:Entry x:Key="Users" EN="Users" PL="Użytkownicy"/>
+  <l:Entry x:Key="Create user" EN="Create user" PL="Stwórz użytkownika"/>
+  <l:Entry x:Key="Username" EN="Username" PL="Nazwa użytkownika"/>
+  <l:Entry x:Key="Profile" EN="Profile" PL="Profil"/>
+  <l:Entry x:Key="Create" EN="Create" PL="Stwórz"/>
+  <l:Entry x:Key="Edit" EN="Edit" PL="Edytuj"/>
+  <l:Entry x:Key="Password" EN="Password" PL="Hasło"/>
+  <l:Entry x:Key="Login" EN="Login" PL="Zaloguj"/>
+  <l:Entry x:Key="Create local user" EN="Create local user"
+    PL="Stwórz lokalnego użytkownika"/>
+  <l:Entry x:Key="Confirm password" EN="Confirm password" PL="Potwierdź hasło"/>
+  <l:Entry x:Key="Passwords do not match." EN="Passwords do not match."
+    PL="Hasła nie są zgodne."/>
+  <l:Entry x:Key="User with name" EN="User with name" PL="Użytkownik o nazwie"/>
+  <l:Entry x:Key="already exists." EN="already exists." PL="już istnieje."/>
+  <l:Entry x:Key="does not exist." EN="does not exist." PL="nie istnieje."/>
+  <l:Entry x:Key="Specify a password." EN="Specify a password." PL="Określ hasło."/>
+  <l:Entry x:Key="Password should be at least 8 characters long."
+    EN="Password should be at least 8 characters long."
+    PL="Hasło powinno mieć przynajmniej 8 znaków."/>
+  <l:Entry x:Key="Password should contain at least one digit."
+    EN="Password should contain at least one digit."
+    PL="Hasło powinno zawierać przynajmniej jedną cyfrę."/>
+  <l:Entry x:Key="Password should contain at least one special character (not a letter or digit)."
+    EN="Password should contain at least one special character (not a letter or digit)."
+    PL="Hasło powinno zawierać przynajmniej jeden znak specjalny (nie literę ani cyfrę)."/>
+  <l:Entry x:Key="Save" EN="Save" PL="Zapisz"/>
+  <l:Entry x:Key="New password" EN="New password" PL="Nowe hasło"/>
+  <l:Entry x:Key="Wrong password." EN="Wrong password." PL="Nieprawidłowe hasło."/>
+  <l:Entry x:Key="Confirm" EN="Confirm" PL="Zatwierdź"/>
+  <l:Entry x:Key="Decryption" EN="Decryption" PL="Odszyfrowywanie"/>
+  <l:Entry x:Key="Decrypting user's database." EN="Decrypting user's database."
+    PL="Odszyfrowywanie bazy danych użytkownika."/>
+  <l:Entry x:Key="User's database decrypted." EN="User's database decrypted."
+    PL="Baza danych użytkownika odszyfrowana."/>
+  <l:Entry x:Key="No user is logged." EN="No user is logged."
+    PL="Żaden użytkownik nie jest zalogowany."/>
+  <l:Entry x:Key="Database already exists and will be removed."
+    EN="Database already exists and will be removed."
+    PL="Baza danych już istnieje i zostanie usunięta."/>
+  <l:Entry x:Key="File read timed out." EN="File read timed out."
+    PL="Przekroczono czas oczekiwania na odczyt pliku."/>
+  <l:Entry x:Key="Error occured while reading file."
+    EN="Error occured while reading file."
+    PL="Wystąpił błąd podczas odczytywania pliku."/>
+  <l:Entry x:Key="Error occured while writing file."
+    EN="Error occured while writing file."
+    PL="Wystąpił błąd podczas zapisywania pliku."/>
+  <l:Entry x:Key="User's database does not exist. An empty database will be created."
+    EN="User's database does not exist. An empty database will be created."
+    PL="Baza danych użytkownika nie istnieje. Stworzona zostanie pusta baza danych."/>
+  <l:Entry x:Key="Encryption" EN="Encryption" PL="Szyfrowanie"/>
+  <l:Entry x:Key="Encrypting user's database." EN="Encrypting user's database."
+    PL="Szyfrowanie bazy danych użytkownika."/>
+  <l:Entry x:Key="Database encryption and user creation canceled."
+    EN="Database encryption and user creation canceled."
+    PL="Szyfrowanie bazy danych i tworzenie użytkownika anulowane."/>
+  <l:Entry x:Key="Logged user does not exist." EN="Logged user does not exist."
+    PL="Zalogowany użytkownik nie istnieje."/>
+  <l:Entry x:Key="User's database is corrupted. An empty database will be created."
+    EN="User's database is corrupted. An empty database will be created."
+    PL="Baza danych użytkownika jest uszkodzona. Stworzona zostanie pusta baza danych."/>
+  <l:Entry x:Key="Database decryption and password change canceled."
+    EN="Database decryption and password change canceled."
+    PL="Odszyfrowywanie bazy danych i zmiana hasła anulowana."/>
+  <l:Entry x:Key="Server with GUID" EN="Serwer z GUIDem" PL=""/>
+  <l:Entry x:Key="User's database decryption canceled. Logging out."
+    EN="User's database decryption canceled. Logging out."
+    PL="Odszyfrowywanie bazy danych użytkownika anulowane. Wylogowuję."/>
+  <l:Entry x:Key="Server list may have been corrupted." EN="Server list may have been corrupted."
+    PL="Lista serwerów mogła zostać uszkodzona."/>
+  <l:Entry x:Key="You should not have canceled database decryption. It may have been corrupted."
+    EN="You should not have canceled database decryption. It may have been corrupted."
+    PL="Nie powinieneś anulować szyfrowania bazy danych. Mogła zostać uszkodzona."/>
+  <l:Entry x:Key="Encrypting server's database." EN="Encrypting server's database."
+    PL="Szyfrowanie bazy danych serwera."/>
+  <l:Entry x:Key="User's database encryption canceled. Not logging out."
+    EN="User's database encryption canceled. Not logging out."
+    PL="Szyfrowanie bazy danych użytkownika anulowane. Nie wylogowuję."/>
+  <l:Entry x:Key="OK" EN="OK" PL="OK"/>
+  <l:Entry x:Key="Alert" EN="Alert" PL="Alert"/>
+  <l:Entry x:Key="Invalid IP address format." EN="Invalid IP address format."
+    PL="Nieprawidłowy format adresu IP."/>
+  <l:Entry x:Key="Invalid port format." EN="Invalid port format."
+    PL="Nieprawidłowy format portu."/>
+  <l:Entry x:Key="IP address" EN="IP address" PL="Adres IP"/>
+  <l:Entry x:Key="Port" EN="Port" PL="Port"/>
+  <l:Entry x:Key="Add" EN="Add" PL="Dodaj"/>
+  <l:Entry x:Key="Enter your password" EN="Enter your password" PL="Podaj hasło"/>
+  <l:Entry x:Key="Delete server" EN="Delete server" PL="Usuń serwer"/>
+  <l:Entry x:Key="Do you want to delete server '" EN="Do you want to delete server '"
+    PL="Czy chcesz usunąć serwer &quot;"/>
+  <l:Entry x:Key="'?" EN="'?" PL="&quot;?"/>
+  <l:Entry x:Key="Yes" EN="Yes" PL="Tak"/>
+  <l:Entry x:Key="No" EN="No" PL="Nie"/>
+
+</ResourceDictionary>

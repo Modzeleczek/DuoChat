@@ -3,7 +3,6 @@ using Client.MVVM.Model;
 using Shared.MVVM.Core;
 using System.Windows;
 using System.Windows.Controls;
-using System.Net;
 using System;
 using Client.MVVM.Model.XamlObservables;
 

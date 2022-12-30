@@ -117,6 +117,10 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="MVVM\View\Localization\Translations.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MVVM\View\Themes\AccountCard.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -213,8 +217,8 @@
     <Compile Include="MVVM\ViewModel\SettingsViewModel.cs" />
     <Compile Include="MVVM\ViewModel\ViewModel.cs" />
     <Compile Include="MVVM\View\Converters\IPv4AddressToStringConverter.cs" />
-    <Compile Include="MVVM\View\Converters\Strings.cs" />
     <Compile Include="MVVM\View\Helpers\EnableDragHelper.cs" />
+    <Compile Include="MVVM\View\Localization\ClientTranslator.cs" />
     <Compile Include="MVVM\View\Windows\AlertWindow.xaml.cs">
       <DependentUpon>AlertWindow.xaml</DependentUpon>
     </Compile>

@@ -1,10 +1,10 @@
-﻿using Server.MVVM.View.Converters;
+﻿using Server.MVVM.View.Localization;
 using Shared.MVVM.Core;
 
 namespace Server.MVVM.ViewModel
 {
     public class ViewModel : ObservableObject
     {
-        protected readonly Strings d = Strings.Instance;
+        protected readonly ServerTranslator d = ServerTranslator.Instance;
     }
 }

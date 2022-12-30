@@ -1,4 +1,4 @@
-﻿using Client.MVVM.View.Converters;
+﻿using Client.MVVM.View.Localization;
 using Client.MVVM.View.Windows;
 using System.Windows;
 
@@ -20,7 +20,7 @@ namespace Client.MVVM.ViewModel
         public static void ShowDialog(Window owner, string description, string title = null,
             string buttonText = null)
         {
-            var d = Strings.Instance;
+            var d = ClientTranslator.Instance;
             string finalTitle = title ?? d["Alert"];
             string finalButTxt = buttonText ?? d["OK"];
             var vm = new AlertViewModel(finalTitle, description, finalButTxt);

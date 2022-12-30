@@ -1,4 +1,4 @@
-﻿using Client.MVVM.View.Converters;
+﻿using Client.MVVM.View.Localization;
 using Shared.MVVM.Core;
 using System.Windows;
 
@@ -11,7 +11,7 @@ namespace Client.MVVM.ViewModel
         #endregion
 
         protected Window window;
-        protected readonly Strings d = Strings.Instance;
+        protected readonly ClientTranslator d = ClientTranslator.Instance;
 
         protected void Error(string description) =>
             AlertViewModel.ShowDialog(window, description);

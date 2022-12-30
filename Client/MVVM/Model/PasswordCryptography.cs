@@ -1,4 +1,4 @@
-﻿using Client.MVVM.View.Converters;
+﻿using Client.MVVM.View.Localization;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -10,7 +10,7 @@ namespace Client.MVVM.Model
 {
     public class PasswordCryptography
     {
-        private readonly Strings d = Strings.Instance;
+        private readonly ClientTranslator d = ClientTranslator.Instance;
 
         public Status ValidatePassword(SecureString password)
         {
