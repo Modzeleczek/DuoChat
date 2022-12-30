@@ -3,13 +3,13 @@
   x:ClassModifier="public"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:l="clr-namespace:Server.MVVM.View.Localization"
+  xmlns:l="clr-namespace:Shared.MVVM.View.Localization"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:viewmodel="clr-namespace:Server.MVVM.ViewModel"
   x:Name="MainWindowName"
-  Title="{Binding Source={x:Static l:ServerTranslator.Instance}, Path=D.Server}"
+  Title="{Binding Source={x:Static l:Translator.Instance}, Path=D.Server}"
   Width="800"
   Height="450"
   AllowsTransparency="True"
@@ -60,17 +60,17 @@
 
       <StackPanel Orientation="Horizontal">
         <RadioButton
-          Content="{Binding Source={x:Static l:ServerTranslator.Instance}, Path=D.Settings}"
+          Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Settings}"
           GroupName="Tabs"
           Command="{Binding SelectTab}"
           CommandParameter="0"/>
         <RadioButton
-          Content="{Binding Source={x:Static l:ServerTranslator.Instance}, Path=D.Connected_clients}"
+          Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Connected_clients}"
           GroupName="Tabs"
           Command="{Binding SelectTab}"
           CommandParameter="1"/>
         <RadioButton
-          Content="{Binding Source={x:Static l:ServerTranslator.Instance}, Path=D.Accounts}"
+          Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Accounts}"
           GroupName="Tabs"
           Command="{Binding SelectTab}"
           CommandParameter="2"/>

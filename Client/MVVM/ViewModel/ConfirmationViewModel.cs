@@ -1,5 +1,5 @@
 ﻿using Client.MVVM.Model;
-using Client.MVVM.View.Localization;
+using Shared.MVVM.View.Localization;
 using Client.MVVM.View.Windows;
 using Shared.MVVM.Core;
 using System.Windows;
@@ -27,7 +27,7 @@ namespace Client.MVVM.ViewModel
         public static Status ShowDialog(Window owner, string description, string title = null,
             string cancellationButtonText = null, string confirmationButtonText = null)
         {
-            var d = ClientTranslator.Instance;
+            var d = Translator.Instance;
             string finalTitle = title ?? d["Confirmation"];
             string finalCancButTxt = cancellationButtonText ?? d["Cancel"];
             string finalConfButTxt = confirmationButtonText ?? d["Confirm"];

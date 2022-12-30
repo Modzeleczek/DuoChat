@@ -218,7 +218,6 @@
     <Compile Include="MVVM\ViewModel\ViewModel.cs" />
     <Compile Include="MVVM\View\Converters\IPv4AddressToStringConverter.cs" />
     <Compile Include="MVVM\View\Helpers\EnableDragHelper.cs" />
-    <Compile Include="MVVM\View\Localization\ClientTranslator.cs" />
     <Compile Include="MVVM\View\Windows\AlertWindow.xaml.cs">
       <DependentUpon>AlertWindow.xaml</DependentUpon>
     </Compile>

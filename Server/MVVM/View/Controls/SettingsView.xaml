@@ -2,7 +2,7 @@
   x:ClassModifier="public"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:l="clr-namespace:Server.MVVM.View.Localization"
+  xmlns:l="clr-namespace:Shared.MVVM.View.Localization"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
   xmlns:local="clr-namespace:Server.MVVM.View.Controls"
@@ -21,21 +21,21 @@
     </Grid.RowDefinitions>
     <Label Grid.Column="0"
       Grid.Row="0"
-      Content="{Binding Source={x:Static l:ServerTranslator.Instance}, Path=D.Port}"/>
+      Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Port}"/>
     <TextBox Grid.Column="1"
       Grid.Row="0"
       IsEnabled="{Binding ServerStopped}"/>
 
     <Label Grid.Column="0"
       Grid.Row="1"
-      Content="{Binding Source={x:Static l:ServerTranslator.Instance}, Path=D.Name}"/>
+      Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Name}"/>
     <TextBox Grid.Column="1"
       Grid.Row="1"
       IsEnabled="{Binding ServerStopped}"/>
     
     <Label Grid.Column="0"
       Grid.Row="2"
-      Content="{Binding Source={x:Static l:ServerTranslator.Instance}, Path=D.Capacity}"/>
+      Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Capacity}"/>
     <TextBox Grid.Column="1"
       Grid.Row="2"
       IsEnabled="{Binding ServerStopped}"/>
@@ -47,11 +47,11 @@
       <Button.Style>
         <Style TargetType="Button">
           <Setter Property="Content"
-            Value="{Binding Source={x:Static l:ServerTranslator.Instance}, Path=D.Start}"/>
+            Value="{Binding Source={x:Static l:Translator.Instance}, Path=D.Start}"/>
           <Style.Triggers>
             <DataTrigger Binding="{Binding ServerStopped}" Value="True">
               <Setter Property="Content"
-                Value="{Binding Source={x:Static l:ServerTranslator.Instance}, Path=D.Stop}"/>
+                Value="{Binding Source={x:Static l:Translator.Instance}, Path=D.Stop}"/>
             </DataTrigger>
           </Style.Triggers>
         </Style>

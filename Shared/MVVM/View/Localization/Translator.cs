@@ -5,12 +5,13 @@ using System.Windows;
 
 namespace Shared.MVVM.View.Localization
 {
-    public abstract class Translator
+    public class Translator
     {
+        public static Translator Instance { get; } = new Translator();
         private int _activeLanguageId = 1;
         public dynamic D { get; } = new ExpandoObject();
 
-        protected Translator()
+        private Translator()
         {
             FillDictionary();
         }
@@ -42,7 +43,7 @@ namespace Shared.MVVM.View.Localization
         private void FillDictionary()
         {
             var resDict = new ResourceDictionary();
-            resDict.Source = new Uri(TranslationsFilePath, UriKind.Relative);
+            resDict.Source = new Uri("/MVVM/View/Localization/Translations.xaml", UriKind.Relative);
             var keys = resDict.Keys;
             var activeDict = (IDictionary<string, object>)D;
             foreach (string k in keys)
@@ -53,7 +54,5 @@ namespace Shared.MVVM.View.Localization
                 activeDict[k] = _activeLanguageId == 0 ? entry.EN : entry.PL;
             }
         }
-
-        protected abstract string TranslationsFilePath { get; }
     }
 }

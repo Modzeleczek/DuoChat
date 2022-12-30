@@ -2,14 +2,14 @@
 using Newtonsoft.Json;
 using System;
 using System.IO;
-using Client.MVVM.View.Localization;
+using Shared.MVVM.View.Localization;
 
 namespace Client.MVVM.Model.BsonStorages
 {
     public class BsonStorage
     {
         private readonly string path;
-        protected static readonly ClientTranslator d = ClientTranslator.Instance;
+        protected static readonly Translator d = Translator.Instance;
 
         protected BsonStorage(string path)
         {

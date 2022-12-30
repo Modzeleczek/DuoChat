@@ -130,7 +130,6 @@
     <Compile Include="MVVM\View\Controls\SettingsView.xaml.cs">
       <DependentUpon>SettingsView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MVVM\View\Localization\ServerTranslator.cs" />
     <Compile Include="MVVM\View\Windows\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
