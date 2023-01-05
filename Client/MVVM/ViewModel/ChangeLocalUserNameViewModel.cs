@@ -1,6 +1,7 @@
 ﻿using Client.MVVM.Model;
 using Client.MVVM.Model.BsonStorages;
 using Shared.MVVM.Core;
+using Shared.MVVM.Model;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -18,7 +19,7 @@ namespace Client.MVVM.ViewModel
                 var userName = ((TextBox)inpCtrls[0]).Text;
                 if (lus.Exists(userName))
                 {
-                    Error(d["User with name"] + $" {userName} " + d["already exists."]);
+                    Alert(d["User with name"] + $" {userName} " + d["already exists."]);
                     return;
                 }
                 var newUser = new LocalUser(userName, user.PasswordSalt, user.PasswordDigest,
@@ -26,13 +27,13 @@ namespace Client.MVVM.ViewModel
                 var db = newUser.GetDatabase();
                 if (!db.Exists())
                 {
-                    Error(d["User's database does not exist. An empty database will be created."]);
+                    Alert(d["User's database does not exist. An empty database will be created."]);
                     db.Create();
                 }
                 var status = lus.Update(user.Name, newUser);
                 if (status.Code != 0)
                 {
-                    Error(status.Message);
+                    Alert(status.Message);
                     return;
                 }
                 db.Rename(newUser.Name);

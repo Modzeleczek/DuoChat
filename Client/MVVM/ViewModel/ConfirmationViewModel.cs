@@ -1,8 +1,8 @@
-﻿using Client.MVVM.Model;
-using Shared.MVVM.View.Localization;
+﻿using Shared.MVVM.View.Localization;
 using Client.MVVM.View.Windows;
 using Shared.MVVM.Core;
 using System.Windows;
+using Shared.MVVM.Model;
 
 namespace Client.MVVM.ViewModel
 {

@@ -4,8 +4,7 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:l="clr-namespace:Shared.MVVM.View.Localization"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-  xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-  xmlns:local="clr-namespace:Server.MVVM.View.Controls"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   mc:Ignorable="d" 
   d:DesignHeight="450" d:DesignWidth="800">
   <Grid>
@@ -18,38 +17,46 @@
       <RowDefinition Height="*"/>
       <RowDefinition Height="*"/>
       <RowDefinition Height="*"/>
+      <RowDefinition Height="*"/>
     </Grid.RowDefinitions>
     <Label Grid.Column="0"
       Grid.Row="0"
-      Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Port}"/>
+      Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.IP_address}"/>
     <TextBox Grid.Column="1"
       Grid.Row="0"
       IsEnabled="{Binding ServerStopped}"/>
-
+    
     <Label Grid.Column="0"
       Grid.Row="1"
-      Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Name}"/>
+      Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Port}"/>
     <TextBox Grid.Column="1"
       Grid.Row="1"
       IsEnabled="{Binding ServerStopped}"/>
-    
+
     <Label Grid.Column="0"
       Grid.Row="2"
-      Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Capacity}"/>
+      Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Name}"/>
     <TextBox Grid.Column="1"
       Grid.Row="2"
+      IsEnabled="{Binding ServerStopped}"/>
+    
+    <Label Grid.Column="0"
+      Grid.Row="3"
+      Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Capacity}"/>
+    <TextBox Grid.Column="1"
+      Grid.Row="3"
       IsEnabled="{Binding ServerStopped}"/>
 
     <Button Grid.Column="0"
       Grid.ColumnSpan="2"
-      Grid.Row="3"
+      Grid.Row="4"
       Command="{Binding ToggleServer}">
       <Button.Style>
         <Style TargetType="Button">
           <Setter Property="Content"
             Value="{Binding Source={x:Static l:Translator.Instance}, Path=D.Start}"/>
           <Style.Triggers>
-            <DataTrigger Binding="{Binding ServerStopped}" Value="True">
+            <DataTrigger Binding="{Binding ServerStopped}" Value="False">
               <Setter Property="Content"
                 Value="{Binding Source={x:Static l:Translator.Instance}, Path=D.Stop}"/>
             </DataTrigger>

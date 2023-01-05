@@ -1,5 +1,5 @@
 ﻿<w:DialogWindow
-  x:Class="Client.MVVM.View.Windows.AlertWindow"
+  x:Class="Server.MVVM.View.Windows.AlertWindow"
   x:ClassModifier="public"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"

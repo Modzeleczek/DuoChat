@@ -3,6 +3,7 @@ using Client.MVVM.Model.BsonStorages;
 using Client.MVVM.Model.XamlObservables;
 using Client.MVVM.View.Windows;
 using Shared.MVVM.Core;
+using Shared.MVVM.Model;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -11,7 +12,7 @@ using System.Windows;
 
 namespace Client.MVVM.ViewModel
 {
-    public class MainViewModel : ViewModel
+    public class MainViewModel : WindowViewModel
     {
         #region Commands
         private RelayCommand send;
@@ -19,13 +20,6 @@ namespace Client.MVVM.ViewModel
         {
             get => send;
             private set { send = value; OnPropertyChanged(); }
-        }
-
-        private RelayCommand close;
-        public RelayCommand Close
-        {
-            get => close;
-            private set { close = value; OnPropertyChanged(); }
         }
 
         private RelayCommand openSettings;
@@ -177,10 +171,16 @@ namespace Client.MVVM.ViewModel
                     WrittenMessage = "";
                 });
 
-                Close = new RelayCommand(e =>
+                // zapobiega ALT + F4 w głównym oknie
+                CancelEventHandler closingCancHandl = (_, e) => e.Cancel = true;
+                window.Closing += closingCancHandl;
+                Close = new RelayCommand(_ =>
                 {
-                    // przed faktycznym zamknięciem MainWindow, co powoduje zakończenie programu
+                    window.Closing -= closingCancHandl;
+                    // zamknięcie MainWindow powoduje zakończenie programu
+                    window.Close();
                 });
+
                 OpenSettings = new RelayCommand(_ =>
                 {
                     var vm = new SettingsViewModel(loggedUser);
@@ -207,12 +207,12 @@ namespace Client.MVVM.ViewModel
                         curPas.Dispose();
                         if (encSta.Code == 1)
                         {
-                            Error(d["User's database encryption canceled. Not logging out."]);
+                            Alert(d["User's database encryption canceled. Not logging out."]);
                             return;
                         }
                         else if (encSta.Code != 0)
                         {
-                            Error(encSta.Message);
+                            Alert(encSta.Message);
                             return;
                         }
                         loggedUser = null;
@@ -235,7 +235,7 @@ namespace Client.MVVM.ViewModel
                         Randomize();
                         return;
                     }
-                    Error(d["Logged user does not exist."]);
+                    Alert(d["Logged user does not exist."]);
                 }
                 while (ShowLocalUsersDialog(lus).Code < 0) ;
             });
@@ -268,9 +268,9 @@ namespace Client.MVVM.ViewModel
                         user.DBInitializationVector));
                 curPas.Dispose();
                 if (status.Code == 1)
-                    Error(d["User's database decryption canceled. Logging out."]);
+                    Alert(d["User's database decryption canceled. Logging out."]);
                 else if (status.Code != 0)
-                    Error(status.Message);
+                    Alert(status.Message);
                 // decSta.Code == 0
                 lus.SetLogged(true, user.Name);
                 loggedUser = user;

@@ -1,4 +1,5 @@
-﻿using Shared.MVVM.View.Localization;
+﻿using Shared.MVVM.Model;
+using Shared.MVVM.View.Localization;
 using System;
 using System.Diagnostics;
 using System.IO;

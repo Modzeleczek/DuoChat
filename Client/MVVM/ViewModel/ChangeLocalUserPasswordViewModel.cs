@@ -1,6 +1,7 @@
 ﻿using Client.MVVM.Model;
 using Client.MVVM.Model.BsonStorages;
 using Shared.MVVM.Core;
+using Shared.MVVM.Model;
 using System.ComponentModel;
 using System.Security;
 using System.Windows;
@@ -22,20 +23,20 @@ namespace Client.MVVM.ViewModel
                 var confirmedPassword = ((PasswordBox)inpCtrls[1]).SecurePassword;
                 if (!pc.SecureStringsEqual(password, confirmedPassword))
                 {
-                    Error(d["Passwords do not match."]);
+                    Alert(d["Passwords do not match."]);
                     return;
                 }
                 var valSta = pc.ValidatePassword(password);
                 if (valSta.Code != 0)
                 {
-                    Error(valSta.Message);
+                    Alert(valSta.Message);
                     return;
                 }
                 var newUser = pc.CreateLocalUser(user.Name, password);
                 var db = newUser.GetDatabase();
                 if (!db.Exists())
                 {
-                    Error(d["User's database does not exist. An empty database will be created."]);
+                    Alert(d["User's database does not exist. An empty database will be created."]);
                     db.Create();
                 }
                 else // jeżeli katalog z plikami bazy danych istnieje, to odszyfrowujemy je starym hasłem
@@ -49,12 +50,12 @@ namespace Client.MVVM.ViewModel
                             user.DBInitializationVector));
                     if (decSta.Code == 1)
                     {
-                        Error(d["Database decryption and password change canceled."]);
+                        Alert(d["Database decryption and password change canceled."]);
                         return;
                     }
                     else if (decSta.Code < 0)
                     {
-                        Error(decSta.Message);
+                        Alert(decSta.Message);
                         return;
                     }
                 }
@@ -68,19 +69,19 @@ namespace Client.MVVM.ViewModel
                         newUser.DBInitializationVector));
                 if (encSta.Code == 1)
                 {
-                    Error(d["You should not have canceled database decryption. It may have been corrupted."]);
+                    Alert(d["You should not have canceled database decryption. It may have been corrupted."]);
                     return;
                 }
                 if (encSta.Code != 0)
                 {
-                    Error(encSta.Message + " " + d["Database may have been corrupted."]);
+                    Alert(encSta.Message + " " + d["Database may have been corrupted."]);
                     return;
                 }
 
                 var updSta = lus.Update(user.Name, newUser);
                 if (updSta.Code != 0)
                 {
-                    Error(updSta.Message);
+                    Alert(updSta.Message);
                     return;
                 }
                 password.Dispose();

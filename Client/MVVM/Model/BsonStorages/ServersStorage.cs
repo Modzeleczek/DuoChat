@@ -1,4 +1,5 @@
 ﻿using Client.MVVM.Model.JsonConvertibles;
+using Shared.MVVM.Model;
 using System;
 using System.Collections.Generic;
 

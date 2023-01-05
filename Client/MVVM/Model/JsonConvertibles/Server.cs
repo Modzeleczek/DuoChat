@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Shared.MVVM.Model;
+using System;
 using System.Numerics;
 
 namespace Client.MVVM.Model.JsonConvertibles

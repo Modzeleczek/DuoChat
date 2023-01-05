@@ -6,12 +6,12 @@ namespace Server.MVVM.Model
     public class Client
     {
         private TcpClient _socket;
-        public bool ShouldDisconnect { get; set; }
+        private bool _shouldDisconnect;
 
         public Client(TcpClient socket)
         {
             _socket = socket;
-            ShouldDisconnect = false;
+            _shouldDisconnect = false;
         }
 
         public void Process()
@@ -19,7 +19,7 @@ namespace Server.MVVM.Model
             var netStr = _socket.GetStream();
             try
             {
-                while (!ShouldDisconnect)
+                while (!_shouldDisconnect)
                 {
 
                 }

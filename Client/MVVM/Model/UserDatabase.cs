@@ -1,5 +1,6 @@
 ﻿using Client.MVVM.Model.BsonStorages;
 using Client.MVVM.Model.JsonConvertibles;
+using Shared.MVVM.Model;
 using System;
 using System.IO;
 

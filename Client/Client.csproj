@@ -191,13 +191,11 @@
     <Compile Include="MVVM\Model\BsonStorages\ServersStorage.cs" />
     <Compile Include="MVVM\Model\Conversation.cs" />
     <Compile Include="MVVM\Model\DataAccessObject.cs" />
-    <Compile Include="MVVM\Model\IPv4Address.cs" />
     <Compile Include="MVVM\Model\JsonConvertibles\Server.cs" />
     <Compile Include="MVVM\Model\LocalUser.cs" />
     <Compile Include="MVVM\Model\Message.cs" />
     <Compile Include="MVVM\Model\Participant.cs" />
     <Compile Include="MVVM\Model\PasswordCryptography.cs" />
-    <Compile Include="MVVM\Model\Status.cs" />
     <Compile Include="MVVM\Model\User.cs" />
     <Compile Include="MVVM\Model\UserDatabase.cs" />
     <Compile Include="MVVM\Model\XamlObservables\Server.cs" />
@@ -206,7 +204,6 @@
     <Compile Include="MVVM\ViewModel\ChangeLocalUserPasswordViewModel.cs" />
     <Compile Include="MVVM\ViewModel\ConfirmationViewModel.cs" />
     <Compile Include="MVVM\ViewModel\CreateLocalUserViewModel.cs" />
-    <Compile Include="MVVM\ViewModel\DialogViewModel.cs" />
     <Compile Include="MVVM\ViewModel\FormViewModel.cs" />
     <Compile Include="MVVM\ViewModel\LocalLoginViewModel.cs" />
     <Compile Include="MVVM\ViewModel\LocalUsersViewModel.cs" />
@@ -215,16 +212,14 @@
     <Compile Include="MVVM\ViewModel\ProgressBarViewModel.cs" />
     <Compile Include="MVVM\ViewModel\ServerActions\CreateServerViewModel.cs" />
     <Compile Include="MVVM\ViewModel\SettingsViewModel.cs" />
-    <Compile Include="MVVM\ViewModel\ViewModel.cs" />
+    <Compile Include="MVVM\ViewModel\WindowViewModel.cs" />
     <Compile Include="MVVM\View\Converters\IPv4AddressToStringConverter.cs" />
-    <Compile Include="MVVM\View\Helpers\EnableDragHelper.cs" />
     <Compile Include="MVVM\View\Windows\AlertWindow.xaml.cs">
       <DependentUpon>AlertWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="MVVM\View\Windows\ConfirmationWindow.xaml.cs">
       <DependentUpon>ConfirmationWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MVVM\View\Windows\DialogWindow.cs" />
     <Compile Include="MVVM\View\Windows\FormWindow.xaml.cs">
       <DependentUpon>FormWindow.xaml</DependentUpon>
     </Compile>

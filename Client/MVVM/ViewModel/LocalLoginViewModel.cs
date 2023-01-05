@@ -4,6 +4,7 @@ using Client.MVVM.View.Windows;
 using Shared.MVVM.Core;
 using System.Windows;
 using System.Windows.Controls;
+using Shared.MVVM.Model;
 
 namespace Client.MVVM.ViewModel
 {
@@ -19,14 +20,14 @@ namespace Client.MVVM.ViewModel
                 var password = ((PasswordBox)inpCtrls[0]).SecurePassword;
                 if (!pc.DigestsEqual(password, user.PasswordSalt, user.PasswordDigest))
                 {
-                    Error(d["Wrong password."]);
+                    Alert(d["Wrong password."]);
                     return;
                 }
                 object retDat = null;
                 var db = user.GetDatabase();
                 if (!db.Exists())
                 {
-                    Error(d["User's database does not exist. An empty database will be created."]);
+                    Alert(d["User's database does not exist. An empty database will be created."]);
                     db.Create();
                 }
                 if (returnEnteredPassword)

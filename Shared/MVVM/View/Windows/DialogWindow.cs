@@ -1,10 +1,9 @@
-﻿using Client.MVVM.ViewModel;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Media.Animation;
 
-namespace Client.MVVM.View.Windows
+namespace Shared.MVVM.View.Windows
 {
     public class DialogWindow : Window
     {
@@ -13,7 +12,7 @@ namespace Client.MVVM.View.Windows
 
         public DialogWindow() { }
 
-        protected DialogWindow(Window owner, DialogViewModel dataContext)
+        protected DialogWindow(Window owner, object dataContext)
         {
             Initialize();
             DataContext = dataContext;

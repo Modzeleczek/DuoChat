@@ -107,7 +107,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MVVM\View\Themes\TitleBarButton.xaml">
+    <Page Include="MVVM\View\Themes\Buttons.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\View\Windows\AlertWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -123,12 +127,16 @@
     <Compile Include="MVVM\Model\PacketBuilder.cs" />
     <Compile Include="MVVM\Model\Server.cs" />
     <Compile Include="MVVM\ViewModel\AccountsViewModel.cs" />
+    <Compile Include="MVVM\ViewModel\AlertViewModel.cs" />
     <Compile Include="MVVM\ViewModel\ConnectedClientsViewModel.cs" />
     <Compile Include="MVVM\ViewModel\MainViewModel.cs" />
     <Compile Include="MVVM\ViewModel\SettingsViewModel.cs" />
     <Compile Include="MVVM\ViewModel\ViewModel.cs" />
     <Compile Include="MVVM\View\Controls\SettingsView.xaml.cs">
       <DependentUpon>SettingsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MVVM\View\Windows\AlertWindow.xaml.cs">
+      <DependentUpon>AlertWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="MVVM\View\Windows\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -162,7 +170,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="MVVM\View\Icons\logo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.8">
       <Visible>False</Visible>

@@ -1,10 +1,7 @@
-﻿using Shared.MVVM.Core;
-using Shared.MVVM.View.Localization;
-
-namespace Server.MVVM.ViewModel
+﻿namespace Server.MVVM.ViewModel
 {
-    public class ViewModel : ObservableObject
+    public class ViewModel : Shared.MVVM.ViewModel.ViewModel
     {
-        protected readonly Translator d = Translator.Instance;
+        protected void Alert(string description) => AlertViewModel.ShowDialog(window, description);
     }
 }

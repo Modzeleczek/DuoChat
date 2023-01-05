@@ -1,10 +1,12 @@
 ﻿using Client.MVVM.Model;
 using Client.MVVM.Model.BsonStorages;
 using Shared.MVVM.Core;
+using Shared.MVVM.Model;
+using Shared.MVVM.ViewModel;
 
 namespace Client.MVVM.ViewModel
 {
-    public class SettingsViewModel : DialogViewModel
+    public class SettingsViewModel : WindowViewModel
     {
         #region Commands
         public RelayCommand LocalLogout { get; }

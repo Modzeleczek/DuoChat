@@ -2,13 +2,18 @@
   x:Class="Server.App"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:local="clr-namespace:Server"
+  xmlns:ctrl="clr-namespace:Server.MVVM.View.Controls"
+  xmlns:vm="clr-namespace:Server.MVVM.ViewModel"
   StartupUri="/MVVM/View/Windows/MainWindow.xaml">
   <Application.Resources>
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="/MVVM/View/Themes/TitleBarButton.xaml"/>
+        <ResourceDictionary Source="/MVVM/View/Themes/Buttons.xaml" />
       </ResourceDictionary.MergedDictionaries>
+
+      <DataTemplate DataType="{x:Type vm:SettingsViewModel}">
+        <ctrl:SettingsView />
+      </DataTemplate>
     </ResourceDictionary>
   </Application.Resources>
 </Application>

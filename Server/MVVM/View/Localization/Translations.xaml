@@ -14,7 +14,16 @@
   <l:Entry x:Key="Stop" EN="Stop" PL="Zatrzymaj"/>
   <l:Entry x:Key="Port" EN="Port" PL="Port"/>
   <l:Entry x:Key="Name" EN="Name" PL="Nazwa"/>
+  <l:Entry x:Key="IP_address" EN="IP address" PL="Adres IP"/>
+  <l:Entry x:Key="Alert" EN="Alert" PL="Alert"/>
+  <l:Entry x:Key="OK" EN="OK" PL="OK"/>
 
   <!-- klucze używane w plikach .cs - nie muszą być prawidłowymi nazwami zmiennych -->
+  <l:Entry x:Key="Invalid IP address format." EN="Invalid IP address format."
+    PL="Nieprawidłowy format adresu IP."/>
+  <l:Entry x:Key="Invalid port format." EN="Invalid port format."
+    PL="Nieprawidłowy format portu."/>
+  <l:Entry x:Key="Invalid capacity format." EN="Invalid capacity format."
+    PL="Nieprawidłowy format pojemności."/>
   
 </ResourceDictionary>

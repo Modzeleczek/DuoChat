@@ -1,9 +1,10 @@
-﻿using Client.MVVM.Model;
-using Shared.MVVM.Core;
+﻿using Shared.MVVM.Core;
+using Shared.MVVM.Model;
+using Shared.MVVM.ViewModel;
 
 namespace Client.MVVM.ViewModel
 {
-    public class FormViewModel : DialogViewModel
+    public class FormViewModel : WindowViewModel
     {
         #region Commands
         public RelayCommand Confirm { get; protected set; }

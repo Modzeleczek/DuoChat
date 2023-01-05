@@ -5,9 +5,10 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:l="clr-namespace:Shared.MVVM.View.Localization"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:h="clr-namespace:Shared.MVVM.View.Helpers"
   xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-  xmlns:viewmodel="clr-namespace:Server.MVVM.ViewModel"
+  xmlns:vm="clr-namespace:Server.MVVM.ViewModel"
   x:Name="MainWindowName"
   Title="{Binding Source={x:Static l:Translator.Instance}, Path=D.Server}"
   Width="800"
@@ -18,8 +19,14 @@
   WindowStyle="None"
   mc:Ignorable="d">
   <Window.DataContext>
-    <viewmodel:MainViewModel />
+    <vm:MainViewModel />
   </Window.DataContext>
+  <i:Interaction.Triggers>
+    <i:EventTrigger EventName="Loaded">
+      <i:InvokeCommandAction Command="{Binding WindowLoaded}" CommandParameter="{Binding ElementName=MainWindowName}" />
+    </i:EventTrigger>
+  </i:Interaction.Triggers>
+
   <Border
     Background="#4A4E69"
     BorderBrush="#9A8C98"
@@ -33,6 +40,7 @@
       </Grid.RowDefinitions>
       <Border
         Grid.Row="0"
+        h:EnableDragHelper.EnableDrag="True"
         Background="#22223B"
         CornerRadius="9,9,0,0">
         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
@@ -58,7 +66,8 @@
         </Grid>
       </Border>
 
-      <StackPanel Orientation="Horizontal">
+      <StackPanel Grid.Row="1"
+        Orientation="Horizontal">
         <RadioButton
           Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Settings}"
           GroupName="Tabs"
@@ -76,9 +85,9 @@
           CommandParameter="2"/>
       </StackPanel>
 
-      <ContentControl Grid.Row="1"
-      Margin="10"
-      Content="{Binding SelectedTab}"/>
+      <ContentControl Grid.Row="2"
+        Margin="10"
+        Content="{Binding SelectedTab}"/>
     </Grid>
   </Border>
 </Window>

@@ -12,7 +12,14 @@
     <Compile Include="$(MSBuildThisFileDirectory)Cryptography\HybridCryptosystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Core\ObservableObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Core\RelayCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\IPv4Address.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Status.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\ViewModel\AlertViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\ViewModel\ViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\ViewModel\WindowViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\View\Helpers\EnableDragHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\View\Localization\Entry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\View\Localization\Translator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\View\Windows\DialogWindow.cs" />
   </ItemGroup>
 </Project>

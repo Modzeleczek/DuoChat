@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Shared.MVVM.Model;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Client.MVVM.Model.BsonStorages

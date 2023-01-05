@@ -1,5 +1,6 @@
 ﻿using Shared.MVVM.Core;
-using System;
+using Shared.MVVM.Model;
+using System.Windows;
 
 namespace Server.MVVM.ViewModel
 {
@@ -10,8 +11,16 @@ namespace Server.MVVM.ViewModel
         #endregion
 
         #region Properties
-        private short _port;
-        public short Port
+
+        private string _ipAddress;
+        public string IpAddress
+        {
+            get => _ipAddress;
+            set { _ipAddress = value; OnPropertyChanged(); }
+        }
+
+        private string _port;
+        public string Port
         {
             get => _port;
             set { _port = value; OnPropertyChanged(); }
@@ -24,14 +33,14 @@ namespace Server.MVVM.ViewModel
             set { _name = value; OnPropertyChanged(); }
         }
 
-        private int _capacity;
-        public int Capacity
+        private string _capacity;
+        public string Capacity
         {
             get => _capacity;
             set { _capacity = value; OnPropertyChanged(); }
         }
 
-        private bool _serverStopped;
+        private bool _serverStopped = true;
         public bool ServerStopped
         {
             get => _serverStopped;
@@ -39,28 +48,38 @@ namespace Server.MVVM.ViewModel
         }
         #endregion
 
-        public event Action ServerStart;
-        public event Action ServerStop;
+        private Model.Server _server;
 
-        public SettingsViewModel()
+        public SettingsViewModel(Window owner, Model.Server server)
         {
-            ToggleServer = new RelayCommand(e =>
+            window = owner;
+            _server = server;
+            ToggleServer = new RelayCommand(_ =>
             {
-                if (!_serverStopped)
+                if (!_server.Started)
                 {
-                    if (ServerStop != null)
+                    if (!IPv4Address.TryParse(IpAddress, out IPv4Address ipAddress))
                     {
-                        ServerStop();
-                        ServerStopped = true;
+                        Alert(d["Invalid IP address format."]);
+                        return;
                     }
+                    if (!ushort.TryParse(Port, out ushort port))
+                    {
+                        Alert(d["Invalid port format."]);
+                        return;
+                    }
+                    if (!uint.TryParse(Capacity, out uint capacity))
+                    {
+                        Alert(d["Invalid capacity format."]);
+                        return;
+                    }
+                    _server.Start(ipAddress.BinaryRepresentation, port, Name, capacity);
+                    ServerStopped = false;
                 }
                 else
                 {
-                    if (ServerStart != null)
-                    {
-                        ServerStart();
-                        ServerStopped = false;
-                    }
+                    _server.Stop();
+                    ServerStopped = true;
                 }
             });
         }

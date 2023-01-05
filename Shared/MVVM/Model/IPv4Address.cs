@@ -1,4 +1,4 @@
-﻿namespace Client.MVVM.Model
+﻿namespace Shared.MVVM.Model
 {
     public class IPv4Address
     {
@@ -12,6 +12,7 @@
         public static bool TryParse(string text, out IPv4Address ret)
         {
             ret = null;
+            if (text == null) return false;
             var split = text.Split('.');
             if (split.Length != 4) return false;
             int binRepr = 0;

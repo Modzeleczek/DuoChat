@@ -1,14 +1,14 @@
-﻿<windows:DialogWindow
+﻿<w:DialogWindow
   x:Class="Client.MVVM.View.Windows.LocalUsersWindow"
   x:ClassModifier="public"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:l="clr-namespace:Shared.MVVM.View.Localization"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-  xmlns:h="clr-namespace:Client.MVVM.View.Helpers"
+  xmlns:h="clr-namespace:Shared.MVVM.View.Helpers"
   xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-  xmlns:windows="clr-namespace:Client.MVVM.View.Windows"
+  xmlns:w="clr-namespace:Shared.MVVM.View.Windows"
   x:Name="LocalUsersWindowName"
   Title="{Binding Source={x:Static l:Translator.Instance}, Path=D.Local_users}"
   Width="800"
@@ -156,4 +156,4 @@
         Style="{StaticResource CornerRadiusButtonStyle}" />
     </Grid>
   </Border>
-</windows:DialogWindow>
+</w:DialogWindow>

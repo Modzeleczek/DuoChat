@@ -2,7 +2,7 @@
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace Client.MVVM.View.Helpers
+namespace Shared.MVVM.View.Helpers
 {
     public class EnableDragHelper
     {

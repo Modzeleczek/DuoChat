@@ -30,17 +30,6 @@ namespace Client.MVVM.View.Windows
             serversAccountsVisible = !serversAccountsVisible;
         }
 
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            e.Cancel = true;
-        }
-
-        private void Button_Close_Click(object sender, RoutedEventArgs e)
-        {
-            Closing -= Window_Closing;
-            Close();
-        }
-
         private void Button_Minimize_Click(object sender, RoutedEventArgs e)
         {
             WindowState = WindowState.Minimized;
@@ -76,7 +65,7 @@ namespace Client.MVVM.View.Windows
             }
         }
 
-        private void Resizeing_Form(object sender, MouseEventArgs e)
+        private void Resizing_Form(object sender, MouseEventArgs e)
         {
             if (ResizeInProcess)
             {

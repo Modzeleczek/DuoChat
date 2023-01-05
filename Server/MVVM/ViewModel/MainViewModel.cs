@@ -1,44 +1,69 @@
 ﻿using Shared.MVVM.Core;
+using Shared.MVVM.ViewModel;
+using System.ComponentModel;
+using System.Windows;
+using BaseViewModel = Shared.MVVM.ViewModel.ViewModel;
 
 namespace Server.MVVM.ViewModel
 {
-    public class MainViewModel : ViewModel
+    public class MainViewModel : WindowViewModel
     {
         #region Commands
-        // setujemy te właściwości w konstruktorze MainViewModel, a nie w callbacku (RelayCommandzie) zdarzenia WindowLoaded, więc nie potrzeba setterów z wywołaniami OnPropertyChanged
-        public RelayCommand Close { get; }
-        public RelayCommand SelectTab { get; }
+        // setujemy te właściwości w callbacku (RelayCommandzie) zdarzenia WindowLoaded, a nie w konstruktorze MainViewModel, więc potrzebne są settery z wywołaniami OnPropertyChanged
+        private RelayCommand _selectTab;
+        public RelayCommand SelectTab
+        {
+            get => _selectTab;
+            private set { _selectTab = value; OnPropertyChanged(); }
+        }
         #endregion
 
         #region Properties
-        private ViewModel selectedTab;
-        public ViewModel SelectedTab
+        private BaseViewModel selectedTab;
+        public BaseViewModel SelectedTab
         {
             get => selectedTab;
-            set { selectedTab = value; OnPropertyChanged(); }
+            private set { selectedTab = value; OnPropertyChanged(); }
         }
         #endregion
 
+        private Model.Server _server;
+
         public MainViewModel()
         {
-            var server = new Model.Server();
-
-            Close = new RelayCommand(e => { });
-            var setVM = new SettingsViewModel();
-            setVM.ServerStart += () =>
+            WindowLoaded = new RelayCommand(windowLoadedE =>
             {
-                
-            };
+                window = (Window)windowLoadedE;
 
-            var conCliVM = new ConnectedClientsViewModel();
-            var accVM = new AccountsViewModel();
-            var tabs = new ViewModel[] { setVM,  conCliVM, accVM };
-            SelectTab = new RelayCommand(e =>
-            {
-                int index = int.Parse((string)e);
-                if (SelectedTab == tabs[index]) return;
-                SelectedTab = tabs[index];
+                _server = new Model.Server();
+
+                // zapobiega ALT + F4 w głównym oknie
+                CancelEventHandler closingCancHandl = (_, e) => e.Cancel = true;
+                window.Closing += closingCancHandl;
+                Close = new RelayCommand(_ =>
+                {
+                    if (_server.Started)
+                    {
+                        _server.Stop();
+                    }
+                    window.Closing -= closingCancHandl;
+                    // zamknięcie MainWindow powoduje zakończenie programu
+                    window.Close();
+                });
+
+                var setVM = new SettingsViewModel(window, _server);
+                var conCliVM = new ConnectedClientsViewModel(window, _server);
+                var accVM = new AccountsViewModel(window, _server);
+                var tabs = new BaseViewModel[] { setVM, conCliVM, accVM };
+                SelectTab = new RelayCommand(e =>
+                {
+                    int index = int.Parse((string)e);
+                    if (SelectedTab == tabs[index]) return;
+                    SelectedTab = tabs[index];
+                });
             });
         }
+
+        private void Alert(string description) => AlertViewModel.ShowDialog(window, description);
     }
 }

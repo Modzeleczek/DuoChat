@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System;
 using Client.MVVM.Model.XamlObservables;
+using Shared.MVVM.Model;
 
 namespace Client.MVVM.ViewModel
 {
@@ -20,19 +21,19 @@ namespace Client.MVVM.ViewModel
                 var ipAddressStr = ((TextBox)inpCtrls[0]).Text;
                 if (!IPv4Address.TryParse(ipAddressStr, out IPv4Address ipAddress))
                 {
-                    Error(d["Invalid IP address format."]);
+                    Alert(d["Invalid IP address format."]);
                     return;
                 }
                 var portStr = ((TextBox)inpCtrls[1]).Text;
                 if (!ushort.TryParse(portStr, out ushort port))
                 {
-                    Error(d["Invalid port format."]);
+                    Alert(d["Invalid port format."]);
                     return;
                 }
                 var db = loggedUser.GetDatabase();
                 if (!db.Exists())
                 {
-                    Error(d["User's database does not exist. An empty database will be created."]);
+                    Alert(d["User's database does not exist. An empty database will be created."]);
                     db.Create();
                 }
                 var serSto = db.GetServersStorage();
@@ -40,7 +41,7 @@ namespace Client.MVVM.ViewModel
                 var serGuid = Guid.NewGuid();
                 if (serSto.Exists(serGuid))
                 {
-                    Error(d["Server with GUID"] + $" {serGuid} " + d["already exists."]);
+                    Alert(d["Server with GUID"] + $" {serGuid} " + d["already exists."]);
                     return;
                 }
                 var newServer = new Server
@@ -53,7 +54,7 @@ namespace Client.MVVM.ViewModel
                 var status = serSto.Add(newServer.ToSerializable());
                 if (status.Code != 0)
                 {
-                    Error(status.Message);
+                    Alert(status.Message);
                     return;
                 }
                 OnRequestClose(new Status(0, null, newServer));

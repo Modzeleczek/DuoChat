@@ -8,7 +8,7 @@ using System.Windows;
 
 namespace Client.MVVM.ViewModel
 {
-    public class LocalUsersViewModel : DialogViewModel
+    public class LocalUsersViewModel : WindowViewModel
     {
         #region Commands
         public RelayCommand Create { get; }
@@ -93,7 +93,7 @@ namespace Client.MVVM.ViewModel
                 var sta = lus.Delete(user.Name);
                 if (sta.Code != 0)
                 {
-                    Error(sta.Message);
+                    Alert(sta.Message);
                     return;
                 }
                 user.GetDatabase().Delete();

@@ -1,4 +1,4 @@
-﻿using Client.MVVM.Model;
+﻿using Shared.MVVM.Model;
 using System;
 using System.Globalization;
 using System.Windows.Data;

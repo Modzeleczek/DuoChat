@@ -1,9 +1,9 @@
-﻿using Client.MVVM.View.Windows;
+﻿using Server.MVVM.View.Windows;
 using Shared.MVVM.View.Localization;
 using System.Windows;
 using BaseAlertViewModel = Shared.MVVM.ViewModel.AlertViewModel;
 
-namespace Client.MVVM.ViewModel
+namespace Server.MVVM.ViewModel
 {
     public class AlertViewModel : BaseAlertViewModel
     {

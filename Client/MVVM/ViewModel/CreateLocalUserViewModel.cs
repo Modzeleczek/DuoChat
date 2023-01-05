@@ -1,6 +1,7 @@
 ﻿using Client.MVVM.Model;
 using Client.MVVM.Model.BsonStorages;
 using Shared.MVVM.Core;
+using Shared.MVVM.Model;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -21,32 +22,32 @@ namespace Client.MVVM.ViewModel
                 var confirmedPassword = ((PasswordBox)inpCtrls[2]).SecurePassword;
                 if (!pc.SecureStringsEqual(password, confirmedPassword))
                 {
-                    Error(d["Passwords do not match."]);
+                    Alert(d["Passwords do not match."]);
                     return;
                 }
                 var valSta = pc.ValidatePassword(password);
                 if (valSta.Code != 0)
                 {
-                    Error(valSta.Message);
+                    Alert(valSta.Message);
                     return;
                 }
                 if (lus.Exists(userName))
                 {
-                    Error(d["User with name"] + $" {userName} " + d["already exists."]);
+                    Alert(d["User with name"] + $" {userName} " + d["already exists."]);
                     return;
                 }
                 var newUser = pc.CreateLocalUser(userName, password);
                 var db = newUser.GetDatabase();
                 if (db.Exists())
                 {
-                    Error(d["Database already exists and will be removed."]);
+                    Alert(d["Database already exists and will be removed."]);
                     db.Delete();
                 }
                 db.Create();
                 var addSta = lus.Add(newUser);
                 if (addSta.Code != 0)
                 {
-                    Error(addSta.Message);
+                    Alert(addSta.Message);
                     return;
                 }
                 password.Dispose();

@@ -5,10 +5,10 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:l="clr-namespace:Shared.MVVM.View.Localization"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-  xmlns:h="clr-namespace:Client.MVVM.View.Helpers"
+  xmlns:h="clr-namespace:Shared.MVVM.View.Helpers"
   xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-  xmlns:viewmodel="clr-namespace:Client.MVVM.ViewModel"
+  xmlns:vm="clr-namespace:Client.MVVM.ViewModel"
   x:Name="MainWindowName"
   Title="{Binding Source={x:Static l:Translator.Instance}, Path=D.DuoChat}"
   Width="1200"
@@ -17,20 +17,20 @@
   MinHeight="300"
   AllowsTransparency="True"
   Background="Transparent"
-  Closing="Window_Closing"
   FontFamily="/MVVM/View/Fonts/RedHatDisplay"
   Icon="/MVVM/View/Icons/logo.png"
   ResizeMode="CanResize"
   WindowStyle="None"
   mc:Ignorable="d">
   <Window.DataContext>
-    <viewmodel:MainViewModel />
+    <vm:MainViewModel />
   </Window.DataContext>
   <i:Interaction.Triggers>
     <i:EventTrigger EventName="Loaded">
       <i:InvokeCommandAction Command="{Binding WindowLoaded}" CommandParameter="{Binding ElementName=MainWindowName}" />
     </i:EventTrigger>
   </i:Interaction.Triggers>
+  
   <Grid>
 
     <Rectangle
@@ -112,8 +112,8 @@
           <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-          <ColumnDefinition x:Name="ServersColumn" Width="200" />
-          <ColumnDefinition x:Name="AccountsColumn" Width="200" />
+          <ColumnDefinition x:Name="ServersColumn" Width="0" />
+          <ColumnDefinition x:Name="AccountsColumn" Width="0" />
           <ColumnDefinition Width="200" MinWidth="70" />
           <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
@@ -158,7 +158,6 @@
                 Height="25"
                 Margin="4,1,16,0"
                 BorderThickness="0"
-                Click="Button_Close_Click"
                 Command="{Binding Path=Close}"
                 Content="✕"
                 FontSize="15"

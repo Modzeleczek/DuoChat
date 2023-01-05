@@ -1,4 +1,4 @@
-﻿namespace Client.MVVM.Model
+﻿namespace Shared.MVVM.Model
 {
     public class Status
     {

@@ -1,12 +1,12 @@
-﻿using Client.MVVM.Model;
-using Client.MVVM.View.Windows;
+﻿using Client.MVVM.View.Windows;
 using Shared.MVVM.Core;
+using Shared.MVVM.Model;
 using System.ComponentModel;
 using System.Windows;
 
 namespace Client.MVVM.ViewModel
 {
-    public class ProgressBarViewModel : DialogViewModel
+    public class ProgressBarViewModel : WindowViewModel
     {
         #region Commands
         public RelayCommand Cancel { get; protected set; }
@@ -55,7 +55,7 @@ namespace Client.MVVM.ViewModel
             /* if (e.Error != null) // wystąpił błąd
             else if (e.Cancelled) // użytkownik anulował
             else // zakończono powodzeniem */
-            if (status.Code < 0) Error(status.Message);
+            if (status.Code < 0) Alert(status.Message);
             OnRequestClose(status); // we wszystkich 3 przypadkach (błąd, anulowanie, powodzenie) informacja dla wywołującego viewmodelu jest w statusie
         }
 

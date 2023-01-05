@@ -1,4 +1,5 @@
 ﻿using Client.MVVM.ViewModel;
+using Shared.MVVM.View.Windows;
 using System.Windows;
 
 namespace Client.MVVM.View.Windows
