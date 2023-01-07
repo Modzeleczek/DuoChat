@@ -25,5 +25,15 @@
     PL="Nieprawidłowy format portu."/>
   <l:Entry x:Key="Invalid capacity format." EN="Invalid capacity format."
     PL="Nieprawidłowy format pojemności."/>
-  
+  <l:Entry x:Key="No translation: " EN="" PL="Brak tłumaczenia: "/>
+  <l:Entry x:Key="Server was started." EN="Server was started." PL="Serwer został uruchomiony."/>
+  <l:Entry x:Key="Server was not started." EN="Server was not started."
+    PL="Serwer nie został uruchomiony."/>
+  <l:Entry x:Key="Server was safely stopped." EN="Server was safely stopped."
+    PL="Serwer został bezpiecznie zatrzymany."/>
+  <l:Entry x:Key="Server was suddenly stopped." EN="Server was suddenly stopped."
+    PL="Serwer został nagle zatrzymany."/>
+  <l:Entry x:Key="Capacity must be positive." EN="Capacity must be positive."
+    PL="Pojemność musi być dodatnia."/>
+
 </ResourceDictionary>

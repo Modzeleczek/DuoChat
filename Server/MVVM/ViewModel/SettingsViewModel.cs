@@ -44,7 +44,7 @@ namespace Server.MVVM.ViewModel
         public bool ServerStopped
         {
             get => _serverStopped;
-            set { _serverStopped = value; OnPropertyChanged(); }
+            private set { _serverStopped = value; OnPropertyChanged(); }
         }
         #endregion
 
@@ -53,35 +53,64 @@ namespace Server.MVVM.ViewModel
         public SettingsViewModel(Window owner, Model.Server server)
         {
             window = owner;
+
             _server = server;
+            Callback startStopHandler = (_) => ServerStopped = !_server.Running;
+            _server.Started += startStopHandler;
+            _server.Stopped += startStopHandler;
+
             ToggleServer = new RelayCommand(_ =>
             {
-                if (!_server.Started)
+                if (!_server.Running)
                 {
-                    if (!IPv4Address.TryParse(IpAddress, out IPv4Address ipAddress))
-                    {
-                        Alert(d["Invalid IP address format."]);
-                        return;
-                    }
-                    if (!ushort.TryParse(Port, out ushort port))
-                    {
-                        Alert(d["Invalid port format."]);
-                        return;
-                    }
-                    if (!uint.TryParse(Capacity, out uint capacity))
-                    {
-                        Alert(d["Invalid capacity format."]);
-                        return;
-                    }
-                    _server.Start(ipAddress.BinaryRepresentation, port, Name, capacity);
-                    ServerStopped = false;
+                    if (!ParseIpAddress(out IPv4Address ipAddress)) return;
+                    if (!ParsePort(out ushort port)) return;
+                    if (!ParseCapacity(out int capacity)) return;
+                    _server.BeginStart(ipAddress.BinaryRepresentation, port, Name, capacity);
                 }
-                else
-                {
-                    _server.Stop();
-                    ServerStopped = true;
-                }
+                else _server.BeginStop();
             });
+        }
+
+        private bool ParseIpAddress(out IPv4Address ipAddress)
+        {
+            ipAddress = null;
+            if (!IPv4Address.TryParse(IpAddress, out IPv4Address value))
+            {
+                Alert(d["Invalid IP address format."]);
+                return false;
+            }
+            ipAddress = value;
+            return true;
+        }
+
+        private bool ParsePort(out ushort port)
+        {
+            port = 0;
+            if (!ushort.TryParse(Port, out ushort value))
+            {
+                Alert(d["Invalid port format."]);
+                return false;
+            }
+            port = value;
+            return true;
+        }
+
+        private bool ParseCapacity(out int capacity)
+        {
+            capacity = 0;
+            if (!int.TryParse(Capacity, out int value))
+            {
+                Alert(d["Invalid capacity format."]);
+                return false;
+            }
+            if (value <= 0)
+            {
+                Alert(d["Capacity must be positive."]);
+                return false;
+            }
+            capacity = value;
+            return true;
         }
     }
 }

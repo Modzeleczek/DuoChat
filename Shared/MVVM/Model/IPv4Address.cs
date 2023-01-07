@@ -16,12 +16,12 @@
             var split = text.Split('.');
             if (split.Length != 4) return false;
             int binRepr = 0;
-            for (int i = 0; i <= 3; ++i)
+            for (int i = 3; i >= 0; --i)
             {
                 binRepr <<= 8;
                 if (!byte.TryParse(split[i], out byte parsedByte))
                     return false;
-                // w _binaryRepresentation trzymamy bajty adresu w kolejności little-endian
+                // trzymamy bajty adresu w kolejności big-endian, czyli prawy (ostatni z oddzielonych kropkami) oktet jest zapisany w najbardziej znaczącym bajcie _binaryRepresentation
                 binRepr |= parsedByte;
             }
             /* nie używać, bo może parsować adresy IPv6
@@ -35,7 +35,7 @@
         {
             int binRepr = BinaryRepresentation;
             var octets = new byte[4];
-            for (int i = 3; i >= 0; --i)
+            for (int i = 0; i <= 3; ++i)
             {
                 octets[i] = (byte)(binRepr & 255);
                 binRepr >>= 8;

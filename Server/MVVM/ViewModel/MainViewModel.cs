@@ -40,15 +40,20 @@ namespace Server.MVVM.ViewModel
                 // zapobiega ALT + F4 w głównym oknie
                 CancelEventHandler closingCancHandl = (_, e) => e.Cancel = true;
                 window.Closing += closingCancHandl;
-                Close = new RelayCommand(_ =>
+                Callback closeApplication = (_) =>
                 {
-                    if (_server.Started)
-                    {
-                        _server.Stop();
-                    }
                     window.Closing -= closingCancHandl;
                     // zamknięcie MainWindow powoduje zakończenie programu
-                    window.Close();
+                    UIInvoke(() => window.Close());
+                };
+                Close = new RelayCommand(_ =>
+                {
+                    if (_server.Running)
+                    {
+                        _server.Stopped += closeApplication;
+                        _server.BeginStop();
+                    }
+                    else closeApplication(null);
                 });
 
                 var setVM = new SettingsViewModel(window, _server);
@@ -61,6 +66,25 @@ namespace Server.MVVM.ViewModel
                     if (SelectedTab == tabs[index]) return;
                     SelectedTab = tabs[index];
                 });
+
+                _server.Started += (status) =>
+                {
+                    string message = null;
+                    if (status.Code == 0) message = d["Server was started."];
+                    else message = d["Server was not started."] +
+                        " " + d["No translation: "] + status.Message;
+                    UIInvoke(() => Alert(message));
+                };
+                _server.Stopped += (status) =>
+                {
+                    string message = null;
+                    if (status.Code == 0) message = d["Server was safely stopped."];
+                    else message = d["Server was suddenly stopped."] +
+                        " " + d["No translation: "] + status.Message;
+                    UIInvoke(() => Alert(message));
+                };
+
+                SelectTab.Execute("0");
             });
         }
 

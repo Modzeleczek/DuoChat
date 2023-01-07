@@ -24,28 +24,32 @@
       Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.IP_address}"/>
     <TextBox Grid.Column="1"
       Grid.Row="0"
-      IsEnabled="{Binding ServerStopped}"/>
+      IsEnabled="{Binding ServerStopped, Mode=OneWay}"
+      Text="{Binding IpAddress}"/>
     
     <Label Grid.Column="0"
       Grid.Row="1"
       Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Port}"/>
     <TextBox Grid.Column="1"
       Grid.Row="1"
-      IsEnabled="{Binding ServerStopped}"/>
+      IsEnabled="{Binding ServerStopped, Mode=OneWay}"
+      Text="{Binding Port}"/>
 
     <Label Grid.Column="0"
       Grid.Row="2"
       Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Name}"/>
     <TextBox Grid.Column="1"
       Grid.Row="2"
-      IsEnabled="{Binding ServerStopped}"/>
+      IsEnabled="{Binding ServerStopped, Mode=OneWay}"
+      Text="{Binding Name}"/>
     
     <Label Grid.Column="0"
       Grid.Row="3"
       Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Capacity}"/>
     <TextBox Grid.Column="1"
       Grid.Row="3"
-      IsEnabled="{Binding ServerStopped}"/>
+      IsEnabled="{Binding ServerStopped, Mode=OneWay}"
+      Text="{Binding Capacity}"/>
 
     <Button Grid.Column="0"
       Grid.ColumnSpan="2"

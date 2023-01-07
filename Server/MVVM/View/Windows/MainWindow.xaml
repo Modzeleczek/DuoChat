@@ -72,7 +72,8 @@
           Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Settings}"
           GroupName="Tabs"
           Command="{Binding SelectTab}"
-          CommandParameter="0"/>
+          CommandParameter="0"
+          IsChecked="True"/>
         <RadioButton
           Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Connected_clients}"
           GroupName="Tabs"
