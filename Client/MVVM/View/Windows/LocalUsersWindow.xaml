@@ -49,15 +49,9 @@
             Foreground="#9A8C98" />
           <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
             <Button
-              Width="25"
-              Height="25"
               Margin="4,1,16,0"
-              BorderThickness="0"
               Command="{Binding Path=Close}"
               Content="✕"
-              FontSize="15"
-              FontWeight="Bold"
-              Foreground="#9A8C98"
               Style="{StaticResource TitleBarButtonStyle}" />
           </StackPanel>
         </Grid>
@@ -117,8 +111,6 @@
                       Command="{Binding Path=DataContext.ChangeName, ElementName=LocalUsersWindowName}"
                       CommandParameter="{Binding}"
                       Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Change_name}"
-                      FontWeight="SemiBold"
-                      Foreground="#C9ADA7"
                       Style="{StaticResource CornerRadiusButtonStyle}" />
                     <Button
                       Margin="7"
@@ -126,16 +118,12 @@
                       Command="{Binding Path=DataContext.ChangePassword, ElementName=LocalUsersWindowName}"
                       CommandParameter="{Binding}"
                       Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Change_password}"
-                      FontWeight="SemiBold"
-                      Foreground="#C9ADA7"
                       Style="{StaticResource CornerRadiusButtonStyle}" />
                     <Button
                       Margin="7,7,20,7"
                       Command="{Binding Path=DataContext.Delete, ElementName=LocalUsersWindowName}"
                       CommandParameter="{Binding}"
                       Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Delete}"
-                      FontWeight="SemiBold"
-                      Foreground="#C9ADA7"
                       Style="{StaticResource CornerRadiusButtonStyle}" />
 
                   </StackPanel>

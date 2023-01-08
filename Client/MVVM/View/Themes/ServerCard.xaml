@@ -78,8 +78,6 @@
                   Command="{Binding Path=DataContext.DeleteServer, ElementName=MainWindowName}"
                   CommandParameter="{Binding}"
                   Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Delete}"
-                  FontWeight="SemiBold"
-                  Foreground="#C9ADA7"
                   Style="{StaticResource CornerRadiusButtonStyle}" />
               </StackPanel>
             </Grid>

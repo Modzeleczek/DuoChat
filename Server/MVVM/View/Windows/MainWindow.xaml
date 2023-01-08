@@ -58,9 +58,6 @@
               BorderThickness="0"
               Command="{Binding Path=Close}"
               Content="✕"
-              FontSize="15"
-              FontWeight="Bold"
-              Foreground="#9A8C98"
               Style="{StaticResource TitleBarButtonStyle}" />
           </StackPanel>
         </Grid>

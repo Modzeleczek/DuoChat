@@ -59,7 +59,7 @@ namespace Client.MVVM.ViewModel
                 if (LocalLoginViewModel.ShowDialog(window, user, false).Code != 0) return; // nie udało się zalogować
                 // udało się zalogować
                 var vm = new ChangeLocalUserNameViewModel(user);
-                var win = new FormWindow(window, vm, d["Change name"],
+                var win = new FormWindow(window, vm, d["Change_name"],
                     new FormWindow.Field[]
                     {
                         new FormWindow.Field(d["Username"], user.Name, false),
@@ -75,7 +75,7 @@ namespace Client.MVVM.ViewModel
                 if (logSta.Code != 0) return;
                 var curPas = (SecureString)((dynamic)logSta.Data).Password;
                 var vm = new ChangeLocalUserPasswordViewModel(user, curPas);
-                var win = new FormWindow(window, vm, d["Change password"],
+                var win = new FormWindow(window, vm, d["Change_password"],
                     new FormWindow.Field[]
                     {
                         new FormWindow.Field(d["New password"], "", true),

@@ -20,6 +20,11 @@ namespace Client.MVVM.ViewModel
                 var userName = ((TextBox)inpCtrls[0]).Text;
                 var password = ((PasswordBox)inpCtrls[1]).SecurePassword;
                 var confirmedPassword = ((PasswordBox)inpCtrls[2]).SecurePassword;
+                if (string.IsNullOrWhiteSpace(userName))
+                {
+                    Alert(d["Username cannot be empty."]);
+                    return;
+                }
                 if (!pc.SecureStringsEqual(password, confirmedPassword))
                 {
                     Alert(d["Passwords do not match."]);

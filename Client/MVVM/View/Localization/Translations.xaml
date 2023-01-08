@@ -121,5 +121,7 @@
   <l:Entry x:Key="'?" EN="'?" PL="&quot;?"/>
   <l:Entry x:Key="Yes" EN="Yes" PL="Tak"/>
   <l:Entry x:Key="No" EN="No" PL="Nie"/>
+  <l:Entry x:Key="Username cannot be empty." EN="Username cannot be empty."
+    PL="Nazwa użytkownika nie może być pusta."/>
 
 </ResourceDictionary>

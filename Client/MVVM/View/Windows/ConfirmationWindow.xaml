@@ -82,8 +82,6 @@
         Content="{Binding Path=ConfirmationButtonText}"
         FontFamily="/MVVM/View/Fonts/RedHatDisplay"
         FontSize="18"
-        FontWeight="SemiBold"
-        Foreground="#C9ADA7"
         Style="{StaticResource CornerRadiusButtonStyle}" />
     </Grid>
   </Border>

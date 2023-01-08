@@ -132,37 +132,19 @@
               Foreground="#9A8C98" />
             <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
               <Button
-                Width="25"
-                Height="25"
                 Margin="4,1,0,2"
-                BorderThickness="0"
                 Click="Button_Minimize_Click"
                 Content="🗕"
-                FontSize="15"
-                FontWeight="Bold"
-                Foreground="#9A8C98"
                 Style="{StaticResource TitleBarButtonStyle}" />
               <Button
-                Width="25"
-                Height="25"
                 Margin="4,1,2,2"
-                BorderThickness="0"
                 Click="Button_Maximize_Click"
                 Content="🗖"
-                FontSize="15"
-                FontWeight="Bold"
-                Foreground="#9A8C98"
                 Style="{StaticResource TitleBarButtonStyle}" />
               <Button
-                Width="25"
-                Height="25"
                 Margin="4,1,16,0"
-                BorderThickness="0"
                 Command="{Binding Path=Close}"
                 Content="✕"
-                FontSize="15"
-                FontWeight="Bold"
-                Foreground="#9A8C98"
                 Style="{StaticResource TitleBarButtonStyle}" />
             </StackPanel>
           </Grid>
@@ -171,7 +153,7 @@
         <Grid
           Grid.Row="1"
           Grid.Column="0"
-          Background="#3b3e54">
+          Background="#3B3E54">
           <Grid.RowDefinitions>
             <RowDefinition Height="50" />
             <RowDefinition Height="*" />
@@ -192,27 +174,21 @@
             ItemContainerStyle="{StaticResource ServerCardStyle}"
             ItemsSource="{Binding Servers}"
             SelectedItem="{Binding SelectedServer, Mode=TwoWay}" />
-          <Border
+          <Button
             Grid.Row="2"
-            Background="#3b3e54"
-            BorderBrush="#9A8C98"
-            CornerRadius="0,0,0,10">
-            <Button Height="25" Command="{Binding AddServer}">
-              <Label
-                Margin="5,0,5,0"
-                VerticalAlignment="Center"
-                Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Add_server}"
-                FontFamily="/MVVM/View/Fonts/RedHatDisplay"
-                FontWeight="SemiBold"
-                Foreground="#C9ADA7" />
-            </Button>
-          </Border>
+            Grid.Column="1"
+            Margin="50,10,50,10"
+            Command="{Binding AddServer}"
+            Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Add_server}"
+            FontFamily="/MVVM/View/Fonts/RedHatDisplay"
+            FontSize="14"
+            Style="{StaticResource CornerRadiusButtonStyle}" />
         </Grid>
 
         <Grid
           Grid.Row="1"
           Grid.Column="1"
-          Background="#3b3e54">
+          Background="#3B3E54">
           <Grid.RowDefinitions>
             <RowDefinition Height="50" />
             <RowDefinition Height="*" />
@@ -244,18 +220,15 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="60" />
           </Grid.RowDefinitions>
-          <Border Grid.Row="0" Background="#3b3e54">
+          <Border Grid.Row="0" Background="#3B3E54">
             <StackPanel Orientation="Horizontal">
               <Button
                 x:Name="ToggleServersAccountsButton"
                 Width="25"
                 VerticalContentAlignment="Center"
-                Background="Transparent"
-                BorderThickness="0"
                 Click="Button_ToggleServersAccounts_Click"
                 Content="&gt;"
                 FontSize="40"
-                FontWeight="Bold"
                 Foreground="#C9ADA7"
                 Style="{StaticResource MenuButtonStyle}" />
               <Label
@@ -268,7 +241,7 @@
                 Foreground="#C9ADA7" />
             </StackPanel>
           </Border>
-          <Border Grid.Row="1" Background="#3b3e54">
+          <Border Grid.Row="1" Background="#3B3E54">
             <ListView
               x:Name="ConversationsListView"
               Grid.Row="1"
@@ -281,7 +254,7 @@
           </Border>
           <Border
             Grid.Row="2"
-            Background="#3b3e54"
+            Background="#3B3E54"
             BorderBrush="#9A8C98"
             CornerRadius="0,0,0,10">
             <DockPanel>
@@ -313,12 +286,9 @@
                 Height="25"
                 Margin="0,0,10,0"
                 HorizontalAlignment="Right"
-                Background="Transparent"
-                BorderThickness="0"
                 Command="{Binding OpenSettings}"
                 DockPanel.Dock="Right"
                 FontSize="15"
-                FontWeight="Bold"
                 Foreground="#9A8C98"
                 Style="{StaticResource MenuButtonStyle}">
                 <Image Source="/MVVM/View/Icons/settings.png" />
@@ -371,7 +341,7 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="70" />
           </Grid.RowDefinitions>
-          <Border Grid.Row="0" Background="#3b3e54">
+          <Border Grid.Row="0" Background="#3B3E54">
             <Grid Margin="8" HorizontalAlignment="Stretch">
               <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
                 <Label

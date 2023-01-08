@@ -132,7 +132,7 @@ namespace Client.MVVM.ViewModel
                 AddServer = new RelayCommand(_ =>
                 {
                     var vm = new CreateServerViewModel(loggedUser);
-                    var win = new FormWindow(window, vm, d["Add server"], new FormWindow.Field[]
+                    var win = new FormWindow(window, vm, d["Add_server"], new FormWindow.Field[]
                     {
                         new FormWindow.Field(d["IP address"], "", false),
                         new FormWindow.Field(d["Port"], "", false)

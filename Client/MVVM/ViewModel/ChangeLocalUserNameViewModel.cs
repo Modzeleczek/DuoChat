@@ -24,7 +24,7 @@ namespace Client.MVVM.ViewModel
                 }
                 var newUser = new LocalUser(userName, user.PasswordSalt, user.PasswordDigest,
                     user.DBInitializationVector, user.DBSalt);
-                var db = newUser.GetDatabase();
+                var db = user.GetDatabase();
                 if (!db.Exists())
                 {
                     Alert(d["User's database does not exist. An empty database will be created."]);
