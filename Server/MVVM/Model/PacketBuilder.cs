@@ -1,5 +1,4 @@
-﻿using Shared.Cryptography;
-using System.IO;
+﻿using System.IO;
 
 namespace Server.MVVM.Model
 {

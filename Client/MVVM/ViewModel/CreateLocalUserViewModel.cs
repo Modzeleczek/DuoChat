@@ -20,9 +20,10 @@ namespace Client.MVVM.ViewModel
                 var userName = ((TextBox)inpCtrls[0]).Text;
                 var password = ((PasswordBox)inpCtrls[1]).SecurePassword;
                 var confirmedPassword = ((PasswordBox)inpCtrls[2]).SecurePassword;
-                if (string.IsNullOrWhiteSpace(userName))
+                var unValSta = lus.ValidateUserName(userName);
+                if (unValSta.Code != 0)
                 {
-                    Alert(d["Username cannot be empty."]);
+                    Alert(unValSta.Message);
                     return;
                 }
                 if (!pc.SecureStringsEqual(password, confirmedPassword))

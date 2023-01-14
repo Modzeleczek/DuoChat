@@ -23,7 +23,7 @@
             Padding="5"
             Background="{TemplateBinding Background}"
             CornerRadius="5">
-            <Grid x:Name="ItemGrid">
+            <Grid>
               <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
               </Grid.ColumnDefinitions>
@@ -59,20 +59,10 @@
               <StackPanel
                 Grid.Column="0"
                 HorizontalAlignment="Right"
-                Orientation="Horizontal">
-                <StackPanel.Style>
-                  <Style TargetType="StackPanel">
-                    <Setter Property="Visibility" Value="Hidden" />
-                    <Style.Triggers>
-                      <DataTrigger Binding="{Binding ElementName=ItemGrid, Path=IsMouseOver}" Value="True">
-                        <Setter Property="Visibility" Value="Visible" />
-                      </DataTrigger>
-                    </Style.Triggers>
-                  </Style>
-                </StackPanel.Style>
+                Orientation="Horizontal"
+                Style="{StaticResource HoverPanelStyle}">
                 <!-- ElementName=MainWindowName odnosi się do MainWindow.xaml, w którym używamy stylu ServerCardStyle -->
                 <Button
-                  Grid.Column="0"
                   Margin="7,7,20,7"
                   HorizontalAlignment="Right"
                   Command="{Binding Path=DataContext.DeleteServer, ElementName=MainWindowName}"

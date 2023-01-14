@@ -2,7 +2,6 @@
 using Client.MVVM.Model.BsonStorages;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model;
-using Shared.MVVM.ViewModel;
 
 namespace Client.MVVM.ViewModel
 {

@@ -17,6 +17,11 @@
   <l:Entry x:Key="IP_address" EN="IP address" PL="Adres IP"/>
   <l:Entry x:Key="Alert" EN="Alert" PL="Alert"/>
   <l:Entry x:Key="OK" EN="OK" PL="OK"/>
+  <l:Entry x:Key="GUID" EN="GUID" PL="GUID"/>
+  <l:Entry x:Key="Private_key" EN="Private key" PL="Klucz prywatny"/>
+  <l:Entry x:Key="Generate" EN="Generate" PL="Wygeneruj"/>
+  <l:Entry x:Key="Load" EN="Load" PL="Wczytaj"/>
+  <l:Entry x:Key="Save" EN="Save" PL="Zapisz"/>
 
   <!-- klucze używane w plikach .cs - nie muszą być prawidłowymi nazwami zmiennych -->
   <l:Entry x:Key="Invalid IP address format." EN="Invalid IP address format."
@@ -35,5 +40,28 @@
     PL="Serwer został nagle zatrzymany."/>
   <l:Entry x:Key="Capacity must be positive." EN="Capacity must be positive."
     PL="Pojemność musi być dodatnia."/>
+  <l:Entry x:Key="Generate or enter a GUID." EN="Generate or enter a GUID."
+    PL="Wygeneruj lub wprowadź GUID."/>
+  <l:Entry x:Key="Invalid GUID format." EN="Invalid GUID format." PL="Nieprawidłowy format GUID."/>
+  <l:Entry x:Key="Generate or enter a private key." EN="Generate or enter a private key."
+    PL="Wygeneruj lub wprowadź klucz prywatny."/>
+  <l:Entry x:Key="Invalid private key format or either of its components is not prime."
+    EN="Invalid private key format or either of its components is not prime."
+    PL="Nieprawidłowy format klucza prywatnego lub którykolwiek z jego składników nie jest liczbą pierwszą."/>
+  <l:Entry x:Key="Do you want to generate a new GUID? Users may not trust a server changing its GUID without prior notice."
+    EN="Do you want to generate a new GUID? Users may not trust a server changing its GUID without prior notice."
+    PL="Czy chcesz wygenerować nowy GUID. Użytkownicy mogą nie ufać serwerowi zmieniającemu GUID bez uprzedniej zapowiedzi."/>
+  <l:Entry x:Key="Generate GUID" EN="Generate GUID" PL="Wygeneruj GUID"/>
+  <l:Entry x:Key="No" EN="No" PL="Nie"/>
+  <l:Entry x:Key="Yes" EN="Yes" PL="Tak"/>
+  <l:Entry x:Key="Settings file does not exist. Default settings will be loaded."
+    EN="Settings file does not exist. Default settings will be loaded."
+    PL="Plik ustawień nie istnieje. Zostaną załadowane domyślne ustawienia."/>
+  <l:Entry x:Key="Do you want to generate a new private key? Server's public key is derived from private key and users may not trust a server changing it without prior notice."
+    EN="Do you want to generate a new private key? Server's public key is derived from private key and users may not trust a server changing it without prior notice."
+    PL="Czy chcesz wygenerować nowy klucz prywatny. Klucz publiczny serwera pochodzi od klucza prywatnego i użytkownicy mogą nie ufać serwerowi zmieniającemu go bez uprzedniej zapowiedzi."/>
+  <l:Entry x:Key="Generate private key"
+    EN="Generate private key"
+    PL="Wygeneruj klucz prywatny"/>
 
 </ResourceDictionary>

@@ -2,7 +2,6 @@
   x:Class="Client.App"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:local="clr-namespace:Client"
   Startup="Application_Startup"
   StartupUri="/MVVM/View/Windows/MainWindow.xaml">
   <Application.Resources>
@@ -10,6 +9,7 @@
       <ResourceDictionary.MergedDictionaries>
         <!-- ServerCard musi być po Buttons, bo go używa -->
         <ResourceDictionary Source="/MVVM/View/Themes/Buttons.xaml" />
+        <ResourceDictionary Source="/MVVM/View/Themes/HoverPanel.xaml" />
         <ResourceDictionary Source="/MVVM/View/Themes/ServerCard.xaml" />
         <ResourceDictionary Source="/MVVM/View/Themes/ConversationCard.xaml" />
         <ResourceDictionary Source="/MVVM/View/Themes/AccountCard.xaml" />

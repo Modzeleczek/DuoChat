@@ -1,7 +1,6 @@
-﻿using Shared.Cryptography;
-using Shared.MVVM.Core;
+﻿using Shared.MVVM.Core;
+using Shared.MVVM.Model.Cryptography;
 using System;
-using System.Numerics;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -18,7 +17,7 @@ namespace Client.MVVM.Model
 
         public string Password { get; set; }
 
-        public HybridCryptosystem.PrivateKey Key { get; set; }
+        public PrivateKey Key { get; set; }
 
         private string nickname;
         public string Nickname
@@ -34,11 +33,7 @@ namespace Client.MVVM.Model
             {
                 Login = rng.Next().ToString(),
                 Password = rng.Next().ToString(),
-                Key = new HybridCryptosystem.PrivateKey
-                {
-                    P = new BigInteger(rng.Next()),
-                    Q = new BigInteger(rng.Next())
-                },
+                Key = null,
                 Nickname = rng.Next().ToString(),
                 Image = new WriteableBitmap(100, 100, 96, 96, PixelFormats.Bgra32, null)
             };

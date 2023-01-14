@@ -9,13 +9,17 @@
     <Import_RootNamespace>Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Cryptography\HybridCryptosystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Core\Callback.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Core\ObservableObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Core\RelayCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Cryptography\HybridCryptosystem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Cryptography\PrivateKey.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Cryptography\PublicKey.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\IPv4Address.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Status.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\ViewModel\AlertViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\ViewModel\ConfirmationViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\ViewModel\FormViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\ViewModel\ViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\ViewModel\WindowViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\View\Helpers\EnableDragHelper.cs" />

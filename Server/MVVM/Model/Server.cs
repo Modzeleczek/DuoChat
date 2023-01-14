@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using System.Threading;
 using Shared.MVVM.Model;
 using Shared.MVVM.Core;
+using System;
+using Shared.MVVM.Model.Cryptography;
 
 namespace Server.MVVM.Model
 {
@@ -14,6 +16,8 @@ namespace Server.MVVM.Model
 
         private List<Client> _clients = new List<Client>();
         private TcpListener _listener = null;
+        private Guid _guid = Guid.Empty;
+        private PrivateKey _privateKey = null;
         private string _name = "";
         private int _capacity = 0;
         private Task _runner = null;
@@ -23,15 +27,18 @@ namespace Server.MVVM.Model
 
         public Server() { }
 
-        public void BeginStart(int ipV4Address, ushort port, string name, int capacity)
+        public void BeginStart(Guid guid, PrivateKey privateKey, int ipV4Address, ushort port,
+            string name, int capacity)
         {
             Status status = null;
-            _name = name;
-            _capacity = capacity;
-            _listener = new TcpListener(new IPAddress(ipV4Address), port);
             try
             {
+                _listener = new TcpListener(new IPAddress(ipV4Address), port);
                 _listener.Start(capacity);
+                _guid = guid;
+                _privateKey = privateKey;
+                _name = name;
+                _capacity = capacity;
                 _stopRequested = false;
                 _runner = Task.Run(Process);
                 Running = true;

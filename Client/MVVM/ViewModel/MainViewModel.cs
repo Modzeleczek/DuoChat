@@ -189,7 +189,7 @@ namespace Client.MVVM.ViewModel
                     win.ShowDialog();
                     if (vm.Status.Code == 2) // wylogowanie
                     {
-                        Clear();
+                        ClearLists();
                         var logSta = LocalLoginViewModel.ShowDialog(window, loggedUser, true);
                         if (logSta.Code != 0) return;
                         var curPas = (SecureString)((dynamic)logSta.Data).Password;
@@ -232,7 +232,7 @@ namespace Client.MVVM.ViewModel
                     if (getSta.Code == 0)
                     {
                         loggedUser = (LocalUser)getSta.Data;
-                        Randomize();
+                        ResetLists();
                         return;
                     }
                     Alert(d["Logged user does not exist."]);
@@ -274,12 +274,12 @@ namespace Client.MVVM.ViewModel
                 // decSta.Code == 0
                 lus.SetLogged(true, user.Name);
                 loggedUser = user;
-                Randomize();
+                ResetLists();
             }
             return status;
         }
         
-        private void Clear()
+        private void ClearLists()
         {
             SelectedConversation = null;
             SelectedAccount = null;
@@ -289,7 +289,7 @@ namespace Client.MVVM.ViewModel
             Servers.Clear();
         }
 
-        private void Randomize()
+        private void ResetLists()
         {
             Servers.Clear();
             Accounts.Clear();
@@ -297,7 +297,6 @@ namespace Client.MVVM.ViewModel
             var db = loggedUser.GetDatabase();
             var serSto = db.GetServersStorage();
             var servers = serSto.GetAll();
-            // var srvCnt = rng.Next(8, 15);
             for (int i = 0; i < servers.Count; ++i)
                 Servers.Add(servers[i].ToObservable());
         }

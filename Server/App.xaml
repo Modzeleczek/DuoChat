@@ -9,6 +9,7 @@
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/MVVM/View/Themes/Buttons.xaml" />
+        <ResourceDictionary Source="/MVVM/View/Themes/HoverPanel.xaml" />
       </ResourceDictionary.MergedDictionaries>
 
       <DataTemplate DataType="{x:Type vm:SettingsViewModel}">

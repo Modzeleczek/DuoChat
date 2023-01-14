@@ -27,15 +27,13 @@ namespace Server.MVVM.ViewModel
         }
         #endregion
 
-        private Model.Server _server;
-
         public MainViewModel()
         {
             WindowLoaded = new RelayCommand(windowLoadedE =>
             {
                 window = (Window)windowLoadedE;
 
-                _server = new Model.Server();
+                var server = new Model.Server();
 
                 // zapobiega ALT + F4 w głównym oknie
                 CancelEventHandler closingCancHandl = (_, e) => e.Cancel = true;
@@ -48,17 +46,17 @@ namespace Server.MVVM.ViewModel
                 };
                 Close = new RelayCommand(_ =>
                 {
-                    if (_server.Running)
+                    if (server.Running)
                     {
-                        _server.Stopped += closeApplication;
-                        _server.BeginStop();
+                        server.Stopped += closeApplication;
+                        server.BeginStop();
                     }
                     else closeApplication(null);
                 });
 
-                var setVM = new SettingsViewModel(window, _server);
-                var conCliVM = new ConnectedClientsViewModel(window, _server);
-                var accVM = new AccountsViewModel(window, _server);
+                var setVM = new SettingsViewModel(window, server);
+                var conCliVM = new ConnectedClientsViewModel(window, server);
+                var accVM = new AccountsViewModel(window, server);
                 var tabs = new BaseViewModel[] { setVM, conCliVM, accVM };
                 SelectTab = new RelayCommand(e =>
                 {
@@ -67,7 +65,7 @@ namespace Server.MVVM.ViewModel
                     SelectedTab = tabs[index];
                 });
 
-                _server.Started += (status) =>
+                server.Started += (status) =>
                 {
                     string message = null;
                     if (status.Code == 0) message = d["Server was started."];
@@ -75,7 +73,7 @@ namespace Server.MVVM.ViewModel
                         " " + d["No translation: "] + status.Message;
                     UIInvoke(() => Alert(message));
                 };
-                _server.Stopped += (status) =>
+                server.Stopped += (status) =>
                 {
                     string message = null;
                     if (status.Code == 0) message = d["Server was safely stopped."];

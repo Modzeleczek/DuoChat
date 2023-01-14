@@ -17,6 +17,12 @@ namespace Client.MVVM.ViewModel
             {
                 var inpCtrls = (Control[])e;
                 var userName = ((TextBox)inpCtrls[0]).Text;
+                var unValSta = lus.ValidateUserName(userName);
+                if (unValSta.Code != 0)
+                {
+                    Alert(unValSta.Message);
+                    return;
+                }
                 if (lus.Exists(userName))
                 {
                     Alert(d["User with name"] + $" {userName} " + d["already exists."]);

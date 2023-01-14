@@ -130,5 +130,20 @@ namespace Client.MVVM.Model.BsonStorages
             var fileStr = Load();
             return new Status(0, null, fileStr.ActiveLanguageId);
         }
+
+        public Status ValidateUserName(string userName)
+        {
+            if (string.IsNullOrWhiteSpace(userName))
+                return new Status(1, d["Username cannot be empty."]);
+            /* nie możemy pozwolić na stworzenie drugiego użytkownika o takiej samej nazwie
+             * case-insensitive, ponieważ NTFS ma case-insensitive nazwy plików i katalogów;
+             * najprościej temu zapobiec, wymuszając nazwy użytkowników
+             * złożone z tylko małych liter */
+            foreach (var c in userName)
+                if (!((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9')))
+                    return new Status(2,
+                        d["Username may contain only lowercase characters and digits."]);
+            return new Status(0);
+        }
     }
 }

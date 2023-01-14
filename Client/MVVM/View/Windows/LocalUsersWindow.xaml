@@ -62,7 +62,7 @@
           <ItemsControl.ItemTemplate>
             <DataTemplate>
               <Border BorderBrush="#9A8C98" BorderThickness="0,1,0,1">
-                <Grid x:Name="ItemGrid">
+                <Grid>
                   <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                   </Grid.ColumnDefinitions>
@@ -95,17 +95,7 @@
                     Foreground="#C9ADA7"
                     Text="{Binding Name}" />
                   <StackPanel HorizontalAlignment="Right" Orientation="Horizontal"
-                    Grid.Column="0">
-                    <StackPanel.Style>
-                      <Style TargetType="StackPanel">
-                        <Setter Property="Visibility" Value="Hidden" />
-                        <Style.Triggers>
-                          <DataTrigger Binding="{Binding ElementName=ItemGrid, Path=IsMouseOver}" Value="True">
-                            <Setter Property="Visibility" Value="Visible" />
-                          </DataTrigger>
-                        </Style.Triggers>
-                      </Style>
-                    </StackPanel.Style>
+                    Grid.Column="0" Style="{StaticResource HoverPanelStyle}">
                     <Button
                       Margin="7"
                       Command="{Binding Path=DataContext.ChangeName, ElementName=LocalUsersWindowName}"

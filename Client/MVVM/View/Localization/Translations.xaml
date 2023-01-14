@@ -123,5 +123,8 @@
   <l:Entry x:Key="No" EN="No" PL="Nie"/>
   <l:Entry x:Key="Username cannot be empty." EN="Username cannot be empty."
     PL="Nazwa użytkownika nie może być pusta."/>
+  <l:Entry x:Key="Username may contain only lowercase characters and digits."
+    EN="Username may contain only lowercase characters and digits."
+    PL="Nazwa użytkownika może zawierać tylko małe litery i cyfry."/>
 
 </ResourceDictionary>
