@@ -63,9 +63,9 @@
     PL="Baza danych użytkownika odszyfrowana."/>
   <l:Entry x:Key="No user is logged." EN="No user is logged."
     PL="Żaden użytkownik nie jest zalogowany."/>
-  <l:Entry x:Key="Database already exists and will be removed."
-    EN="Database already exists and will be removed."
-    PL="Baza danych już istnieje i zostanie usunięta."/>
+  <l:Entry x:Key="Database with such username already exists."
+    EN="Database with such username already exists."
+    PL="Baza danych z taką nazwą już istnieje."/>
   <l:Entry x:Key="File read timed out." EN="File read timed out."
     PL="Przekroczono czas oczekiwania na odczyt pliku."/>
   <l:Entry x:Key="Error occured while reading file."
@@ -74,9 +74,9 @@
   <l:Entry x:Key="Error occured while writing file."
     EN="Error occured while writing file."
     PL="Wystąpił błąd podczas zapisywania pliku."/>
-  <l:Entry x:Key="User's database does not exist. An empty database will be created."
-    EN="User's database does not exist. An empty database will be created."
-    PL="Baza danych użytkownika nie istnieje. Stworzona zostanie pusta baza danych."/>
+  <l:Entry x:Key="User's database does not exist."
+    EN="User's database does not exist."
+    PL="Baza danych użytkownika nie istnieje."/>
   <l:Entry x:Key="Encryption" EN="Encryption" PL="Szyfrowanie"/>
   <l:Entry x:Key="Encrypting user's database." EN="Encrypting user's database."
     PL="Szyfrowanie bazy danych użytkownika."/>
@@ -88,9 +88,9 @@
   <l:Entry x:Key="User's database is corrupted. An empty database will be created."
     EN="User's database is corrupted. An empty database will be created."
     PL="Baza danych użytkownika jest uszkodzona. Stworzona zostanie pusta baza danych."/>
-  <l:Entry x:Key="Database decryption and password change canceled."
-    EN="Database decryption and password change canceled."
-    PL="Odszyfrowywanie bazy danych i zmiana hasła anulowana."/>
+  <l:Entry x:Key="Password change canceled."
+    EN="Password change canceled."
+    PL="Zmiana hasła anulowana."/>
   <l:Entry x:Key="Server with GUID" EN="Serwer z GUIDem" PL=""/>
   <l:Entry x:Key="User's database decryption canceled. Logging out."
     EN="User's database decryption canceled. Logging out."
@@ -126,5 +126,15 @@
   <l:Entry x:Key="Username may contain only lowercase characters and digits."
     EN="Username may contain only lowercase characters and digits."
     PL="Nazwa użytkownika może zawierać tylko małe litery i cyfry."/>
+  <l:Entry x:Key="User's directory does not exist."
+    EN="User's directory does not exist."
+    PL="Katalog użytkownika nie istnieje."/>
+  <l:Entry x:Key="A directory with user's new name already exists."
+    EN="A directory with user's new name already exists."
+    PL="Istnieje już katalog posiadający nową nazwę użytkownika."/>
+  <l:Entry x:Key="Error occured while renaming user's directory."
+    EN="Error occured while renaming user's directory."
+    PL="Wystąpił błąd podczas zmiany nazwy katalogu użytkownika."/>
+  <l:Entry x:Key="No translation: " EN="" PL="Brak tłumaczenia: "/>
 
 </ResourceDictionary>

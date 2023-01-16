@@ -1,4 +1,6 @@
-﻿using Shared.MVVM.Model;
+﻿using Client.MVVM.Model.JsonSerializables;
+using Shared.MVVM.Model;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -16,27 +18,33 @@ namespace Client.MVVM.Model.BsonStorages
             public bool IsLogged { get; set; } = false;
             public string LoggedUserName { get; set; } = "";
             public int ActiveLanguageId { get; set; } = 0;
-            public List<LocalUser> Users { get; set; } = new List<LocalUser>();
+            public List<LocalUserSerializable> Users { get; set; } = new List<LocalUserSerializable>();
         }
+
+        private Status AlreadyExistsStatus(string name) =>
+            new Status(2, d["User with name"] + $" {name} " + d["already exists."]);
+
+        private Status DoesNotExistStatus(string name) =>
+            new Status(1, d["User with name"] + $" {name} " + d["does not exist."]);
 
         private BsonStructure Load() => Load<BsonStructure>();
 
         private void Save(BsonStructure users) => Save<BsonStructure>(users);
 
-        public Status Add(LocalUser user)
+        public Status Add(LocalUserSerializable user)
         {
             var fileStr = Load();
             var users = fileStr.Users;
             if (Exists(user.Name, users))
-                return new Status(1, d["User with name"] + $" '{user.Name}' " + d["already exists."]);
+                return AlreadyExistsStatus(user.Name);
             users.Add(user);
             Save(fileStr);
             return new Status(0);
         }
 
-        public List<LocalUser> GetAll() => Load().Users;
+        public List<LocalUserSerializable> GetAll() => Load().Users;
 
-        private bool Exists(string userName, List<LocalUser> users)
+        private bool Exists(string userName, List<LocalUserSerializable> users)
         {
             for (int i = 0; i < users.Count; ++i)
                 if (users[i].Name == userName)
@@ -55,11 +63,10 @@ namespace Client.MVVM.Model.BsonStorages
                 if (u.Name == userName)
                     return new Status(0, null, u);
             }
-            return new Status(1,
-                d["User with name"] + $" '{userName}' " + d["does not exist."], null);
+            return DoesNotExistStatus(userName);
         }
 
-        public Status Update(string userName, LocalUser user)
+        public Status Update(string userName, LocalUserSerializable user)
         {
             // w obiekcie user może być nowa nazwa użytkownika, ale nie może być zajęta
             var fileStr = Load();
@@ -68,20 +75,19 @@ namespace Client.MVVM.Model.BsonStorages
             {
                 if (users[i].Name == userName)
                 {
-                    string error = d["User with name"] + $" '{user.Name}' " + d["already exists."];
                     int j;
                     for (j = 0; j < i; ++j)
                         if (users[j].Name == user.Name)
-                            return new Status(2, error);
+                            return AlreadyExistsStatus(user.Name);
                     for (j = i + 1; j < users.Count; ++j)
                         if (users[j].Name == user.Name)
-                            return new Status(2, error);
+                            return AlreadyExistsStatus(user.Name);
                     users[i] = user;
                     Save(fileStr);
                     return new Status(0);
                 }
             }
-            return new Status(1, d["User with name"] + $" '{userName}' " + d["does not exist."]);
+            return DoesNotExistStatus(userName);
         }
 
         public Status Delete(string userName)
@@ -90,15 +96,14 @@ namespace Client.MVVM.Model.BsonStorages
             var users = fileStr.Users;
             for (int i = 0; i < users.Count; ++i)
             {
-                var u = users[i];
-                if (u.Name == userName)
+                if (users[i].Name == userName)
                 {
                     users.RemoveAt(i);
                     Save(fileStr);
                     return new Status(0);
                 }
             }
-            return new Status(1, d["User with name"] + $" '{userName}' " + d["does not exist."]);
+            return DoesNotExistStatus(userName);
         }
 
         public Status SetLogged(bool isLogged, string userName = "")

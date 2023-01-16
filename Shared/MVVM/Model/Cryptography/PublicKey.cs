@@ -21,5 +21,7 @@ namespace Shared.MVVM.Model.Cryptography
             par.Modulus = _modulus;
             rsa.ImportParameters(par);
         }
+
+        public byte[] ToBytes() => _modulus;
     }
 }

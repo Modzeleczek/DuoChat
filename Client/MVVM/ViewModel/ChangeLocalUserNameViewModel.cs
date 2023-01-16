@@ -28,22 +28,19 @@ namespace Client.MVVM.ViewModel
                     Alert(d["User with name"] + $" {userName} " + d["already exists."]);
                     return;
                 }
-                var newUser = new LocalUser(userName, user.PasswordSalt, user.PasswordDigest,
-                    user.DBInitializationVector, user.DBSalt);
-                var db = user.GetDatabase();
-                if (!db.Exists())
+                var oldUserName = user.Name;
+                var renameStatus = user.Rename(userName);
+                if (renameStatus.Code != 0)
                 {
-                    Alert(d["User's database does not exist. An empty database will be created."]);
-                    db.Create();
-                }
-                var status = lus.Update(user.Name, newUser);
-                if (status.Code != 0)
-                {
-                    Alert(status.Message);
+                    Alert(renameStatus.Message);
                     return;
                 }
-                db.Rename(newUser.Name);
-                // user.Name = userName;
+                var updateStatus = lus.Update(oldUserName, user.ToSerializable());
+                if (updateStatus.Code != 0)
+                {
+                    Alert(updateStatus.Message);
+                    return;
+                }
                 OnRequestClose(new Status(0));
             });
         }

@@ -1,7 +1,6 @@
 ﻿using Shared.MVVM.Model;
 using Shared.MVVM.View.Localization;
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Security;
@@ -11,7 +10,7 @@ namespace Client.MVVM.Model
 {
     public class PasswordCryptography
     {
-        private readonly Translator d = Translator.Instance;
+        private static readonly Translator d = Translator.Instance;
 
         public Status ValidatePassword(SecureString password)
         {
@@ -133,23 +132,6 @@ namespace Client.MVVM.Model
             {
                 if (ptr != IntPtr.Zero) Marshal.ZeroFreeBSTR(ptr);
             }
-        }
-
-        private byte[] GenerateRandom(int byteCount)
-        {
-            var bytes = new byte[byteCount];
-            using (var rng = RandomNumberGenerator.Create())
-                rng.GetBytes(bytes);
-            return bytes;
-        }
-
-        public LocalUser CreateLocalUser(string userName, SecureString password)
-        {
-            var passSalt = GenerateRandom(128 / 8); // 128 b sól
-            var passDigest = ComputeDigest(password, passSalt); // 128 b - rozmiar klucza AESa
-            var dbIv = GenerateRandom(128 / 8); // 128 b - rozmiar bloku AESa
-            var dbSalt = GenerateRandom(128 / 8); // 128 b sól
-            return new LocalUser(userName, passSalt, passDigest, dbIv, dbSalt);
         }
 
         public void EncryptFile(BackgroundProgress progress,
@@ -288,8 +270,6 @@ namespace Client.MVVM.Model
             FileTransformation transformation)
         {
             var files = Directory.GetFiles(path);
-            foreach (var f in files)
-                Debug.WriteLine(f);
             progress.CoarseMax = files.Length - 1;
             progress.CoarseProgress = 0;
             var status = new Status(0);

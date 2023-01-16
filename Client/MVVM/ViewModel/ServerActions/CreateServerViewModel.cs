@@ -4,8 +4,8 @@ using Shared.MVVM.Core;
 using System.Windows;
 using System.Windows.Controls;
 using System;
-using Client.MVVM.Model.XamlObservables;
 using Shared.MVVM.Model;
+using Shared.MVVM.Model.Cryptography;
 
 namespace Client.MVVM.ViewModel
 {
@@ -30,28 +30,26 @@ namespace Client.MVVM.ViewModel
                     Alert(d["Invalid port format."]);
                     return;
                 }
-                var db = loggedUser.GetDatabase();
-                if (!db.Exists())
+                if (!loggedUser.DirectoryExists())
                 {
-                    Alert(d["User's database does not exist. An empty database will be created."]);
-                    db.Create();
+                    Alert(d["User's database does not exist."]);
+                    return;
                 }
-                var serSto = db.GetServersStorage();
-                // var serGuid = Guid.Parse("CE213984-6F1D-4845-9CBF-58A3675DDCF9");
                 var serGuid = Guid.NewGuid();
-                if (serSto.Exists(serGuid))
+                if (loggedUser.ServerExists(serGuid))
                 {
                     Alert(d["Server with GUID"] + $" {serGuid} " + d["already exists."]);
                     return;
                 }
                 var newServer = new Server
                 {
-                    GUID = serGuid,
+                    Guid = serGuid,
+                    PublicKey = new PublicKey(new byte[] {0b0000_1111}),
                     IpAddress = ipAddress,
                     Port = port,
                     Name = "przykładowa nazwa"
                 };
-                var status = serSto.Add(newServer.ToSerializable());
+                var status = loggedUser.AddServer(newServer);
                 if (status.Code != 0)
                 {
                     Alert(status.Message);

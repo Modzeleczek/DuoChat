@@ -1,4 +1,4 @@
-﻿using Client.MVVM.Model.JsonConvertibles;
+﻿using Client.MVVM.Model.JsonSerializables;
 using Shared.MVVM.Model;
 using System;
 using System.Collections.Generic;
@@ -11,19 +11,19 @@ namespace Client.MVVM.Model.BsonStorages
 
         private class BsonStructure
         {
-            public List<Server> Servers { get; set; } = new List<Server>();
+            public List<ServerSerializable> Servers { get; set; } = new List<ServerSerializable>();
         }
 
         private BsonStructure Load() => Load<BsonStructure>();
 
         private void Save(BsonStructure servers) => Save<BsonStructure>(servers);
 
-        public Status Add(Server server)
+        public Status Add(ServerSerializable server)
         {
             var fileStr = Load();
             var servers = fileStr.Servers;
-            if (Exists(server.GUID, servers))
-                return AlreadyExistsStatus(server.GUID);
+            if (Exists(server.Guid, servers))
+                return AlreadyExistsStatus(server.Guid);
             servers.Add(server);
             Save(fileStr);
             return new Status(0);
@@ -32,9 +32,9 @@ namespace Client.MVVM.Model.BsonStorages
         private Status AlreadyExistsStatus(Guid guid) =>
             new Status(2, d["Server with GUID"] + $" {guid} " + d["already exists."]);
 
-        public List<Server> GetAll() => Load().Servers;
+        public List<ServerSerializable> GetAll() => Load().Servers;
 
-        private bool Exists(Guid guid, List<Server> servers)
+        private bool Exists(Guid guid, List<ServerSerializable> servers)
         {
             for (int i = 0; i < servers.Count; ++i)
                 if (servers[i].KeyEquals(guid))
@@ -58,16 +58,15 @@ namespace Client.MVVM.Model.BsonStorages
         }
 
         private Status DoesNotExistStatus(Guid guid) =>
-            new Status(1, d["Server with GUID"] + $" {guid} " + d["does not exist."], null);
+            new Status(1, d["Server with GUID"] + $" {guid} " + d["does not exist."]);
 
-        public Status Update(Guid guid, Server server)
+        public Status Update(Guid guid, ServerSerializable server)
         {
             var fileStr = Load();
             var servers = fileStr.Servers;
             for (int i = 0; i < servers.Count; ++i)
             {
-                var s = servers[i];
-                if (s.KeyEquals(guid))
+                if (servers[i].KeyEquals(guid))
                 {
                     int j;
                     for (j = 0; j < i; ++j)
@@ -90,8 +89,7 @@ namespace Client.MVVM.Model.BsonStorages
             var servers = fileStr.Servers;
             for (int i = 0; i < servers.Count; ++i)
             {
-                var s = servers[i];
-                if (s.KeyEquals(guid))
+                if (servers[i].KeyEquals(guid))
                 {
                     servers.RemoveAt(i);
                     Save(fileStr);

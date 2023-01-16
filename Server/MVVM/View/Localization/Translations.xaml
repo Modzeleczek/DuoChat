@@ -63,5 +63,8 @@
   <l:Entry x:Key="Generate private key"
     EN="Generate private key"
     PL="Wygeneruj klucz prywatny"/>
+  <l:Entry x:Key="Port must be in range"
+    EN="Port must be in range"
+    PL="Port musi należeć do przedziału"/>
 
 </ResourceDictionary>

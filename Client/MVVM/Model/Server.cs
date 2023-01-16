@@ -1,15 +1,17 @@
-﻿using Shared.MVVM.Core;
+﻿using Client.MVVM.Model.JsonSerializables;
+using Shared.MVVM.Core;
 using Shared.MVVM.Model;
+using Shared.MVVM.Model.Cryptography;
 using System;
-using System.Numerics;
 
-namespace Client.MVVM.Model.XamlObservables
+namespace Client.MVVM.Model
 {
     public class Server : ObservableObject
     {
-        public Guid GUID { get; set; }
+        #region Properties
+        public Guid Guid { get; set; }
 
-        public BigInteger PublicKey { get; set; }
+        public PublicKey PublicKey { get; set; }
 
         private IPv4Address ipAddress;
         public IPv4Address IpAddress
@@ -31,22 +33,13 @@ namespace Client.MVVM.Model.XamlObservables
             get => name;
             set { name = value; OnPropertyChanged(); }
         }
+        #endregion
 
-        public static Server Random(Random rng) =>
-            new Server
+        public ServerSerializable ToSerializable() =>
+            new ServerSerializable
             {
-                GUID = Guid.NewGuid(),
-                PublicKey = new BigInteger(rng.Next()),
-                IpAddress = new IPv4Address(rng.Next()),
-                Port = (ushort)rng.Next(),
-                Name = rng.Next().ToString()
-            };
-
-        public JsonConvertibles.Server ToSerializable() =>
-            new JsonConvertibles.Server
-            {
-                GUID = GUID,
-                PublicKey = PublicKey,
+                Guid = Guid,
+                PublicKey = PublicKey.ToBytes(),
                 IpAddress = IpAddress.BinaryRepresentation,
                 Port = Port,
                 Name = Name

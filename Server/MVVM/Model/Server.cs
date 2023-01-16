@@ -12,8 +12,11 @@ namespace Server.MVVM.Model
 {
     public class Server
     {
-        public bool Running { get; private set; } = false;
+        #region Properties
+        public bool IsRunning { get; private set; } = false;
+        #endregion
 
+        #region Fields
         private List<Client> _clients = new List<Client>();
         private TcpListener _listener = null;
         private Guid _guid = Guid.Empty;
@@ -22,18 +25,22 @@ namespace Server.MVVM.Model
         private int _capacity = 0;
         private Task _runner = null;
         private bool _stopRequested = false;
+        #endregion
 
+        #region Events
         public event Callback Started, Stopped;
+        #endregion
 
         public Server() { }
 
-        public void BeginStart(Guid guid, PrivateKey privateKey, int ipV4Address, ushort port,
+        public void Start(Guid guid, PrivateKey privateKey, IPAddress ipAddress, int port,
             string name, int capacity)
         {
             Status status = null;
             try
             {
-                _listener = new TcpListener(new IPAddress(ipV4Address), port);
+                var localEndPoint = new IPEndPoint(ipAddress, port);
+                _listener = new TcpListener(localEndPoint);
                 _listener.Start(capacity);
                 _guid = guid;
                 _privateKey = privateKey;
@@ -41,12 +48,13 @@ namespace Server.MVVM.Model
                 _capacity = capacity;
                 _stopRequested = false;
                 _runner = Task.Run(Process);
-                Running = true;
+                IsRunning = true;
                 status = new Status(0);
             }
             catch (SocketException se)
             {
                 _listener.Stop();
+                IsRunning = false;
                 // se.ErrorCode zawsze jest różne od 0
                 status = new Status(-1, se.Message, se.ErrorCode);
             }
@@ -89,15 +97,15 @@ namespace Server.MVVM.Model
             {
                 _clients.Clear();
                 _listener.Stop();
-                Running = false;
+                IsRunning = false;
                 Stopped?.Invoke(status); // jeżeli nie ma żadnych obserwatorów (nikt nie ustawił callbacków (handlerów)) i Stopped == null, to Invoke się nie wykona
             }
         }
 
-        public void BeginStop()
+        public void RequestStop()
         {
-            // jeżeli serwer nie działa, to udajemy, że się oda razu zamknął
-            if (_listener == null)
+            // jeżeli serwer nie działa, to udajemy, że się od razu zamknął
+            if (!IsRunning)
             {
                 Stopped?.Invoke(new Status(0));
                 return;

@@ -1,6 +1,6 @@
 ﻿using Client.MVVM.Model;
 using Client.MVVM.Model.BsonStorages;
-using Client.MVVM.Model.XamlObservables;
+using Client.MVVM.Model.JsonSerializables;
 using Client.MVVM.View.Windows;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model;
@@ -58,14 +58,28 @@ namespace Client.MVVM.ViewModel
             get => selectedServer;
             set
             {
+                /* nie sprawdzamy, czy value == SelectedServer, aby można było reconnectować
+                poprzez kliknięcie na już zaznaczony serwer */
+                if (_client.IsConnected) _client.Disconnect();
                 selectedServer = value;
                 SelectedAccount = null;
                 Accounts.Clear();
                 if (value != null)
                 {
-                    var accCnt = rng.Next(3, 8);
-                    for (int i = 0; i < accCnt; ++i)
-                        Accounts.Add(Account.Random(rng));
+                    var status = _client.Connect(SelectedServer);
+                    if (status.Code != 0)
+                    {
+                        selectedServer = null;
+                        Alert(status.Message);
+                    }
+                    else
+                    {
+                        /* TODO: wczytujemy z lokalnej bazy danych klienta konta posiadane przez
+                         * użytkownika na serwerze, z którym się połączyliśmy */
+                        var accCnt = rng.Next(3, 8);
+                        for (int i = 0; i < accCnt; ++i)
+                            Accounts.Add(Account.Random(rng));
+                    }
                 }
                 OnPropertyChanged();
             }
@@ -120,6 +134,7 @@ namespace Client.MVVM.ViewModel
         #endregion
 
         private LocalUser loggedUser = null;
+        private Model.Client _client = new Model.Client();
         private Random rng = new Random();
         
         public MainViewModel()
@@ -153,11 +168,11 @@ namespace Client.MVVM.ViewModel
                     {
                         if (SelectedServer == server)
                         {
-                            // rozłączamy z serwerem
+                            // rozłączamy z serwerem synchronicznie (czekając na zakończenie rozłączania)
+                            _client.Disconnect();
                         }
                         Servers.Remove(server);
-                        loggedUser.GetDatabase().GetServersStorage()
-                            .Delete(server.ToSerializable().GUID);
+                        loggedUser.DeleteServer(server.Guid);
                     }
                 });
 
@@ -201,9 +216,9 @@ namespace Client.MVVM.ViewModel
                             d["Encrypting user's database."], true,
                             (worker, args) =>
                             pc.EncryptDirectory(new BackgroundProgress((BackgroundWorker)worker, args),
-                                loggedUser.GetDatabase().DirectoryPath,
-                                pc.ComputeDigest(curPas, loggedUser.DBSalt),
-                                loggedUser.DBInitializationVector));
+                                loggedUser.DirectoryPath,
+                                pc.ComputeDigest(curPas, loggedUser.DbSalt),
+                                loggedUser.DbInitializationVector));
                         curPas.Dispose();
                         if (encSta.Code == 1)
                         {
@@ -225,13 +240,13 @@ namespace Client.MVVM.ViewModel
                 Conversations = new ObservableCollection<Conversation>();
                 d.ActiveLanguageId = (int)lus.GetActiveLanguage().Data;
                 var getLogSta = lus.GetLogged();
-                if (getLogSta.Code == 0)
+                if (getLogSta.Code == 0) // jakiś użytkownik jest już zalogowany
                 {
                     var userName = (string)getLogSta.Data;
                     var getSta = lus.Get(userName);
-                    if (getSta.Code == 0)
+                    if (getSta.Code == 0) // zalogowany użytkownik istnieje w BSONie
                     {
-                        loggedUser = (LocalUser)getSta.Data;
+                        loggedUser = ((LocalUserSerializable)getSta.Data).ToObservable();
                         ResetLists();
                         return;
                     }
@@ -256,16 +271,15 @@ namespace Client.MVVM.ViewModel
                 var dat = (dynamic)status.Data;
                 var curPas = (SecureString)dat.Password;
                 var user = (LocalUser)dat.LoggedUser;
-                var db = user.GetDatabase();
 
                 var pc = new PasswordCryptography();
                 status = ProgressBarViewModel.ShowDialog(window,
                     d["Decrypting user's database."], true,
                     (worker, args) =>
                     pc.DecryptDirectory(new BackgroundProgress((BackgroundWorker)worker, args),
-                        db.DirectoryPath,
-                        pc.ComputeDigest(curPas, user.DBSalt),
-                        user.DBInitializationVector));
+                        user.DirectoryPath,
+                        pc.ComputeDigest(curPas, user.DbSalt),
+                        user.DbInitializationVector));
                 curPas.Dispose();
                 if (status.Code == 1)
                     Alert(d["User's database decryption canceled. Logging out."]);
@@ -294,11 +308,9 @@ namespace Client.MVVM.ViewModel
             Servers.Clear();
             Accounts.Clear();
             Conversations.Clear();
-            var db = loggedUser.GetDatabase();
-            var serSto = db.GetServersStorage();
-            var servers = serSto.GetAll();
+            var servers = loggedUser.GetAllServers();
             for (int i = 0; i < servers.Count; ++i)
-                Servers.Add(servers[i].ToObservable());
+                Servers.Add(servers[i]);
         }
     }
 }

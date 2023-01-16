@@ -21,8 +21,10 @@ namespace Client.MVVM.ViewModel
         }
         public string Description { get; }
         public bool Cancelable { get; }
+        public bool ProgressBarVisible { get; }
 
-        public ProgressBarViewModel(DoWorkEventHandler work, string description, bool cancelable)
+        private ProgressBarViewModel(DoWorkEventHandler work, string description, bool cancelable,
+            bool progressBarVisible)
         {
             Cancel = new RelayCommand(e => worker.CancelAsync());
             worker = new BackgroundWorker
@@ -35,6 +37,7 @@ namespace Client.MVVM.ViewModel
             worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
             Description = description;
             Cancelable = cancelable;
+            ProgressBarVisible = progressBarVisible;
         }
 
         public void BeginWorking()
@@ -60,9 +63,10 @@ namespace Client.MVVM.ViewModel
         }
 
         public static Status ShowDialog(Window owner, string operationDescriptionText,
-            bool cancelable, DoWorkEventHandler work)
+            bool cancelable, DoWorkEventHandler work, bool progressBarVisible = true)
         {
-            var vm = new ProgressBarViewModel(work, operationDescriptionText, cancelable);
+            var vm = new ProgressBarViewModel(work, operationDescriptionText, cancelable,
+                progressBarVisible);
             var win = new ProgressBarWindow(owner, vm);
             // zapobiegamy ALT + F4 w oknie z progress barem
             CancelEventHandler cancelHandler = (sender, args) => args.Cancel = true;

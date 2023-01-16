@@ -32,41 +32,39 @@ namespace Client.MVVM.ViewModel
                     Alert(valSta.Message);
                     return;
                 }
-                var newUser = pc.CreateLocalUser(user.Name, password);
-                var db = newUser.GetDatabase();
-                if (!db.Exists())
+                if (!user.DirectoryExists())
                 {
-                    Alert(d["User's database does not exist. An empty database will be created."]);
-                    db.Create();
+                    Alert(d["User's database does not exist."]);
+                    return;
                 }
-                else // jeżeli katalog z plikami bazy danych istnieje, to odszyfrowujemy je starym hasłem
+                // jeżeli katalog z plikami bazy danych istnieje, to odszyfrowujemy je starym hasłem
+                var decSta = ProgressBarViewModel.ShowDialog(window,
+                    d["Decrypting user's database."], true,
+                    (worker, args) =>
+                    pc.DecryptDirectory(new BackgroundProgress((BackgroundWorker)worker, args),
+                        user.DirectoryPath,
+                        pc.ComputeDigest(oldPassword, user.DbSalt),
+                        user.DbInitializationVector));
+                if (decSta.Code == 1)
                 {
-                    var decSta = ProgressBarViewModel.ShowDialog(window,
-                        d["Decrypting user's database."], true,
-                        (worker, args) =>
-                        pc.DecryptDirectory(new BackgroundProgress((BackgroundWorker)worker, args),
-                            db.DirectoryPath,
-                            pc.ComputeDigest(oldPassword, user.DBSalt),
-                            user.DBInitializationVector));
-                    if (decSta.Code == 1)
-                    {
-                        Alert(d["Database decryption and password change canceled."]);
-                        return;
-                    }
-                    else if (decSta.Code < 0)
-                    {
-                        Alert(decSta.Message);
-                        return;
-                    }
+                    Alert(d["Password change canceled."]);
+                    return;
                 }
+                else if (decSta.Code < 0)
+                {
+                    Alert(decSta.Message);
+                    return;
+                }
+                // wyznaczamy nową sól i skrót hasła oraz IV i sól bazy danych
+                user.ResetPassword(password);
                 // zaszyfrowujemy plik bazy danych nowym hasłem
                 var encSta = ProgressBarViewModel.ShowDialog(window,
                     d["Encrypting user's database."], false,
                     (worker, args) =>
                     pc.EncryptDirectory(new BackgroundProgress((BackgroundWorker)worker, args),
-                        db.DirectoryPath,
-                        pc.ComputeDigest(password, newUser.DBSalt),
-                        newUser.DBInitializationVector));
+                        user.DirectoryPath,
+                        pc.ComputeDigest(password, user.DbSalt),
+                        user.DbInitializationVector));
                 if (encSta.Code == 1)
                 {
                     Alert(d["You should not have canceled database decryption. It may have been corrupted."]);
@@ -78,7 +76,7 @@ namespace Client.MVVM.ViewModel
                     return;
                 }
 
-                var updSta = lus.Update(user.Name, newUser);
+                var updSta = lus.Update(user.Name, user.ToSerializable());
                 if (updSta.Code != 0)
                 {
                     Alert(updSta.Message);
@@ -86,8 +84,6 @@ namespace Client.MVVM.ViewModel
                 }
                 password.Dispose();
                 confirmedPassword.Dispose();
-                /* user.Salt = salt;
-                user.Digest = digest; */
                 OnRequestClose(new Status(0));
             });
         }

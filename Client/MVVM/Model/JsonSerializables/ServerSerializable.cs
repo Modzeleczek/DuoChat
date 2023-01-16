@@ -1,23 +1,24 @@
 ﻿using Shared.MVVM.Model;
 using System;
-using System.Numerics;
 
-namespace Client.MVVM.Model.JsonConvertibles
+namespace Client.MVVM.Model.JsonSerializables
 {
-    public class Server
+    public class ServerSerializable
     {
-        public Guid GUID { get; set; }
-        public BigInteger PublicKey { get; set; }
+        #region Properties
+        public Guid Guid { get; set; }
+        public byte[] PublicKey { get; set; }
         public int IpAddress { get; set; }
         public ushort Port { get; set; }
         public string Name { get; set; }
+        #endregion
 
         public override bool Equals(object obj)
         {
-            if (!(obj is Server)) return base.Equals(obj);
-            var ser = (Server)obj;
+            if (!(obj is ServerSerializable)) return false;
+            var ser = (ServerSerializable)obj;
             // return KeyEquals(ser.IpAddress, ser.Port);
-            return KeyEquals(ser.GUID);
+            return KeyEquals(ser.Guid);
         }
 
         public override int GetHashCode()
@@ -28,14 +29,14 @@ namespace Client.MVVM.Model.JsonConvertibles
         public bool KeyEquals(Guid guid)
         {
             // return IpAddress.Equals(ipAddress) && Port == port;
-            return GUID == guid;
+            return Guid == guid;
         }
 
-        public XamlObservables.Server ToObservable() =>
-            new XamlObservables.Server
+        public Server ToObservable() =>
+            new Server
             {
-                GUID = GUID,
-                PublicKey = PublicKey,
+                Guid = Guid,
+                PublicKey = new Shared.MVVM.Model.Cryptography.PublicKey(PublicKey),
                 IpAddress = new IPv4Address(IpAddress),
                 Port = Port,
                 Name = Name

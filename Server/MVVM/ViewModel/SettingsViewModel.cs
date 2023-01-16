@@ -4,6 +4,7 @@ using Shared.MVVM.Model;
 using Shared.MVVM.Model.Cryptography;
 using System;
 using System.IO;
+using System.Net;
 using System.Text;
 using System.Windows;
 
@@ -86,7 +87,7 @@ namespace Server.MVVM.ViewModel
 
             LoadFromFile();
 
-            Callback startStopHandler = (_) => ServerStopped = !server.Running;
+            Callback startStopHandler = (_) => ServerStopped = !server.IsRunning;
             server.Started += startStopHandler;
             server.Stopped += startStopHandler;
             // server.Started += (_) => ServerStopped = false;
@@ -95,17 +96,17 @@ namespace Server.MVVM.ViewModel
             ToggleServer = new RelayCommand(_ =>
             {
                 // if (!ServerStopped)
-                if (server.Running)
+                if (server.IsRunning)
                 {
-                    server.BeginStop();
+                    server.RequestStop();
                     return;
                 }
                 if (!ParseGuid(out Guid guid)) return;
                 if (!ParsePrivateKey(out PrivateKey privateKey)) return;
                 if (!ParseIpAddress(out IPv4Address ipAddress)) return;
-                if (!ParsePort(out ushort port)) return;
+                if (!ParsePort(out int port)) return;
                 if (!ParseCapacity(out int capacity)) return;
-                server.BeginStart(guid, privateKey, ipAddress.BinaryRepresentation, port,
+                server.Start(guid, privateKey, ipAddress.ToIPAddress(), port,
                     Name, capacity);
             });
 
@@ -178,12 +179,18 @@ namespace Server.MVVM.ViewModel
             return true;
         }
 
-        private bool ParsePort(out ushort port)
+        private bool ParsePort(out int port)
         {
             port = 0;
-            if (!ushort.TryParse(Port, out ushort value))
+            if (!int.TryParse(Port, out int value))
             {
                 Alert(d["Invalid port format."]);
+                return false;
+            }
+            int min = IPEndPoint.MinPort, max = IPEndPoint.MaxPort;
+            if (!(value >= min && value <= max))
+            {
+                Alert(d["Port must be in range"] + $" <{min}, {max}>.");
                 return false;
             }
             port = value;

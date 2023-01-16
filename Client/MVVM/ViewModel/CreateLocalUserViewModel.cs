@@ -42,23 +42,22 @@ namespace Client.MVVM.ViewModel
                     Alert(d["User with name"] + $" {userName} " + d["already exists."]);
                     return;
                 }
-                var newUser = pc.CreateLocalUser(userName, password);
-                var db = newUser.GetDatabase();
-                if (db.Exists())
+                var newUser = new LocalUser(userName, password);
+                if (newUser.DirectoryExists())
                 {
-                    Alert(d["Database already exists and will be removed."]);
-                    db.Delete();
+                    Alert(d["Database with such username already exists."]);
+                    return;
                 }
-                db.Create();
-                var addSta = lus.Add(newUser);
-                if (addSta.Code != 0)
+                newUser.CreateDirectory();
+                var addStatus = lus.Add(newUser.ToSerializable());
+                if (addStatus.Code != 0)
                 {
-                    Alert(addSta.Message);
+                    Alert(addStatus.Message);
                     return;
                 }
                 password.Dispose();
                 confirmedPassword.Dispose();
-                OnRequestClose(new Status(0));
+                OnRequestClose(new Status(0, null, newUser));
             });
         }
 

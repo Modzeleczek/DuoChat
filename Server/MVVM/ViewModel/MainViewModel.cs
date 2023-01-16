@@ -46,10 +46,10 @@ namespace Server.MVVM.ViewModel
                 };
                 Close = new RelayCommand(_ =>
                 {
-                    if (server.Running)
+                    if (server.IsRunning)
                     {
                         server.Stopped += closeApplication;
-                        server.BeginStop();
+                        server.RequestStop();
                     }
                     else closeApplication(null);
                 });

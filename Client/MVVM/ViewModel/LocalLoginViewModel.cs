@@ -23,21 +23,20 @@ namespace Client.MVVM.ViewModel
                     Alert(d["Wrong password."]);
                     return;
                 }
-                object retDat = null;
-                var db = user.GetDatabase();
-                if (!db.Exists())
+                dynamic statusData = null;
+                if (!user.DirectoryExists())
                 {
-                    Alert(d["User's database does not exist. An empty database will be created."]);
-                    db.Create();
+                    Alert(d["User's database does not exist."]);
+                    return;
                 }
                 if (returnEnteredPassword)
-                    retDat = new { LoggedUser = user, Password = password };
+                    statusData = new { LoggedUser = user, Password = password };
                 else
                 {
                     password.Dispose();
-                    retDat = user;
+                    statusData = user;
                 }
-                OnRequestClose(new Status(0, null, retDat));
+                OnRequestClose(new Status(0, null, statusData));
             });
         }
 

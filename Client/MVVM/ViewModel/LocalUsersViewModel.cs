@@ -3,6 +3,7 @@ using Client.MVVM.Model.BsonStorages;
 using Client.MVVM.View.Windows;
 using Shared.MVVM.Core;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Security;
 using System.Windows;
 
@@ -31,7 +32,8 @@ namespace Client.MVVM.ViewModel
         {
             var lus = new LocalUsersStorage();
             WindowLoaded = new RelayCommand(e => window = (Window)e);
-            LocalUsers = new ObservableCollection<LocalUser>(lus.GetAll());
+            LocalUsers = new ObservableCollection<LocalUser>(
+                lus.GetAll().Select(e => e.ToObservable()).ToList());
             Create = new RelayCommand(_ =>
             {
                 var vm = new CreateLocalUserViewModel();
@@ -44,7 +46,9 @@ namespace Client.MVVM.ViewModel
                 vm.RequestClose += (s, e) => win.Close();
                 win.ShowDialog();
                 // ShowDialog blokuje wykonanie kodu z tego obiektu typu command do momentu zamknięcia okna tworzenia użytkownika
-                LocalUsers = new ObservableCollection<LocalUser>(lus.GetAll());
+                var status = vm.Status;
+                if (status.Code == 0)
+                    LocalUsers.Add((LocalUser)status.Data);
             });
             Login = new RelayCommand(clickedUser =>
             {
@@ -66,7 +70,7 @@ namespace Client.MVVM.ViewModel
                     }, d["Cancel"], d["Save"]);
                 vm.RequestClose += (s, e) => win.Close();
                 win.ShowDialog();
-                LocalUsers = new ObservableCollection<LocalUser>(lus.GetAll());
+                if (vm.Status.Code == 0) Reinsert(user);
             });
             ChangePassword = new RelayCommand(clickedUser =>
             {
@@ -84,7 +88,6 @@ namespace Client.MVVM.ViewModel
                 vm.RequestClose += (s, e) => win.Close();
                 win.ShowDialog();
                 curPas.Dispose();
-                LocalUsers = new ObservableCollection<LocalUser>(lus.GetAll());
             });
             Delete = new RelayCommand(clickedUser =>
             {
@@ -96,9 +99,23 @@ namespace Client.MVVM.ViewModel
                     Alert(sta.Message);
                     return;
                 }
-                user.GetDatabase().Delete();
-                LocalUsers = new ObservableCollection<LocalUser>(lus.GetAll());
+                user.DeleteDirectory();
+                Remove(user);
             });
+        }
+
+        private void Reinsert(LocalUser user)
+        {
+            int index = Remove(user);
+            LocalUsers.Insert(index, user);
+        }
+
+        private int Remove(LocalUser user)
+        {
+            var index = LocalUsers.IndexOf(user);
+            if (index == -1) return -1;
+            LocalUsers.RemoveAt(index);
+            return index;
         }
     }
 }

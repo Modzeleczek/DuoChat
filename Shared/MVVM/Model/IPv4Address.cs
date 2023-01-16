@@ -1,4 +1,6 @@
-﻿namespace Shared.MVVM.Model
+﻿using System.Net;
+
+namespace Shared.MVVM.Model
 {
     public class IPv4Address
     {
@@ -42,5 +44,7 @@
             }
             return string.Join(".", octets);
         }
+
+        public IPAddress ToIPAddress() => new IPAddress(BinaryRepresentation);
     }
 }
