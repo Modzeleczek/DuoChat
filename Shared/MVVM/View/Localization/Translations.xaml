@@ -4,6 +4,8 @@
   xmlns:l="clr-namespace:Shared.MVVM.View.Localization">
 
   <!-- nie używać tu automatycznego formatowania XAMLa -->
+  
+  <!-- tylko do klienta -->
   <!-- klucze używane w plikach .xaml - muszą być prawidłowymi nazwami zmiennych -->
   <l:Entry x:Key="At_message" EN="@message" PL="@wiadomość"/>
   <l:Entry x:Key="Delete" EN="Delete" PL="Usuń"/>
@@ -20,10 +22,10 @@
   <l:Entry x:Key="Conversation_name" EN="Conversation name" PL="Nazwa konwersacji"/>
   <l:Entry x:Key="Progress" EN="Progress" PL="Postęp"/>
   <l:Entry x:Key="Cancel" EN="Cancel" PL="Anuluj"/>
-  <l:Entry x:Key="Settings" EN="Settings" PL="Ustawienia"/>
   <l:Entry x:Key="Dark_theme" EN="Dark theme" PL="Ciemny motyw"/>
   <l:Entry x:Key="Log_local_user_out" EN="Log local user out" PL="Wyloguj lokalnego użytkownika"/>
   <l:Entry x:Key="Toggle_language" EN="Toggle language" PL="Przełącz język"/>
+  <l:Entry x:Key="Server_name" EN="Server name" PL="Nazwa serwera"/>
 
   <!-- klucze używane w plikach .cs - nie muszą być prawidłowymi nazwami zmiennych -->
   <l:Entry x:Key="Users" EN="Users" PL="Użytkownicy"/>
@@ -83,15 +85,16 @@
   <l:Entry x:Key="Database encryption and user creation canceled."
     EN="Database encryption and user creation canceled."
     PL="Szyfrowanie bazy danych i tworzenie użytkownika anulowane."/>
-  <l:Entry x:Key="Logged user does not exist." EN="Logged user does not exist."
-    PL="Zalogowany użytkownik nie istnieje."/>
+  <l:Entry x:Key="User set as logged does not exist." EN="User set as logged does not exist."
+    PL="Użytkownik oznaczony jako zalogowany nie istnieje."/>
   <l:Entry x:Key="User's database is corrupted. An empty database will be created."
     EN="User's database is corrupted. An empty database will be created."
     PL="Baza danych użytkownika jest uszkodzona. Stworzona zostanie pusta baza danych."/>
   <l:Entry x:Key="Password change canceled."
     EN="Password change canceled."
     PL="Zmiana hasła anulowana."/>
-  <l:Entry x:Key="Server with GUID" EN="Serwer z GUIDem" PL=""/>
+  <l:Entry x:Key="Server with IP address" EN="Server with IP address" PL="Serwer z adresem IP"/>
+  <l:Entry x:Key="and port" EN="and port" PL="i portem"/>
   <l:Entry x:Key="User's database decryption canceled. Logging out."
     EN="User's database decryption canceled. Logging out."
     PL="Odszyfrowywanie bazy danych użytkownika anulowane. Wylogowuję."/>
@@ -107,20 +110,13 @@
     PL="Szyfrowanie bazy danych użytkownika anulowane. Nie wylogowuję."/>
   <l:Entry x:Key="OK" EN="OK" PL="OK"/>
   <l:Entry x:Key="Alert" EN="Alert" PL="Alert"/>
-  <l:Entry x:Key="Invalid IP address format." EN="Invalid IP address format."
-    PL="Nieprawidłowy format adresu IP."/>
-  <l:Entry x:Key="Invalid port format." EN="Invalid port format."
-    PL="Nieprawidłowy format portu."/>
   <l:Entry x:Key="IP address" EN="IP address" PL="Adres IP"/>
   <l:Entry x:Key="Port" EN="Port" PL="Port"/>
   <l:Entry x:Key="Add" EN="Add" PL="Dodaj"/>
   <l:Entry x:Key="Enter your password" EN="Enter your password" PL="Podaj hasło"/>
   <l:Entry x:Key="Delete server" EN="Delete server" PL="Usuń serwer"/>
-  <l:Entry x:Key="Do you want to delete server '" EN="Do you want to delete server '"
-    PL="Czy chcesz usunąć serwer &quot;"/>
-  <l:Entry x:Key="'?" EN="'?" PL="&quot;?"/>
-  <l:Entry x:Key="Yes" EN="Yes" PL="Tak"/>
-  <l:Entry x:Key="No" EN="No" PL="Nie"/>
+  <l:Entry x:Key="Do you want to delete server" EN="Do you want to delete server"
+    PL="Czy chcesz usunąć serwer"/>
   <l:Entry x:Key="Username cannot be empty." EN="Username cannot be empty."
     PL="Nazwa użytkownika nie może być pusta."/>
   <l:Entry x:Key="Username may contain only lowercase characters and digits."
@@ -135,11 +131,10 @@
   <l:Entry x:Key="Error occured while renaming user's directory."
     EN="Error occured while renaming user's directory."
     PL="Wystąpił błąd podczas zmiany nazwy katalogu użytkownika."/>
-  <l:Entry x:Key="No translation: " EN="" PL="Brak tłumaczenia: "/>
-  <l:Entry x:Key="Text is null." EN="Text is null." PL="Tekst jest nullem."/>
-  <l:Entry x:Key="Text does not consist of two parts separated with semicolon."
-    EN="Text does not consist of two parts separated with semicolon."
-    PL="Tekst nie składa się z dwóch części rozdzielonych średnikiem."/>
+
+  <l:Entry x:Key="String does not consist of two parts separated with semicolon."
+    EN="String does not consist of two parts separated with semicolon."
+    PL="Ciąg nie składa się z dwóch części rozdzielonych średnikiem."/>
   <l:Entry x:Key="First number (p) is not valid Base64 string."
     EN="First number (p) is not valid Base64 string."
     PL="Pierwsza liczba (p) nie jest poprawnym ciągiem w formacie Base64."/>
@@ -152,5 +147,84 @@
   <l:Entry x:Key="Second number (q) is not prime."
     EN="Second number (q) is not prime."
     PL="Druga liczba (q) nie jest liczbą pierwszą."/>
+
+  <!-- tylko do serwera -->
+  <!-- klucze używane w plikach .xaml - muszą być prawidłowymi nazwami zmiennych -->
+  <l:Entry x:Key="Server" EN="Server" PL="Serwer"/>
+  <l:Entry x:Key="Connected_clients" EN="Connected clients" PL="Połączone klienty"/>
+  <l:Entry x:Key="Capacity" EN="Capacity" PL="Pojemność"/>
+  <l:Entry x:Key="Start" EN="Start" PL="Uruchom"/>
+  <l:Entry x:Key="Stop" EN="Stop" PL="Zatrzymaj"/>
+  <l:Entry x:Key="Name" EN="Name" PL="Nazwa"/>
+  <l:Entry x:Key="IP_address" EN="IP address" PL="Adres IP"/>
+  <l:Entry x:Key="GUID" EN="GUID" PL="GUID"/>
+  <l:Entry x:Key="Private_key" EN="Private key" PL="Klucz prywatny"/>
+  <l:Entry x:Key="Generate" EN="Generate" PL="Wygeneruj"/>
+  <l:Entry x:Key="Load" EN="Load" PL="Wczytaj"/>
+
+  <!-- klucze używane w plikach .cs - nie muszą być prawidłowymi nazwami zmiennych -->
+  <l:Entry x:Key="Invalid capacity format." EN="Invalid capacity format."
+    PL="Nieprawidłowy format pojemności."/>
+  <l:Entry x:Key="Server was started." EN="Server was started." PL="Serwer został uruchomiony."/>
+  <l:Entry x:Key="Server was not started." EN="Server was not started."
+    PL="Serwer nie został uruchomiony."/>
+  <l:Entry x:Key="Server was safely stopped." EN="Server was safely stopped."
+    PL="Serwer został bezpiecznie zatrzymany."/>
+  <l:Entry x:Key="Server was suddenly stopped." EN="Server was suddenly stopped."
+    PL="Serwer został nagle zatrzymany."/>
+  <l:Entry x:Key="Capacity must be positive." EN="Capacity must be positive."
+    PL="Pojemność musi być dodatnia."/>
+  <l:Entry x:Key="Generate or enter a GUID." EN="Generate or enter a GUID."
+    PL="Wygeneruj lub wprowadź GUID."/>
+  <l:Entry x:Key="Invalid GUID format." EN="Invalid GUID format." PL="Nieprawidłowy format GUID."/>
+  <l:Entry x:Key="Generate or enter a private key." EN="Generate or enter a private key."
+    PL="Wygeneruj lub wprowadź klucz prywatny."/>
+  <l:Entry x:Key="Do you want to generate a new GUID? Users may not trust a server changing its GUID without prior notice."
+    EN="Do you want to generate a new GUID? Users may not trust a server changing its GUID without prior notice."
+    PL="Czy chcesz wygenerować nowy GUID. Użytkownicy mogą nie ufać serwerowi zmieniającemu GUID bez uprzedniej zapowiedzi."/>
+  <l:Entry x:Key="Generate GUID" EN="Generate GUID" PL="Wygeneruj GUID"/>
+  <l:Entry x:Key="Settings file does not exist. Default settings will be loaded."
+    EN="Settings file does not exist. Default settings will be loaded."
+    PL="Plik ustawień nie istnieje. Zostaną załadowane domyślne ustawienia."/>
+  <l:Entry x:Key="Do you want to generate a new private key? Server's public key is derived from private key and users may not trust a server changing it without prior notice."
+    EN="Do you want to generate a new private key? Server's public key is derived from private key and users may not trust a server changing it without prior notice."
+    PL="Czy chcesz wygenerować nowy klucz prywatny. Klucz publiczny serwera pochodzi od klucza prywatnego i użytkownicy mogą nie ufać serwerowi zmieniającemu go bez uprzedniej zapowiedzi."/>
+  <l:Entry x:Key="Generate private key"
+    EN="Generate private key"
+    PL="Wygeneruj klucz prywatny"/>
+  <l:Entry x:Key="Private key generation"
+    EN="Private key generation"
+    PL="Generowanie klucza prywatnego"/>
+  <l:Entry x:Key="Private key validation"
+    EN="Private key validation"
+    PL="Walidacja klucza prywatnego"/>
+
+  <!-- do klienta i serwera -->
+  <!-- klucze używane w plikach .xaml - muszą być prawidłowymi nazwami zmiennych -->
+  <l:Entry x:Key="Settings" EN="Settings" PL="Ustawienia"/>
+
+  <!-- klucze używane w plikach .cs - nie muszą być prawidłowymi nazwami zmiennych -->
+  <l:Entry x:Key="No translation: " EN="" PL="Brak tłumaczenia: "/>
+  <l:Entry x:Key="No" EN="No" PL="Nie"/>
+  <l:Entry x:Key="Yes" EN="Yes" PL="Tak"/>
+
+  <l:Entry x:Key="Invalid IP address format." EN="Invalid IP address format."
+    PL="Nieprawidłowy format adresu IP."/>
+  <l:Entry x:Key="String is null." EN="String is null." PL="Ciąg jest nullem."/>
+  <l:Entry x:Key="String does not consist of four octets separated with periods."
+    EN="String does not consist of four octets separated with periods."
+    PL="Ciąg nie składa się z czterech oktetów oddzielonych kropkami."/>
+  <l:Entry x:Key="octet from the left is not valid number in range"
+    EN="octet from the left is not valid number in range"
+    PL="oktet od lewej nie jest poprawną liczbą z przedziału"/>
+
+  <l:Entry x:Key="Invalid port format." EN="Invalid port format."
+    PL="Nieprawidłowy format portu."/>
+  <l:Entry x:Key="String is not a number."
+    EN="String is not a number."
+    PL="Ciąg nie jest liczbą."/>
+  <l:Entry x:Key="Port must be in range"
+    EN="Port must be in range"
+    PL="Port musi należeć do przedziału"/>
 
 </ResourceDictionary>

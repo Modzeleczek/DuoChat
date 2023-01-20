@@ -162,7 +162,7 @@ namespace Client.MVVM.ViewModel
                 {
                     var server = (Server)obj;
                     var status = ConfirmationViewModel.ShowDialog(window,
-                        d["Do you want to delete server '"] + server.Name + d["'?"],
+                        d["Do you want to delete server"] + $" {server.IpAddress}:{server.Port}?",
                         d["Delete server"], d["No"], d["Yes"]);
                     if (status.Code == 0)
                     {
@@ -172,7 +172,7 @@ namespace Client.MVVM.ViewModel
                             _client.Disconnect();
                         }
                         Servers.Remove(server);
-                        loggedUser.DeleteServer(server.Guid);
+                        loggedUser.DeleteServer(server.IpAddress, server.Port);
                     }
                 });
 
@@ -231,7 +231,7 @@ namespace Client.MVVM.ViewModel
                         }
                         else if (encSta.Code != 0) return;
                         loggedUser = null;
-                        while (ShowLocalUsersDialog(lus).Code != 0) ;
+                        ShowLocalUsersDialog();
                     }
                 });
 
@@ -250,31 +250,32 @@ namespace Client.MVVM.ViewModel
                         ResetLists();
                         return;
                     }
-                    Alert(d["Logged user does not exist."]);
+                    Alert(d["User set as logged does not exist."]);
                 }
-                // gdy < 0, to błąd; gdy == 1, to użytkownik anulował odszyfrowywanie bazy danych
-                while (ShowLocalUsersDialog(lus).Code != 0) ;
+                ShowLocalUsersDialog();
             });
         }
 
-        private Status ShowLocalUsersDialog(LocalUsersStorage lus)
+        private void ShowLocalUsersDialog()
         {
-            var vm = new LocalUsersViewModel();
-            var win = new LocalUsersWindow(window, vm);
-            vm.RequestClose += (s, e) => win.Close();
-            win.ShowDialog();
-            var status = vm.Status;
-            // jeżeli użytkownik się zalogował, to vm.Status.Code == 0
-            if (status.Code != 0) // jeżeli użytkownik zamknął okno bez zalogowania się
-                Application.Current.Shutdown();
-            else
+            var lus = new LocalUsersStorage();
+            while (true)
             {
-                var dat = (dynamic)status.Data;
+                var loginStatus = LocalUsersViewModel.ShowDialog(window);
+                /* jeżeli użytkownik zamknął okno bez zalogowania się
+                (nie ma innych możliwych kodów niż 0 i 1) */
+                if (loginStatus.Code == 1)
+                {
+                    Application.Current.Shutdown();
+                    return;
+                }
+                // jeżeli użytkownik się zalogował, to vm.Status.Code == 0
+                var dat = (dynamic)loginStatus.Data;
                 var curPas = (SecureString)dat.Password;
                 var user = (LocalUser)dat.LoggedUser;
 
                 var pc = new PasswordCryptography();
-                status = ProgressBarViewModel.ShowDialog(window,
+                var decryptionStatus = ProgressBarViewModel.ShowDialog(window,
                     d["Decrypting user's database."], true,
                     (reporter) =>
                     pc.DecryptDirectory(reporter,
@@ -282,20 +283,20 @@ namespace Client.MVVM.ViewModel
                         pc.ComputeDigest(curPas, user.DbSalt),
                         user.DbInitializationVector));
                 curPas.Dispose();
-                if (status.Code == 1)
+                if (decryptionStatus.Code == 1)
                     Alert(d["User's database decryption canceled. Logging out."]);
                 /* jeżeli status.Code < 0, to alert z błędem został już wyświetlony w
                 ProgressBarViewModel.Worker_RunWorkerCompleted */
-                else if (status.Code == 0)
+                else if (decryptionStatus.Code == 0)
                 {
                     lus.SetLogged(true, user.Name);
                     loggedUser = user;
                     ResetLists();
+                    return;
                 }
             }
-            return status;
         }
-        
+
         private void ClearLists()
         {
             SelectedConversation = null;

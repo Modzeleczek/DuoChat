@@ -27,8 +27,15 @@ namespace Shared.MVVM.Model.Cryptography
             _q = q;
         }
 
-        public PrivateKey()
+        public static void Random(ProgressReporter reporter)
         {
+            reporter.Result = RandomInner(reporter);
+        }
+
+        private static Status RandomInner(ProgressReporter reporter)
+        {
+            reporter.FineMax = 2;
+            reporter.FineProgress = 0;
             using (var rng = RandomNumberGenerator.Create())
             {
                 // generujemy 2 losowe liczby z zakresu <0, 2^(8*128)-1>
@@ -40,10 +47,17 @@ namespace Shared.MVVM.Model.Cryptography
                 var one = new BigInteger(1);
                 p |= (one << (64 * 8));
                 q |= (one << (64 * 8));
+
                 p = FirstProbablePrimeGreaterThan(p);
+                reporter.FineProgress = 1;
+                if (reporter.CancellationPending) return new Status(1);
+
                 q = FirstProbablePrimeGreaterThan(q);
-                _p = ToUnsignedBigEndian(p);
-                _q = ToUnsignedBigEndian(q);
+                reporter.FineProgress = 2;
+                if (reporter.CancellationPending) return new Status(1);
+
+                return new Status(0, null, new PrivateKey(
+                    ToUnsignedBigEndian(p), ToUnsignedBigEndian(q)));
             }
         }
 
@@ -80,11 +94,11 @@ namespace Shared.MVVM.Model.Cryptography
             reporter.FineProgress = 0;
 
             if (text == null)
-                return new Status(-1, d["Text is null."]);
+                return new Status(-1, d["String is null."]);
 
             var split = text.Split(';');
             if (split.Length != 2)
-                return new Status(-2, d["Text does not consist of two parts separated with semicolon."]);
+                return new Status(-2, d["String does not consist of two parts separated with semicolon."]);
 
             byte[] p = null;
             try
@@ -100,9 +114,11 @@ namespace Shared.MVVM.Model.Cryptography
 
             if (!IsProbablePrime(p)) return new Status(-5, d["First number (p) is not prime."]);
             reporter.FineProgress = 1;
+            if (reporter.CancellationPending) return new Status(1);
 
             if (!IsProbablePrime(q)) return new Status(-6, d["Second number (q) is not prime."]);
             reporter.FineProgress = 2;
+            if (reporter.CancellationPending) return new Status(1);
 
             return new Status(0, null, new PrivateKey(p, q));
         }
@@ -165,7 +181,7 @@ namespace Shared.MVVM.Model.Cryptography
             }
         }
 
-        private BigInteger FirstProbablePrimeGreaterThan(BigInteger min)
+        private static BigInteger FirstProbablePrimeGreaterThan(BigInteger min)
         {
             /* test pierwszości Millera-Rabina stwierdza, że liczba jest złożona lub prawdopodobnie (ale nie na pewno) pierwsza; trzeci parametr mpz_probable_prime_p równy np. 100 oznacza, że chcemy, aby prawdopodobieństwo, że liczba złożona jest nazwana pierwszą, wynosiło 2^(-100) */
             byte[] bytes;
@@ -189,7 +205,7 @@ namespace Shared.MVVM.Model.Cryptography
             return new BigInteger(bytes);
         }
 
-        private BigInteger GenerateRandom(int octetCount, bool sign, RandomNumberGenerator rng)
+        private static BigInteger GenerateRandom(int octetCount, bool sign, RandomNumberGenerator rng)
         {
             byte[] octets = new byte[octetCount];
             rng.GetBytes(octets);
@@ -201,7 +217,7 @@ namespace Shared.MVVM.Model.Cryptography
             return new BigInteger(octets);
         }
 
-        private byte[] ToUnsignedBigEndian(BigInteger bi)
+        private static byte[] ToUnsignedBigEndian(BigInteger bi)
         {
             // wygenerowana liczba nie może być ujemna
             /* if (bi.Sign == -1)
@@ -215,7 +231,7 @@ namespace Shared.MVVM.Model.Cryptography
             return bytes;
         }
 
-        private void Reverse(byte[] array)
+        private static void Reverse(byte[] array)
         {
             int len = array.Length;
             for (int i = 0; i < len / 2; ++i)

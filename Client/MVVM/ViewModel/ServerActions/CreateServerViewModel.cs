@@ -5,7 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System;
 using Shared.MVVM.Model;
-using Shared.MVVM.Model.Cryptography;
+using Shared.MVVM.Model.Networking;
 
 namespace Client.MVVM.ViewModel
 {
@@ -18,36 +18,44 @@ namespace Client.MVVM.ViewModel
             Confirm = new RelayCommand(e =>
             {
                 var inpCtrls = (Control[])e;
+
                 var ipAddressStr = ((TextBox)inpCtrls[0]).Text;
-                if (!IPv4Address.TryParse(ipAddressStr, out IPv4Address ipAddress))
+                var ipParseStatus = IPv4Address.TryParse(ipAddressStr);
+                if (ipParseStatus.Code != 0)
                 {
-                    Alert(d["Invalid IP address format."]);
+                    Alert(d["Invalid IP address format."] + " " + ipParseStatus.Message);
                     return;
                 }
+                var ipAddress = (IPv4Address)ipParseStatus.Data;
+
                 var portStr = ((TextBox)inpCtrls[1]).Text;
-                if (!ushort.TryParse(portStr, out ushort port))
+                var portParseStatus = Port.TryParse(portStr);
+                if (portParseStatus.Code != 0)
                 {
-                    Alert(d["Invalid port format."]);
+                    Alert(d["Invalid port format."] + " " + portParseStatus.Message);
                     return;
                 }
+                var port = (Port)portParseStatus.Data;
+
                 if (!loggedUser.DirectoryExists())
                 {
                     Alert(d["User's database does not exist."]);
                     return;
                 }
-                var serGuid = Guid.NewGuid();
-                if (loggedUser.ServerExists(serGuid))
+                
+                if (loggedUser.ServerExists(ipAddress, port))
                 {
-                    Alert(d["Server with GUID"] + $" {serGuid} " + d["already exists."]);
+                    Alert(d["Server with IP address"] + $" {ipAddress} " +
+                        "and port" + $" {port} " + d["already exists."]);
                     return;
                 }
                 var newServer = new Server
                 {
-                    Guid = serGuid,
-                    PublicKey = new PublicKey(new byte[] {0b0000_1111}),
+                    Guid = Guid.Empty,
+                    PublicKey = null,
                     IpAddress = ipAddress,
                     Port = port,
-                    Name = "przykładowa nazwa"
+                    Name = null
                 };
                 var status = loggedUser.AddServer(newServer);
                 if (status.Code != 0)

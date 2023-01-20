@@ -238,10 +238,7 @@ namespace Client.MVVM.Model
             Status status, string path)
         {
             if (reporter.CancellationPending)
-            {
-                reporter.Cancel = true;
-                status.Code = 1;
-            }
+                status = new Status(1);
             var tempPath = path + ".temp";
             if (status.Code == 0)
             {
@@ -291,10 +288,7 @@ namespace Client.MVVM.Model
             Status status, string[] files)
         {
             if (reporter.CancellationPending)
-            {
-                reporter.Cancel = true;
-                status.Code = 1;
-            }
+                status = new Status(1);
             if (status.Code == 0)
             {
                 foreach (var f in files)

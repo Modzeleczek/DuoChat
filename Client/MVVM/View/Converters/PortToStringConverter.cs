@@ -5,23 +5,23 @@ using System.Windows.Data;
 
 namespace Client.MVVM.View.Converters
 {
-    public class IPv4AddressToStringConverter : IValueConverter
+    public class PortToStringConverter : IValueConverter
     {
-        public IPv4AddressToStringConverter() { }
+        public PortToStringConverter() { }
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var ipAddress = value as IPv4Address;
-            if (ipAddress == null)
-                throw new ArgumentException("Value is not of type IPv4Address.");
-            return ipAddress.ToString();
+            var port = value as Port;
+            if (port == null)
+                throw new ArgumentException("Value is not of type Port.");
+            return port.ToString();
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var status = IPv4Address.TryParse((string)value);
+            var status = Port.TryParse((string)value);
             if (status.Code != 0) return null;
-            return (IPv4Address)status.Data;
+            return (Port)status.Data;
         }
     }
 }

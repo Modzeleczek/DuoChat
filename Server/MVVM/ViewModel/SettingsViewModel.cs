@@ -1,12 +1,9 @@
 ﻿using Newtonsoft.Json;
 using Shared.MVVM.Core;
-using Shared.MVVM.Model;
 using Shared.MVVM.Model.Cryptography;
-using Shared.MVVM.ViewModel.LongBlockingOperation;
+using Shared.MVVM.Model.Networking;
 using System;
-using System.ComponentModel;
 using System.IO;
-using System.Net;
 using System.Text;
 using System.Windows;
 
@@ -105,11 +102,10 @@ namespace Server.MVVM.ViewModel
                 }
                 if (!ParseGuid(out Guid guid)) return;
                 if (!ParseIpAddress(out IPv4Address ipAddress)) return;
-                if (!ParsePort(out int port)) return;
+                if (!ParsePort(out Port port)) return;
                 if (!ParseCapacity(out int capacity)) return;
                 if (!ParsePrivateKey(out PrivateKey privateKey)) return;
-                server.Start(guid, privateKey, ipAddress.ToIPAddress(), port,
-                    Name, capacity);
+                server.Start(guid, privateKey, ipAddress, port, Name, capacity);
             });
 
             GenerateGuid = new RelayCommand(_ =>
@@ -123,11 +119,17 @@ namespace Server.MVVM.ViewModel
 
             GeneratePrivateKey = new RelayCommand(_ =>
             {
-                var status = ConfirmationViewModel.ShowDialog(window,
+                var confStatus = ConfirmationViewModel.ShowDialog(window,
                     d["Do you want to generate a new private key? Server's public key is derived from private key and users may not trust a server changing it without prior notice."],
                     d["Generate private key"], d["No"], d["Yes"]);
-                if (status.Code == 0)
-                    PrivateKey = new PrivateKey().ToString();
+                if (confStatus.Code == 0)
+                {
+                    var genStatus = ProgressBarViewModel.ShowDialog(window,
+                        d["Private key generation"], true,
+                        (reporter) => Shared.MVVM.Model.Cryptography.PrivateKey.Random(reporter));
+                    if (genStatus.Code == 1) return; // anulowano
+                    PrivateKey = ((PrivateKey)genStatus.Data).ToString();
+                }
             });
 
             Load = new RelayCommand(_ => LoadFromFile());
@@ -174,30 +176,26 @@ namespace Server.MVVM.ViewModel
         private bool ParseIpAddress(out IPv4Address ipAddress)
         {
             ipAddress = null;
-            if (!IPv4Address.TryParse(IpAddress, out IPv4Address value))
+            var status = IPv4Address.TryParse(IpAddress);
+            if (status.Code != 0)
             {
-                Alert(d["Invalid IP address format."]);
+                Alert(d["Invalid IP address format."] + " " + status.Message);
                 return false;
             }
-            ipAddress = value;
+            ipAddress = (IPv4Address)status.Data;
             return true;
         }
 
-        private bool ParsePort(out int port)
+        private bool ParsePort(out Port port)
         {
-            port = 0;
-            if (!int.TryParse(Port, out int value))
+            port = null;
+            var status = Shared.MVVM.Model.Networking.Port.TryParse(Port);
+            if (status.Code != 0)
             {
-                Alert(d["Invalid port format."]);
+                Alert(d["Invalid port format."] + " " + status.Message);
                 return false;
             }
-            int min = IPEndPoint.MinPort, max = IPEndPoint.MaxPort;
-            if (!(value >= min && value <= max))
-            {
-                Alert(d["Port must be in range"] + $" <{min}, {max}>.");
-                return false;
-            }
-            port = value;
+            port = (Port)status.Data;
             return true;
         }
 

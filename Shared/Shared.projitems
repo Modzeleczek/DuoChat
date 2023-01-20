@@ -15,7 +15,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Cryptography\HybridCryptosystem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Cryptography\PrivateKey.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Cryptography\PublicKey.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\IPv4Address.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\IPv4Address.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Port.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Status.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\ViewModel\AlertViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\ViewModel\ConfirmationViewModel.cs" />
@@ -29,5 +30,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\View\Localization\Entry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\View\Localization\Translator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\View\Windows\DialogWindow.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="$(MSBuildThisFileDirectory)MVVM\View\Localization\Translations.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
 </Project>

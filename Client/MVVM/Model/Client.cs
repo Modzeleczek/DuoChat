@@ -32,7 +32,7 @@ namespace Client.MVVM.Model
             Status status = null;
             try
             {
-                var remoteEndPoint = new IPEndPoint(server.IpAddress.ToIPAddress(), server.Port);
+                var remoteEndPoint = new IPEndPoint(server.IpAddress.ToIPAddress(), server.Port.Value);
                 _socket = new TcpClient();
                 _socket.Connect(remoteEndPoint);
                 _server = server;

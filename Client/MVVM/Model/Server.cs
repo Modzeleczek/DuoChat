@@ -1,7 +1,7 @@
 ﻿using Client.MVVM.Model.JsonSerializables;
 using Shared.MVVM.Core;
-using Shared.MVVM.Model;
 using Shared.MVVM.Model.Cryptography;
+using Shared.MVVM.Model.Networking;
 using System;
 
 namespace Client.MVVM.Model
@@ -20,8 +20,8 @@ namespace Client.MVVM.Model
             set { ipAddress = value; OnPropertyChanged(); }
         }
 
-        private ushort port;
-        public ushort Port
+        private Port port;
+        public Port Port
         {
             get => port;
             set { port = value; OnPropertyChanged(); }
@@ -39,9 +39,9 @@ namespace Client.MVVM.Model
             new ServerSerializable
             {
                 Guid = Guid,
-                PublicKey = PublicKey.ToBytes(),
+                PublicKey = PublicKey?.ToBytes(),
                 IpAddress = IpAddress.BinaryRepresentation,
-                Port = Port,
+                Port = Port.Value,
                 Name = Name
             };
     }

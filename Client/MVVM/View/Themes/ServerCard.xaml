@@ -39,8 +39,20 @@
                   FontFamily="/MVVM/View/Fonts/RedHatDisplay"
                   FontSize="15"
                   FontWeight="SemiBold"
-                  Foreground="#C9ADA7"
-                  Text="{Binding Name}" />
+                  Foreground="#C9ADA7">
+                  <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                      <Setter Property="Text" Value="{Binding Name}"/>
+                      <Style.Triggers>
+                        <DataTrigger Binding="{Binding Path=Name.Length, FallbackValue=-1,
+                          TargetNullValue=-1}" Value="-1">
+                          <Setter Property="Text" Value="{Binding Source={x:Static l:Translator.Instance},
+                            Path=D.Server_name}"/>
+                        </DataTrigger>
+                      </Style.Triggers>
+                    </Style>
+                  </TextBlock.Style>
+                </TextBlock>
                 <TextBlock
                   Margin="5,0,0,10"
                   Padding="0"
@@ -49,11 +61,12 @@
                   FontWeight="Normal"
                   Foreground="#F2E9E4">
                   <TextBlock.Resources>
-                    <c:IPv4AddressToStringConverter x:Key="ConvInstance" />
+                    <c:IPv4AddressToStringConverter x:Key="IpAddressConv" />
+                    <c:PortToStringConverter x:Key="PortConv" />
                   </TextBlock.Resources>
-                  <Run Text="{Binding IpAddress, Converter={StaticResource ConvInstance}}" />
+                  <Run Text="{Binding IpAddress, Converter={StaticResource IpAddressConv}}" />
                   <Run Text=":" />
-                  <Run Text="{Binding Port}" />
+                  <Run Text="{Binding Port, Converter={StaticResource PortConv}}" />
                 </TextBlock>
               </StackPanel>
               <StackPanel

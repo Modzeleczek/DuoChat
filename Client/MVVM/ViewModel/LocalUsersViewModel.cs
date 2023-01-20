@@ -2,7 +2,9 @@
 using Client.MVVM.Model.BsonStorages;
 using Client.MVVM.View.Windows;
 using Shared.MVVM.Core;
+using Shared.MVVM.Model;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Security;
 using System.Windows;
@@ -116,6 +118,15 @@ namespace Client.MVVM.ViewModel
             if (index == -1) return -1;
             LocalUsers.RemoveAt(index);
             return index;
+        }
+
+        public static Status ShowDialog(Window owner)
+        {
+            var vm = new LocalUsersViewModel();
+            var win = new LocalUsersWindow(owner, vm);
+            vm.RequestClose += (sender, args) => win.Close();
+            win.ShowDialog();
+            return vm.Status;
         }
     }
 }

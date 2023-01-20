@@ -6,10 +6,6 @@ namespace Shared.MVVM.ViewModel.LongBlockingOperation
 {
     public abstract class ProgressBarViewModel : WindowViewModel
     {
-        #region Commands
-        public RelayCommand Cancel { get; protected set; }
-        #endregion
-
         #region Properties
         private double progress;
         public double Progress
@@ -32,7 +28,9 @@ namespace Shared.MVVM.ViewModel.LongBlockingOperation
         {
             // potrzebne, jeżeli chcemy pojawiać alerty nad oknem postępu (ProgressBarWindow)
             WindowLoaded = new RelayCommand(e => window = (Window)e);
-            Cancel = new RelayCommand(e => worker.CancelAsync());
+            /* worker.CancelAsync tylko ustawia worker.cancellationPending na true
+            getterem do worker.cancellationPending jest worker.CancellationPending */
+            Close = new RelayCommand(e => worker.CancelAsync());
             worker = new BackgroundWorker
             {
                 WorkerReportsProgress = true,

@@ -8,6 +8,7 @@ using Shared.MVVM.Core;
 using System;
 using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.View.Localization;
+using Shared.MVVM.Model.Networking;
 
 namespace Server.MVVM.Model
 {
@@ -34,13 +35,13 @@ namespace Server.MVVM.Model
 
         public Server() { }
 
-        public void Start(Guid guid, PrivateKey privateKey, IPAddress ipAddress, int port,
+        public void Start(Guid guid, PrivateKey privateKey, IPv4Address ipAddress, Port port,
             string name, int capacity)
         {
             Status status = null;
             try
             {
-                var localEndPoint = new IPEndPoint(ipAddress, port);
+                var localEndPoint = new IPEndPoint(ipAddress.ToIPAddress(), port.Value);
                 _listener = new TcpListener(localEndPoint);
                 _listener.Start(capacity);
                 _guid = guid;

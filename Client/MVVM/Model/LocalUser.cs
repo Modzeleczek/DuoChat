@@ -2,11 +2,11 @@
 using Client.MVVM.Model.JsonSerializables;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model;
+using Shared.MVVM.Model.Networking;
 using Shared.MVVM.View.Localization;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Security;
 using System.Security.Cryptography;
 
@@ -103,13 +103,16 @@ namespace Client.MVVM.Model
             DbSalt = GenerateRandom(128 / 8); // 128 b sól
         }
 
-        public Status AddServer(Server server) => _serversStorage.Add(server.ToSerializable());
+        public Status AddServer(Server server) =>
+            _serversStorage.Add(server);
 
         public List<Server> GetAllServers() =>
-            _serversStorage.GetAll().Select(e => e.ToObservable()).ToList();
+            _serversStorage.GetAll();
 
-        public bool ServerExists(Guid guid) => _serversStorage.Exists(guid);
+        public bool ServerExists(IPv4Address ipAddress, Port port) =>
+            _serversStorage.Exists(ipAddress, port);
 
-        public Status DeleteServer(Guid guid) => _serversStorage.Delete(guid);
+        public Status DeleteServer(IPv4Address ipAddress, Port port) =>
+            _serversStorage.Delete(ipAddress, port);
     }
 }

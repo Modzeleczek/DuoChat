@@ -1,4 +1,4 @@
-﻿using Shared.MVVM.Model;
+﻿using Shared.MVVM.Model.Networking;
 using System;
 
 namespace Client.MVVM.Model.JsonSerializables
@@ -17,8 +17,7 @@ namespace Client.MVVM.Model.JsonSerializables
         {
             if (!(obj is ServerSerializable)) return false;
             var ser = (ServerSerializable)obj;
-            // return KeyEquals(ser.IpAddress, ser.Port);
-            return KeyEquals(ser.Guid);
+            return KeyEquals(ser.IpAddress, ser.Port);
         }
 
         public override int GetHashCode()
@@ -26,10 +25,9 @@ namespace Client.MVVM.Model.JsonSerializables
             return base.GetHashCode();
         }
 
-        public bool KeyEquals(Guid guid)
+        public bool KeyEquals(int ipAddress, ushort port)
         {
-            // return IpAddress.Equals(ipAddress) && Port == port;
-            return Guid == guid;
+            return IpAddress == ipAddress && Port == port;
         }
 
         public Server ToObservable() =>
@@ -38,7 +36,7 @@ namespace Client.MVVM.Model.JsonSerializables
                 Guid = Guid,
                 PublicKey = new Shared.MVVM.Model.Cryptography.PublicKey(PublicKey),
                 IpAddress = new IPv4Address(IpAddress),
-                Port = Port,
+                Port = new Port(Port),
                 Name = Name
             };
     }
