@@ -1,10 +1,10 @@
-﻿using Client.MVVM.View.Windows;
+﻿using Server.MVVM.View.Windows;
 using Shared.MVVM.Model;
 using System.ComponentModel;
 using System.Windows;
 using BaseProgressBarViewModel = Shared.MVVM.ViewModel.LongBlockingOperation.ProgressBarViewModel;
 
-namespace Client.MVVM.ViewModel
+namespace Server.MVVM.ViewModel
 {
     public class ProgressBarViewModel : BaseProgressBarViewModel
     {

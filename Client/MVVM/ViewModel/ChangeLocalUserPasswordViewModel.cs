@@ -2,6 +2,7 @@
 using Client.MVVM.Model.BsonStorages;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model;
+using Shared.MVVM.ViewModel.LongBlockingOperation;
 using System.ComponentModel;
 using System.Security;
 using System.Windows;
@@ -41,7 +42,7 @@ namespace Client.MVVM.ViewModel
                 var decSta = ProgressBarViewModel.ShowDialog(window,
                     d["Decrypting user's database."], true,
                     (worker, args) =>
-                    pc.DecryptDirectory(new BackgroundProgress((BackgroundWorker)worker, args),
+                    pc.DecryptDirectory(new ProgressReporter((BackgroundWorker)worker, args),
                         user.DirectoryPath,
                         pc.ComputeDigest(oldPassword, user.DbSalt),
                         user.DbInitializationVector));
@@ -50,18 +51,14 @@ namespace Client.MVVM.ViewModel
                     Alert(d["Password change canceled."]);
                     return;
                 }
-                else if (decSta.Code < 0)
-                {
-                    Alert(decSta.Message);
-                    return;
-                }
+                else if (decSta.Code != 0) return;
                 // wyznaczamy nową sól i skrót hasła oraz IV i sól bazy danych
                 user.ResetPassword(password);
                 // zaszyfrowujemy plik bazy danych nowym hasłem
                 var encSta = ProgressBarViewModel.ShowDialog(window,
                     d["Encrypting user's database."], false,
                     (worker, args) =>
-                    pc.EncryptDirectory(new BackgroundProgress((BackgroundWorker)worker, args),
+                    pc.EncryptDirectory(new ProgressReporter((BackgroundWorker)worker, args),
                         user.DirectoryPath,
                         pc.ComputeDigest(password, user.DbSalt),
                         user.DbInitializationVector));
@@ -72,7 +69,7 @@ namespace Client.MVVM.ViewModel
                 }
                 if (encSta.Code != 0)
                 {
-                    Alert(encSta.Message + " " + d["Database may have been corrupted."]);
+                    Alert(d["Database may have been corrupted."]);
                     return;
                 }
 

@@ -20,6 +20,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\ViewModel\AlertViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\ViewModel\ConfirmationViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\ViewModel\FormViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\ViewModel\LongBlockingOperation\ProgressBarViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\ViewModel\LongBlockingOperation\ProgressReporter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\ViewModel\ViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\ViewModel\WindowViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\View\Helpers\EnableDragHelper.cs" />

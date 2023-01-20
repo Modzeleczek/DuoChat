@@ -69,16 +69,14 @@ namespace Server.MVVM.ViewModel
                 {
                     string message = null;
                     if (status.Code == 0) message = d["Server was started."];
-                    else message = d["Server was not started."] +
-                        " " + d["No translation: "] + status.Message;
+                    else message = d["Server was not started."] + " " + status.Message;
                     UIInvoke(() => Alert(message));
                 };
                 server.Stopped += (status) =>
                 {
                     string message = null;
                     if (status.Code == 0) message = d["Server was safely stopped."];
-                    else message = d["Server was suddenly stopped."] +
-                        " " + d["No translation: "] + status.Message;
+                    else message = d["Server was suddenly stopped."] + " " + status.Message;
                     UIInvoke(() => Alert(message));
                 };
 

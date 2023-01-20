@@ -2,7 +2,9 @@
 using Shared.MVVM.Core;
 using Shared.MVVM.Model;
 using Shared.MVVM.Model.Cryptography;
+using Shared.MVVM.ViewModel.LongBlockingOperation;
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -102,10 +104,10 @@ namespace Server.MVVM.ViewModel
                     return;
                 }
                 if (!ParseGuid(out Guid guid)) return;
-                if (!ParsePrivateKey(out PrivateKey privateKey)) return;
                 if (!ParseIpAddress(out IPv4Address ipAddress)) return;
                 if (!ParsePort(out int port)) return;
                 if (!ParseCapacity(out int capacity)) return;
+                if (!ParsePrivateKey(out PrivateKey privateKey)) return;
                 server.Start(guid, privateKey, ipAddress.ToIPAddress(), port,
                     Name, capacity);
             });
@@ -157,13 +159,15 @@ namespace Server.MVVM.ViewModel
                 Alert(d["Generate or enter a private key."]);
                 return false;
             }
-            if (!Shared.MVVM.Model.Cryptography.PrivateKey.TryParse(
-                PrivateKey, out PrivateKey value))
-            {
-                Alert(d["Invalid private key format or either of its components is not prime."]);
+            var status = ProgressBarViewModel.ShowDialog(window,
+                d["Private key validation"], true,
+                (worker, args) => Shared.MVVM.Model.Cryptography.PrivateKey.TryParse(
+                    new ProgressReporter((BackgroundWorker)worker, args),
+                    PrivateKey));
+            if (status.Code == 1) return false; // anulowano
+            if (status.Code < 0)
                 return false;
-            }
-            privateKey = value;
+            privateKey = (PrivateKey)status.Data;
             return true;
         }
 

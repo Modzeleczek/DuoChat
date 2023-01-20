@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Shared.MVVM.View.Localization;
+using Shared.MVVM.ViewModel.LongBlockingOperation;
+using System;
 using System.IO;
 using System.Numerics;
 using System.Runtime.InteropServices;
@@ -64,6 +66,45 @@ namespace Shared.MVVM.Model.Cryptography
             {
                 return false;
             }
+        }
+
+        public static void TryParse(ProgressReporter reporter, string text)
+        {
+            reporter.Result = TryParseInner(reporter, text);
+        }
+
+        private static Status TryParseInner(ProgressReporter reporter, string text)
+        {
+            var d = Translator.Instance;
+            reporter.FineMax = 2;
+            reporter.FineProgress = 0;
+
+            if (text == null)
+                return new Status(-1, d["Text is null."]);
+
+            var split = text.Split(';');
+            if (split.Length != 2)
+                return new Status(-2, d["Text does not consist of two parts separated with semicolon."]);
+
+            byte[] p = null;
+            try
+            { p = Convert.FromBase64String(split[0]); }
+            catch (FormatException)
+            { return new Status(-3, d["First number (p) is not valid Base64 string."]); }
+
+            byte[] q = null;
+            try
+            { q = Convert.FromBase64String(split[1]); }
+            catch (FormatException)
+            { return new Status(-4, d["Second number (q) is not valid Base64 string."]); }
+
+            if (!IsProbablePrime(p)) return new Status(-5, d["First number (p) is not prime."]);
+            reporter.FineProgress = 1;
+
+            if (!IsProbablePrime(q)) return new Status(-6, d["Second number (q) is not prime."]);
+            reporter.FineProgress = 2;
+
+            return new Status(0, null, new PrivateKey(p, q));
         }
 
         private static bool IsProbablePrime(byte[] number)

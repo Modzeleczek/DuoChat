@@ -22,6 +22,7 @@
   <l:Entry x:Key="Generate" EN="Generate" PL="Wygeneruj"/>
   <l:Entry x:Key="Load" EN="Load" PL="Wczytaj"/>
   <l:Entry x:Key="Save" EN="Save" PL="Zapisz"/>
+  <l:Entry x:Key="Cancel" EN="Cancel" PL="Anuluj"/>
 
   <!-- klucze używane w plikach .cs - nie muszą być prawidłowymi nazwami zmiennych -->
   <l:Entry x:Key="Invalid IP address format." EN="Invalid IP address format."
@@ -45,9 +46,6 @@
   <l:Entry x:Key="Invalid GUID format." EN="Invalid GUID format." PL="Nieprawidłowy format GUID."/>
   <l:Entry x:Key="Generate or enter a private key." EN="Generate or enter a private key."
     PL="Wygeneruj lub wprowadź klucz prywatny."/>
-  <l:Entry x:Key="Invalid private key format or either of its components is not prime."
-    EN="Invalid private key format or either of its components is not prime."
-    PL="Nieprawidłowy format klucza prywatnego lub którykolwiek z jego składników nie jest liczbą pierwszą."/>
   <l:Entry x:Key="Do you want to generate a new GUID? Users may not trust a server changing its GUID without prior notice."
     EN="Do you want to generate a new GUID? Users may not trust a server changing its GUID without prior notice."
     PL="Czy chcesz wygenerować nowy GUID. Użytkownicy mogą nie ufać serwerowi zmieniającemu GUID bez uprzedniej zapowiedzi."/>
@@ -66,5 +64,24 @@
   <l:Entry x:Key="Port must be in range"
     EN="Port must be in range"
     PL="Port musi należeć do przedziału"/>
+  <l:Entry x:Key="Text is null." EN="Text is null." PL="Tekst jest nullem."/>
+  <l:Entry x:Key="Text does not consist of two parts separated with semicolon."
+    EN="Text does not consist of two parts separated with semicolon."
+    PL="Tekst nie składa się z dwóch części rozdzielonych średnikiem."/>
+  <l:Entry x:Key="First number (p) is not valid Base64 string."
+    EN="First number (p) is not valid Base64 string."
+    PL="Pierwsza liczba (p) nie jest poprawnym ciągiem w formacie Base64."/>
+  <l:Entry x:Key="Second number (q) is not valid Base64 string."
+    EN="Second number (q) is not valid Base64 string."
+    PL="Druga liczba (q) nie jest poprawnym ciągiem w formacie Base64."/>
+  <l:Entry x:Key="First number (p) is not prime."
+    EN="First number (p) is not prime."
+    PL="Pierwsza liczba (p) nie jest liczbą pierwszą."/>
+  <l:Entry x:Key="Second number (q) is not prime."
+    EN="Second number (q) is not prime."
+    PL="Druga liczba (q) nie jest liczbą pierwszą."/>
+  <l:Entry x:Key="Private key validation"
+    EN="Private key validation"
+    PL="Walidacja klucza prywatnego"/>
 
 </ResourceDictionary>

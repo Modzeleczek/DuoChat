@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel;
 
-namespace Client.MVVM.Model
+namespace Shared.MVVM.ViewModel.LongBlockingOperation
 {
-    public class BackgroundProgress
+    public class ProgressReporter
     {
         public BackgroundWorker worker;
         public DoWorkEventArgs args;
@@ -24,7 +24,7 @@ namespace Client.MVVM.Model
         public bool Cancel { set => args.Cancel = value; }
         public object Result { set => args.Result = value; }
 
-        public BackgroundProgress(BackgroundWorker worker, DoWorkEventArgs args)
+        public ProgressReporter(BackgroundWorker worker, DoWorkEventArgs args)
         {
             this.worker = worker;
             this.args = args;

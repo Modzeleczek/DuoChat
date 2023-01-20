@@ -4,6 +4,7 @@ using Client.MVVM.Model.JsonSerializables;
 using Client.MVVM.View.Windows;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model;
+using Shared.MVVM.ViewModel.LongBlockingOperation;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -206,7 +207,11 @@ namespace Client.MVVM.ViewModel
                     {
                         ClearLists();
                         var logSta = LocalLoginViewModel.ShowDialog(window, loggedUser, true);
-                        if (logSta.Code != 0) return;
+                        if (logSta.Code != 0)
+                        {
+                            ResetLists();
+                            return;
+                        }
                         var curPas = (SecureString)((dynamic)logSta.Data).Password;
 
                         lus.SetLogged(false);
@@ -215,7 +220,7 @@ namespace Client.MVVM.ViewModel
                         var encSta = ProgressBarViewModel.ShowDialog(window,
                             d["Encrypting user's database."], true,
                             (worker, args) =>
-                            pc.EncryptDirectory(new BackgroundProgress((BackgroundWorker)worker, args),
+                            pc.EncryptDirectory(new ProgressReporter((BackgroundWorker)worker, args),
                                 loggedUser.DirectoryPath,
                                 pc.ComputeDigest(curPas, loggedUser.DbSalt),
                                 loggedUser.DbInitializationVector));
@@ -225,13 +230,9 @@ namespace Client.MVVM.ViewModel
                             Alert(d["User's database encryption canceled. Not logging out."]);
                             return;
                         }
-                        else if (encSta.Code != 0)
-                        {
-                            Alert(encSta.Message);
-                            return;
-                        }
+                        else if (encSta.Code != 0) return;
                         loggedUser = null;
-                        while (ShowLocalUsersDialog(lus).Code < 0) ;
+                        while (ShowLocalUsersDialog(lus).Code != 0) ;
                     }
                 });
 
@@ -252,7 +253,8 @@ namespace Client.MVVM.ViewModel
                     }
                     Alert(d["Logged user does not exist."]);
                 }
-                while (ShowLocalUsersDialog(lus).Code < 0) ;
+                // gdy < 0, to błąd; gdy == 1, to użytkownik anulował odszyfrowywanie bazy danych
+                while (ShowLocalUsersDialog(lus).Code != 0) ;
             });
         }
 
@@ -276,19 +278,21 @@ namespace Client.MVVM.ViewModel
                 status = ProgressBarViewModel.ShowDialog(window,
                     d["Decrypting user's database."], true,
                     (worker, args) =>
-                    pc.DecryptDirectory(new BackgroundProgress((BackgroundWorker)worker, args),
+                    pc.DecryptDirectory(new ProgressReporter((BackgroundWorker)worker, args),
                         user.DirectoryPath,
                         pc.ComputeDigest(curPas, user.DbSalt),
                         user.DbInitializationVector));
                 curPas.Dispose();
                 if (status.Code == 1)
                     Alert(d["User's database decryption canceled. Logging out."]);
-                else if (status.Code != 0)
-                    Alert(status.Message);
-                // decSta.Code == 0
-                lus.SetLogged(true, user.Name);
-                loggedUser = user;
-                ResetLists();
+                /* jeżeli status.Code < 0, to alert z błędem został już wyświetlony w
+                ProgressBarViewModel.Worker_RunWorkerCompleted */
+                else if (status.Code == 0)
+                {
+                    lus.SetLogged(true, user.Name);
+                    loggedUser = user;
+                    ResetLists();
+                }
             }
             return status;
         }

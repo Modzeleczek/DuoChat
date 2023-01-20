@@ -189,7 +189,6 @@
   <ItemGroup>
     <Compile Include="MVVM\Model\Account.cs" />
     <Compile Include="MVVM\Model\Attachment.cs" />
-    <Compile Include="MVVM\Model\BackgroundProgress.cs" />
     <Compile Include="MVVM\Model\BsonStorages\BsonStorage.cs" />
     <Compile Include="MVVM\Model\BsonStorages\LocalUsersStorage.cs" />
     <Compile Include="MVVM\Model\BsonStorages\ServersStorage.cs" />

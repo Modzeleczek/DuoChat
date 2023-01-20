@@ -136,5 +136,21 @@
     EN="Error occured while renaming user's directory."
     PL="Wystąpił błąd podczas zmiany nazwy katalogu użytkownika."/>
   <l:Entry x:Key="No translation: " EN="" PL="Brak tłumaczenia: "/>
+  <l:Entry x:Key="Text is null." EN="Text is null." PL="Tekst jest nullem."/>
+  <l:Entry x:Key="Text does not consist of two parts separated with semicolon."
+    EN="Text does not consist of two parts separated with semicolon."
+    PL="Tekst nie składa się z dwóch części rozdzielonych średnikiem."/>
+  <l:Entry x:Key="First number (p) is not valid Base64 string."
+    EN="First number (p) is not valid Base64 string."
+    PL="Pierwsza liczba (p) nie jest poprawnym ciągiem w formacie Base64."/>
+  <l:Entry x:Key="Second number (q) is not valid Base64 string."
+    EN="Second number (q) is not valid Base64 string."
+    PL="Druga liczba (q) nie jest poprawnym ciągiem w formacie Base64."/>
+  <l:Entry x:Key="First number (p) is not prime."
+    EN="First number (p) is not prime."
+    PL="Pierwsza liczba (p) nie jest liczbą pierwszą."/>
+  <l:Entry x:Key="Second number (q) is not prime."
+    EN="Second number (q) is not prime."
+    PL="Druga liczba (q) nie jest liczbą pierwszą."/>
 
 </ResourceDictionary>

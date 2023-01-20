@@ -1,5 +1,6 @@
 ﻿using Shared.MVVM.Model;
 using Shared.MVVM.View.Localization;
+using Shared.MVVM.ViewModel.LongBlockingOperation;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -134,21 +135,21 @@ namespace Client.MVVM.Model
             }
         }
 
-        public void EncryptFile(BackgroundProgress progress,
+        public void EncryptFile(ProgressReporter reporter,
             string path, byte[] key, byte[] initializationVector)
         {
-            var status = EncryptSingleFile(progress, path, key, initializationVector);
-            FileTransformationCleanup(progress, status, path);
+            var status = EncryptSingleFile(reporter, path, key, initializationVector);
+            FileTransformationCleanup(reporter, status, path);
         }
 
-        public void DecryptFile(BackgroundProgress progress,
+        public void DecryptFile(ProgressReporter reporter,
             string path, byte[] key, byte[] initializationVector)
         {
-            var status = EncryptSingleFile(progress, path, key, initializationVector);
-            FileTransformationCleanup(progress, status, path);
+            var status = EncryptSingleFile(reporter, path, key, initializationVector);
+            FileTransformationCleanup(reporter, status, path);
         }
         
-        private Status EncryptSingleFile(BackgroundProgress progress,
+        private Status EncryptSingleFile(ProgressReporter reporter,
             string path, byte[] key, byte[] initializationVector)
         {
             using (var aes = CreateAes())
@@ -157,12 +158,12 @@ namespace Client.MVVM.Model
             using (var outFS = File.OpenWrite(path + ".temp"))
             using (var cs = new CryptoStream(outFS, enc, CryptoStreamMode.Write))
             {
-                progress.FineMax = inFS.Length;
-                return TransformFile(progress, inFS, cs);
+                reporter.FineMax = inFS.Length;
+                return TransformFile(reporter, inFS, cs);
             }
         }
             
-        private Status DecryptSingleFile(BackgroundProgress progress,
+        private Status DecryptSingleFile(ProgressReporter reporter,
             string path, byte[] key, byte[] initializationVector)
         {
             using (var aes = CreateAes())
@@ -171,8 +172,8 @@ namespace Client.MVVM.Model
             using (var outFS = File.OpenWrite(path + ".temp"))
             using (var cs = new CryptoStream(inFS, dec, CryptoStreamMode.Read))
             {
-                progress.FineMax = inFS.Length;
-                return TransformFile(progress, cs, outFS);
+                reporter.FineMax = inFS.Length;
+                return TransformFile(reporter, cs, outFS);
             }
         }
 
@@ -185,10 +186,10 @@ namespace Client.MVVM.Model
         }
 
         // https://stackoverflow.com/a/32437759/14357934
-        private Status TransformFile(BackgroundProgress progress, Stream readFrom, Stream writeTo)
+        private Status TransformFile(ProgressReporter reporter, Stream readFrom, Stream writeTo)
         {
             const int bufferSize = 4096;
-            progress.FineProgress = 0;
+            reporter.FineProgress = 0;
             byte[] buffer = new byte[bufferSize];
             while (true)
             {
@@ -222,9 +223,9 @@ namespace Client.MVVM.Model
                 { writeTo.Write(buffer, position, remainingBytes); }
                 catch (Exception)
                 { return new Status(-3, d["Error occured while writing file."]); }
-                progress.FineProgress += remainingBytes;
+                reporter.FineProgress += remainingBytes;
                 // int progress = (int)(((double)bytesProcessed / inStreamSize) * 100.0);
-                if (progress.CancellationPending)
+                if (reporter.CancellationPending)
                     return new Status(1);
                 // Jeżeli bez problemów doszliśmy do końca pliku (EOF)
                 // Przerywamy pętlę while (true).
@@ -233,12 +234,12 @@ namespace Client.MVVM.Model
             }
         }
 
-        private void FileTransformationCleanup(BackgroundProgress progress,
+        private void FileTransformationCleanup(ProgressReporter reporter,
             Status status, string path)
         {
-            if (progress.CancellationPending)
+            if (reporter.CancellationPending)
             {
-                progress.Cancel = true;
+                reporter.Cancel = true;
                 status.Code = 1;
             }
             var tempPath = path + ".temp";
@@ -251,47 +252,47 @@ namespace Client.MVVM.Model
             // jeżeli użytkownik anulował lub wystąpił błąd, usuwamy nowy plik
             else if (File.Exists(tempPath))
                 File.Delete(tempPath);
-            progress.Result = status;
+            reporter.Result = status;
         }
 
-        public void EncryptDirectory(BackgroundProgress progress,
+        public void EncryptDirectory(ProgressReporter reporter,
             string path, byte[] key, byte[] initializationVector) =>
-            TransformDirectory(progress, path, key, initializationVector, EncryptSingleFile);
+            TransformDirectory(reporter, path, key, initializationVector, EncryptSingleFile);
 
-        public void DecryptDirectory(BackgroundProgress progress,
+        public void DecryptDirectory(ProgressReporter reporter,
             string path, byte[] key, byte[] initializationVector) =>
-            TransformDirectory(progress, path, key, initializationVector, DecryptSingleFile);
+            TransformDirectory(reporter, path, key, initializationVector, DecryptSingleFile);
 
-        private delegate Status FileTransformation(BackgroundProgress progress,
+        private delegate Status FileTransformation(ProgressReporter reporter,
             string path, byte[] key, byte[] initializationVector);
 
-        private void TransformDirectory(BackgroundProgress progress,
+        private void TransformDirectory(ProgressReporter reporter,
             string path, byte[] key, byte[] initializationVector,
             FileTransformation transformation)
         {
             var files = Directory.GetFiles(path);
-            progress.CoarseMax = files.Length - 1;
-            progress.CoarseProgress = 0;
+            reporter.CoarseMax = files.Length - 1;
+            reporter.CoarseProgress = 0;
             var status = new Status(0);
             for (int i = 0; i < files.Length; ++i)
             {
-                if (progress.CancellationPending) // nie ustawiamy tu status.Code = 1, bo zostanie ustawione w DirectoryTransformationCleanup
+                if (reporter.CancellationPending) // nie ustawiamy tu status.Code = 1, bo zostanie ustawione w DirectoryTransformationCleanup
                     goto DIRECTORY_CLEANUP;
-                status = transformation(progress, files[i], key, initializationVector);
+                status = transformation(reporter, files[i], key, initializationVector);
                 if (status.Code != 0)
                     goto DIRECTORY_CLEANUP;
-                progress.CoarseProgress += 1;
+                reporter.CoarseProgress += 1;
             }
         DIRECTORY_CLEANUP:
-            DirectoryTransformationCleanup(progress, status, files);
+            DirectoryTransformationCleanup(reporter, status, files);
         }
 
-        private void DirectoryTransformationCleanup(BackgroundProgress progress,
+        private void DirectoryTransformationCleanup(ProgressReporter reporter,
             Status status, string[] files)
         {
-            if (progress.CancellationPending)
+            if (reporter.CancellationPending)
             {
-                progress.Cancel = true;
+                reporter.Cancel = true;
                 status.Code = 1;
             }
             if (status.Code == 0)
@@ -312,7 +313,7 @@ namespace Client.MVVM.Model
                     if (File.Exists(temp))
                         File.Delete(temp);
                 }
-            progress.Result = status;
+            reporter.Result = status;
         }
     }
 }
