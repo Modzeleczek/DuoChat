@@ -4,7 +4,6 @@ using Client.MVVM.Model.JsonSerializables;
 using Client.MVVM.View.Windows;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model;
-using Shared.MVVM.ViewModel.LongBlockingOperation;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -219,8 +218,8 @@ namespace Client.MVVM.ViewModel
                         var pc = new PasswordCryptography();
                         var encSta = ProgressBarViewModel.ShowDialog(window,
                             d["Encrypting user's database."], true,
-                            (worker, args) =>
-                            pc.EncryptDirectory(new ProgressReporter((BackgroundWorker)worker, args),
+                            (reporter) =>
+                            pc.EncryptDirectory(reporter,
                                 loggedUser.DirectoryPath,
                                 pc.ComputeDigest(curPas, loggedUser.DbSalt),
                                 loggedUser.DbInitializationVector));
@@ -277,8 +276,8 @@ namespace Client.MVVM.ViewModel
                 var pc = new PasswordCryptography();
                 status = ProgressBarViewModel.ShowDialog(window,
                     d["Decrypting user's database."], true,
-                    (worker, args) =>
-                    pc.DecryptDirectory(new ProgressReporter((BackgroundWorker)worker, args),
+                    (reporter) =>
+                    pc.DecryptDirectory(reporter,
                         user.DirectoryPath,
                         pc.ComputeDigest(curPas, user.DbSalt),
                         user.DbInitializationVector));

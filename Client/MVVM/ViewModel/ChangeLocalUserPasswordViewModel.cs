@@ -2,8 +2,6 @@
 using Client.MVVM.Model.BsonStorages;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model;
-using Shared.MVVM.ViewModel.LongBlockingOperation;
-using System.ComponentModel;
 using System.Security;
 using System.Windows;
 using System.Windows.Controls;
@@ -41,8 +39,8 @@ namespace Client.MVVM.ViewModel
                 // jeżeli katalog z plikami bazy danych istnieje, to odszyfrowujemy je starym hasłem
                 var decSta = ProgressBarViewModel.ShowDialog(window,
                     d["Decrypting user's database."], true,
-                    (worker, args) =>
-                    pc.DecryptDirectory(new ProgressReporter((BackgroundWorker)worker, args),
+                    (reporter) =>
+                    pc.DecryptDirectory(reporter,
                         user.DirectoryPath,
                         pc.ComputeDigest(oldPassword, user.DbSalt),
                         user.DbInitializationVector));
@@ -57,8 +55,8 @@ namespace Client.MVVM.ViewModel
                 // zaszyfrowujemy plik bazy danych nowym hasłem
                 var encSta = ProgressBarViewModel.ShowDialog(window,
                     d["Encrypting user's database."], false,
-                    (worker, args) =>
-                    pc.EncryptDirectory(new ProgressReporter((BackgroundWorker)worker, args),
+                    (reporter) =>
+                    pc.EncryptDirectory(reporter,
                         user.DirectoryPath,
                         pc.ComputeDigest(password, user.DbSalt),
                         user.DbInitializationVector));

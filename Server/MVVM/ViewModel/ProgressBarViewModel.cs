@@ -1,5 +1,6 @@
 ﻿using Server.MVVM.View.Windows;
 using Shared.MVVM.Model;
+using Shared.MVVM.ViewModel.LongBlockingOperation;
 using System.ComponentModel;
 using System.Windows;
 using BaseProgressBarViewModel = Shared.MVVM.ViewModel.LongBlockingOperation.ProgressBarViewModel;
@@ -8,7 +9,7 @@ namespace Server.MVVM.ViewModel
 {
     public class ProgressBarViewModel : BaseProgressBarViewModel
     {
-        protected ProgressBarViewModel(DoWorkEventHandler work, string description, bool cancelable,
+        protected ProgressBarViewModel(Work work, string description, bool cancelable,
             bool progressBarVisible) :
             base(work, description, cancelable, progressBarVisible) { }
 
@@ -24,7 +25,7 @@ namespace Server.MVVM.ViewModel
         }
 
         public static Status ShowDialog(Window owner, string operationDescriptionText,
-            bool cancelable, DoWorkEventHandler work, bool progressBarVisible = true)
+            bool cancelable, Work work, bool progressBarVisible = true)
         {
             var vm = new ProgressBarViewModel(work, operationDescriptionText, cancelable,
                 progressBarVisible);

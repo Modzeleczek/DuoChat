@@ -27,7 +27,7 @@ namespace Shared.MVVM.ViewModel.LongBlockingOperation
         private BackgroundWorker worker;
         #endregion
 
-        protected ProgressBarViewModel(DoWorkEventHandler work, string description, bool cancelable,
+        protected ProgressBarViewModel(Work work, string description, bool cancelable,
             bool progressBarVisible)
         {
             // potrzebne, jeżeli chcemy pojawiać alerty nad oknem postępu (ProgressBarWindow)
@@ -38,7 +38,11 @@ namespace Shared.MVVM.ViewModel.LongBlockingOperation
                 WorkerReportsProgress = true,
                 WorkerSupportsCancellation = true
             };
-            worker.DoWork += work;
+            DoWorkEventHandler doWork = (worker, args) =>
+            {
+                work(new ProgressReporter((BackgroundWorker)worker, args));
+            };
+            worker.DoWork += doWork;
             worker.ProgressChanged += Worker_ProgressChanged;
             worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
             Description = description;
