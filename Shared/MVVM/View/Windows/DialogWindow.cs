@@ -9,6 +9,7 @@ namespace Shared.MVVM.View.Windows
     {
         private Storyboard closeStoryboard;
         private bool closeStoryboardCompleted = false;
+        public bool Closable { get; set; } = true;
 
         public DialogWindow() { }
 
@@ -50,17 +51,27 @@ namespace Shared.MVVM.View.Windows
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
-            if (!closeStoryboardCompleted)
+            if (Closable) // okno może być zamknięte
             {
-                closeStoryboard.Begin();
-                e.Cancel = true;
+                // jeszcze nie wykonaliśmy animacji zamknięcia okna
+                if (!closeStoryboardCompleted)
+                {
+                    // rozpoczynamy animację zamknięcia okna
+                    closeStoryboard.Begin();
+                    // zapobiegamy zamknięciu okna przed zakończeniem animacji
+                    e.Cancel = true;
+                }
+                // false to domyślna wartość, ale jawnie ją ustawiamy
+                else e.Cancel = false;
             }
+            // okno nie może być zamknięte, więc zapobiegamy jego zamknięciu
+            else e.Cancel = true;
         }
 
         private void closeStoryboard_Completed(object sender, EventArgs e)
         {
             closeStoryboardCompleted = true;
-            Close();
+            Close(); // wywołanie Close powoduje wykonanie handlera Window_Closing eventu Closing
         }
     }
 }

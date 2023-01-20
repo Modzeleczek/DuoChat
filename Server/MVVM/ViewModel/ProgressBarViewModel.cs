@@ -31,11 +31,10 @@ namespace Server.MVVM.ViewModel
                 progressBarVisible);
             var win = new ProgressBarWindow(owner, vm);
             // zapobiegamy ALT + F4 w oknie z progress barem
-            CancelEventHandler cancelHandler = (sender, args) => args.Cancel = true;
-            win.Closing += cancelHandler;
+            win.Closable = false;
             vm.RequestClose += (sender, args) =>
             {
-                win.Closing -= cancelHandler;
+                win.Closable = true;
                 win.Close();
             };
             vm.BeginWorking();

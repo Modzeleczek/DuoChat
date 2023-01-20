@@ -226,5 +226,8 @@
   <l:Entry x:Key="Port must be in range"
     EN="Port must be in range"
     PL="Port musi należeć do przedziału"/>
+  <l:Entry x:Key="Cancelling..."
+    EN="Cancelling..."
+    PL="Anulowanie..."/>
 
 </ResourceDictionary>

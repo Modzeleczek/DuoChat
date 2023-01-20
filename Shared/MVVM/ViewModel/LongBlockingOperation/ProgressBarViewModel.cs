@@ -11,12 +11,31 @@ namespace Shared.MVVM.ViewModel.LongBlockingOperation
         public double Progress
         {
             get => progress;
+            /* Progress ma setter z powiadamianiem widoku (view) o zmianie (OnPropertyChanged),
+            ponieważ jest edytowalne przez BackgroundWorkera i musi być odświeżane w GUI */
             set { progress = value; OnPropertyChanged(); }
         }
-        // tylko progress ma setter z powiadamianiem widoku (view) o zmianie (OnPropertyChanged), ponieważ 
-        public string Description { get; }
-        public bool Cancelable { get; }
-        public bool ProgressBarVisible { get; }
+
+        private string description;
+        public string Description
+        {
+            get => description;
+            set { description = value; OnPropertyChanged(); }
+        }
+
+        private bool cancelable;
+        public bool Cancelable
+        {
+            get => cancelable;
+            set { cancelable = value; OnPropertyChanged(); }
+        }
+
+        private bool progressBarVisible;
+        public bool ProgressBarVisible
+        {
+            get => progressBarVisible;
+            set { progressBarVisible = value; OnPropertyChanged(); }
+        }
         #endregion
 
         #region Fields
@@ -28,9 +47,17 @@ namespace Shared.MVVM.ViewModel.LongBlockingOperation
         {
             // potrzebne, jeżeli chcemy pojawiać alerty nad oknem postępu (ProgressBarWindow)
             WindowLoaded = new RelayCommand(e => window = (Window)e);
-            /* worker.CancelAsync tylko ustawia worker.cancellationPending na true
+            /* worker.CancelAsync tylko ustawia worker.cancellationPending na true;
             getterem do worker.cancellationPending jest worker.CancellationPending */
-            Close = new RelayCommand(e => worker.CancelAsync());
+            Close = new RelayCommand(e =>
+            {
+                if (!worker.CancellationPending)
+                {
+                    worker.CancelAsync();
+                    Description = d["Cancelling..."];
+                    Cancelable = false; // deaktywujemy przycisk anulowania
+                }
+            });
             worker = new BackgroundWorker
             {
                 WorkerReportsProgress = true,
