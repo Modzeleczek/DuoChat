@@ -23,7 +23,7 @@ namespace Server.MVVM.ViewModel
             var vm = new ConfirmationViewModel(finalTitle, description,
                 finalCancButTxt, finalConfButTxt);
             var win = new ConfirmationWindow(owner, vm);
-            vm.RequestClose += (sender, args) => win.Close();
+            vm.RequestClose += () => win.Close();
             win.ShowDialog();
             return vm.Status;
         }

@@ -45,7 +45,7 @@ namespace Client.MVVM.ViewModel
                     new FormWindow.Field(d["Password"], "", true),
                     new FormWindow.Field(d["Confirm password"], "", true)
                 }, d["Cancel"], d["Create"]);
-                vm.RequestClose += (s, e) => win.Close();
+                vm.RequestClose += () => win.Close();
                 win.ShowDialog();
                 // ShowDialog blokuje wykonanie kodu z tego obiektu typu command do momentu zamknięcia okna tworzenia użytkownika
                 var status = vm.Status;
@@ -70,7 +70,7 @@ namespace Client.MVVM.ViewModel
                     {
                         new FormWindow.Field(d["Username"], user.Name, false),
                     }, d["Cancel"], d["Save"]);
-                vm.RequestClose += (s, e) => win.Close();
+                vm.RequestClose += () => win.Close();
                 win.ShowDialog();
                 if (vm.Status.Code == 0) Reinsert(user);
             });
@@ -87,7 +87,7 @@ namespace Client.MVVM.ViewModel
                         new FormWindow.Field(d["New password"], "", true),
                         new FormWindow.Field(d["Confirm password"], "", true)
                     }, d["Cancel"], d["Save"]);
-                vm.RequestClose += (s, e) => win.Close();
+                vm.RequestClose += () => win.Close();
                 win.ShowDialog();
                 curPas.Dispose();
             });
@@ -124,7 +124,7 @@ namespace Client.MVVM.ViewModel
         {
             var vm = new LocalUsersViewModel();
             var win = new LocalUsersWindow(owner, vm);
-            vm.RequestClose += (sender, args) => win.Close();
+            vm.RequestClose += () => win.Close();
             win.ShowDialog();
             return vm.Status;
         }

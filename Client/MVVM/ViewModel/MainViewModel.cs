@@ -6,7 +6,6 @@ using Shared.MVVM.Core;
 using Shared.MVVM.View.Windows;
 using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Security;
 using System.Windows;
 
@@ -152,7 +151,7 @@ namespace Client.MVVM.ViewModel
                         new FormWindow.Field(d["IP address"], "", false),
                         new FormWindow.Field(d["Port"], "", false)
                     }, d["Cancel"], d["Add"]);
-                    vm.RequestClose += (s, e) => win.Close();
+                    vm.RequestClose += () => win.Close();
                     win.ShowDialog();
                     var status = vm.Status;
                     if (status.Code == 0)
@@ -199,7 +198,7 @@ namespace Client.MVVM.ViewModel
                 {
                     var vm = new SettingsViewModel(loggedUser);
                     var win = new SettingsWindow(window, vm);
-                    vm.RequestClose += (s, e) => win.Close();
+                    vm.RequestClose += () => win.Close();
                     win.ShowDialog();
                     if (vm.Status.Code == 2) // wylogowanie
                     {

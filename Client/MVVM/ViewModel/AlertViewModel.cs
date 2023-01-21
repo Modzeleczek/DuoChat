@@ -18,7 +18,7 @@ namespace Client.MVVM.ViewModel
             string finalButTxt = buttonText ?? d["OK"];
             var vm = new AlertViewModel(finalTitle, description, finalButTxt);
             var win = new AlertWindow(owner, vm);
-            vm.RequestClose += (sender, args) => win.Close();
+            vm.RequestClose += () => win.Close();
             win.ShowDialog();
         }
     }

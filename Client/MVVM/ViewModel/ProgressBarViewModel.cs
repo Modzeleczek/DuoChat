@@ -32,7 +32,7 @@ namespace Client.MVVM.ViewModel
             var win = new ProgressBarWindow(owner, vm);
             // zapobiegamy ALT + F4 w oknie z progress barem
             win.Closable = false;
-            vm.RequestClose += (sender, args) =>
+            vm.RequestClose += () =>
             {
                 win.Closable = true;
                 win.Close();

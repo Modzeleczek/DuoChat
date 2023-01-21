@@ -28,12 +28,15 @@ namespace Shared.MVVM.ViewModel
         }
 
         public Status Status { get; protected set; } = new Status(1);
-        public event EventHandler RequestClose = null;
+        public event Action RequestClose = null;
 
-        protected virtual void OnRequestClose(Status status)
+        protected void OnRequestClose(Status status)
         {
-            if (RequestClose != null) RequestClose(this, null);
             Status = status;
+            /* używamy typu Action jako handlerów eventu RequestClose, bo we
+            wszystkich miejscach w programie status viewmodelu pobieramy z
+            settera Status, a nie poprzez parametr handlera eventu RequestClose */
+            if (RequestClose != null) RequestClose();
         }
     }
 }

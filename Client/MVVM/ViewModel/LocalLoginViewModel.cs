@@ -56,7 +56,7 @@ namespace Client.MVVM.ViewModel
             {
                 new FormWindow.Field(d["Password"], "", true)
             }, d["Cancel"], d["OK"]);
-            vm.RequestClose += (s, e) => win.Close();
+            vm.RequestClose += () => win.Close();
             win.ShowDialog();
             return vm.Status;
         }
