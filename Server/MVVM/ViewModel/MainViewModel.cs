@@ -1,7 +1,6 @@
 ﻿using Shared.MVVM.Core;
+using Shared.MVVM.View.Windows;
 using Shared.MVVM.ViewModel;
-using System.ComponentModel;
-using System.Windows;
 using BaseViewModel = Shared.MVVM.ViewModel.ViewModel;
 
 namespace Server.MVVM.ViewModel
@@ -31,16 +30,15 @@ namespace Server.MVVM.ViewModel
         {
             WindowLoaded = new RelayCommand(windowLoadedE =>
             {
-                window = (Window)windowLoadedE;
+                window = (DialogWindow)windowLoadedE;
 
                 var server = new Model.Server();
 
                 // zapobiega ALT + F4 w głównym oknie
-                CancelEventHandler closingCancHandl = (_, e) => e.Cancel = true;
-                window.Closing += closingCancHandl;
+                window.Closable = false;
                 Callback closeApplication = (_) =>
                 {
-                    window.Closing -= closingCancHandl;
+                    window.Closable = true;
                     // zamknięcie MainWindow powoduje zakończenie programu
                     UIInvoke(() => window.Close());
                 };

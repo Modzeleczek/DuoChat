@@ -1,6 +1,6 @@
 ﻿using Shared.MVVM.Core;
+using Shared.MVVM.View.Windows;
 using System.ComponentModel;
-using System.Windows;
 
 namespace Shared.MVVM.ViewModel.LongBlockingOperation
 {
@@ -46,7 +46,7 @@ namespace Shared.MVVM.ViewModel.LongBlockingOperation
             bool progressBarVisible)
         {
             // potrzebne, jeżeli chcemy pojawiać alerty nad oknem postępu (ProgressBarWindow)
-            WindowLoaded = new RelayCommand(e => window = (Window)e);
+            WindowLoaded = new RelayCommand(e => window = (DialogWindow)e);
             /* worker.CancelAsync tylko ustawia worker.cancellationPending na true;
             getterem do worker.cancellationPending jest worker.CancellationPending */
             Close = new RelayCommand(e =>

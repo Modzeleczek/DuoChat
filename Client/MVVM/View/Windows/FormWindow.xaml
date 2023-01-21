@@ -19,7 +19,7 @@
   mc:Ignorable="d">
   <i:Interaction.Triggers>
     <i:EventTrigger EventName="Loaded">
-      <i:InvokeCommandAction Command="{Binding Path=WindowLoaded}" CommandParameter="{Binding ElementName=FormWindowName}" />
+      <i:InvokeCommandAction Command="{Binding WindowLoaded}" CommandParameter="{Binding ElementName=FormWindowName}" />
     </i:EventTrigger>
   </i:Interaction.Triggers>
   <Border

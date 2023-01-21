@@ -2,8 +2,8 @@
 using Client.MVVM.Model.BsonStorages;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model;
+using Shared.MVVM.View.Windows;
 using System.Security;
-using System.Windows;
 using System.Windows.Controls;
 
 namespace Client.MVVM.ViewModel
@@ -14,7 +14,7 @@ namespace Client.MVVM.ViewModel
         {
             var pc = new PasswordCryptography();
             var lus = new LocalUsersStorage();
-            WindowLoaded = new RelayCommand(e => window = (Window)e);
+            WindowLoaded = new RelayCommand(e => window = (DialogWindow)e);
             Confirm = new RelayCommand(e =>
             {
                 var inpCtrls = (Control[])e;

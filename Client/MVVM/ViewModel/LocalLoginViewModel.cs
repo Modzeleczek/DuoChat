@@ -5,6 +5,7 @@ using Shared.MVVM.Core;
 using System.Windows;
 using System.Windows.Controls;
 using Shared.MVVM.Model;
+using Shared.MVVM.View.Windows;
 
 namespace Client.MVVM.ViewModel
 {
@@ -13,7 +14,7 @@ namespace Client.MVVM.ViewModel
         public LocalLoginViewModel(LocalUser user, bool returnEnteredPassword)
         {
             var pc = new PasswordCryptography();
-            WindowLoaded = new RelayCommand(e => window = (Window)e);
+            WindowLoaded = new RelayCommand(e => window = (DialogWindow)e);
             Confirm = new RelayCommand(e =>
             {
                 var inpCtrls = (Control[])e;

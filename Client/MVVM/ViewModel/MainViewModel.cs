@@ -3,7 +3,7 @@ using Client.MVVM.Model.BsonStorages;
 using Client.MVVM.Model.JsonSerializables;
 using Client.MVVM.View.Windows;
 using Shared.MVVM.Core;
-using Shared.MVVM.Model;
+using Shared.MVVM.View.Windows;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -142,7 +142,7 @@ namespace Client.MVVM.ViewModel
             var lus = new LocalUsersStorage();
             WindowLoaded = new RelayCommand(windowLoadedE =>
             {
-                window = (Window)windowLoadedE;
+                window = (DialogWindow)windowLoadedE;
 
                 AddServer = new RelayCommand(_ =>
                 {
@@ -187,11 +187,10 @@ namespace Client.MVVM.ViewModel
                 });
 
                 // zapobiega ALT + F4 w głównym oknie
-                CancelEventHandler closingCancHandl = (_, e) => e.Cancel = true;
-                window.Closing += closingCancHandl;
+                window.Closable = false;
                 Close = new RelayCommand(_ =>
                 {
-                    window.Closing -= closingCancHandl;
+                    window.Closable = true;
                     // zamknięcie MainWindow powoduje zakończenie programu
                     window.Close();
                 });

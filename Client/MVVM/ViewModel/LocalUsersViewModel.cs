@@ -3,8 +3,8 @@ using Client.MVVM.Model.BsonStorages;
 using Client.MVVM.View.Windows;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model;
+using Shared.MVVM.View.Windows;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
 using System.Security;
 using System.Windows;
@@ -33,7 +33,7 @@ namespace Client.MVVM.ViewModel
         public LocalUsersViewModel()
         {
             var lus = new LocalUsersStorage();
-            WindowLoaded = new RelayCommand(e => window = (Window)e);
+            WindowLoaded = new RelayCommand(e => window = (DialogWindow)e);
             LocalUsers = new ObservableCollection<LocalUser>(
                 lus.GetAll().Select(e => e.ToObservable()).ToList());
             Create = new RelayCommand(_ =>

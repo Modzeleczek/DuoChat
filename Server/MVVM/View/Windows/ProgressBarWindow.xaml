@@ -20,9 +20,10 @@
   Icon="/MVVM/View/Icons/logo.png">
   <i:Interaction.Triggers>
     <i:EventTrigger EventName="Loaded">
-      <i:InvokeCommandAction Command="{Binding Path=WindowLoaded}" CommandParameter="{Binding ElementName=ProgressBarWindowName}" />
+      <i:InvokeCommandAction Command="{Binding WindowLoaded}" CommandParameter="{Binding ElementName=ProgressBarWindowName}" />
     </i:EventTrigger>
   </i:Interaction.Triggers>
+  
   <Window.Resources>
     <ControlTemplate x:Key="ProgressBarPath" TargetType="ProgressBar">
       <Viewbox Stretch="Fill">
@@ -55,6 +56,7 @@
     </ControlTemplate>
 
   </Window.Resources>
+
   <Border
     Background="#4A4E69"
     BorderBrush="#9A8C98"

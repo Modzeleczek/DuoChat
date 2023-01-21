@@ -20,7 +20,7 @@
   Icon="/MVVM/View/Icons/logo.png">
   <i:Interaction.Triggers>
     <i:EventTrigger EventName="Loaded">
-      <i:InvokeCommandAction Command="{Binding Path=WindowLoaded}" CommandParameter="{Binding ElementName=ProgressBarWindowName}" />
+      <i:InvokeCommandAction Command="{Binding WindowLoaded}" CommandParameter="{Binding ElementName=ProgressBarWindowName}" />
     </i:EventTrigger>
   </i:Interaction.Triggers>
   <Window.Resources>

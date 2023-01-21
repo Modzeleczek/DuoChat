@@ -1,17 +1,19 @@
-﻿using System.Windows;
+﻿using Client.MVVM.ViewModel;
+using Shared.MVVM.View.Windows;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Shapes;
 
 namespace Client.MVVM.View.Windows
 {
-    public partial class MainWindow : Window
+    public partial class MainWindow : DialogWindow
     {
         private bool serversAccountsVisible = false;
 
-        public MainWindow()
-        {
-            InitializeComponent();
-        }
+        public MainWindow(Window owner, MainViewModel dataContext)
+            : base(owner, dataContext) { }
+
+        protected override void Initialize() => InitializeComponent();
 
         private void Button_ToggleServersAccounts_Click(object sender, RoutedEventArgs e)
         {

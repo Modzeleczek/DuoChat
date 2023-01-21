@@ -1,4 +1,4 @@
-﻿<Window
+﻿<w:DialogWindow
   x:Class="Server.MVVM.View.Windows.MainWindow"
   x:ClassModifier="public"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -8,7 +8,7 @@
   xmlns:h="clr-namespace:Shared.MVVM.View.Helpers"
   xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-  xmlns:vm="clr-namespace:Server.MVVM.ViewModel"
+  xmlns:w="clr-namespace:Shared.MVVM.View.Windows"
   x:Name="MainWindowName"
   Title="{Binding Source={x:Static l:Translator.Instance}, Path=D.Server}"
   Width="800"
@@ -17,10 +17,8 @@
   Background="Transparent"
   ResizeMode="CanResize"
   WindowStyle="None"
-  mc:Ignorable="d">
-  <Window.DataContext>
-    <vm:MainViewModel />
-  </Window.DataContext>
+  mc:Ignorable="d"
+  Icon="/MVVM/View/Icons/logo.png">
   <i:Interaction.Triggers>
     <i:EventTrigger EventName="Loaded">
       <i:InvokeCommandAction Command="{Binding WindowLoaded}" CommandParameter="{Binding ElementName=MainWindowName}" />
@@ -88,4 +86,4 @@
         Content="{Binding SelectedTab}"/>
     </Grid>
   </Border>
-</Window>
+</w:DialogWindow>

@@ -2,10 +2,10 @@
 using Shared.MVVM.Core;
 using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking;
+using Shared.MVVM.View.Windows;
 using System;
 using System.IO;
 using System.Text;
-using System.Windows;
 
 namespace Server.MVVM.ViewModel
 {
@@ -80,7 +80,7 @@ namespace Server.MVVM.ViewModel
 
         private const string PATH = "settings.json";
 
-        public SettingsViewModel(Window owner, Model.Server server)
+        public SettingsViewModel(DialogWindow owner, Model.Server server)
         {
             window = owner;
 
