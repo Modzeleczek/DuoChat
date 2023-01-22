@@ -179,7 +179,8 @@ namespace Server.MVVM.ViewModel
             var status = IPv4Address.TryParse(IpAddress);
             if (status.Code != 0)
             {
-                Alert(d["Invalid IP address format."] + " " + status.Message);
+                status.Prepend(d["Invalid IP address format."]);
+                Alert(status.Message);
                 return false;
             }
             ipAddress = (IPv4Address)status.Data;
@@ -192,7 +193,8 @@ namespace Server.MVVM.ViewModel
             var status = Shared.MVVM.Model.Networking.Port.TryParse(Port);
             if (status.Code != 0)
             {
-                Alert(d["Invalid port format."] + " " + status.Message);
+                status.Prepend(d["Invalid port format."]);
+                Alert(status.Message);
                 return false;
             }
             port = (Port)status.Data;

@@ -59,7 +59,7 @@ namespace Server.MVVM.Model
                 IsRunning = false;
                 var d = Translator.Instance;
                 // se.ErrorCode zawsze jest różne od 0
-                status = new Status(-1, d["No translation: "] + se.Message, se.ErrorCode);
+                status = new Status(-1, se.ErrorCode, d["No translation:"], se.Message);
             }
             finally
             {
@@ -95,7 +95,7 @@ namespace Server.MVVM.Model
             {
                 // według dokumentacji funkcji TcpListener.AcceptTcpClient, se.ErrorCode jest kodem błędu, którego opis można zobaczyć w "Windows Sockets version 2 API error code documentation"
                 var d = Translator.Instance;
-                status = new Status(-1, d["No translation: "] + se.Message, se.ErrorCode);
+                status = new Status(-1, se.ErrorCode, d["No translation:"], se.Message);
             }
             finally
             {

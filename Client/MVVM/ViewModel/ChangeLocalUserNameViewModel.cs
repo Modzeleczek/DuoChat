@@ -16,28 +16,32 @@ namespace Client.MVVM.ViewModel
             Confirm = new RelayCommand(e =>
             {
                 var inpCtrls = (Control[])e;
-                var userName = ((TextBox)inpCtrls[0]).Text;
-                var unValSta = lus.ValidateUserName(userName);
+                var newUsername = ((TextBox)inpCtrls[0]).Text;
+                var unValSta = lus.ValidateUserName(newUsername);
                 if (unValSta.Code != 0)
                 {
                     Alert(unValSta.Message);
                     return;
                 }
-                if (lus.Exists(userName))
+                var existsStatus = lus.Exists(newUsername);
+                if (existsStatus.Code < 0)
                 {
-                    Alert(d["User with name"] + $" {userName} " + d["already exists."]);
+                    existsStatus.Prepend(d["Error occured while"],
+                       d["checking if"], d["user"], d["already exists."]);
+                    Alert(existsStatus.Message);
+                    return;
+                }
+                if (existsStatus.Code == 0)
+                {
+                    Alert(existsStatus.Message);
                     return;
                 }
                 var oldUserName = user.Name;
-                var renameStatus = user.Rename(userName);
-                if (renameStatus.Code != 0)
-                {
-                    Alert(renameStatus.Message);
-                    return;
-                }
-                var updateStatus = lus.Update(oldUserName, user.ToSerializable());
+                user.Name = newUsername;
+                var updateStatus = lus.Update(oldUserName, user);
                 if (updateStatus.Code != 0)
                 {
+                    updateStatus.Prepend(d["Error occured while"], d["updating user in database."]);
                     Alert(updateStatus.Message);
                     return;
                 }

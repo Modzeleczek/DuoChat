@@ -8,6 +8,7 @@ namespace Client.MVVM.Model
 {
     public class Account : ObservableObject
     {
+        #region Properties
         private string login;
         public string Login
         {
@@ -17,7 +18,7 @@ namespace Client.MVVM.Model
 
         public string Password { get; set; }
 
-        public PrivateKey Key { get; set; }
+        public PrivateKey PrivateKey { get; set; }
 
         private string nickname;
         public string Nickname
@@ -27,13 +28,14 @@ namespace Client.MVVM.Model
         }
 
         public WriteableBitmap Image { get; set; }
+        #endregion
 
         public static Account Random(Random rng) =>
             new Account
             {
                 Login = rng.Next().ToString(),
                 Password = rng.Next().ToString(),
-                Key = null,
+                PrivateKey = null,
                 Nickname = rng.Next().ToString(),
                 Image = new WriteableBitmap(100, 100, 96, 96, PixelFormats.Bgra32, null)
             };

@@ -31,50 +31,65 @@ namespace Client.MVVM.ViewModel
                     Alert(valSta.Message);
                     return;
                 }
-                if (!user.DirectoryExists())
+
+                var ensureStatus = lus.EnsureValidDatabaseState();
+                if (ensureStatus.Code != 0)
                 {
-                    Alert(d["User's database does not exist."]);
+                    ensureStatus.Prepend(d["Error occured while"],
+                        d["ensuring valid user database state."]);
+                    Alert(ensureStatus.Message);
                     return;
                 }
+
                 // jeżeli katalog z plikami bazy danych istnieje, to odszyfrowujemy je starym hasłem
-                var decSta = ProgressBarViewModel.ShowDialog(window,
+                var decryptStatus = ProgressBarViewModel.ShowDialog(window,
                     d["Decrypting user's database."], true,
                     (reporter) =>
                     pc.DecryptDirectory(reporter,
                         user.DirectoryPath,
                         pc.ComputeDigest(oldPassword, user.DbSalt),
                         user.DbInitializationVector));
-                if (decSta.Code == 1)
+                if (decryptStatus.Code == 1)
+                    return;
+                // nie udało się odszyfrować katalogu użytkownika, więc anulujemy zmianę hasła
+                else if (decryptStatus.Code != 0)
                 {
-                    Alert(d["Password change canceled."]);
+                    decryptStatus.Prepend(d["Error occured while"],
+                        d["decrypting user's database."]);
+                    Alert(decryptStatus.Message);
                     return;
                 }
-                else if (decSta.Code != 0) return;
+
                 // wyznaczamy nową sól i skrót hasła oraz IV i sól bazy danych
                 user.ResetPassword(password);
+
                 // zaszyfrowujemy plik bazy danych nowym hasłem
-                var encSta = ProgressBarViewModel.ShowDialog(window,
+                var encryptStatus = ProgressBarViewModel.ShowDialog(window,
                     d["Encrypting user's database."], false,
                     (reporter) =>
                     pc.EncryptDirectory(reporter,
                         user.DirectoryPath,
                         pc.ComputeDigest(password, user.DbSalt),
                         user.DbInitializationVector));
-                if (encSta.Code == 1)
+                if (encryptStatus.Code == 1)
                 {
-                    Alert(d["You should not have canceled database decryption. It may have been corrupted."]);
+                    encryptStatus.Prepend(d["You should not have canceled database decryption. It may have been corrupted."]);
+                    Alert(encryptStatus.Message);
                     return;
                 }
-                if (encSta.Code != 0)
+                else if (encryptStatus.Code != 0)
                 {
-                    Alert(d["Database may have been corrupted."]);
+                    encryptStatus.Prepend(d["Error occured while"], d["encrypting user's database."],
+                        d["Database may have been corrupted."]);
+                    Alert(encryptStatus.Message);
                     return;
                 }
 
-                var updSta = lus.Update(user.Name, user.ToSerializable());
-                if (updSta.Code != 0)
+                var updateStatus = lus.Update(user.Name, user);
+                if (updateStatus.Code != 0)
                 {
-                    Alert(updSta.Message);
+                    updateStatus.Prepend(d["Error occured while"], d["updating user in database."]);
+                    Alert(updateStatus.Message);
                     return;
                 }
                 password.Dispose();

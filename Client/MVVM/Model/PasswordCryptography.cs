@@ -16,10 +16,10 @@ namespace Client.MVVM.Model
         public Status ValidatePassword(SecureString password)
         {
             if (password == null)
-                return new Status(-1, d["Specify a password."]);
+                return new Status(1, null, d["Specify a password."]);
             IntPtr bstr = IntPtr.Zero;
             if (password.Length < 8)
-                return new Status(-2, d["Password should be at least 8 characters long."]);
+                return new Status(2, null, d["Password should be at least 8 characters long."]);
             try
             {
                 bstr = Marshal.SecureStringToBSTR(password);
@@ -30,14 +30,14 @@ namespace Client.MVVM.Model
                         if (!char.IsWhiteSpace(*p))
                         { allWhiteSpace = false; break; }
                     if (allWhiteSpace)
-                        return new Status(-3, d["Specify a password."]);
+                        return new Status(3, null, d["Specify a password."]);
 
                     bool hasDigit = false;
                     for (char* p = (char*)bstr.ToPointer(); *p != 0; ++p)
                         if (*p >= '0' && *p <= '9')
                         { hasDigit = true; break; }
                     if (!hasDigit)
-                        return new Status(-4, d["Password should contain at least one digit."]);
+                        return new Status(4, null, d["Password should contain at least one digit."]);
 
                     bool hasSpecial = false;
                     for (char* p = (char*)bstr.ToPointer(); *p != 0; ++p)
@@ -45,7 +45,7 @@ namespace Client.MVVM.Model
                             (*p >= '0' && *p <= '9')))
                         { hasSpecial = true; break; }
                     if (!hasSpecial)
-                        return new Status(-5, d["Password should contain at least one special character (not a letter or digit)."]);
+                        return new Status(5, null, d["Password should contain at least one special character (not a letter or digit)."]);
                 }
                 return new Status(0);
             }
@@ -204,12 +204,12 @@ namespace Client.MVVM.Model
                 while (true)
                 {
                     if (timeoutCounter == 1000)
-                        return new Status(-1, d["File read timed out."]);
+                        return new Status(-1, null, d["File read timed out."]);
                     if (remainingBytes == 0) break;
                     try
                     { bytesRead = readFrom.Read(buffer, position, remainingBytes); }
                     catch (Exception)
-                    { return new Status(-2, d["Error occured while reading file."]); }
+                    { return new Status(-2, null, d["Error occured while reading file."]); }
                     if (bytesRead == 0) break;
                     // O liczbę bajtów odczytanych w aktualnej iteracji zmniejszamy liczbę pozostałych bajtów i
                     remainingBytes -= bytesRead;
@@ -222,7 +222,7 @@ namespace Client.MVVM.Model
                 try
                 { writeTo.Write(buffer, position, remainingBytes); }
                 catch (Exception)
-                { return new Status(-3, d["Error occured while writing file."]); }
+                { return new Status(-3, null, d["Error occured while writing file."]); }
                 reporter.FineProgress += remainingBytes;
                 // int progress = (int)(((double)bytesProcessed / inStreamSize) * 100.0);
                 if (reporter.CancellationPending)

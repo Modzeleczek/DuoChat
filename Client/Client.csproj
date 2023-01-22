@@ -190,7 +190,6 @@
     <Compile Include="MVVM\Model\BsonStorages\ServersStorage.cs" />
     <Compile Include="MVVM\Model\Client.cs" />
     <Compile Include="MVVM\Model\Conversation.cs" />
-    <Compile Include="MVVM\Model\DataAccessObject.cs" />
     <Compile Include="MVVM\Model\JsonSerializables\LocalUserSerializable.cs" />
     <Compile Include="MVVM\Model\JsonSerializables\ServerSerializable.cs" />
     <Compile Include="MVVM\Model\LocalUser.cs" />
@@ -198,6 +197,7 @@
     <Compile Include="MVVM\Model\Participant.cs" />
     <Compile Include="MVVM\Model\PasswordCryptography.cs" />
     <Compile Include="MVVM\Model\Server.cs" />
+    <Compile Include="MVVM\Model\ServerDatabase.cs" />
     <Compile Include="MVVM\Model\User.cs" />
     <Compile Include="MVVM\ViewModel\AlertViewModel.cs" />
     <Compile Include="MVVM\ViewModel\ChangeLocalUserNameViewModel.cs" />

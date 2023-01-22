@@ -56,7 +56,7 @@ namespace Shared.MVVM.Model.Cryptography
                 reporter.FineProgress = 2;
                 if (reporter.CancellationPending) return new Status(1);
 
-                return new Status(0, null, new PrivateKey(
+                return new Status(0, new PrivateKey(
                     ToUnsignedBigEndian(p), ToUnsignedBigEndian(q)));
             }
         }
@@ -94,33 +94,33 @@ namespace Shared.MVVM.Model.Cryptography
             reporter.FineProgress = 0;
 
             if (text == null)
-                return new Status(-1, d["String is null."]);
+                return new Status(-1, null, d["String is null."]);
 
             var split = text.Split(';');
             if (split.Length != 2)
-                return new Status(-2, d["String does not consist of two parts separated with semicolon."]);
+                return new Status(-2, null, d["String does not consist of two parts separated with semicolon."]);
 
             byte[] p = null;
             try
             { p = Convert.FromBase64String(split[0]); }
             catch (FormatException)
-            { return new Status(-3, d["First number (p) is not valid Base64 string."]); }
+            { return new Status(-3, null, d["First number (p) is not valid Base64 string."]); }
 
             byte[] q = null;
             try
             { q = Convert.FromBase64String(split[1]); }
             catch (FormatException)
-            { return new Status(-4, d["Second number (q) is not valid Base64 string."]); }
+            { return new Status(-4, null, d["Second number (q) is not valid Base64 string."]); }
 
-            if (!IsProbablePrime(p)) return new Status(-5, d["First number (p) is not prime."]);
+            if (!IsProbablePrime(p)) return new Status(-5, null, d["First number (p) is not prime."]);
             reporter.FineProgress = 1;
             if (reporter.CancellationPending) return new Status(1);
 
-            if (!IsProbablePrime(q)) return new Status(-6, d["Second number (q) is not prime."]);
+            if (!IsProbablePrime(q)) return new Status(-6, null, d["Second number (q) is not prime."]);
             reporter.FineProgress = 2;
             if (reporter.CancellationPending) return new Status(1);
 
-            return new Status(0, null, new PrivateKey(p, q));
+            return new Status(0, new PrivateKey(p, q));
         }
 
         private static bool IsProbablePrime(byte[] number)

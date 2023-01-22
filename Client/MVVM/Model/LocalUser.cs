@@ -3,8 +3,6 @@ using Client.MVVM.Model.JsonSerializables;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model;
 using Shared.MVVM.Model.Networking;
-using Shared.MVVM.View.Localization;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Security;
@@ -32,10 +30,9 @@ namespace Client.MVVM.Model
 
         public byte[] DbSalt { get; set; }
 
-        public string DirectoryPath => Path.Combine(LocalUsersStorage.USERS_DIRECTORY_PATH, Name);
+        public string DirectoryPath => Path.Combine(LocalUsersStorage.USERS_DIRECTORY_NAME, Name);
 
-        private ServersStorage _serversStorage =>
-            new ServersStorage(Path.Combine(DirectoryPath, "servers.bson"));
+        private ServersStorage serversStorage => new ServersStorage(this);
         #endregion
 
         public LocalUser() { }
@@ -56,35 +53,6 @@ namespace Client.MVVM.Model
                 DbSalt = DbSalt
             };
 
-        public bool DirectoryExists() => Directory.Exists(DirectoryPath);
-
-        public void DeleteDirectory() => Directory.Delete(DirectoryPath, true);
-
-        public void CreateDirectory() => Directory.CreateDirectory(DirectoryPath);
-
-        public Status Rename(string newName)
-        {
-            var d = Translator.Instance;
-            var oldDirectoryPath = DirectoryPath;
-            if (!Directory.Exists(oldDirectoryPath))
-                return new Status(-1, d["User's directory does not exist."]);
-            var oldName = Name;
-            try
-            {
-                Name = newName;
-                var newDirectoryPath = DirectoryPath;
-                if (Directory.Exists(newDirectoryPath))
-                    return new Status(-2, d["A directory with user's new name already exists."]);
-                Directory.Move(oldDirectoryPath, DirectoryPath);
-                return new Status(0);
-            }
-            catch (Exception)
-            {
-                Name = oldName;
-                return new Status(-3, d["Error occured while renaming user's directory."]);
-            }
-        }
-
         private byte[] GenerateRandom(int byteCount)
         {
             var bytes = new byte[byteCount];
@@ -104,15 +72,32 @@ namespace Client.MVVM.Model
         }
 
         public Status AddServer(Server server) =>
-            _serversStorage.Add(server);
+            serversStorage.Add(server);
 
-        public List<Server> GetAllServers() =>
-            _serversStorage.GetAll();
+        public Status GetAllServers() =>
+            serversStorage.GetAll();
 
-        public bool ServerExists(IPv4Address ipAddress, Port port) =>
-            _serversStorage.Exists(ipAddress, port);
+        public Status ServerExists(IPv4Address ipAddress, Port port) =>
+            serversStorage.Exists(ipAddress, port);
 
         public Status DeleteServer(IPv4Address ipAddress, Port port) =>
-            _serversStorage.Delete(ipAddress, port);
+            serversStorage.Delete(ipAddress, port);
+
+        private Status GetServerDatabase(IPv4Address ipAddress, Port port) =>
+            serversStorage.GetServerDatabase(ipAddress, port);
+
+        public Status GetAllAccounts(IPv4Address ipAddress, Port port)
+        {
+            var getDbStatus = GetServerDatabase(ipAddress, port);
+            if (getDbStatus.Code != 0)
+                return getDbStatus.Prepend(-1); // -1
+            var db = (ServerDatabase)getDbStatus.Data;
+
+            var getAllStatus = db.GetAllAccounts();
+            if (getAllStatus.Code != 0)
+                return getAllStatus.Prepend(-2); // -2
+
+            return new Status(0, (List<Account>)getAllStatus.Data);
+        }
     }
 }

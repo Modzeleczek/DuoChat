@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using Shared.MVVM.Model;
 using Shared.MVVM.View.Windows;
+using Client.MVVM.Model.BsonStorages;
 
 namespace Client.MVVM.ViewModel
 {
@@ -25,11 +26,6 @@ namespace Client.MVVM.ViewModel
                     return;
                 }
                 dynamic statusData = null;
-                if (!user.DirectoryExists())
-                {
-                    Alert(d["User's database does not exist."]);
-                    return;
-                }
                 if (returnEnteredPassword)
                     statusData = new { LoggedUser = user, Password = password };
                 else
@@ -37,7 +33,7 @@ namespace Client.MVVM.ViewModel
                     password.Dispose();
                     statusData = user;
                 }
-                OnRequestClose(new Status(0, null, statusData));
+                OnRequestClose(new Status(0, statusData));
             });
         }
 

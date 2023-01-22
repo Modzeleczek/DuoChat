@@ -4,8 +4,8 @@ using Client.MVVM.View.Windows;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model;
 using Shared.MVVM.View.Windows;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Security;
 using System.Windows;
 
@@ -33,9 +33,23 @@ namespace Client.MVVM.ViewModel
         public LocalUsersViewModel()
         {
             var lus = new LocalUsersStorage();
-            WindowLoaded = new RelayCommand(e => window = (DialogWindow)e);
-            LocalUsers = new ObservableCollection<LocalUser>(
-                lus.GetAll().Select(e => e.ToObservable()).ToList());
+            WindowLoaded = new RelayCommand(windowLoadedE =>
+            {
+                window = (DialogWindow)windowLoadedE;
+
+                /* musi być w WindowLoaded, bo musimy mieć przypisane window, kiedy
+                chcemy otwierać nowe okno nad LocalUsersWindow */
+                var getAllStatus = lus.GetAll();
+                if (getAllStatus.Code != 0)
+                {
+                    getAllStatus.Prepend(d["Error occured while"], d["reading user list."]);
+                    Alert(getAllStatus.Message);
+                    LocalUsers = new ObservableCollection<LocalUser>();
+                }
+                else
+                    LocalUsers = new ObservableCollection<LocalUser>((List<LocalUser>)getAllStatus.Data);
+            });
+
             Create = new RelayCommand(_ =>
             {
                 var vm = new CreateLocalUserViewModel();
@@ -95,13 +109,13 @@ namespace Client.MVVM.ViewModel
             {
                 var user = (LocalUser)clickedUser;
                 if (LocalLoginViewModel.ShowDialog(window, user, false).Code != 0) return;
-                var sta = lus.Delete(user.Name);
-                if (sta.Code != 0)
+                var status = lus.Delete(user.Name);
+                if (status.Code != 0)
                 {
-                    Alert(sta.Message);
+                    status.Prepend(d["Error occured while"], d["deleting"], d["user from database."]);
+                    Alert(status.Message);
                     return;
                 }
-                user.DeleteDirectory();
                 Remove(user);
             });
         }

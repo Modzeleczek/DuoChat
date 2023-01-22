@@ -23,7 +23,8 @@ namespace Client.MVVM.ViewModel
                 var ipParseStatus = IPv4Address.TryParse(ipAddressStr);
                 if (ipParseStatus.Code != 0)
                 {
-                    Alert(d["Invalid IP address format."] + " " + ipParseStatus.Message);
+                    ipParseStatus.Prepend(d["Invalid IP address format."]);
+                    Alert(ipParseStatus.Message);
                     return;
                 }
                 var ipAddress = (IPv4Address)ipParseStatus.Data;
@@ -32,23 +33,26 @@ namespace Client.MVVM.ViewModel
                 var portParseStatus = Port.TryParse(portStr);
                 if (portParseStatus.Code != 0)
                 {
-                    Alert(d["Invalid port format."] + " " + portParseStatus.Message);
+                    portParseStatus.Prepend(d["Invalid port format."]);
+                    Alert(portParseStatus.Message);
                     return;
                 }
                 var port = (Port)portParseStatus.Data;
 
-                if (!loggedUser.DirectoryExists())
+                var existsStatus = loggedUser.ServerExists(ipAddress, port);
+                if (existsStatus.Code < 0)
                 {
-                    Alert(d["User's database does not exist."]);
+                    existsStatus.Prepend(d["Error occured while"],
+                        d["checking if"], d["server"], d["already exists."]);
+                    Alert(existsStatus.Message);
                     return;
                 }
-                
-                if (loggedUser.ServerExists(ipAddress, port))
+                if (existsStatus.Code == 0)
                 {
-                    Alert(d["Server with IP address"] + $" {ipAddress} " +
-                        "and port" + $" {port} " + d["already exists."]);
+                    Alert(existsStatus.Message);
                     return;
                 }
+                // existsStatus.Code == 1, czyli serwer jeszcze nie istnieje
                 var newServer = new Server
                 {
                     Guid = Guid.Empty,
@@ -57,13 +61,14 @@ namespace Client.MVVM.ViewModel
                     Port = port,
                     Name = null
                 };
-                var status = loggedUser.AddServer(newServer);
-                if (status.Code != 0)
+                var addStatus = loggedUser.AddServer(newServer);
+                if (addStatus.Code != 0)
                 {
-                    Alert(status.Message);
+                    addStatus.Prepend(d["Error occured while"], d["adding server to database."]);
+                    Alert(addStatus.Message);
                     return;
                 }
-                OnRequestClose(new Status(0, null, newServer));
+                OnRequestClose(new Status(0, newServer));
             });
         }
     }

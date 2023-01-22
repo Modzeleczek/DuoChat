@@ -33,7 +33,7 @@ namespace Shared.MVVM.View.Localization
             get
             {
                 var activeDict = (IDictionary<string, object>)D;
-                const string noTrans = "no translation";
+                string noTrans = "no translation " + key;
                 if (!activeDict.TryGetValue(key, out object obj))
                     return noTrans;
                 string translated = obj as string;

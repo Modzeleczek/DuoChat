@@ -3,43 +3,56 @@ using Newtonsoft.Json;
 using System;
 using System.IO;
 using Shared.MVVM.View.Localization;
+using Shared.MVVM.Model;
 
 namespace Client.MVVM.Model.BsonStorages
 {
     public class BsonStorage
     {
-        private readonly string path;
         protected static readonly Translator d = Translator.Instance;
 
-        protected BsonStorage(string path)
+        protected Status Load<BsonStructure>(string bsonPath) where BsonStructure : new()
         {
-            this.path = path;
-        }
-
-        protected BsonStructure Load<BsonStructure>() where BsonStructure : new()
-        {
-            BsonStructure ret;
-            if (File.Exists(path))
+            if (File.Exists(bsonPath))
             {
-                using (var br = new BinaryReader(File.OpenRead(path)))
-                using (var bdr = new BsonDataReader(br, false, DateTimeKind.Utc))
+                try
                 {
-                    var ser = new JsonSerializer();
-                    ret = ser.Deserialize<BsonStructure>(bdr);
+                    using (var fs = File.OpenRead(bsonPath))
+                    using (var br = new BinaryReader(fs))
+                    using (var bdr = new BsonDataReader(br, false, DateTimeKind.Utc))
+                    {
+                        var ser = new JsonSerializer();
+                        var structure = ser.Deserialize<BsonStructure>(bdr);
+                        return new Status(0, structure); // 0
+                    }
+                }
+                catch (Exception)
+                {
+                    return new Status(-1, null, d["Error occured while opening file"],
+                        bsonPath, d["for reading."]); // -1
                 }
             }
-            else ret = new BsonStructure();
-            return ret;
+            else return new Status(-2, null, d["File"], bsonPath, d["does not exist."]); // -2
         }
 
-        protected void Save<BsonStructure>(BsonStructure data)
+        protected Status Save<BsonStructure>(string bsonPath, BsonStructure data)
         {
             // jeżeli plik nie istnieje, to zostanie stworzony
-            using (var bw = new BinaryWriter(File.OpenWrite(path)))
-            using (var bdw = new BsonDataWriter(bw))
+            try
             {
-                var ser = new JsonSerializer();
-                ser.Serialize(bdw, data);
+                using (var fs = File.OpenWrite(bsonPath))
+                using (var bw = new BinaryWriter(fs))
+                using (var bdw = new BsonDataWriter(bw))
+                {
+                    var ser = new JsonSerializer();
+                    ser.Serialize(bdw, data);
+                    return new Status(0); // 0
+                }
+            }
+            catch (Exception)
+            {
+                return new Status(-1, null, d["Error occured while opening file"],
+                    bsonPath, d["for writing."]); // -1
             }
         }
     }

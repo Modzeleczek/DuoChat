@@ -65,9 +65,34 @@
     PL="Baza danych użytkownika odszyfrowana."/>
   <l:Entry x:Key="No user is logged." EN="No user is logged."
     PL="Żaden użytkownik nie jest zalogowany."/>
-  <l:Entry x:Key="Database with such username already exists."
-    EN="Database with such username already exists."
-    PL="Baza danych z taką nazwą już istnieje."/>
+
+  <l:Entry x:Key="Error occured while opening file" EN="Error occured while opening file"
+    PL="Wystąpił błąd podczas otwierania pliku"/>
+  <l:Entry x:Key="for reading." EN="for reading." PL="do odczytu."/>
+  <l:Entry x:Key="for writing." EN="for writing." PL="do zapisu."/>
+  
+  <l:Entry x:Key="File" EN="File" PL="Plik"/>
+  <l:Entry x:Key="User's directory with name" EN="User's directory with name"
+    PL="Katalog użytkownika o nazwie"/>
+  <l:Entry x:Key="Error occured while" EN="Error occured while" PL="Wystąpił błąd podczas"/>
+  <l:Entry x:Key="creating" EN="creating" PL="tworzenia"/>
+  <l:Entry x:Key="renaming" EN="renaming" PL="zmiany nazwy"/>
+  <l:Entry x:Key="deleting" EN="deleting" PL="usuwania"/>
+  <l:Entry x:Key="user's directory." EN="user's directory." PL="katalogu użytkownika."/>
+  <l:Entry x:Key="user." EN="user." PL="użytkownika."/>
+  <l:Entry x:Key="deleting the newly-added" EN="deleting the newly-added"
+    PL="usuwania nowo dodanego"/>
+  <l:Entry x:Key="restoring the updated" EN="restoring the updated"
+    PL="przywracania zaktualizowanego"/>
+  <l:Entry x:Key="restoring the deleted" EN="restoring the deleted"
+    PL="przywracania usuniętego"/>
+  <l:Entry x:Key="directory" EN="directory" PL="katalogu"/>
+  <l:Entry x:Key="file" EN="file" PL="pliku"/>
+
+  <l:Entry x:Key="Server's file with name" EN="Server's file with name" PL="Plik serwera o nazwie"/>
+  <l:Entry x:Key="server's file." EN="server's file." PL="pliku serwera."/>
+  <l:Entry x:Key="server." EN="server." PL="serwera."/>
+
   <l:Entry x:Key="File read timed out." EN="File read timed out."
     PL="Przekroczono czas oczekiwania na odczyt pliku."/>
   <l:Entry x:Key="Error occured while reading file."
@@ -76,38 +101,32 @@
   <l:Entry x:Key="Error occured while writing file."
     EN="Error occured while writing file."
     PL="Wystąpił błąd podczas zapisywania pliku."/>
-  <l:Entry x:Key="User's database does not exist."
-    EN="User's database does not exist."
-    PL="Baza danych użytkownika nie istnieje."/>
   <l:Entry x:Key="Encryption" EN="Encryption" PL="Szyfrowanie"/>
   <l:Entry x:Key="Encrypting user's database." EN="Encrypting user's database."
     PL="Szyfrowanie bazy danych użytkownika."/>
-  <l:Entry x:Key="Database encryption and user creation canceled."
-    EN="Database encryption and user creation canceled."
-    PL="Szyfrowanie bazy danych i tworzenie użytkownika anulowane."/>
   <l:Entry x:Key="User set as logged does not exist." EN="User set as logged does not exist."
     PL="Użytkownik oznaczony jako zalogowany nie istnieje."/>
   <l:Entry x:Key="User's database is corrupted. An empty database will be created."
     EN="User's database is corrupted. An empty database will be created."
     PL="Baza danych użytkownika jest uszkodzona. Stworzona zostanie pusta baza danych."/>
-  <l:Entry x:Key="Password change canceled."
-    EN="Password change canceled."
-    PL="Zmiana hasła anulowana."/>
+  <l:Entry x:Key="decrypting user's database."
+    EN="decrypting user's database."
+    PL="odszyfrowywania bazy danych użytkownika."/>
+  <l:Entry x:Key="encrypting user's database."
+    EN="encrypting user's database."
+    PL="szyfrowania bazy danych użytkownika."/>
   <l:Entry x:Key="Server with IP address" EN="Server with IP address" PL="Serwer z adresem IP"/>
   <l:Entry x:Key="and port" EN="and port" PL="i portem"/>
-  <l:Entry x:Key="User's database decryption canceled. Logging out."
-    EN="User's database decryption canceled. Logging out."
-    PL="Odszyfrowywanie bazy danych użytkownika anulowane. Wylogowuję."/>
   <l:Entry x:Key="Server list may have been corrupted." EN="Server list may have been corrupted."
     PL="Lista serwerów mogła zostać uszkodzona."/>
   <l:Entry x:Key="You should not have canceled database decryption. It may have been corrupted."
     EN="You should not have canceled database decryption. It may have been corrupted."
     PL="Nie powinieneś anulować szyfrowania bazy danych. Mogła zostać uszkodzona."/>
+  <l:Entry x:Key="Database may have been corrupted."
+    EN="Database may have been corrupted."
+    PL="Baza danych mogła zostać uszkodzona."/>
   <l:Entry x:Key="Encrypting server's database." EN="Encrypting server's database."
     PL="Szyfrowanie bazy danych serwera."/>
-  <l:Entry x:Key="User's database encryption canceled. Not logging out."
-    EN="User's database encryption canceled. Not logging out."
-    PL="Szyfrowanie bazy danych użytkownika anulowane. Nie wylogowuję."/>
   <l:Entry x:Key="OK" EN="OK" PL="OK"/>
   <l:Entry x:Key="Alert" EN="Alert" PL="Alert"/>
   <l:Entry x:Key="IP address" EN="IP address" PL="Adres IP"/>
@@ -122,15 +141,6 @@
   <l:Entry x:Key="Username may contain only lowercase characters and digits."
     EN="Username may contain only lowercase characters and digits."
     PL="Nazwa użytkownika może zawierać tylko małe litery i cyfry."/>
-  <l:Entry x:Key="User's directory does not exist."
-    EN="User's directory does not exist."
-    PL="Katalog użytkownika nie istnieje."/>
-  <l:Entry x:Key="A directory with user's new name already exists."
-    EN="A directory with user's new name already exists."
-    PL="Istnieje już katalog posiadający nową nazwę użytkownika."/>
-  <l:Entry x:Key="Error occured while renaming user's directory."
-    EN="Error occured while renaming user's directory."
-    PL="Wystąpił błąd podczas zmiany nazwy katalogu użytkownika."/>
 
   <l:Entry x:Key="String does not consist of two parts separated with semicolon."
     EN="String does not consist of two parts separated with semicolon."
@@ -147,6 +157,50 @@
   <l:Entry x:Key="Second number (q) is not prime."
     EN="Second number (q) is not prime."
     PL="Druga liczba (q) nie jest liczbą pierwszą."/>
+
+  <l:Entry x:Key="reading user's server list." EN="reading user's server list."
+    PL="odczytywania listy serwerów użytkownika."/>
+  <l:Entry x:Key="reading user's account list." EN="reading user's account list."
+    PL="odczytywania listy kont użytkownika."/>
+  <l:Entry x:Key="checking if" EN="checking if" PL="sprawdzania, czy"/>
+  <l:Entry x:Key="server" EN="server" PL="serwer"/>
+  <l:Entry x:Key="updating user in database." EN="updating user in database."
+    PL="aktualizowania użytkownika w bazie danych."/>
+  <l:Entry x:Key="adding user to database." EN="adding user to database."
+    PL="dodawania użytkownika do bazy danych."/>
+  <l:Entry x:Key="user" EN="user" PL="użytkownik"/>
+  <l:Entry x:Key="reading user list." EN="reading user list." PL="odczytywania listy użytkowników."/>
+  <l:Entry x:Key="user from database." EN="user from database." PL="użytkownika z bazy danych."/>
+  <l:Entry x:Key="adding server to database." EN="adding server to database."
+    PL="dodawania serwera do bazy danych."/>
+  <l:Entry x:Key="executing DDL code creating server database."
+    EN="executing DDL code creating server database."
+    PL="wykonywania kodu DDL tworzącego bazę danych serwera."/>
+  <l:Entry x:Key="Server database file" EN="Server database file" PL="Plik bazy danych serwera"/>
+  <l:Entry x:Key="users" EN="users" PL="użytkowników"/>
+  <l:Entry x:Key="not having" EN="not having" PL="nieposiadających"/>
+  <l:Entry x:Key="directories with file" EN="directories with file" PL="katalogów z plikiem"/>
+  <l:Entry x:Key="listing files and subdirectories in directory"
+    EN="listing files and subdirectories in directory"
+    PL="tworzenia listy plików i podkatalogów w katalogu"/>
+  <l:Entry x:Key="ensuring valid user database state." EN="ensuring valid user database state."
+    PL="zapewniania poprawnego stanu bazy danych użytkowników."/>
+  <l:Entry x:Key="validating server's database." EN="validating server's database."
+    PL="sprawdzania poprawności bazy danych serwera."/>
+  <l:Entry x:Key="servers" EN="servers" PL="serwerów"/>
+  <l:Entry x:Key="files" EN="plików" PL="plików"/>
+  <l:Entry x:Key="ensuring valid server database state." EN="ensuring valid server database state."
+    PL="zapewniania poprawnego stanu bazy danych serwerów."/>
+  <l:Entry x:Key="deleting the newly-added user's directory."
+    EN="deleting the newly-added user's directory."
+    PL="usuwania katalogu nowo dodanego użytkownika."/>
+  <l:Entry x:Key="user's server database." EN="user's server database."
+    PL="bazy danych serwerów użytkownika."/>
+  <l:Entry x:Key="resetting server database." EN="resetting server database."
+    PL="resetowania bazy danych serwera."/>
+  <l:Entry x:Key="deleting the newly-added server's database."
+    EN="deleting the newly-added server's database."
+    PL="usuwania bazy danych nowo dodanego serwera."/>
 
   <!-- tylko do serwera -->
   <!-- klucze używane w plikach .xaml - muszą być prawidłowymi nazwami zmiennych -->
@@ -204,7 +258,7 @@
   <l:Entry x:Key="Settings" EN="Settings" PL="Ustawienia"/>
 
   <!-- klucze używane w plikach .cs - nie muszą być prawidłowymi nazwami zmiennych -->
-  <l:Entry x:Key="No translation: " EN="" PL="Brak tłumaczenia: "/>
+  <l:Entry x:Key="No translation:" EN="" PL="Brak tłumaczenia:"/>
   <l:Entry x:Key="No" EN="No" PL="Nie"/>
   <l:Entry x:Key="Yes" EN="Yes" PL="Tak"/>
 

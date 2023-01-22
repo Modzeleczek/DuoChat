@@ -51,12 +51,12 @@ namespace Client.MVVM.Model
                 if (ex is SocketException)
                 {
                     var se = (SocketException)ex;
-                    status = new Status(-1, d["No translation: "] + se.Message, se.ErrorCode);
+                    status = new Status(-1, se.ErrorCode, d["No translation:"], se.Message);
                 }
                 else // if (ex is ArgumentOutOfRangeException)
                 {
                     var ae = (ArgumentOutOfRangeException)ex;
-                    status = new Status(-2, d["No translation: "] + ae.Message);
+                    status = new Status(-2, null, d["No translation:"], ae.Message);
                 }
             }
             return status;
@@ -77,7 +77,7 @@ namespace Client.MVVM.Model
             catch (Exception ex)
             {
                 var d = Translator.Instance;
-                status = new Status(-1, d["No translation: "] + ex.Message);
+                status = new Status(-1, null, d["No translation:"], ex.Message);
             }
             finally
             {

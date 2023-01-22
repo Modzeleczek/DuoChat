@@ -37,27 +37,30 @@ namespace Client.MVVM.ViewModel
                     Alert(valSta.Message);
                     return;
                 }
-                if (lus.Exists(userName))
+                var existsStatus = lus.Exists(userName);
+                if (existsStatus.Code < 0)
                 {
-                    Alert(d["User with name"] + $" {userName} " + d["already exists."]);
+                    existsStatus.Prepend(d["Error occured while"],
+                        d["checking if"], d["user"], d["already exists."]);
+                    Alert(existsStatus.Message);
+                    return;
+                }
+                if (existsStatus.Code == 0)
+                {
+                    Alert(existsStatus.Message);
                     return;
                 }
                 var newUser = new LocalUser(userName, password);
-                if (newUser.DirectoryExists())
-                {
-                    Alert(d["Database with such username already exists."]);
-                    return;
-                }
-                newUser.CreateDirectory();
-                var addStatus = lus.Add(newUser.ToSerializable());
+                var addStatus = lus.Add(newUser);
                 if (addStatus.Code != 0)
                 {
+                    addStatus.Prepend(d["Error occured while"], d["adding user to database."]);
                     Alert(addStatus.Message);
                     return;
                 }
                 password.Dispose();
                 confirmedPassword.Dispose();
-                OnRequestClose(new Status(0, null, newUser));
+                OnRequestClose(new Status(0, newUser));
             });
         }
 

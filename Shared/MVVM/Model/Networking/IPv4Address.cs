@@ -16,24 +16,24 @@ namespace Shared.MVVM.Model.Networking
         {
             var d = Translator.Instance;
             if (text == null)
-                return new Status(-1, d["String is null."]);
+                return new Status(-1, null, d["String is null."]);
             var split = text.Split('.');
             if (split.Length != 4)
-                return new Status(-2, d["String does not consist of four octets separated with periods."]);
+                return new Status(-2, null, d["String does not consist of four octets separated with periods."]);
             int binRepr = 0;
             for (int i = 3; i >= 0; --i)
             {
                 binRepr <<= 8;
                 if (!byte.TryParse(split[i], out byte parsedByte))
-                    return new Status(-3, $"{i + 1}. " +
-                        d["octet from the left is not valid number in range"] + " <0,255>.");
+                    return new Status(-3, null, $"{i + 1}.",
+                        d["octet from the left is not valid number in range"], "<0,255>.");
                 // trzymamy bajty adresu w kolejności big-endian, czyli prawy (ostatni z oddzielonych kropkami) oktet jest zapisany w najbardziej znaczącym bajcie _binaryRepresentation
                 binRepr |= parsedByte;
             }
             /* nie używać, bo może parsować adresy IPv6
             if (!IPAddress.TryParse(text, out IPAddress ip))
                 return false; */
-            return new Status(0, null, new IPv4Address(binRepr));
+            return new Status(0, new IPv4Address(binRepr));
         }
 
         public override string ToString()
@@ -49,5 +49,7 @@ namespace Shared.MVVM.Model.Networking
         }
 
         public IPAddress ToIPAddress() => new IPAddress(BinaryRepresentation);
+
+        public static implicit operator string(IPv4Address ip) => ip.ToString();
     }
 }
