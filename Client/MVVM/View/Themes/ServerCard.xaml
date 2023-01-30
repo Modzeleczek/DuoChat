@@ -24,6 +24,7 @@
             Background="{TemplateBinding Background}"
             CornerRadius="5">
             <Grid>
+              <!-- potrzebny do HoverPanelStyle -->
               <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
               </Grid.ColumnDefinitions>
@@ -74,11 +75,13 @@
                 HorizontalAlignment="Right"
                 Orientation="Horizontal"
                 Style="{StaticResource HoverPanelStyle}">
-                <!-- ElementName=MainWindowName odnosi się do MainWindow.xaml, w którym używamy stylu ServerCardStyle -->
+                <!-- RelativeSource odnosi się do MainWindow.xaml,
+                w którym używamy stylu ServerCardStyle -->
                 <Button
                   Margin="7,7,20,7"
                   HorizontalAlignment="Right"
-                  Command="{Binding Path=DataContext.DeleteServer, ElementName=MainWindowName}"
+                  Command="{Binding Path=DataContext.DeleteServer, RelativeSource=
+                    {RelativeSource Mode=FindAncestor, AncestorLevel=1, AncestorType=Window}}"
                   CommandParameter="{Binding}"
                   Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Delete}"
                   Style="{StaticResource CornerRadiusButtonStyle}" />

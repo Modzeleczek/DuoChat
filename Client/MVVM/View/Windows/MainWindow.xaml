@@ -157,6 +157,7 @@
             <RowDefinition Height="60" />
           </Grid.RowDefinitions>
           <Label
+            Grid.Row="0"
             Margin="8,5,0,0"
             Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Servers}"
             FontFamily="/MVVM/View/Fonts/RedHatDisplay"
@@ -164,13 +165,15 @@
             FontWeight="SemiBold"
             Foreground="#C9ADA7" />
           <ListView
+            x:Name="ServersListView"
             Grid.Row="1"
             Background="Transparent"
             BorderBrush="#4A4E69"
             BorderThickness="0,0,0,4"
             ItemContainerStyle="{StaticResource ServerCardStyle}"
             ItemsSource="{Binding Servers}"
-            SelectedItem="{Binding SelectedServer, Mode=TwoWay}" />
+            SelectedItem="{Binding SelectedServer, Mode=TwoWay}"
+            SelectionChanged="ListView_SelectionChanged" />
           <Button
             Grid.Row="2"
             Grid.Column="1"
@@ -192,6 +195,7 @@
             <RowDefinition Height="60" />
           </Grid.RowDefinitions>
           <Label
+            Grid.Row="0"
             Margin="8,5,0,0"
             Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Accounts}"
             FontFamily="/MVVM/View/Fonts/RedHatDisplay"
@@ -205,7 +209,28 @@
             BorderThickness="0,0,0,4"
             ItemContainerStyle="{StaticResource AccountCardStyle}"
             ItemsSource="{Binding Accounts}"
-            SelectedItem="{Binding SelectedAccount, Mode=TwoWay}" />
+            SelectedItem="{Binding SelectedAccount, Mode=TwoWay}"
+            SelectionChanged="ListView_SelectionChanged" />
+          <Button
+            Grid.Row="2"
+            Grid.Column="1"
+            Margin="50,10,50,10"
+            Command="{Binding AddAccount}"
+            Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Add_account}"
+            FontFamily="/MVVM/View/Fonts/RedHatDisplay"
+            FontSize="14">
+            <Button.Style>
+              <Style TargetType="Button" BasedOn="{StaticResource CornerRadiusButtonStyle}">
+                <Setter Property="Visibility" Value="Visible" />
+                <Style.Triggers>
+                  <!-- <DataTrigger Binding="{Binding SelectedServer}" Value="{x:Null}"> -->
+                  <DataTrigger Binding="{Binding Path=SelectedIndex, ElementName=ServersListView}" Value="-1">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                  </DataTrigger>
+                </Style.Triggers>
+              </Style>
+            </Button.Style>
+          </Button>
         </Grid>
 
         <Grid
@@ -247,7 +272,8 @@
               BorderThickness="0,0,0,4"
               ItemContainerStyle="{StaticResource ConversationCardStyle}"
               ItemsSource="{Binding Conversations}"
-              SelectedItem="{Binding SelectedConversation}" />
+              SelectedItem="{Binding SelectedConversation}"
+              SelectionChanged="ListView_SelectionChanged" />
           </Border>
           <Border
             Grid.Row="2"

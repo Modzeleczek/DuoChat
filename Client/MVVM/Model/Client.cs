@@ -2,8 +2,8 @@
 using Shared.MVVM.Model;
 using Shared.MVVM.View.Localization;
 using System;
-using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Client.MVVM.Model
@@ -15,6 +15,7 @@ namespace Client.MVVM.Model
         #endregion
 
         #region Fields
+        private Translator d = Translator.Instance;
         private TcpClient _socket = null;
         private Task _runner = null;
         private bool _disconnectRequested = false;
@@ -30,35 +31,60 @@ namespace Client.MVVM.Model
         public Status Connect(Server server)
         {
             Status status = null;
+            // https://stackoverflow.com/a/43237063
+            _socket = new TcpClient();
+            var timeOut = TimeSpan.FromSeconds(2);
+            var cancellationCompletionSource = new TaskCompletionSource<bool>();
             try
             {
-                var remoteEndPoint = new IPEndPoint(server.IpAddress.ToIPAddress(), server.Port.Value);
-                _socket = new TcpClient();
-                _socket.Connect(remoteEndPoint);
+                /* w obiekcie CancellationTokenSource tworzy się task "anulujący",
+                który zostanie anulowany po czasie timeOut */
+                using (var cts = new CancellationTokenSource(timeOut))
+                {
+                    // rozpoczynamy taska "łączącego", który łączy TcpClienta z serwerem
+                    var task = _socket.ConnectAsync(server.IpAddress.ToIPAddress(), server.Port.Value);
+                    /* ustawiamy funkcję, która zostanie wykonana w momencie anulowania taska obiektu CancellationTokenSource (czyli po czasie timeOut) */
+                    using (cts.Token.Register(() => cancellationCompletionSource.TrySetResult(true)))
+                    {
+                        /* synchronicznie czekamy na zakończenie pierwszego z dwóch tasków:
+                        łączącego lub anulującego; jeżeli pierwszy zakończy się nie task łączący,
+                        ale anulujący, to wyrzucamy wyjątek */
+                        var whenAny = Task.WhenAny(task, cancellationCompletionSource.Task);
+                        whenAny.Wait();
+                        if (whenAny.Result != task)
+                            throw new OperationCanceledException(cts.Token);
+                        /* jeżeli w tasku łączącym został wyrzucony wyjątek, to wyrzucamy
+                        go w aktualnej metodzie, aby został obsłużony w catchach na dole */
+                        // throw exception inside 'task' (if any)
+                        if (task.Exception?.InnerException != null)
+                            throw task.Exception.InnerException;
+                    }
+                }
                 _server = server;
                 _disconnectRequested = false;
                 _runner = Task.Run(Process);
                 IsConnected = true;
-                status = new Status(0);
+                return new Status(0); // 0
             }
-            catch (Exception ex) when (
-                ex is SocketException ||
-                ex is ArgumentOutOfRangeException)
+            catch (OperationCanceledException)
             {
-                _socket.Close();
-                IsConnected = false;
-                var d = Translator.Instance;
-                if (ex is SocketException)
-                {
-                    var se = (SocketException)ex;
-                    status = new Status(-1, se.ErrorCode, d["No translation:"], se.Message);
-                }
-                else // if (ex is ArgumentOutOfRangeException)
-                {
-                    var ae = (ArgumentOutOfRangeException)ex;
-                    status = new Status(-2, null, d["No translation:"], ae.Message);
-                }
+                status = new Status(-1, null, d["Server connection timed out."]); // -1
             }
+            catch (SocketException)
+            {
+                status = new Status(-2, null, d["No response from the server."]); // -2
+                // dokładna przyczyna braku połączenia jest w SocketException.Message
+            }
+            catch (Exception)
+            {
+                status = new Status(-3, null, d["Error occured while"],
+                    d["connecting to the server."]); // -3
+            }
+            /* System.ArgumentNullException - nie może wystąpić, bo walidujemy adres IP
+            System.ArgumentOutOfRangeException - nie może wystąpić, bo walidujemy port
+            System.ObjectDisposedException - nie może wystąpić, bo tworzymy nowy,
+            niezdisposowany obiekt TcpClient */
+            _socket.Close();
             return status;
         }
 
@@ -76,7 +102,6 @@ namespace Client.MVVM.Model
             }
             catch (Exception ex)
             {
-                var d = Translator.Instance;
                 status = new Status(-1, null, d["No translation:"], ex.Message);
             }
             finally

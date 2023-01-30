@@ -1,8 +1,9 @@
 ﻿using Client.MVVM.Model;
 using Client.MVVM.Model.BsonStorages;
+using Client.MVVM.View.Windows;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model;
-using Shared.MVVM.View.Windows;
+using System.Collections.Generic;
 using System.Windows.Controls;
 
 namespace Client.MVVM.ViewModel
@@ -12,17 +13,27 @@ namespace Client.MVVM.ViewModel
         public ChangeLocalUserNameViewModel(LocalUser user)
         {
             var lus = new LocalUsersStorage();
-            WindowLoaded = new RelayCommand(e => window = (DialogWindow)e);
+
+            WindowLoaded = new RelayCommand(e =>
+            {
+                var win = (FormWindow)e;
+                window = win;
+                win.AddTextField(d["Username"], user.Name);
+                RequestClose += () => win.Close();
+            });
+
             Confirm = new RelayCommand(e =>
             {
-                var inpCtrls = (Control[])e;
-                var newUsername = ((TextBox)inpCtrls[0]).Text;
-                var unValSta = lus.ValidateUserName(newUsername);
+                var fields = (List<Control>)e;
+
+                var newUsername = ((TextBox)fields[0]).Text;
+                var unValSta = LocalUsersStorage.ValidateUserName(newUsername);
                 if (unValSta.Code != 0)
                 {
                     Alert(unValSta.Message);
                     return;
                 }
+
                 var existsStatus = lus.Exists(newUsername);
                 if (existsStatus.Code < 0)
                 {
@@ -36,6 +47,8 @@ namespace Client.MVVM.ViewModel
                     Alert(existsStatus.Message);
                     return;
                 }
+                // użytkownik nie istnieje
+
                 var oldUserName = user.Name;
                 user.Name = newUsername;
                 var updateStatus = lus.Update(oldUserName, user);

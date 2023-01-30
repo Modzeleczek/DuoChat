@@ -1,6 +1,7 @@
 ﻿using Client.MVVM.ViewModel;
 using Shared.MVVM.View.Windows;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Shapes;
 
@@ -114,5 +115,14 @@ namespace Client.MVVM.View.Windows
             }
         }
         #endregion
+
+        private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            /* potrzebne, aby po nieudanej próbie połączenia z serwerem,
+            kliknięte konto na liście kont zostało odznaczone */
+            var listView = (ListView)sender;
+            if (listView.SelectedItem == null)
+                listView.UnselectAll();
+        }
     }
 }

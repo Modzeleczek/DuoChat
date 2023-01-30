@@ -166,7 +166,8 @@ namespace Client.MVVM.Model.BsonStorages
             users.Add(user.ToSerializable());
             var saveStatus = Save(structure);
             if (saveStatus.Code != 0)
-                return saveStatus.Prepend(-4); // -4
+                return saveStatus.Prepend(-4, d["Error occured while"],
+                    d["saving"], d["user database file."]); // -4
 
             try
             { Directory.CreateDirectory(directoryPath); }
@@ -288,12 +289,14 @@ namespace Client.MVVM.Model.BsonStorages
                         if (users[j].Equals(userSerializable))
                             return UserAlreadyExistsStatus(-2, newUserName); // -2
 
+                    string[] dbSaveError = { d["Error occured while"],
+                        d["saving"], d["user database file."] };
                     if (userSerializable.KeyEquals(userName))
                     {
                         // jeżeli metodą Update nie zmieniamy nazwy użytkownika
                         var saveStatus = Save(structure);
                         if (saveStatus.Code != 0)
-                            return saveStatus.Prepend(-3); // -3
+                            return saveStatus.Prepend(-3, dbSaveError); // -3
                     }
                     else
                     {
@@ -305,7 +308,7 @@ namespace Client.MVVM.Model.BsonStorages
                         users[i] = userSerializable;
                         var saveStatus = Save(structure);
                         if (saveStatus.Code != 0)
-                            return saveStatus.Prepend(-5); // -5
+                            return saveStatus.Prepend(-5, dbSaveError); // -5
 
                         var oldDirectoryPath = UserDirectoryPath(userName);
                         if (Directory.Exists(oldDirectoryPath))
@@ -349,7 +352,8 @@ namespace Client.MVVM.Model.BsonStorages
                     users.RemoveAt(i);
                     var saveStatus = Save(structure);
                     if (saveStatus.Code != 0)
-                        return saveStatus.Prepend(-2); // -2
+                        return saveStatus.Prepend(-2, d["Error occured while"],
+                            d["saving"], d["user database file."]); // -2
 
                     var directoryPath = UserDirectoryPath(userName);
                     if (Directory.Exists(directoryPath))
@@ -431,7 +435,7 @@ namespace Client.MVVM.Model.BsonStorages
             return new Status(0, structure.ActiveLanguageId);
         }
 
-        public Status ValidateUserName(string userName)
+        public static Status ValidateUserName(string userName)
         {
             if (string.IsNullOrWhiteSpace(userName))
                 return new Status(1, null, d["Username cannot be empty."]);
@@ -442,7 +446,7 @@ namespace Client.MVVM.Model.BsonStorages
             foreach (var c in userName)
                 if (!((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9')))
                     return new Status(2, null,
-                        d["Username may contain only lowercase characters and digits."]);
+                        d["Username may contain only lowercase letters and digits."]);
             return new Status(0);
         }
     }

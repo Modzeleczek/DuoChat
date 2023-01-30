@@ -52,16 +52,14 @@ namespace Client.MVVM.ViewModel
 
             Create = new RelayCommand(_ =>
             {
-                var vm = new CreateLocalUserViewModel();
-                var win = new FormWindow(window, vm, d["Create local user"], new FormWindow.Field[]
+                var vm = new CreateLocalUserViewModel
                 {
-                    new FormWindow.Field(d["Username"], "", false),
-                    new FormWindow.Field(d["Password"], "", true),
-                    new FormWindow.Field(d["Confirm password"], "", true)
-                }, d["Cancel"], d["Create"]);
-                vm.RequestClose += () => win.Close();
-                win.ShowDialog();
-                // ShowDialog blokuje wykonanie kodu z tego obiektu typu command do momentu zamknięcia okna tworzenia użytkownika
+                    Title = d["Create local user"],
+                    ConfirmButtonText = d["Create"]
+                };
+                new FormWindow(window, vm).ShowDialog();
+                /* ShowDialog blokuje wykonanie kodu z tego obiektu typu command
+                do momentu zamknięcia okna tworzenia użytkownika */
                 var status = vm.Status;
                 if (status.Code == 0)
                     LocalUsers.Add((LocalUser)status.Data);
@@ -69,41 +67,37 @@ namespace Client.MVVM.ViewModel
             Login = new RelayCommand(clickedUser =>
             {
                 var user = (LocalUser)clickedUser;
-                var status = LocalLoginViewModel.ShowDialog(window, user, true, d["Login"]);
+                var status = LocalLoginViewModel.ShowDialog(window, user, true, d["Log in"]);
                 if (status.Code != 0) return;
-                OnRequestClose(status);
+                OnRequestClose(new Status(0, new { LoggedUser = user, Password = status.Data }));
             });
             ChangeName = new RelayCommand(clickedUser =>
             {
                 var user = (LocalUser)clickedUser;
-                if (LocalLoginViewModel.ShowDialog(window, user, false).Code != 0) return; // nie udało się zalogować
+                // nie udało się zalogować
+                if (LocalLoginViewModel.ShowDialog(window, user, false).Code != 0) return;
                 // udało się zalogować
-                var vm = new ChangeLocalUserNameViewModel(user);
-                var win = new FormWindow(window, vm, d["Change_name"],
-                    new FormWindow.Field[]
-                    {
-                        new FormWindow.Field(d["Username"], user.Name, false),
-                    }, d["Cancel"], d["Save"]);
-                vm.RequestClose += () => win.Close();
-                win.ShowDialog();
+                var vm = new ChangeLocalUserNameViewModel(user)
+                {
+                    Title = d["Change_name"],
+                    ConfirmButtonText = d["Save"]
+                };
+                new FormWindow(window, vm).ShowDialog();
                 if (vm.Status.Code == 0) Reinsert(user);
             });
             ChangePassword = new RelayCommand(clickedUser =>
             {
                 var user = (LocalUser)clickedUser;
-                var logSta = LocalLoginViewModel.ShowDialog(window, user, true);
-                if (logSta.Code != 0) return;
-                var curPas = (SecureString)((dynamic)logSta.Data).Password;
-                var vm = new ChangeLocalUserPasswordViewModel(user, curPas);
-                var win = new FormWindow(window, vm, d["Change_password"],
-                    new FormWindow.Field[]
-                    {
-                        new FormWindow.Field(d["New password"], "", true),
-                        new FormWindow.Field(d["Confirm password"], "", true)
-                    }, d["Cancel"], d["Save"]);
-                vm.RequestClose += () => win.Close();
-                win.ShowDialog();
-                curPas.Dispose();
+                var loginStatus = LocalLoginViewModel.ShowDialog(window, user, true);
+                if (loginStatus.Code != 0) return;
+                var currentPassword = (SecureString)loginStatus.Data;
+                var vm = new ChangeLocalUserPasswordViewModel(user, currentPassword)
+                {
+                    Title = d["Change_password"],
+                    ConfirmButtonText = d["Save"]
+                };
+                new FormWindow(window, vm).ShowDialog();
+                currentPassword.Dispose();
             });
             Delete = new RelayCommand(clickedUser =>
             {

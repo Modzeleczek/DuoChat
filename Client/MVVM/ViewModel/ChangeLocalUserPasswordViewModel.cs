@@ -1,25 +1,36 @@
 ﻿using Client.MVVM.Model;
 using Client.MVVM.Model.BsonStorages;
+using Client.MVVM.View.Windows;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model;
-using Shared.MVVM.View.Windows;
+using System.Collections.Generic;
 using System.Security;
 using System.Windows.Controls;
 
 namespace Client.MVVM.ViewModel
 {
-    public class ChangeLocalUserPasswordViewModel : PasswordFormViewModel
+    public class ChangeLocalUserPasswordViewModel : FormViewModel
     {
         public ChangeLocalUserPasswordViewModel(LocalUser user, SecureString oldPassword)
         {
             var pc = new PasswordCryptography();
             var lus = new LocalUsersStorage();
-            WindowLoaded = new RelayCommand(e => window = (DialogWindow)e);
+
+            WindowLoaded = new RelayCommand(e =>
+            {
+                var win = (FormWindow)e;
+                window = win;
+                win.AddPasswordField(d["New password"]);
+                win.AddPasswordField(d["Confirm password"]);
+                RequestClose += () => win.Close();
+            });
+
             Confirm = new RelayCommand(e =>
             {
-                var inpCtrls = (Control[])e;
-                var password = ((PasswordBox)inpCtrls[0]).SecurePassword;
-                var confirmedPassword = ((PasswordBox)inpCtrls[1]).SecurePassword;
+                var fields = (List<Control>)e;
+
+                var password = ((PasswordBox)fields[0]).SecurePassword;
+                var confirmedPassword = ((PasswordBox)fields[1]).SecurePassword;
                 if (!pc.SecureStringsEqual(password, confirmedPassword))
                 {
                     Alert(d["Passwords do not match."]);
@@ -96,12 +107,15 @@ namespace Client.MVVM.ViewModel
                 confirmedPassword.Dispose();
                 OnRequestClose(new Status(0));
             });
-        }
 
-        protected override void DisposePasswords(Control[] controls)
-        {
-            ((PasswordBox)controls[0]).SecurePassword.Dispose();
-            ((PasswordBox)controls[1]).SecurePassword.Dispose();
+            var defaultCloseHandler = Close;
+            Close = new RelayCommand(e =>
+            {
+                var fields = (List<Control>)e;
+                ((PasswordBox)fields[0]).SecurePassword.Dispose();
+                ((PasswordBox)fields[1]).SecurePassword.Dispose();
+                defaultCloseHandler?.Execute(e);
+            });
         }
     }
 }

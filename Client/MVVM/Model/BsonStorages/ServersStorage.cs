@@ -169,7 +169,8 @@ namespace Client.MVVM.Model.BsonStorages
             servers.Add(server.ToSerializable());
             var saveStatus = Save(structure);
             if (saveStatus.Code != 0)
-                return saveStatus.Prepend(-4); // -4
+                return saveStatus.Prepend(-4, d["Error occured while"],
+                    d["saving"], d["user's server database file."]); // -4
 
             try
             /* jeżeli użyjemy tu zwykłego File.Create, to SQLite nie chce się łączyć
@@ -191,7 +192,8 @@ namespace Client.MVVM.Model.BsonStorages
             var resetStatus = new ServerDatabase(filePath).ResetDatabase();
             if (resetStatus.Code != 0)
             {
-                resetStatus.Prepend(-7, d["Error occured while"], d["resetting server database."]); // -7
+                resetStatus.Prepend(-7, d["Error occured while"],
+                    d["resetting server database."]); // -7
 
                 servers.RemoveAt(servers.Count - 1); // usuwamy ostatnio dodanego
                 saveStatus = Save(structure);
@@ -291,12 +293,14 @@ namespace Client.MVVM.Model.BsonStorages
                         if (servers[j].Equals(serverSerializable))
                             return ServerAlreadyExistsStatus(-2, newIpAddress, newPort); // -2
 
+                    string[] dbSaveError = { d["Error occured while"],
+                        d["saving"], d["user's server database file."] };
                     if (serverSerializable.KeyEquals(ipAddress.BinaryRepresentation, port.Value))
                     {
                         // jeżeli metodą Update nie zmieniamy pary (adres IP, port) serwera
                         var saveStatus = Save(structure);
                         if (saveStatus.Code != 0)
-                            return saveStatus.Prepend(-3); // -3
+                            return saveStatus.Prepend(-3, dbSaveError); // -3
                     }
                     else
                     {
@@ -308,7 +312,7 @@ namespace Client.MVVM.Model.BsonStorages
                         servers[i] = serverSerializable;
                         var saveStatus = Save(structure);
                         if (saveStatus.Code != 0)
-                            return saveStatus.Prepend(-5); // -5
+                            return saveStatus.Prepend(-5, dbSaveError); // -5
 
                         var oldFilePath = ServerFilePath(ipAddress, port);
                         if (File.Exists(oldFilePath))
@@ -352,7 +356,8 @@ namespace Client.MVVM.Model.BsonStorages
                     servers.RemoveAt(i);
                     var saveStatus = Save(structure);
                     if (saveStatus.Code != 0)
-                        return saveStatus.Prepend(-2); // -2
+                        return saveStatus.Prepend(-2, d["Error occured while"],
+                            d["saving"], d["user's server database file."]); // -2
 
                     var filePath = ServerFilePath(ipAddress, port);
                     if (File.Exists(filePath))
@@ -381,12 +386,15 @@ namespace Client.MVVM.Model.BsonStorages
         public Status GetServerDatabase(IPv4Address ipAddress, Port port)
         {
             var existsStatus = Exists(ipAddress, port);
+            if (existsStatus.Code < 0)
+                return existsStatus.Prepend(-1, d["Error occured while"], d["checking if"],
+                    d["server"], d["already exists"]); // -1
             if (existsStatus.Code == 1)
-                return existsStatus.Prepend(-1); // -1
+                return existsStatus.Prepend(-2); // -2
 
             var dbPath = ServerFilePath(ipAddress, port);
 
-            return new Status(0, new ServerDatabase(dbPath));
+            return new Status(0, new ServerDatabase(dbPath)); // 0
         }
     }
 }

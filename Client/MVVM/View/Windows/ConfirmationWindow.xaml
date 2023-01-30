@@ -70,7 +70,7 @@
         Grid.Column="0"
         Margin="50,10,50,10"
         Command="{Binding Path=Close}"
-        Content="{Binding Path=CancellationButtonText}"
+        Content="{Binding Path=CancelButtonText}"
         FontFamily="/MVVM/View/Fonts/RedHatDisplay"
         FontSize="18"
         Style="{StaticResource CornerRadiusButtonStyle}" />
@@ -80,7 +80,7 @@
         Grid.Column="1"
         Margin="50,10,50,10"
         Command="{Binding Path=Confirm}"
-        Content="{Binding Path=ConfirmationButtonText}"
+        Content="{Binding Path=ConfirmButtonText}"
         FontFamily="/MVVM/View/Fonts/RedHatDisplay"
         FontSize="18"
         Style="{StaticResource CornerRadiusButtonStyle}" />

@@ -26,6 +26,7 @@
   <l:Entry x:Key="Log_local_user_out" EN="Log local user out" PL="Wyloguj lokalnego użytkownika"/>
   <l:Entry x:Key="Toggle_language" EN="Toggle language" PL="Przełącz język"/>
   <l:Entry x:Key="Server_name" EN="Server name" PL="Nazwa serwera"/>
+  <l:Entry x:Key="Add_account" EN="Add account" PL="Dodaj konto"/>
 
   <!-- klucze używane w plikach .cs - nie muszą być prawidłowymi nazwami zmiennych -->
   <l:Entry x:Key="Users" EN="Users" PL="Użytkownicy"/>
@@ -35,7 +36,7 @@
   <l:Entry x:Key="Create" EN="Create" PL="Stwórz"/>
   <l:Entry x:Key="Edit" EN="Edit" PL="Edytuj"/>
   <l:Entry x:Key="Password" EN="Password" PL="Hasło"/>
-  <l:Entry x:Key="Login" EN="Login" PL="Zaloguj"/>
+  <l:Entry x:Key="Log in" EN="Log in" PL="Zaloguj"/>
   <l:Entry x:Key="Create local user" EN="Create local user"
     PL="Stwórz lokalnego użytkownika"/>
   <l:Entry x:Key="Confirm password" EN="Confirm password" PL="Potwierdź hasło"/>
@@ -134,12 +135,12 @@
   <l:Entry x:Key="Add" EN="Add" PL="Dodaj"/>
   <l:Entry x:Key="Enter your password" EN="Enter your password" PL="Podaj hasło"/>
   <l:Entry x:Key="Delete server" EN="Delete server" PL="Usuń serwer"/>
-  <l:Entry x:Key="Do you want to delete server" EN="Do you want to delete server"
-    PL="Czy chcesz usunąć serwer"/>
+  <l:Entry x:Key="Do you want to delete" EN="Do you want to delete"
+    PL="Czy chcesz usunąć"/>
   <l:Entry x:Key="Username cannot be empty." EN="Username cannot be empty."
     PL="Nazwa użytkownika nie może być pusta."/>
-  <l:Entry x:Key="Username may contain only lowercase characters and digits."
-    EN="Username may contain only lowercase characters and digits."
+  <l:Entry x:Key="Username may contain only lowercase letters and digits."
+    EN="Username may contain only lowercase letters and digits."
     PL="Nazwa użytkownika może zawierać tylko małe litery i cyfry."/>
 
   <l:Entry x:Key="String does not consist of two parts separated with semicolon."
@@ -166,16 +167,17 @@
   <l:Entry x:Key="server" EN="server" PL="serwer"/>
   <l:Entry x:Key="updating user in database." EN="updating user in database."
     PL="aktualizowania użytkownika w bazie danych."/>
-  <l:Entry x:Key="adding user to database." EN="adding user to database."
-    PL="dodawania użytkownika do bazy danych."/>
+  <l:Entry x:Key="adding" EN="adding" PL="dodawania"/>
+  <l:Entry x:Key="user to database." EN="user to database."
+    PL="użytkownika do bazy danych."/>
   <l:Entry x:Key="user" EN="user" PL="użytkownik"/>
   <l:Entry x:Key="reading user list." EN="reading user list." PL="odczytywania listy użytkowników."/>
   <l:Entry x:Key="user from database." EN="user from database." PL="użytkownika z bazy danych."/>
-  <l:Entry x:Key="adding server to database." EN="adding server to database."
-    PL="dodawania serwera do bazy danych."/>
-  <l:Entry x:Key="executing DDL code creating server database."
-    EN="executing DDL code creating server database."
-    PL="wykonywania kodu DDL tworzącego bazę danych serwera."/>
+  <l:Entry x:Key="server to user's database." EN="server to user's database."
+    PL="serwera do bazy danych użytkownika."/>
+  <l:Entry x:Key="executing DDL query creating server database."
+    EN="executing DDL query creating server database."
+    PL="wykonywania zapytania DDL tworzącego bazę danych serwera."/>
   <l:Entry x:Key="Server database file" EN="Server database file" PL="Plik bazy danych serwera"/>
   <l:Entry x:Key="users" EN="users" PL="użytkowników"/>
   <l:Entry x:Key="not having" EN="not having" PL="nieposiadających"/>
@@ -185,8 +187,8 @@
     PL="tworzenia listy plików i podkatalogów w katalogu"/>
   <l:Entry x:Key="ensuring valid user database state." EN="ensuring valid user database state."
     PL="zapewniania poprawnego stanu bazy danych użytkowników."/>
-  <l:Entry x:Key="validating server's database." EN="validating server's database."
-    PL="sprawdzania poprawności bazy danych serwera."/>
+  <l:Entry x:Key="executing SQLite integrity check." EN="executing SQLite integrity check."
+    PL="wykonywania sprawdzenia integralności SQLite."/>
   <l:Entry x:Key="servers" EN="servers" PL="serwerów"/>
   <l:Entry x:Key="files" EN="plików" PL="plików"/>
   <l:Entry x:Key="ensuring valid server database state." EN="ensuring valid server database state."
@@ -201,6 +203,38 @@
   <l:Entry x:Key="deleting the newly-added server's database."
     EN="deleting the newly-added server's database."
     PL="usuwania bazy danych nowo dodanego serwera."/>
+  <l:Entry x:Key="account" EN="account" PL="konto"/>
+  <l:Entry x:Key="Delete account" EN="Delete account" PL="Usuń konto"/>
+  <l:Entry x:Key="Login" EN="Login" PL="Login"/>
+  <l:Entry x:Key="Private key" EN="Private key" PL="Klucz prywatny"/>
+  <l:Entry x:Key="Login cannot be empty." EN="Login cannot be empty." PL="Login nie może być pusty."/>
+  <l:Entry x:Key="Invalid private key format." EN="Invalid private key format."
+    PL="Nieprawidłowy format klucza prywatnego."/>
+  <l:Entry x:Key="executing query." EN="executing query." PL="wykonywania zapytania."/>
+  <l:Entry x:Key="More than one account with login" EN="More than one account with login"
+    PL="Więcej niż jedno konto z loginem"/>
+  <l:Entry x:Key="exist." EN="exist." PL="istnieje."/>
+  <l:Entry x:Key="account to server's database." EN="account to server's database."
+    PL="konta do bazy danych serwera."/>
+  <l:Entry x:Key="connecting to server's database file." EN="connecting to server's database file."
+    PL="łączenia z plikiem bazy danych serwera."/>
+  <l:Entry x:Key="Number of rows affected by the query is other than 1."
+    EN="Number of rows affected by the query is other than 1."
+    PL="Liczba wierszy, na które wpływ miało zapytanie, jest inna niż 1."/>
+  <l:Entry x:Key="Account with login" EN="Account with login" PL="Konto o loginie"/>
+  <l:Entry x:Key="saving" EN="saving" PL="zapisywania"/>
+  <l:Entry x:Key="user's server database file." EN="user's server database file."
+    PL="pliku bazy danych serwerów użytkownika."/>
+  <l:Entry x:Key="user database file." EN="user database file." PL="pliku bazy danych użytkowników."/>
+  <l:Entry x:Key="getting" EN="getting" PL="uzyskiwania"/>
+  <l:Entry x:Key="access to server's database." EN="access to server's database."
+    PL="dostępu do bazy danych serwera."/>
+  <l:Entry x:Key="Server connection timed out." EN="Server connection timed out."
+    PL="Przekroczono czas oczekiwania na połączenie z serwerem."/>
+  <l:Entry x:Key="No response from the server." EN="No response from the server."
+    PL="Brak odpowiedzi od serwera."/>
+  <l:Entry x:Key="connecting to the server." EN="connecting to the server."
+    PL="łączenia z serwerem."/>
 
   <!-- tylko do serwera -->
   <!-- klucze używane w plikach .xaml - muszą być prawidłowymi nazwami zmiennych -->
@@ -243,15 +277,7 @@
   <l:Entry x:Key="Do you want to generate a new private key? Server's public key is derived from private key and users may not trust a server changing it without prior notice."
     EN="Do you want to generate a new private key? Server's public key is derived from private key and users may not trust a server changing it without prior notice."
     PL="Czy chcesz wygenerować nowy klucz prywatny. Klucz publiczny serwera pochodzi od klucza prywatnego i użytkownicy mogą nie ufać serwerowi zmieniającemu go bez uprzedniej zapowiedzi."/>
-  <l:Entry x:Key="Generate private key"
-    EN="Generate private key"
-    PL="Wygeneruj klucz prywatny"/>
-  <l:Entry x:Key="Private key generation"
-    EN="Private key generation"
-    PL="Generowanie klucza prywatnego"/>
-  <l:Entry x:Key="Private key validation"
-    EN="Private key validation"
-    PL="Walidacja klucza prywatnego"/>
+  <l:Entry x:Key="Private key validation" EN="Private key validation" PL="Walidacja klucza prywatnego"/>
 
   <!-- do klienta i serwera -->
   <!-- klucze używane w plikach .xaml - muszą być prawidłowymi nazwami zmiennych -->
@@ -272,16 +298,11 @@
     EN="octet from the left is not valid number in range"
     PL="oktet od lewej nie jest poprawną liczbą z przedziału"/>
 
-  <l:Entry x:Key="Invalid port format." EN="Invalid port format."
-    PL="Nieprawidłowy format portu."/>
-  <l:Entry x:Key="String is not a number."
-    EN="String is not a number."
-    PL="Ciąg nie jest liczbą."/>
-  <l:Entry x:Key="Port must be in range"
-    EN="Port must be in range"
-    PL="Port musi należeć do przedziału"/>
-  <l:Entry x:Key="Cancelling..."
-    EN="Cancelling..."
-    PL="Anulowanie..."/>
+  <l:Entry x:Key="Invalid port format." EN="Invalid port format." PL="Nieprawidłowy format portu."/>
+  <l:Entry x:Key="String is not a number." EN="String is not a number." PL="Ciąg nie jest liczbą."/>
+  <l:Entry x:Key="Port must be in range" EN="Port must be in range" PL="Port musi należeć do przedziału"/>
+  <l:Entry x:Key="Cancelling..." EN="Cancelling..." PL="Anulowanie..."/>
+  <l:Entry x:Key="Generate private key" EN="Generate private key" PL="Wygeneruj klucz prywatny"/>
+  <l:Entry x:Key="Private key generation" EN="Private key generation" PL="Generowanie klucza prywatnego"/>
 
 </ResourceDictionary>

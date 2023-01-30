@@ -199,6 +199,7 @@
     <Compile Include="MVVM\Model\Server.cs" />
     <Compile Include="MVVM\Model\ServerDatabase.cs" />
     <Compile Include="MVVM\Model\User.cs" />
+    <Compile Include="MVVM\ViewModel\AccountActions\CreateAccountViewModel.cs" />
     <Compile Include="MVVM\ViewModel\AlertViewModel.cs" />
     <Compile Include="MVVM\ViewModel\ChangeLocalUserNameViewModel.cs" />
     <Compile Include="MVVM\ViewModel\ChangeLocalUserPasswordViewModel.cs" />
@@ -208,7 +209,6 @@
     <Compile Include="MVVM\ViewModel\LocalLoginViewModel.cs" />
     <Compile Include="MVVM\ViewModel\LocalUsersViewModel.cs" />
     <Compile Include="MVVM\ViewModel\MainViewModel.cs" />
-    <Compile Include="MVVM\ViewModel\PasswordFormViewModel.cs" />
     <Compile Include="MVVM\ViewModel\ProgressBarViewModel.cs" />
     <Compile Include="MVVM\ViewModel\ServerActions\CreateServerViewModel.cs" />
     <Compile Include="MVVM\ViewModel\SettingsViewModel.cs" />

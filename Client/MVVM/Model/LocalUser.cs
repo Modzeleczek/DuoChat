@@ -3,6 +3,7 @@ using Client.MVVM.Model.JsonSerializables;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model;
 using Shared.MVVM.Model.Networking;
+using Shared.MVVM.View.Localization;
 using System.Collections.Generic;
 using System.IO;
 using System.Security;
@@ -33,6 +34,10 @@ namespace Client.MVVM.Model
         public string DirectoryPath => Path.Combine(LocalUsersStorage.USERS_DIRECTORY_NAME, Name);
 
         private ServersStorage serversStorage => new ServersStorage(this);
+        #endregion
+
+        #region Fields
+        private static readonly Translator d = Translator.Instance;
         #endregion
 
         public LocalUser() { }
@@ -83,21 +88,55 @@ namespace Client.MVVM.Model
         public Status DeleteServer(IPv4Address ipAddress, Port port) =>
             serversStorage.Delete(ipAddress, port);
 
-        private Status GetServerDatabase(IPv4Address ipAddress, Port port) =>
-            serversStorage.GetServerDatabase(ipAddress, port);
+        private Status GetServerDatabase(IPv4Address ipAddress, Port port)
+        {
+            var getDbStatus = serversStorage.GetServerDatabase(ipAddress, port);
+            if (getDbStatus.Code != 0)
+                return getDbStatus.Prepend(-1, d["Error occured while"], d["getting"],
+                    d["access to server's database."]); // -1
+            return getDbStatus; // 0
+        }
 
         public Status GetAllAccounts(IPv4Address ipAddress, Port port)
         {
             var getDbStatus = GetServerDatabase(ipAddress, port);
             if (getDbStatus.Code != 0)
-                return getDbStatus.Prepend(-1); // -1
+                return getDbStatus; // -1
             var db = (ServerDatabase)getDbStatus.Data;
 
-            var getAllStatus = db.GetAllAccounts();
-            if (getAllStatus.Code != 0)
-                return getAllStatus.Prepend(-2); // -2
+            return db.GetAllAccounts();
+        }
 
-            return new Status(0, (List<Account>)getAllStatus.Data);
+        public Status AddAccount(IPv4Address ipAddress, Port port, Account account)
+        {
+            var getDbStatus = GetServerDatabase(ipAddress, port);
+            if (getDbStatus.Code != 0)
+                return getDbStatus; // -1
+            var db = (ServerDatabase)getDbStatus.Data;
+
+            /* w funkcji wywołującej aktualną funkcję (AddAccount)
+            dodajemy "Error occured while adding account to server's database" */
+            return db.AddAccount(account);
+        }
+
+        public Status AccountExists(IPv4Address ipAddress, Port port, string login)
+        {
+            var getDbStatus = GetServerDatabase(ipAddress, port);
+            if (getDbStatus.Code != 0)
+                return getDbStatus; // -1
+            var db = (ServerDatabase)getDbStatus.Data;
+
+            return db.AccountExists(login);
+        }
+
+        public Status DeleteAccount(IPv4Address ipAddress, Port port, string login)
+        {
+            var getDbStatus = GetServerDatabase(ipAddress, port);
+            if (getDbStatus.Code != 0)
+                return getDbStatus; // -1
+            var db = (ServerDatabase)getDbStatus.Data;
+
+            return db.DeleteAccount(login);
         }
     }
 }

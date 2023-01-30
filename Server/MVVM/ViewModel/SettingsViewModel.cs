@@ -164,9 +164,9 @@ namespace Server.MVVM.ViewModel
             var status = ProgressBarViewModel.ShowDialog(window,
                 d["Private key validation"], true,
                 (reporter) => Shared.MVVM.Model.Cryptography.PrivateKey.TryParse(
-                    reporter,
-                    PrivateKey));
+                    reporter, PrivateKey));
             if (status.Code == 1) return false; // anulowano
+            // błędy zostały już wyświetlone w ProgressBarViewModelu
             if (status.Code < 0)
                 return false;
             privateKey = (PrivateKey)status.Data;

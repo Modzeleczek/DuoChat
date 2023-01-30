@@ -1,6 +1,7 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:l="clr-namespace:Shared.MVVM.View.Localization">
   <Style x:Key="AccountCardStyle" TargetType="ListViewItem">
 
     <Style.Triggers>
@@ -21,24 +22,41 @@
             Padding="5"
             Background="{TemplateBinding Background}"
             CornerRadius="5">
-            <StackPanel
-              Margin="5,0,0,0"
-              CanHorizontallyScroll="False"
-              Orientation="Horizontal">
+            <Grid>
+              <!-- potrzebny do HoverPanelStyle -->
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+              </Grid.ColumnDefinitions>
               <StackPanel
+                Grid.Column="0"
+                Margin="5,0,0,0"
                 VerticalAlignment="Center"
                 CanHorizontallyScroll="False"
                 Orientation="Vertical">
-                <Label
+                <TextBlock
                   Margin="5,10,0,0"
                   Padding="2"
-                  Content="{Binding Login}"
+                  Text="{Binding Login}"
                   FontFamily="/MVVM/View/Fonts/RedHatDisplay"
                   FontSize="15"
                   FontWeight="SemiBold"
                   Foreground="#C9ADA7" />
               </StackPanel>
-            </StackPanel>
+              <StackPanel
+                Grid.Column="0"
+                HorizontalAlignment="Right"
+                Orientation="Horizontal"
+                Style="{StaticResource HoverPanelStyle}">
+                <Button
+                  Margin="7,7,20,7"
+                  HorizontalAlignment="Right"
+                  Command="{Binding Path=DataContext.DeleteAccount, RelativeSource=
+                    {RelativeSource Mode=FindAncestor, AncestorLevel=1, AncestorType=Window}}"
+                  CommandParameter="{Binding}"
+                  Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Delete}"
+                  Style="{StaticResource CornerRadiusButtonStyle}" />
+              </StackPanel>
+            </Grid>
           </Border>
         </ControlTemplate>
       </Setter.Value>

@@ -1,16 +1,14 @@
 ﻿using Client.MVVM.Model;
 using Client.MVVM.Model.BsonStorages;
-using Client.MVVM.Model.JsonSerializables;
 using Client.MVVM.View.Windows;
+using Client.MVVM.ViewModel.AccountActions;
 using Shared.MVVM.Core;
 using Shared.MVVM.View.Windows;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Security;
 using System.Windows;
-using System.Windows.Documents;
 
 namespace Client.MVVM.ViewModel
 {
@@ -43,6 +41,20 @@ namespace Client.MVVM.ViewModel
         {
             get => deleteServer;
             private set { deleteServer = value; OnPropertyChanged(); }
+        }
+
+        private RelayCommand addAccount;
+        public RelayCommand AddAccount
+        {
+            get => addAccount;
+            private set { addAccount = value; OnPropertyChanged(); }
+        }
+
+        private RelayCommand deleteAccount;
+        public RelayCommand DeleteAccount
+        {
+            get => deleteAccount;
+            private set { deleteAccount = value; OnPropertyChanged(); }
         }
         #endregion
 
@@ -108,7 +120,7 @@ namespace Client.MVVM.ViewModel
                     var status = _client.Connect(SelectedServer);
                     if (status.Code != 0)
                     {
-                        selectedServer = null;
+                        selectedAccount = null;
                         Alert(status.Message);
                     }
                     else
@@ -179,14 +191,12 @@ namespace Client.MVVM.ViewModel
 
             AddServer = new RelayCommand(_ =>
             {
-                var vm = new CreateServerViewModel(loggedUser);
-                var win = new FormWindow(window, vm, d["Add_server"], new FormWindow.Field[]
+                var vm = new CreateServerViewModel(loggedUser)
                 {
-                        new FormWindow.Field(d["IP address"], "", false),
-                        new FormWindow.Field(d["Port"], "", false)
-                }, d["Cancel"], d["Add"]);
-                vm.RequestClose += () => win.Close();
-                win.ShowDialog();
+                    Title = d["Add_server"],
+                    ConfirmButtonText = d["Add"]
+                };
+                new FormWindow(window, vm).ShowDialog();
                 var status = vm.Status;
                 if (status.Code == 0)
                     Servers.Add((Server)status.Data);
@@ -195,7 +205,8 @@ namespace Client.MVVM.ViewModel
             {
                 var server = (Server)obj;
                 var status = ConfirmationViewModel.ShowDialog(window,
-                    d["Do you want to delete server"] + $" {server.IpAddress}:{server.Port}?",
+                    d["Do you want to delete"] + " " + d["server"] +
+                    $" {server.IpAddress}:{server.Port}?",
                     d["Delete server"], d["No"], d["Yes"]);
                 if (status.Code == 0)
                 {
@@ -210,6 +221,41 @@ namespace Client.MVVM.ViewModel
                     }
                     Servers.Remove(server);
                     loggedUser.DeleteServer(server.IpAddress, server.Port);
+                }
+            });
+
+            AddAccount = new RelayCommand(_ =>
+            {
+                if (SelectedServer == null) return;
+                var vm = new CreateAccountViewModel(loggedUser, SelectedServer)
+                {
+                    Title = d["Add_account"],
+                    ConfirmButtonText = d["Add"]
+                };
+                new FormWindow(window, vm).ShowDialog();
+                var status = vm.Status;
+                if (status.Code == 0)
+                    Accounts.Add((Account)status.Data);
+            });
+            DeleteAccount = new RelayCommand(obj =>
+            {
+                var account = (Account)obj;
+                var status = ConfirmationViewModel.ShowDialog(window,
+                    d["Do you want to delete"] + " " + d["account"] +
+                    $" {account.Login}?",
+                    d["Delete account"], d["No"], d["Yes"]);
+                if (status.Code == 0)
+                {
+                    if (SelectedAccount == account)
+                    {
+                        if (_client.IsConnected)
+                        {
+                            _client.Disconnect();
+                        }
+                    }
+                    Accounts.Remove(account);
+                    var server = SelectedServer;
+                    loggedUser.DeleteAccount(server.IpAddress, server.Port, account.Login);
                 }
             });
 
@@ -232,6 +278,7 @@ namespace Client.MVVM.ViewModel
 
             OpenSettings = new RelayCommand(_ =>
             {
+                SelectedAccount = null;
                 var vm = new SettingsViewModel(loggedUser);
                 var win = new SettingsWindow(window, vm);
                 vm.RequestClose += () => win.Close();
@@ -239,13 +286,13 @@ namespace Client.MVVM.ViewModel
                 if (vm.Status.Code == 2) // wylogowanie
                 {
                     ClearLists();
-                    var logSta = LocalLoginViewModel.ShowDialog(window, loggedUser, true);
-                    if (logSta.Code != 0)
+                    var loginStatus = LocalLoginViewModel.ShowDialog(window, loggedUser, true);
+                    if (loginStatus.Code != 0)
                     {
                         ResetLists();
                         return;
                     }
-                    var curPas = (SecureString)((dynamic)logSta.Data).Password;
+                    var currentPassword = (SecureString)loginStatus.Data;
 
                     lus.SetLogged(false);
 
@@ -255,9 +302,9 @@ namespace Client.MVVM.ViewModel
                         (reporter) =>
                         pc.EncryptDirectory(reporter,
                             loggedUser.DirectoryPath,
-                            pc.ComputeDigest(curPas, loggedUser.DbSalt),
+                            pc.ComputeDigest(currentPassword, loggedUser.DbSalt),
                             loggedUser.DbInitializationVector));
-                    curPas.Dispose();
+                    currentPassword.Dispose();
                     if (encSta.Code == 1)
                         return;
                     // nie udało się zaszyfrować katalogu użytkownika, więc też nie wylogowujemy

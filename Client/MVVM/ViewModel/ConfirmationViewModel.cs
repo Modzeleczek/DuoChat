@@ -9,16 +9,16 @@ namespace Client.MVVM.ViewModel
     public class ConfirmationViewModel : BaseConfirmationViewModel
     {
         private ConfirmationViewModel(string title, string description,
-            string cancellationButtonText, string confirmationButtonText) :
-            base(title, description, cancellationButtonText, confirmationButtonText) { }
+            string cancelButtonText, string confirmButtonText) :
+            base(title, description, cancelButtonText, confirmButtonText) { }
 
         public static Status ShowDialog(Window owner, string description, string title = null,
-            string cancellationButtonText = null, string confirmationButtonText = null)
+            string cancelButtonText = null, string confirmButtonText = null)
         {
             var d = Translator.Instance;
             string finalTitle = title ?? d["Confirmation"];
-            string finalCancButTxt = cancellationButtonText ?? d["Cancel"];
-            string finalConfButTxt = confirmationButtonText ?? d["Confirm"];
+            string finalCancButTxt = cancelButtonText ?? d["Cancel"];
+            string finalConfButTxt = confirmButtonText ?? d["Confirm"];
             var vm = new ConfirmationViewModel(finalTitle, description,
                 finalCancButTxt, finalConfButTxt);
             var win = new ConfirmationWindow(owner, vm);
