@@ -74,6 +74,29 @@ namespace Client.MVVM.ViewModel
                     Alert(addStatus.Message);
                     return;
                 }
+
+                // zaszyfrowujemy katalog użytkownika jego hasłem
+                var encryptStatus = ProgressBarViewModel.ShowDialog(window,
+                    d["Encrypting user's database."], false,
+                    (reporter) =>
+                    pc.EncryptDirectory(reporter,
+                        newUser.DirectoryPath,
+                        pc.ComputeDigest(password, newUser.DbSalt),
+                        newUser.DbInitializationVector));
+                if (encryptStatus.Code == 1)
+                {
+                    encryptStatus.Prepend(d["You should not have canceled database encryption. It may have been corrupted."]);
+                    Alert(encryptStatus.Message);
+                    return;
+                }
+                else if (encryptStatus.Code != 0)
+                {
+                    encryptStatus.Prepend(d["Error occured while"], d["encrypting user's database."],
+                        d["Database may have been corrupted."]);
+                    Alert(encryptStatus.Message);
+                    return;
+                }
+
                 password.Dispose();
                 confirmedPassword.Dispose();
                 OnRequestClose(new Status(0, newUser));

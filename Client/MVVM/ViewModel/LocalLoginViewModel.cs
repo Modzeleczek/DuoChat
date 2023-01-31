@@ -26,7 +26,7 @@ namespace Client.MVVM.ViewModel
 
             Confirm = new RelayCommand(e =>
             {
-                var fields = (Control[])e;
+                var fields = (List<Control>)e;
 
                 var password = ((PasswordBox)fields[0]).SecurePassword;
                 if (!pc.DigestsEqual(password, user.PasswordSalt, user.PasswordDigest))

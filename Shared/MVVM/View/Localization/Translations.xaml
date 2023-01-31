@@ -120,8 +120,8 @@
   <l:Entry x:Key="and port" EN="and port" PL="i portem"/>
   <l:Entry x:Key="Server list may have been corrupted." EN="Server list may have been corrupted."
     PL="Lista serwerów mogła zostać uszkodzona."/>
-  <l:Entry x:Key="You should not have canceled database decryption. It may have been corrupted."
-    EN="You should not have canceled database decryption. It may have been corrupted."
+  <l:Entry x:Key="You should not have canceled database encryption. It may have been corrupted."
+    EN="You should not have canceled database encryption. It may have been corrupted."
     PL="Nie powinieneś anulować szyfrowania bazy danych. Mogła zostać uszkodzona."/>
   <l:Entry x:Key="Database may have been corrupted."
     EN="Database may have been corrupted."

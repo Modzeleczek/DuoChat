@@ -10,11 +10,7 @@ namespace Shared.MVVM.Model.Cryptography
 {
     public class PrivateKey
     {
-#if x64
-        private const string DLL_PATH = "Prime_x64.dll";
-#else
-        private const string DLL_PATH = "Prime_x86.dll";
-#endif
+        private const string DLL_PATH = "Prime.dll";
         private const CallingConvention CONVENTION = CallingConvention.Cdecl;
 
         // unsigned bit-endian - P[0] to najbardziej znaczący bajt liczby

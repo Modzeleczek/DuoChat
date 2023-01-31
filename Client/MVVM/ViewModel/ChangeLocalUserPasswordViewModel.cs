@@ -74,7 +74,7 @@ namespace Client.MVVM.ViewModel
                 // wyznaczamy nową sól i skrót hasła oraz IV i sól bazy danych
                 user.ResetPassword(password);
 
-                // zaszyfrowujemy plik bazy danych nowym hasłem
+                // zaszyfrowujemy katalog użytkownika nowym hasłem
                 var encryptStatus = ProgressBarViewModel.ShowDialog(window,
                     d["Encrypting user's database."], false,
                     (reporter) =>
@@ -84,7 +84,7 @@ namespace Client.MVVM.ViewModel
                         user.DbInitializationVector));
                 if (encryptStatus.Code == 1)
                 {
-                    encryptStatus.Prepend(d["You should not have canceled database decryption. It may have been corrupted."]);
+                    encryptStatus.Prepend(d["You should not have canceled database encryption. It may have been corrupted."]);
                     Alert(encryptStatus.Message);
                     return;
                 }
