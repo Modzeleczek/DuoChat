@@ -83,7 +83,12 @@ namespace Client.MVVM.ViewModel
                     ConfirmButtonText = d["Save"]
                 };
                 new FormWindow(window, vm).ShowDialog();
-                if (vm.Status.Code == 0) Reinsert(user);
+                if (vm.Status.Code != 0)
+                    return;
+                var index = LocalUsers.IndexOf(user);
+                // index == -1 nie może wystąpić, bo user istnieje
+                LocalUsers.RemoveAt(index);
+                LocalUsers.Insert(index, user);
             });
             ChangePassword = new RelayCommand(clickedUser =>
             {
@@ -110,22 +115,8 @@ namespace Client.MVVM.ViewModel
                     Alert(status.Message);
                     return;
                 }
-                Remove(user);
+                LocalUsers.Remove(user);
             });
-        }
-
-        private void Reinsert(LocalUser user)
-        {
-            int index = Remove(user);
-            LocalUsers.Insert(index, user);
-        }
-
-        private int Remove(LocalUser user)
-        {
-            var index = LocalUsers.IndexOf(user);
-            if (index == -1) return -1;
-            LocalUsers.RemoveAt(index);
-            return index;
         }
 
         public static Status ShowDialog(Window owner)

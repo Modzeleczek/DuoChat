@@ -6,38 +6,34 @@ namespace Client.MVVM.Model.JsonSerializables
     public class ServerSerializable
     {
         #region Properties
-        public Guid Guid { get; set; }
-        public byte[] PublicKey { get; set; }
+        public string Name { get; set; }
         public int IpAddress { get; set; }
         public ushort Port { get; set; }
-        public string Name { get; set; }
+        public Guid Guid { get; set; }
+        public byte[] PublicKey { get; set; }
         #endregion
 
         public override bool Equals(object obj)
         {
             if (!(obj is ServerSerializable)) return false;
-            var ser = (ServerSerializable)obj;
-            return KeyEquals(ser.IpAddress, ser.Port);
+            var server = (ServerSerializable)obj;
+            return KeyEquals(server.IpAddress, server.Port);
         }
 
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
+        public override int GetHashCode() => base.GetHashCode();
 
-        public bool KeyEquals(int ipAddress, ushort port)
-        {
-            return IpAddress == ipAddress && Port == port;
-        }
+        public bool KeyEquals(int ipAddress, ushort port) =>
+            IpAddress == ipAddress && Port == port;
 
         public Server ToObservable() =>
             new Server
             {
-                Guid = Guid,
-                PublicKey = new Shared.MVVM.Model.Cryptography.PublicKey(PublicKey),
+                Name = Name,
                 IpAddress = new IPv4Address(IpAddress),
                 Port = new Port(Port),
-                Name = Name
+                Guid = Guid,
+                PublicKey = PublicKey != null ?
+                    Shared.MVVM.Model.Cryptography.PublicKey.FromBytes(PublicKey) : null,
             };
     }
 }

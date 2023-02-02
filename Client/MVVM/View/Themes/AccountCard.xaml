@@ -48,6 +48,14 @@
                 Orientation="Horizontal"
                 Style="{StaticResource HoverPanelStyle}">
                 <Button
+                  Margin="7"
+                  HorizontalAlignment="Right"
+                  Command="{Binding Path=DataContext.EditAccount, RelativeSource=
+                    {RelativeSource Mode=FindAncestor, AncestorLevel=1, AncestorType=Window}}"
+                  CommandParameter="{Binding}"
+                  Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Edit}"
+                  Style="{StaticResource CornerRadiusButtonStyle}" />
+                <Button
                   Margin="7,7,20,7"
                   HorizontalAlignment="Right"
                   Command="{Binding Path=DataContext.DeleteAccount, RelativeSource=

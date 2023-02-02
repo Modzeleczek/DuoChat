@@ -99,7 +99,8 @@ namespace Client.MVVM.ViewModel
                 var updateStatus = lus.Update(user.Name, user);
                 if (updateStatus.Code != 0)
                 {
-                    updateStatus.Prepend(d["Error occured while"], d["updating user in database."]);
+                    updateStatus.Prepend(d["Error occured while"], d["updating"],
+                        d["user in database."]);
                     Alert(updateStatus.Message);
                     return;
                 }

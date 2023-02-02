@@ -74,7 +74,7 @@ namespace Client.MVVM.View.Windows
             {
                 var button = new Button
                 {
-                    Margin = new Thickness(7, 7, 20, 7),
+                    Margin = new Thickness(7, 7, (i == buttonCount - 1) ? 20 : 7, 7),
                     HorizontalAlignment = HorizontalAlignment.Right,
                     Style = (Style)FindResource("CornerRadiusButtonStyle")
                 };

@@ -216,6 +216,6 @@
   <Import Project="..\Shared\Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /d "$(SolutionDir)build\Release\$(PlatformName)\Prime\Prime.dll" "$(SolutionDir)build\$(ConfigurationName)\$(PlatformName)\$(ProjectName)\"</PostBuildEvent>
+    <PostBuildEvent>xcopy /y /d "$(SolutionDir)build\Release\$(PlatformName)\Prime\Prime.dll" "$(SolutionDir)build\$(ConfigurationName)\$(PlatformName)\$(ProjectName)\"</PostBuildEvent>
   </PropertyGroup>
 </Project>

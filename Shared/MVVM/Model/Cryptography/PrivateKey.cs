@@ -90,29 +90,41 @@ namespace Shared.MVVM.Model.Cryptography
             reporter.FineProgress = 0;
 
             if (text == null)
-                return new Status(-1, null, d["String is null."]);
+                return new Status(-1, null, d["String is null."]); // -1
 
             var split = text.Split(';');
             if (split.Length != 2)
-                return new Status(-2, null, d["String does not consist of two parts separated with semicolon."]);
+                return new Status(-2, null,
+                    d["String does not consist of two parts separated with semicolon."]); // -2
+
+            // np. gdy text == ";"
+            if (string.IsNullOrEmpty(split[0]))
+                return new Status(-3, null, d["First"], d["number"], "(p)", d["is empty."]); // -3
+
+            if (string.IsNullOrEmpty(split[1]))
+                return new Status(-4, null, d["Second"], d["number"], "(q)", d["is empty."]); // -4
 
             byte[] p = null;
             try
             { p = Convert.FromBase64String(split[0]); }
             catch (FormatException)
-            { return new Status(-3, null, d["First number (p) is not valid Base64 string."]); }
+            { return new Status(-5, null, d["First"], d["number"], "(p)",
+                d["is not valid Base64 string."]); } // -5
 
             byte[] q = null;
             try
             { q = Convert.FromBase64String(split[1]); }
             catch (FormatException)
-            { return new Status(-4, null, d["Second number (q) is not valid Base64 string."]); }
+            { return new Status(-6, null, d["Second"], d["number"], "(q)",
+                d["is not valid Base64 string."]); } // -6
 
-            if (!IsProbablePrime(p)) return new Status(-5, null, d["First number (p) is not prime."]);
+            if (!IsProbablePrime(p))
+                return new Status(-7, null, d["First"], d["number"], "(p)", d["is not prime."]); // -7
             reporter.FineProgress = 1;
             if (reporter.CancellationPending) return new Status(1);
 
-            if (!IsProbablePrime(q)) return new Status(-6, null, d["Second number (q) is not prime."]);
+            if (!IsProbablePrime(q))
+                return new Status(-8, null, d["Second"], d["number"], "(q)", d["is not prime."]); // -8
             reporter.FineProgress = 2;
             if (reporter.CancellationPending) return new Status(1);
 

@@ -4,7 +4,6 @@ using Shared.MVVM.Core;
 using Shared.MVVM.Model;
 using Shared.MVVM.Model.Networking;
 using Shared.MVVM.View.Localization;
-using System.Collections.Generic;
 using System.IO;
 using System.Security;
 using System.Security.Cryptography;
@@ -85,6 +84,9 @@ namespace Client.MVVM.Model
         public Status ServerExists(IPv4Address ipAddress, Port port) =>
             serversStorage.Exists(ipAddress, port);
 
+        public Status UpdateServer(IPv4Address ipAddress, Port port, Server server) =>
+            serversStorage.Update(ipAddress, port, server);
+
         public Status DeleteServer(IPv4Address ipAddress, Port port) =>
             serversStorage.Delete(ipAddress, port);
 
@@ -127,6 +129,16 @@ namespace Client.MVVM.Model
             var db = (ServerDatabase)getDbStatus.Data;
 
             return db.AccountExists(login);
+        }
+
+        public Status UpdateAccount(IPv4Address ipAddress, Port port, string login, Account account)
+        {
+            var getDbStatus = GetServerDatabase(ipAddress, port);
+            if (getDbStatus.Code != 0)
+                return getDbStatus; // -1
+            var db = (ServerDatabase)getDbStatus.Data;
+
+            return db.UpdateAccount(login, account);
         }
 
         public Status DeleteAccount(IPv4Address ipAddress, Port port, string login)

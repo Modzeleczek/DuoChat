@@ -2,6 +2,7 @@
 using Client.MVVM.Model.BsonStorages;
 using Client.MVVM.View.Windows;
 using Client.MVVM.ViewModel.AccountActions;
+using Client.MVVM.ViewModel.ServerActions;
 using Shared.MVVM.Core;
 using Shared.MVVM.View.Windows;
 using System;
@@ -36,6 +37,13 @@ namespace Client.MVVM.ViewModel
             private set { addServer = value; OnPropertyChanged(); }
         }
 
+        private RelayCommand editServer;
+        public RelayCommand EditServer
+        {
+            get => editServer;
+            private set { editServer = value; OnPropertyChanged(); }
+        }
+
         private RelayCommand deleteServer;
         public RelayCommand DeleteServer
         {
@@ -48,6 +56,13 @@ namespace Client.MVVM.ViewModel
         {
             get => addAccount;
             private set { addAccount = value; OnPropertyChanged(); }
+        }
+
+        private RelayCommand editAccount;
+        public RelayCommand EditAccount
+        {
+            get => editAccount;
+            private set { editAccount = value; OnPropertyChanged(); }
         }
 
         private RelayCommand deleteAccount;
@@ -201,32 +216,43 @@ namespace Client.MVVM.ViewModel
                 if (status.Code == 0)
                     Servers.Add((Server)status.Data);
             });
+            EditServer = new RelayCommand(obj =>
+            {
+                var server = (Server)obj;
+                if (SelectedServer == server)
+                    SelectedServer = null;
+                var vm = new EditServerViewModel(loggedUser, server)
+                {
+                    Title = d["Edit server"],
+                    ConfirmButtonText = d["Save"]
+                };
+                new FormWindow(window, vm).ShowDialog();
+            });
             DeleteServer = new RelayCommand(obj =>
             {
                 var server = (Server)obj;
-                var status = ConfirmationViewModel.ShowDialog(window,
+                var confirmStatus = ConfirmationViewModel.ShowDialog(window,
                     d["Do you want to delete"] + " " + d["server"] +
                     $" {server.IpAddress}:{server.Port}?",
                     d["Delete server"], d["No"], d["Yes"]);
-                if (status.Code == 0)
+                if (confirmStatus.Code != 0)
+                    return; 
+                if (SelectedServer == server)
+                    // setter rozłącza, jeżeli jesteśmy połączeni, bo ustawia SelectedAccount na null
+                    SelectedServer = null;
+                var deleteStatus = loggedUser.DeleteServer(server.IpAddress, server.Port);
+                if (deleteStatus.Code != 0)
                 {
-                    if (SelectedServer == server)
-                    {
-                        if (_client.IsConnected)
-                        {
-                            /* rozłączamy z serwerem synchronicznie (czekając na
-                             zakończenie rozłączania) */
-                            _client.Disconnect();
-                        }
-                    }
-                    Servers.Remove(server);
-                    loggedUser.DeleteServer(server.IpAddress, server.Port);
+                    deleteStatus.Prepend(d["Error occured while"], d["deleting"],
+                        d["server;D"], d["from user's database."]);
+                    Alert(deleteStatus.Message);
+                    return;
                 }
+                Servers.Remove(server);
             });
 
             AddAccount = new RelayCommand(_ =>
             {
-                if (SelectedServer == null) return;
                 var vm = new CreateAccountViewModel(loggedUser, SelectedServer)
                 {
                     Title = d["Add_account"],
@@ -237,26 +263,40 @@ namespace Client.MVVM.ViewModel
                 if (status.Code == 0)
                     Accounts.Add((Account)status.Data);
             });
+            EditAccount = new RelayCommand(obj =>
+            {
+                var account = (Account)obj;
+                if (SelectedAccount == account)
+                    SelectedAccount = null;
+                var vm = new EditAccountViewModel(loggedUser, SelectedServer, account)
+                {
+                    Title = d["Edit account"],
+                    ConfirmButtonText = d["Save"]
+                };
+                new FormWindow(window, vm).ShowDialog();
+            });
             DeleteAccount = new RelayCommand(obj =>
             {
                 var account = (Account)obj;
-                var status = ConfirmationViewModel.ShowDialog(window,
-                    d["Do you want to delete"] + " " + d["account"] +
-                    $" {account.Login}?",
+                var confirmStatus = ConfirmationViewModel.ShowDialog(window,
+                    d["Do you want to delete"] + " " + d["account"] + $" {account.Login}?",
                     d["Delete account"], d["No"], d["Yes"]);
-                if (status.Code == 0)
+                if (confirmStatus.Code != 0)
+                    return;
+                if (SelectedAccount == account)
+                    // setter rozłącza, jeżeli jesteśmy połączeni
+                    SelectedAccount = null;
+                var server = SelectedServer;
+                var deleteStatus = loggedUser.DeleteAccount(server.IpAddress, server.Port,
+                    account.Login);
+                if (deleteStatus.Code != 0)
                 {
-                    if (SelectedAccount == account)
-                    {
-                        if (_client.IsConnected)
-                        {
-                            _client.Disconnect();
-                        }
-                    }
-                    Accounts.Remove(account);
-                    var server = SelectedServer;
-                    loggedUser.DeleteAccount(server.IpAddress, server.Port, account.Login);
+                    deleteStatus.Prepend(d["Error occured while"], d["deleting"],
+                        d["account;D"], d["from user's database."]);
+                    Alert(deleteStatus.Message);
+                    return;
                 }
+                Accounts.Remove(account);
             });
 
             Send = new RelayCommand(o =>

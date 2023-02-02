@@ -73,13 +73,6 @@ namespace Client.MVVM.Model.BsonStorages
                     shouldOverwrite = true;
                     continue;
                 }
-                var ensureStatus = new ServersStorage(u.ToObservable()).
-                    EnsureValidDatabaseState();
-                if (ensureStatus.Code != 0)
-                {
-                    shouldOverwrite = true;
-                    continue;
-                }
                 filteredUsers.Add(u);
             }
             if (shouldOverwrite)
@@ -88,8 +81,7 @@ namespace Client.MVVM.Model.BsonStorages
                 var saveStatus = Save(structure);
                 if (saveStatus.Code != 0)
                     return saveStatus.Prepend(-4, d["Error occured while"], d["deleting"],
-                        d["users"], d["not having"], d["directories with file"],
-                        ServersStorage.SERVERS_BSON); // -4
+                        d["users"], d["not having"], "a", d["directory"]); // -4
             }
 
             // usuwamy pliki i katalogi z katalogu "databases", do których nie ma w BSONie użytkowników
@@ -180,7 +172,7 @@ namespace Client.MVVM.Model.BsonStorages
                 saveStatus = Save(structure);
                 if (saveStatus.Code != 0)
                     return createDirStatus.Append(-6, d["Error occured while"],
-                        d["deleting the newly-added"], d["user."], saveStatus.Message); // -6
+                        d["deleting"], d["the newly-added"], d["user."], saveStatus.Message); // -6
                 return createDirStatus; // -5
             }
 
@@ -194,13 +186,13 @@ namespace Client.MVVM.Model.BsonStorages
                 saveStatus = Save(structure);
                 if (saveStatus.Code != 0)
                     ensureStatus.Append(-8, d["Error occured while"],
-                        d["deleting the newly-added"], d["user."], saveStatus.Message); // -8
+                        d["deleting"], d["the newly-added"], d["user."], saveStatus.Message); // -8
 
                 try { Directory.Delete(directoryPath); }
                 catch (Exception)
                 {
                     ensureStatus.Append(-9, d["Error occured while"],
-                        d["deleting the newly-added user's directory."]); // -9
+                        d["deleting"], d["the newly-added user's directory."]); // -9
                 }
                 return ensureStatus;
             }
@@ -294,6 +286,7 @@ namespace Client.MVVM.Model.BsonStorages
                     if (userSerializable.KeyEquals(userName))
                     {
                         // jeżeli metodą Update nie zmieniamy nazwy użytkownika
+                        users[i] = userSerializable;
                         var saveStatus = Save(structure);
                         if (saveStatus.Code != 0)
                             return saveStatus.Prepend(-3, dbSaveError); // -3

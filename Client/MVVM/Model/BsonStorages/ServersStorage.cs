@@ -185,7 +185,7 @@ namespace Client.MVVM.Model.BsonStorages
                 saveStatus = Save(structure);
                 if (saveStatus.Code != 0)
                     return createFileStatus.Append(-6, d["Error occured while"],
-                        d["deleting the newly-added"] + d["server."], saveStatus.Message); // -6
+                        d["deleting"], d["the newly-added"] + d["server."], saveStatus.Message); // -6
                 return createFileStatus; // -5
             }
 
@@ -199,13 +199,13 @@ namespace Client.MVVM.Model.BsonStorages
                 saveStatus = Save(structure);
                 if (saveStatus.Code != 0)
                     resetStatus.Append(-8, d["Error occured while"],
-                        d["deleting the newly-added"], d["server."], saveStatus.Message); // -8
+                        d["deleting"], d["the newly-added"], d["server."], saveStatus.Message); // -8
 
                 try { File.Delete(filePath); }
                 catch (Exception)
                 {
                     resetStatus.Append(-9, d["Error occured while"],
-                        d["deleting the newly-added server's database."]); // -9
+                        d["deleting"], d["the newly-added server's database."]); // -9
                 }
                 return resetStatus;
             }
@@ -298,6 +298,7 @@ namespace Client.MVVM.Model.BsonStorages
                     if (serverSerializable.KeyEquals(ipAddress.BinaryRepresentation, port.Value))
                     {
                         // jeżeli metodą Update nie zmieniamy pary (adres IP, port) serwera
+                        servers[i] = serverSerializable;
                         var saveStatus = Save(structure);
                         if (saveStatus.Code != 0)
                             return saveStatus.Prepend(-3, dbSaveError); // -3

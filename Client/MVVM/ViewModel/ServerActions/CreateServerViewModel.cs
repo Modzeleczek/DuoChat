@@ -1,5 +1,4 @@
-﻿using Client.MVVM.Model.BsonStorages;
-using Client.MVVM.Model;
+﻿using Client.MVVM.Model;
 using Shared.MVVM.Core;
 using System.Windows.Controls;
 using System;
@@ -8,74 +7,56 @@ using Shared.MVVM.Model.Networking;
 using System.Collections.Generic;
 using Client.MVVM.View.Windows;
 
-namespace Client.MVVM.ViewModel
+namespace Client.MVVM.ViewModel.ServerActions
 {
-    public class CreateServerViewModel : FormViewModel
+    public class CreateServerViewModel : ServerEditorViewModel
     {
         public CreateServerViewModel(LocalUser loggedUser)
         {
-            var lus = new LocalUsersStorage();
-
+            var currentWindowLoadedHandler = WindowLoaded;
             WindowLoaded = new RelayCommand(e =>
             {
-                var win = (FormWindow)e;
-                window = win;
+                currentWindowLoadedHandler.Execute(e);
+                var win = (FormWindow)window;
+                win.AddTextField(d["Name"]);
                 win.AddTextField(d["IP address"]);
                 win.AddTextField(d["Port"]);
-                RequestClose += () => win.Close();
             });
 
             Confirm = new RelayCommand(e =>
             {
                 var fields = (List<Control>)e;
 
-                var ipAddressStr = ((TextBox)fields[0]).Text;
-                var ipParseStatus = IPv4Address.TryParse(ipAddressStr);
-                if (ipParseStatus.Code != 0)
-                {
-                    ipParseStatus.Prepend(d["Invalid IP address format."]);
-                    Alert(ipParseStatus.Message);
-                    return;
-                }
-                var ipAddress = (IPv4Address)ipParseStatus.Data;
+                // nie walidujemy, bo jest to przechowywane w polu w BSONie, a nie w SQLu
+                var name = ((TextBox)fields[0]).Text;
 
-                var portStr = ((TextBox)fields[1]).Text;
-                var portParseStatus = Port.TryParse(portStr);
-                if (portParseStatus.Code != 0)
-                {
-                    portParseStatus.Prepend(d["Invalid port format."]);
-                    Alert(portParseStatus.Message);
+                if (!ParseIpAddress(((TextBox)fields[1]).Text, out IPv4Address ipAddress))
                     return;
-                }
-                var port = (Port)portParseStatus.Data;
 
-                var existsStatus = loggedUser.ServerExists(ipAddress, port);
-                if (existsStatus.Code < 0)
+                if (!ParsePort(((TextBox)fields[2]).Text, out Port port))
+                    return;
+
+                var existsStatus = ServerExists(loggedUser, ipAddress, port);
+                if (existsStatus.Code != 1)
                 {
-                    existsStatus.Prepend(d["Error occured while"],
-                        d["checking if"], d["server"], d["already exists."]);
+                    // błąd lub serwer istnieje
                     Alert(existsStatus.Message);
                     return;
                 }
-                if (existsStatus.Code == 0)
-                {
-                    Alert(existsStatus.Message);
-                    return;
-                }
-                // existsStatus.Code == 1, czyli serwer jeszcze nie istnieje
+
                 var newServer = new Server
                 {
-                    Guid = Guid.Empty,
-                    PublicKey = null,
+                    Name = name,
                     IpAddress = ipAddress,
                     Port = port,
-                    Name = null
+                    Guid = Guid.Empty,
+                    PublicKey = null,
                 };
                 var addStatus = loggedUser.AddServer(newServer);
                 if (addStatus.Code != 0)
                 {
                     addStatus.Prepend(d["Error occured while"], d["adding"],
-                        d["server to user's database."]);
+                        d["server;D"], d["to user's database."]);
                     Alert(addStatus.Message);
                     return;
                 }

@@ -13,6 +13,15 @@ namespace Shared.MVVM.Model.Networking
             Value = value;
         }
 
+        public override bool Equals(object obj)
+        {
+            if (!(obj is Port)) return false;
+            var port = (Port)obj;
+            return Value == port.Value;
+        }
+
+        public override int GetHashCode() => base.GetHashCode();
+
         public static Status TryParse(string text)
         {
             var d = Translator.Instance;

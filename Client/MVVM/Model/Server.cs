@@ -9,9 +9,12 @@ namespace Client.MVVM.Model
     public class Server : ObservableObject
     {
         #region Properties
-        public Guid Guid { get; set; }
-
-        public PublicKey PublicKey { get; set; }
+        private string name;
+        public string Name
+        {
+            get => name;
+            set { name = value; OnPropertyChanged(); }
+        }
 
         private IPv4Address ipAddress;
         public IPv4Address IpAddress
@@ -27,22 +30,31 @@ namespace Client.MVVM.Model
             set { port = value; OnPropertyChanged(); }
         }
 
-        private string name;
-        public string Name
-        {
-            get => name;
-            set { name = value; OnPropertyChanged(); }
-        }
+        public Guid Guid { get; set; }
+
+        public PublicKey PublicKey { get; set; }
         #endregion
+
+        public bool KeyEquals(IPv4Address ipAddress, Port port) =>
+            IpAddress.Equals(ipAddress) && Port.Equals(port);
 
         public ServerSerializable ToSerializable() =>
             new ServerSerializable
             {
-                Guid = Guid,
-                PublicKey = PublicKey?.ToBytes(),
+                Name = Name,
                 IpAddress = IpAddress.BinaryRepresentation,
                 Port = Port.Value,
-                Name = Name
+                Guid = Guid,
+                PublicKey = PublicKey?.ToBytes(),
             };
+
+        public void CopyTo(Server server)
+        {
+            server.Name = Name;
+            server.IpAddress = IpAddress;
+            server.Port = Port;
+            server.Guid = Guid;
+            server.PublicKey = PublicKey;
+        }
     }
 }

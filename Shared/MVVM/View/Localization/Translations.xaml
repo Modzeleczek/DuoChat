@@ -27,6 +27,7 @@
   <l:Entry x:Key="Toggle_language" EN="Toggle language" PL="Przełącz język"/>
   <l:Entry x:Key="Server_name" EN="Server name" PL="Nazwa serwera"/>
   <l:Entry x:Key="Add_account" EN="Add account" PL="Dodaj konto"/>
+  <l:Entry x:Key="Edit" EN="Edit" PL="Edytuj"/>
 
   <!-- klucze używane w plikach .cs - nie muszą być prawidłowymi nazwami zmiennych -->
   <l:Entry x:Key="Users" EN="Users" PL="Użytkownicy"/>
@@ -34,7 +35,6 @@
   <l:Entry x:Key="Username" EN="Username" PL="Nazwa użytkownika"/>
   <l:Entry x:Key="Profile" EN="Profile" PL="Profil"/>
   <l:Entry x:Key="Create" EN="Create" PL="Stwórz"/>
-  <l:Entry x:Key="Edit" EN="Edit" PL="Edytuj"/>
   <l:Entry x:Key="Password" EN="Password" PL="Hasło"/>
   <l:Entry x:Key="Log in" EN="Log in" PL="Zaloguj"/>
   <l:Entry x:Key="Create local user" EN="Create local user"
@@ -81,8 +81,7 @@
   <l:Entry x:Key="deleting" EN="deleting" PL="usuwania"/>
   <l:Entry x:Key="user's directory." EN="user's directory." PL="katalogu użytkownika."/>
   <l:Entry x:Key="user." EN="user." PL="użytkownika."/>
-  <l:Entry x:Key="deleting the newly-added" EN="deleting the newly-added"
-    PL="usuwania nowo dodanego"/>
+  <l:Entry x:Key="the newly-added" EN="the newly-added" PL="nowo dodanego"/>
   <l:Entry x:Key="restoring the updated" EN="restoring the updated"
     PL="przywracania zaktualizowanego"/>
   <l:Entry x:Key="restoring the deleted" EN="restoring the deleted"
@@ -146,27 +145,22 @@
   <l:Entry x:Key="String does not consist of two parts separated with semicolon."
     EN="String does not consist of two parts separated with semicolon."
     PL="Ciąg nie składa się z dwóch części rozdzielonych średnikiem."/>
-  <l:Entry x:Key="First number (p) is not valid Base64 string."
-    EN="First number (p) is not valid Base64 string."
-    PL="Pierwsza liczba (p) nie jest poprawnym ciągiem w formacie Base64."/>
-  <l:Entry x:Key="Second number (q) is not valid Base64 string."
-    EN="Second number (q) is not valid Base64 string."
-    PL="Druga liczba (q) nie jest poprawnym ciągiem w formacie Base64."/>
-  <l:Entry x:Key="First number (p) is not prime."
-    EN="First number (p) is not prime."
-    PL="Pierwsza liczba (p) nie jest liczbą pierwszą."/>
-  <l:Entry x:Key="Second number (q) is not prime."
-    EN="Second number (q) is not prime."
-    PL="Druga liczba (q) nie jest liczbą pierwszą."/>
-
+  <l:Entry x:Key="First" EN="First" PL="Pierwsza"/>
+  <l:Entry x:Key="number" EN="number" PL="liczba"/>
+  <l:Entry x:Key="Second" EN="Second" PL="Druga"/>
+  <l:Entry x:Key="is empty." EN="is empty." PL="jest pusta."/>
+  <l:Entry x:Key="is not valid Base64 string." EN="is not valid Base64 string."
+    PL="nie jest poprawnym ciągiem w formacie Base64."/>
+  <l:Entry x:Key="is not prime." EN="is not prime." PL="nie jest liczbą pierwszą."/>
+  
   <l:Entry x:Key="reading user's server list." EN="reading user's server list."
     PL="odczytywania listy serwerów użytkownika."/>
   <l:Entry x:Key="reading user's account list." EN="reading user's account list."
     PL="odczytywania listy kont użytkownika."/>
   <l:Entry x:Key="checking if" EN="checking if" PL="sprawdzania, czy"/>
   <l:Entry x:Key="server" EN="server" PL="serwer"/>
-  <l:Entry x:Key="updating user in database." EN="updating user in database."
-    PL="aktualizowania użytkownika w bazie danych."/>
+  <l:Entry x:Key="updating" EN="updating" PL="aktualizowania"/>
+  <l:Entry x:Key="user in database." EN="user in database." PL="użytkownika w bazie danych."/>
   <l:Entry x:Key="adding" EN="adding" PL="dodawania"/>
   <l:Entry x:Key="user to database." EN="user to database."
     PL="użytkownika do bazy danych."/>
@@ -181,7 +175,6 @@
   <l:Entry x:Key="Server database file" EN="Server database file" PL="Plik bazy danych serwera"/>
   <l:Entry x:Key="users" EN="users" PL="użytkowników"/>
   <l:Entry x:Key="not having" EN="not having" PL="nieposiadających"/>
-  <l:Entry x:Key="directories with file" EN="directories with file" PL="katalogów z plikiem"/>
   <l:Entry x:Key="listing files and subdirectories in directory"
     EN="listing files and subdirectories in directory"
     PL="tworzenia listy plików i podkatalogów w katalogu"/>
@@ -193,16 +186,14 @@
   <l:Entry x:Key="files" EN="plików" PL="plików"/>
   <l:Entry x:Key="ensuring valid server database state." EN="ensuring valid server database state."
     PL="zapewniania poprawnego stanu bazy danych serwerów."/>
-  <l:Entry x:Key="deleting the newly-added user's directory."
-    EN="deleting the newly-added user's directory."
-    PL="usuwania katalogu nowo dodanego użytkownika."/>
+  <l:Entry x:Key="the newly-added user's directory." EN="the newly-added user's directory."
+    PL="katalogu nowo dodanego użytkownika."/>
   <l:Entry x:Key="user's server database." EN="user's server database."
     PL="bazy danych serwerów użytkownika."/>
   <l:Entry x:Key="resetting server database." EN="resetting server database."
     PL="resetowania bazy danych serwera."/>
-  <l:Entry x:Key="deleting the newly-added server's database."
-    EN="deleting the newly-added server's database."
-    PL="usuwania bazy danych nowo dodanego serwera."/>
+  <l:Entry x:Key="the newly-added server's database." EN="the newly-added server's database."
+    PL="bazy danych nowo dodanego serwera."/>
   <l:Entry x:Key="account" EN="account" PL="konto"/>
   <l:Entry x:Key="Delete account" EN="Delete account" PL="Usuń konto"/>
   <l:Entry x:Key="Login" EN="Login" PL="Login"/>
@@ -214,8 +205,7 @@
   <l:Entry x:Key="More than one account with login" EN="More than one account with login"
     PL="Więcej niż jedno konto z loginem"/>
   <l:Entry x:Key="exist." EN="exist." PL="istnieje."/>
-  <l:Entry x:Key="account to server's database." EN="account to server's database."
-    PL="konta do bazy danych serwera."/>
+  <l:Entry x:Key="to server's database." EN="to server's database." PL="do bazy danych serwera."/>
   <l:Entry x:Key="connecting to server's database file." EN="connecting to server's database file."
     PL="łączenia z plikiem bazy danych serwera."/>
   <l:Entry x:Key="Number of rows affected by the query is other than 1."
@@ -233,8 +223,17 @@
     PL="Przekroczono czas oczekiwania na połączenie z serwerem."/>
   <l:Entry x:Key="No response from the server." EN="No response from the server."
     PL="Brak odpowiedzi od serwera."/>
-  <l:Entry x:Key="connecting to the server." EN="connecting to the server."
-    PL="łączenia z serwerem."/>
+  <l:Entry x:Key="connecting to the server." EN="connecting to the server." PL="łączenia z serwerem."/>
+  <l:Entry x:Key="Edit account" EN="Edit account" PL="Edytuj konto"/>
+  <l:Entry x:Key="account;D" EN="account" PL="konta"/>
+  <l:Entry x:Key="from user's database." EN="from user's database." PL="z bazy danych użytkownika."/>
+  <l:Entry x:Key="server;D" EN="server" PL="serwera"/>
+  <l:Entry x:Key="in server's database." EN="in server's database." PL="w bazie danych serwera."/>
+  <l:Entry x:Key="Edit server" EN="Edit server" PL="Edytuj serwer"/>
+  <l:Entry x:Key="Public key" EN="Public key" PL="Klucz publiczny"/>
+  <l:Entry x:Key="Number" EN="Number" PL="Liczba"/>
+  <l:Entry x:Key="Invalid public key format." EN="Invalid public key format."
+    PL="Nieprawidłowy format klucza publicznego."/>
 
   <!-- tylko do serwera -->
   <!-- klucze używane w plikach .xaml - muszą być prawidłowymi nazwami zmiennych -->
@@ -243,9 +242,7 @@
   <l:Entry x:Key="Capacity" EN="Capacity" PL="Pojemność"/>
   <l:Entry x:Key="Start" EN="Start" PL="Uruchom"/>
   <l:Entry x:Key="Stop" EN="Stop" PL="Zatrzymaj"/>
-  <l:Entry x:Key="Name" EN="Name" PL="Nazwa"/>
   <l:Entry x:Key="IP_address" EN="IP address" PL="Adres IP"/>
-  <l:Entry x:Key="GUID" EN="GUID" PL="GUID"/>
   <l:Entry x:Key="Private_key" EN="Private key" PL="Klucz prywatny"/>
   <l:Entry x:Key="Generate" EN="Generate" PL="Wygeneruj"/>
   <l:Entry x:Key="Load" EN="Load" PL="Wczytaj"/>
@@ -282,6 +279,8 @@
   <!-- do klienta i serwera -->
   <!-- klucze używane w plikach .xaml - muszą być prawidłowymi nazwami zmiennych -->
   <l:Entry x:Key="Settings" EN="Settings" PL="Ustawienia"/>
+  <l:Entry x:Key="Name" EN="Name" PL="Nazwa"/>
+  <l:Entry x:Key="GUID" EN="GUID" PL="GUID"/>
 
   <!-- klucze używane w plikach .cs - nie muszą być prawidłowymi nazwami zmiennych -->
   <l:Entry x:Key="No translation:" EN="" PL="Brak tłumaczenia:"/>

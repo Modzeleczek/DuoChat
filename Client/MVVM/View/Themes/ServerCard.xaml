@@ -40,20 +40,8 @@
                   FontFamily="/MVVM/View/Fonts/RedHatDisplay"
                   FontSize="15"
                   FontWeight="SemiBold"
-                  Foreground="#C9ADA7">
-                  <TextBlock.Style>
-                    <Style TargetType="TextBlock">
-                      <Setter Property="Text" Value="{Binding Name}"/>
-                      <Style.Triggers>
-                        <DataTrigger Binding="{Binding Path=Name.Length, FallbackValue=-1,
-                          TargetNullValue=-1}" Value="-1">
-                          <Setter Property="Text" Value="{Binding Source={x:Static l:Translator.Instance},
-                            Path=D.Server_name}"/>
-                        </DataTrigger>
-                      </Style.Triggers>
-                    </Style>
-                  </TextBlock.Style>
-                </TextBlock>
+                  Foreground="#C9ADA7"
+                  Text="{Binding Name}" />
                 <TextBlock
                   Margin="5,0,0,10"
                   Padding="0"
@@ -77,6 +65,14 @@
                 Style="{StaticResource HoverPanelStyle}">
                 <!-- RelativeSource odnosi się do MainWindow.xaml,
                 w którym używamy stylu ServerCardStyle -->
+                <Button
+                  Margin="7"
+                  HorizontalAlignment="Right"
+                  Command="{Binding Path=DataContext.EditServer, RelativeSource=
+                    {RelativeSource Mode=FindAncestor, AncestorLevel=1, AncestorType=Window}}"
+                  CommandParameter="{Binding}"
+                  Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Edit}"
+                  Style="{StaticResource CornerRadiusButtonStyle}" />
                 <Button
                   Margin="7,7,20,7"
                   HorizontalAlignment="Right"

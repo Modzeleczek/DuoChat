@@ -1,6 +1,5 @@
 ﻿using Shared.MVVM.Core;
 using Shared.MVVM.Model.Cryptography;
-using System;
 
 namespace Client.MVVM.Model
 {
@@ -17,11 +16,12 @@ namespace Client.MVVM.Model
         public PrivateKey PrivateKey { get; set; }
         #endregion
 
-        public static Account Random(Random rng) =>
-            new Account
-            {
-                Login = rng.Next().ToString(),
-                PrivateKey = null
-            };
+        public bool KeyEquals(string login) => Login == login;
+
+        public void CopyTo(Account account)
+        {
+            account.Login = login;
+            account.PrivateKey = PrivateKey;
+        }
     }
 }

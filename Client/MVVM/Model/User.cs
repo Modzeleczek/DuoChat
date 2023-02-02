@@ -27,7 +27,7 @@ namespace Client.MVVM.Model
         public static User Random(Random rng) =>
             new User
             {
-                PublicKey = new PublicKey(null),
+                PublicKey = null,
                 Nickname = rng.Next().ToString(),
                 Image = new WriteableBitmap(100, 100, 96, 96, PixelFormats.Bgra32, null)
             };

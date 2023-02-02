@@ -1,4 +1,7 @@
-﻿using System.Security.Cryptography;
+﻿using System.IO;
+using System;
+using System.Security.Cryptography;
+using Shared.MVVM.View.Localization;
 
 namespace Shared.MVVM.Model.Cryptography
 {
@@ -9,9 +12,56 @@ namespace Shared.MVVM.Model.Cryptography
 
         private byte[] _modulus;
 
-        public PublicKey(byte[] modulus)
+        private PublicKey(byte[] modulus)
         {
             _modulus = modulus;
+        }
+
+        public static Status TryParse(string text)
+        {
+            var d = Translator.Instance;
+
+            if (text == null)
+                return new Status(-1, null, d["String is null."]); // -1
+
+            if (text == "")
+                return new Status(-2, null, d["String is empty."]); // -2
+
+            try
+            { return new Status(0, new PublicKey(Convert.FromBase64String(text))); } // 0
+            catch (FormatException)
+            { return new Status(-3, null, d["Number"], d["is not valid Base64 string."]); } // -3
+        }
+
+        public override string ToString()
+        {
+            return Convert.ToBase64String(_modulus);
+        }
+
+        public static PublicKey FromBytes(byte[] bytes)
+        {
+            using (var ms = new MemoryStream(bytes))
+            {
+                var lengthBuffer = new byte[2];
+
+                ms.Read(lengthBuffer, 0, 2);
+                var modulusLength = BitConverter.ToUInt16(lengthBuffer, 0);
+                var modulus = new byte[modulusLength];
+                ms.Read(modulus, 0, modulusLength);
+
+                return new PublicKey(modulus);
+            }
+        }
+
+        public byte[] ToBytes()
+        {
+            using (var ms = new MemoryStream())
+            {
+                ms.Write(BitConverter.GetBytes((ushort)_modulus.Length), 0, 2);
+                ms.Write(_modulus, 0, _modulus.Length);
+
+                return ms.ToArray();
+            }
         }
 
         public void ImportTo(RSA rsa)
@@ -21,7 +71,5 @@ namespace Shared.MVVM.Model.Cryptography
             par.Modulus = _modulus;
             rsa.ImportParameters(par);
         }
-
-        public byte[] ToBytes() => _modulus;
     }
 }

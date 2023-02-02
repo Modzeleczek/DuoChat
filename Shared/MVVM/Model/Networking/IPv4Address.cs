@@ -12,6 +12,15 @@ namespace Shared.MVVM.Model.Networking
             BinaryRepresentation = binaryRepresentation;
         }
 
+        public override bool Equals(object obj)
+        {
+            if (!(obj is IPv4Address)) return false;
+            var ip = (IPv4Address)obj;
+            return BinaryRepresentation == ip.BinaryRepresentation;
+        }
+
+        public override int GetHashCode() => base.GetHashCode();
+
         public static Status TryParse(string text)
         {
             var d = Translator.Instance;
