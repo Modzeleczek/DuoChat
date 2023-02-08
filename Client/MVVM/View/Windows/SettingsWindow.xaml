@@ -113,11 +113,11 @@
                 Background="Transparent"
                 BorderThickness="0"
                 CaretBrush="White"
-                FontFamily="/MVVM/View/Fonts/RedHatDisplay"
+                
                 FontSize="16"
                 Foreground="White"
-                HorizontalScrollBarVisibility="Disabled"
-                VerticalScrollBarVisibility="Disabled" />
+                Style="{StaticResource StylishedTextBox}"
+                 />
             </Border>
           </Grid>
         </Border>
