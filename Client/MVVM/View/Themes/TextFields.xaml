@@ -28,7 +28,7 @@
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="HorizontalScrollBarVisibility" Value="Hidden" />
         <Setter Property="VerticalScrollBarVisibility" Value="Hidden" />
-        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Template">
             <Setter.Value>
@@ -38,9 +38,7 @@
                       Background="{TemplateBinding Background}"
                       BorderBrush="#9A8C98"
                       BorderThickness="1,1,1,1"
-                      CornerRadius="10">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                    </Border>
+                      CornerRadius="10" />
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -53,19 +51,6 @@
         <Setter Property="Foreground" Value="#C9ADA7" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="PasswordBox">
-                    <Border
-                      Padding="10"
-                      Background="{TemplateBinding Background}"
-                      BorderBrush="#9A8C98"
-                      BorderThickness="1,1,1,1"
-                      CornerRadius="10">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
+        <Setter Property="CaretBrush" Value="#C9ADA7" />
     </Style>
 </ResourceDictionary>

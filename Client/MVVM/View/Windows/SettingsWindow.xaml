@@ -115,9 +115,7 @@
                 CaretBrush="White"
                 
                 FontSize="16"
-                Foreground="White"
-                Style="{StaticResource StylishedTextBox}"
-                 />
+                Foreground="White"/>
             </Border>
           </Grid>
         </Border>
