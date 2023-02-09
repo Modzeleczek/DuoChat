@@ -1,42 +1,36 @@
-﻿using System.Windows;
+﻿using Client.MVVM.ViewModel;
+using Shared.MVVM.View.Windows;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Shapes;
 
 namespace Client.MVVM.View.Windows
 {
-    public partial class MainWindow : Window
+    public partial class MainWindow : DialogWindow
     {
-        private bool serversVisible = false;
+        private bool serversAccountsVisible = false;
 
-        public MainWindow()
-        {
-            InitializeComponent();
-        }
+        public MainWindow(Window owner, MainViewModel dataContext)
+            : base(owner, dataContext) { }
 
-        private void Button_ToggleServers_Click(object sender, RoutedEventArgs e)
+        protected override void Initialize() => InitializeComponent();
+
+        private void Button_ToggleServersAccounts_Click(object sender, RoutedEventArgs e)
         {
-            if (serversVisible)
+            if (serversAccountsVisible)
             {
                 ServersColumn.Width = new GridLength(0, GridUnitType.Pixel);
-                ToggleServersButton.Content = ">";
+                AccountsColumn.Width = new GridLength(0, GridUnitType.Pixel);
+                ToggleServersAccountsButton.Content = ">";
             }
             else
             {
                 ServersColumn.Width = new GridLength(200, GridUnitType.Pixel);
-                ToggleServersButton.Content = "<";
+                AccountsColumn.Width = new GridLength(200, GridUnitType.Pixel);
+                ToggleServersAccountsButton.Content = "<";
             }
-            serversVisible = !serversVisible;
-        }
-
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            e.Cancel = true;
-        }
-
-        private void Button_Close_Click(object sender, RoutedEventArgs e)
-        {
-            Closing -= Window_Closing;
-            Close();
+            serversAccountsVisible = !serversAccountsVisible;
         }
 
         private void Button_Minimize_Click(object sender, RoutedEventArgs e)
@@ -74,7 +68,7 @@ namespace Client.MVVM.View.Windows
             }
         }
 
-        private void Resizeing_Form(object sender, MouseEventArgs e)
+        private void Resizing_Form(object sender, MouseEventArgs e)
         {
             if (ResizeInProcess)
             {
@@ -121,5 +115,14 @@ namespace Client.MVVM.View.Windows
             }
         }
         #endregion
+
+        private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            /* potrzebne, aby po nieudanej próbie połączenia z serwerem,
+            kliknięte konto na liście kont zostało odznaczone */
+            var listView = (ListView)sender;
+            if (listView.SelectedItem == null)
+                listView.UnselectAll();
+        }
     }
 }

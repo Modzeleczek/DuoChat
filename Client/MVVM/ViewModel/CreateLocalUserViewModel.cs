@@ -1,49 +1,115 @@
-﻿using Client.MVVM.Core;
-using Client.MVVM.Model;
-using Client.MVVM.View.Controls;
-using System.Windows;
+﻿using Client.MVVM.Model;
+using Client.MVVM.Model.BsonStorages;
+using Client.MVVM.View.Windows;
+using Shared.MVVM.Core;
+using Shared.MVVM.Model;
+using Shared.MVVM.View.Windows;
+using System.Collections.Generic;
 using System.Windows.Controls;
 
 namespace Client.MVVM.ViewModel
 {
-    public class CreateLocalUserViewModel : PasswordFormViewModel
+    public class CreateLocalUserViewModel : FormViewModel
     {
         public CreateLocalUserViewModel()
         {
-            WindowLoaded = new RelayCommand(e => window = (Window)e);
+            var pc = new PasswordCryptography();
+            var lus = new LocalUsersStorage();
+
+            WindowLoaded = new RelayCommand(e =>
+            {
+                var win = (FormWindow)e;
+                window = win;
+                win.AddTextField(d["Username"]);
+                win.AddPasswordField(d["Password"]);
+                win.AddPasswordField(d["Confirm password"]);
+                RequestClose += () => win.Close();
+            });
+
             Confirm = new RelayCommand(e =>
             {
-                var inpCtrls = (Control[])e;
-                var userName = ((TextBox)inpCtrls[0]).Text;
-                var password = ((PreviewablePasswordBox)inpCtrls[1]).Password;
-                var confirmedPasswordBox = (PreviewablePasswordBox)inpCtrls[2];
-                /* if (userName == "")
+                var fields = (List<Control>)e;
+
+                var userName = ((TextBox)fields[0]).Text;
+                var unValSta = LocalUsersStorage.ValidateUserName(userName);
+                if (unValSta.Code != 0)
                 {
-                    Error(d["Username cannot be empty."]);
-                    confirmedPasswordBox.Password = "";
-                    return;
-                } */
-                if (password != confirmedPasswordBox.Password)
-                {
-                    Error(d["Passwords do not match."]);
-                    confirmedPasswordBox.Password = "";
+                    Alert(unValSta.Message);
                     return;
                 }
-                // if (!Validate(password)) return;
-                if (LocalUsersStorage.Exists(userName))
+
+                var password = ((PasswordBox)fields[1]).SecurePassword;
+                var confirmedPassword = ((PasswordBox)fields[2]).SecurePassword;
+                if (!pc.SecureStringsEqual(password, confirmedPassword))
                 {
-                    Error(d["User with name"] + $" {userName} " + d["already exists."]);
+                    Alert(d["Passwords do not match."]);
                     return;
                 }
-                var salt = Cryptography.GenerateSalt();
-                var status = LocalUsersStorage.Add(new LocalUser(userName, salt,
-                    Cryptography.ComputeDigest(password, salt)));
-                if (status.Code != 0)
+                var valSta = pc.ValidatePassword(password);
+                if (valSta.Code != 0)
                 {
-                    Error(status.Message);
+                    Alert(valSta.Message);
                     return;
                 }
-                OnRequestClose(new Status(0));
+
+                var existsStatus = lus.Exists(userName);
+                if (existsStatus.Code < 0)
+                {
+                    existsStatus.Prepend(d["Error occured while"],
+                        d["checking if"], d["user"], d["already exists."]);
+                    Alert(existsStatus.Message);
+                    return;
+                }
+                if (existsStatus.Code == 0)
+                {
+                    Alert(existsStatus.Message);
+                    return;
+                }
+                // użytkownik jeszcze nie istnieje
+                var newUser = new LocalUser(userName, password);
+                var addStatus = lus.Add(newUser);
+                if (addStatus.Code != 0)
+                {
+                    addStatus.Prepend(d["Error occured while"], d["adding"], d["user to database."]);
+                    Alert(addStatus.Message);
+                    return;
+                }
+
+                // zaszyfrowujemy katalog użytkownika jego hasłem
+                var encryptStatus = ProgressBarViewModel.ShowDialog(window,
+                    d["Encrypting user's database."], false,
+                    (reporter) =>
+                    pc.EncryptDirectory(reporter,
+                        newUser.DirectoryPath,
+                        pc.ComputeDigest(password, newUser.DbSalt),
+                        newUser.DbInitializationVector));
+                if (encryptStatus.Code == 1)
+                {
+                    encryptStatus.Prepend(d["You should not have canceled database encryption. It may have been corrupted."]);
+                    Alert(encryptStatus.Message);
+                    return;
+                }
+                else if (encryptStatus.Code != 0)
+                {
+                    encryptStatus.Prepend(d["Error occured while"], d["encrypting user's database."],
+                        d["Database may have been corrupted."]);
+                    Alert(encryptStatus.Message);
+                    return;
+                }
+
+                password.Dispose();
+                confirmedPassword.Dispose();
+                OnRequestClose(new Status(0, newUser));
+            });
+
+            var defaultCloseHandler = Close;
+            Close = new RelayCommand(e =>
+            {
+                var fields = (List<Control>)e;
+                ((PasswordBox)fields[1]).SecurePassword.Dispose();
+                ((PasswordBox)fields[2]).SecurePassword.Dispose();
+                // odpowiednik base.Close w nadpisanej metodzie wirtualnej
+                defaultCloseHandler?.Execute(e);
             });
         }
     }

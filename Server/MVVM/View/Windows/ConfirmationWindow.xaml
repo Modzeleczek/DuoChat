@@ -1,0 +1,89 @@
+﻿<w:DialogWindow
+  x:Class="Server.MVVM.View.Windows.ConfirmationWindow"
+  x:ClassModifier="public"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:h="clr-namespace:Shared.MVVM.View.Helpers"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:w="clr-namespace:Shared.MVVM.View.Windows"
+  x:Name="ConfirmationWindowName"
+  Title="{Binding Title}"
+  Width="290"
+  SizeToContent="Height"
+  MinHeight="190"
+  AllowsTransparency="True"
+  Background="Transparent"
+  FontFamily="/MVVM/View/Fonts/RedHatDisplay"
+  Icon="/MVVM/View/Icons/logo.png"
+  WindowStyle="None"
+  mc:Ignorable="d">
+  <Border
+    Background="#4A4E69"
+    BorderBrush="#9A8C98"
+    BorderThickness="2"
+    CornerRadius="10">
+    
+    <Grid>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="40" />
+        <RowDefinition Height="*" />
+        <RowDefinition Height="auto" />
+      </Grid.RowDefinitions>
+      <Border
+        Grid.Row="0"
+        Grid.ColumnSpan="2"
+        h:EnableDragHelper.EnableDrag="True"
+        Background="#22223B"
+        CornerRadius="9,9,0,0">
+        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
+          <Label
+            Margin="15,0,0,0"
+            Content="{Binding ElementName=ConfirmationWindowName, Path=Title}"
+            FontSize="14"
+            FontWeight="SemiBold"
+            Foreground="#9A8C98" />
+          <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" />
+        </Grid>
+      </Border>
+
+      <TextBlock
+        Grid.Row="1"
+        Grid.Column="0"
+        Grid.ColumnSpan="2"
+        Margin="10,5,10,5"
+        HorizontalAlignment="Center"
+        VerticalAlignment="Center"
+        FontFamily="/MVVM/View/Fonts/RedHatDisplay"
+        FontSize="18"
+        FontWeight="SemiBold"
+        Foreground="#C9ADA7"
+        Text="{Binding Path=Description}"
+        TextWrapping="Wrap" />
+
+      <Button
+        Grid.Row="2"
+        Grid.Column="0"
+        Margin="50,10,50,10"
+        Command="{Binding Path=Close}"
+        Content="{Binding Path=CancelButtonText}"
+        FontFamily="/MVVM/View/Fonts/RedHatDisplay"
+        FontSize="18"
+        Style="{StaticResource CornerRadiusButtonStyle}" />
+
+      <Button
+        Grid.Row="2"
+        Grid.Column="1"
+        Margin="50,10,50,10"
+        Command="{Binding Path=Confirm}"
+        Content="{Binding Path=ConfirmButtonText}"
+        FontFamily="/MVVM/View/Fonts/RedHatDisplay"
+        FontSize="18"
+        Style="{StaticResource CornerRadiusButtonStyle}" />
+    </Grid>
+  </Border>
+</w:DialogWindow>

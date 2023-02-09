@@ -1,12 +1,17 @@
-﻿using Client.MVVM.Core;
-using Client.MVVM.Model;
+﻿using Client.MVVM.Model;
+using Client.MVVM.Model.BsonStorages;
 using Client.MVVM.View.Windows;
+using Shared.MVVM.Core;
+using Shared.MVVM.Model;
+using Shared.MVVM.View.Windows;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Security;
 using System.Windows;
 
 namespace Client.MVVM.ViewModel
 {
-    public class LocalUsersViewModel : DialogViewModel
+    public class LocalUsersViewModel : WindowViewModel
     {
         #region Commands
         public RelayCommand Create { get; }
@@ -19,81 +24,117 @@ namespace Client.MVVM.ViewModel
         #region Properties
         private ObservableCollection<LocalUser> localUsers;
         public ObservableCollection<LocalUser> LocalUsers
-        { get => localUsers; set { localUsers = value; OnPropertyChanged(); } }
+        {
+            get => localUsers;
+            set { localUsers = value; OnPropertyChanged(); }
+        }
         #endregion
 
         public LocalUsersViewModel()
         {
-            WindowLoaded = new RelayCommand(e => window = (Window)e);
-            LocalUsers = new ObservableCollection<LocalUser>(LocalUsersStorage.GetAll());
+            var lus = new LocalUsersStorage();
+            WindowLoaded = new RelayCommand(windowLoadedE =>
+            {
+                window = (DialogWindow)windowLoadedE;
+
+                /* musi być w WindowLoaded, bo musimy mieć przypisane window, kiedy
+                chcemy otwierać nowe okno nad LocalUsersWindow */
+                var getAllStatus = lus.GetAll();
+                if (getAllStatus.Code != 0)
+                {
+                    getAllStatus.Prepend(d["Error occured while"], d["reading user list."]);
+                    Alert(getAllStatus.Message);
+                    LocalUsers = new ObservableCollection<LocalUser>();
+                }
+                else
+                    LocalUsers = new ObservableCollection<LocalUser>((List<LocalUser>)getAllStatus.Data);
+            });
+
             Create = new RelayCommand(_ =>
             {
-                var vm = new CreateLocalUserViewModel();
-                var win = new FormWindow(window, vm, d["Create local user"], new FormWindow.Field[]
+                var vm = new CreateLocalUserViewModel
                 {
-                    new FormWindow.Field(d["Username"], "", false),
-                    new FormWindow.Field(d["Password"], "", true),
-                    new FormWindow.Field(d["Confirm password"], "", true)
-                }, d["Create"]);
-                vm.RequestClose += (s, e) => win.Close();
-                win.ShowDialog();
-                // ShowDialog blokuje wykonanie kod z tego obiektu typu command do momentu zamknięcia okna tworzenia użytkownika
-                LocalUsers = new ObservableCollection<LocalUser>(LocalUsersStorage.GetAll());
+                    Title = d["Create local user"],
+                    ConfirmButtonText = d["Create"]
+                };
+                new FormWindow(window, vm).ShowDialog();
+                /* ShowDialog blokuje wykonanie kodu z tego obiektu typu command
+                do momentu zamknięcia okna tworzenia użytkownika */
+                var status = vm.Status;
+                if (status.Code == 0)
+                    LocalUsers.Add((LocalUser)status.Data);
             });
             Login = new RelayCommand(clickedUser =>
             {
-                if (ShowLoginDialog((LocalUser)clickedUser))
-                    OnRequestClose(new Status(0));
+                var user = (LocalUser)clickedUser;
+                var status = LocalLoginViewModel.ShowDialog(window, user, true, d["Log in"]);
+                if (status.Code != 0) return;
+                OnRequestClose(new Status(0, new { LoggedUser = user, Password = status.Data }));
             });
             ChangeName = new RelayCommand(clickedUser =>
             {
                 var user = (LocalUser)clickedUser;
-                if (!ShowLoginDialog(user)) return; // nie udało się zalogować
-                var vm = new ChangeLocalUserNameViewModel(user);
-                var win = new FormWindow(window, vm, d["Change name"],
-                    new FormWindow.Field[]
-                    {
-                        new FormWindow.Field(d["Username"], user.Name, false),
-                    }, d["Save"]);
-                vm.RequestClose += (s, e) => win.Close();
-                win.ShowDialog();
-                LocalUsers = new ObservableCollection<LocalUser>(LocalUsersStorage.GetAll());
+                // nie udało się zalogować
+                if (LocalLoginViewModel.ShowDialog(window, user, false).Code != 0) return;
+                // udało się zalogować
+                var vm = new ChangeLocalUserNameViewModel(user)
+                {
+                    Title = d["Change_name"],
+                    ConfirmButtonText = d["Save"]
+                };
+                new FormWindow(window, vm).ShowDialog();
+                if (vm.Status.Code == 0) Reinsert(user);
             });
             ChangePassword = new RelayCommand(clickedUser =>
             {
                 var user = (LocalUser)clickedUser;
-                if (!ShowLoginDialog(user)) return;
-                var vm = new ChangeLocalUserPasswordViewModel(user);
-                var win = new FormWindow(window, vm, d["Change password"],
-                    new FormWindow.Field[]
-                    {
-                        new FormWindow.Field(d["New password"], "", true),
-                        new FormWindow.Field(d["Confirm password"], "", true)
-                    }, d["Save"]);
-                vm.RequestClose += (s, e) => win.Close();
-                win.ShowDialog();
-                LocalUsers = new ObservableCollection<LocalUser>(LocalUsersStorage.GetAll());
+                var loginStatus = LocalLoginViewModel.ShowDialog(window, user, true);
+                if (loginStatus.Code != 0) return;
+                var currentPassword = (SecureString)loginStatus.Data;
+                var vm = new ChangeLocalUserPasswordViewModel(user, currentPassword)
+                {
+                    Title = d["Change_password"],
+                    ConfirmButtonText = d["Save"]
+                };
+                new FormWindow(window, vm).ShowDialog();
+                currentPassword.Dispose();
             });
             Delete = new RelayCommand(clickedUser =>
             {
                 var user = (LocalUser)clickedUser;
-                if (!ShowLoginDialog(user)) return;
-                LocalUsersStorage.Delete(user.Name);
-                LocalUsers = new ObservableCollection<LocalUser>(LocalUsersStorage.GetAll());
+                if (LocalLoginViewModel.ShowDialog(window, user, false).Code != 0) return;
+                var status = lus.Delete(user.Name);
+                if (status.Code != 0)
+                {
+                    status.Prepend(d["Error occured while"], d["deleting"], d["user from database."]);
+                    Alert(status.Message);
+                    return;
+                }
+                Remove(user);
             });
         }
 
-        private bool ShowLoginDialog(LocalUser user)
+        private void Reinsert(LocalUser user)
         {
-            var vm = new LocalLoginViewModel(user);
-            var win = new FormWindow(window, vm, d["Login"], new FormWindow.Field[]
-            {
-                new FormWindow.Field(d["Password"], "", true)
-            }, d["Login"]);
-            vm.RequestClose += (s, e) => win.Close();
+            int index = Remove(user);
+            LocalUsers.Insert(index, user);
+        }
+
+        private int Remove(LocalUser user)
+        {
+            var index = LocalUsers.IndexOf(user);
+            if (index == -1) return -1;
+            LocalUsers.RemoveAt(index);
+            return index;
+        }
+
+        public static Status ShowDialog(Window owner)
+        {
+            var vm = new LocalUsersViewModel();
+            var win = new LocalUsersWindow(owner, vm);
+            vm.RequestClose += () => win.Close();
             win.ShowDialog();
-            if (vm.Status.Code != 0) return false; // nie udało się zalogować
-            return true; // udało się zalogować
+            return vm.Status;
         }
     }
 }

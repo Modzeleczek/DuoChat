@@ -1,19 +1,25 @@
-﻿using System.Windows.Media;
+﻿using Client.MVVM.View.Windows;
+using Shared.MVVM.View.Localization;
+using System.Windows;
+using BaseAlertViewModel = Shared.MVVM.ViewModel.AlertViewModel;
 
 namespace Client.MVVM.ViewModel
 {
-    public class AlertViewModel : DialogViewModel
+    public class AlertViewModel : BaseAlertViewModel
     {
-        public string AlertText { get; }
-        public int AlertFontSize { get; } = 16;
-        public string ButtonText { get; } = "OK";
-        public int ButtonFontSize { get; } = 16;
-        public SolidColorBrush ButtonBackground { get; }
+        private AlertViewModel(string title, string description, string buttonText) :
+            base(title, description, buttonText) { }
 
-        public AlertViewModel(string text, Color buttonBackground)
+        public static void ShowDialog(Window owner, string description, string title = null,
+            string buttonText = null)
         {
-            AlertText = text;
-            ButtonBackground = new SolidColorBrush(buttonBackground);
+            var d = Translator.Instance;
+            string finalTitle = title ?? d["Alert"];
+            string finalButTxt = buttonText ?? d["OK"];
+            var vm = new AlertViewModel(finalTitle, description, finalButTxt);
+            var win = new AlertWindow(owner, vm);
+            vm.RequestClose += () => win.Close();
+            win.ShowDialog();
         }
     }
 }

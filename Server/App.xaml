@@ -1,0 +1,19 @@
+﻿<Application
+  x:Class="Server.App"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:ctrl="clr-namespace:Server.MVVM.View.Controls"
+  xmlns:vm="clr-namespace:Server.MVVM.ViewModel">
+  <Application.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/MVVM/View/Themes/Buttons.xaml" />
+        <ResourceDictionary Source="/MVVM/View/Themes/HoverPanel.xaml" />
+      </ResourceDictionary.MergedDictionaries>
+
+      <DataTemplate DataType="{x:Type vm:SettingsViewModel}">
+        <ctrl:SettingsView />
+      </DataTemplate>
+    </ResourceDictionary>
+  </Application.Resources>
+</Application>

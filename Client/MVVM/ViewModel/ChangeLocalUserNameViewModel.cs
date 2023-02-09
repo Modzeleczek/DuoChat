@@ -1,6 +1,9 @@
-﻿using Client.MVVM.Core;
-using Client.MVVM.Model;
-using System.Windows;
+﻿using Client.MVVM.Model;
+using Client.MVVM.Model.BsonStorages;
+using Client.MVVM.View.Windows;
+using Shared.MVVM.Core;
+using Shared.MVVM.Model;
+using System.Collections.Generic;
 using System.Windows.Controls;
 
 namespace Client.MVVM.ViewModel
@@ -9,24 +12,52 @@ namespace Client.MVVM.ViewModel
     {
         public ChangeLocalUserNameViewModel(LocalUser user)
         {
-            WindowLoaded = new RelayCommand(e => window = (Window)e);
+            var lus = new LocalUsersStorage();
+
+            WindowLoaded = new RelayCommand(e =>
+            {
+                var win = (FormWindow)e;
+                window = win;
+                win.AddTextField(d["Username"], user.Name);
+                RequestClose += () => win.Close();
+            });
+
             Confirm = new RelayCommand(e =>
             {
-                var inpCtrls = (Control[])e;
-                var userName = ((TextBox)inpCtrls[0]).Text;
-                if (LocalUsersStorage.Exists(userName))
+                var fields = (List<Control>)e;
+
+                var newUsername = ((TextBox)fields[0]).Text;
+                var unValSta = LocalUsersStorage.ValidateUserName(newUsername);
+                if (unValSta.Code != 0)
                 {
-                    Error(d["User with name"] + $" {userName} " + d["already exists."]);
+                    Alert(unValSta.Message);
                     return;
                 }
-                var status = LocalUsersStorage.Update(user.Name,
-                    new LocalUser(userName, user.Salt, user.Digest));
-                if (status.Code != 0)
+
+                var existsStatus = lus.Exists(newUsername);
+                if (existsStatus.Code < 0)
                 {
-                    Error(status.Message);
+                    existsStatus.Prepend(d["Error occured while"],
+                       d["checking if"], d["user"], d["already exists."]);
+                    Alert(existsStatus.Message);
                     return;
                 }
-                // user.Name = userName;
+                if (existsStatus.Code == 0)
+                {
+                    Alert(existsStatus.Message);
+                    return;
+                }
+                // użytkownik nie istnieje
+
+                var oldUserName = user.Name;
+                user.Name = newUsername;
+                var updateStatus = lus.Update(oldUserName, user);
+                if (updateStatus.Code != 0)
+                {
+                    updateStatus.Prepend(d["Error occured while"], d["updating user in database."]);
+                    Alert(updateStatus.Message);
+                    return;
+                }
                 OnRequestClose(new Status(0));
             });
         }

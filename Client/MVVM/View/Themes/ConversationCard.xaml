@@ -1,0 +1,54 @@
+﻿<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Style x:Key="ConversationCardStyle" TargetType="ListViewItem">
+
+    <Style.Triggers>
+      <Trigger Property="IsSelected" Value="True">
+        <Setter Property="Background" Value="#232533" />
+      </Trigger>
+    </Style.Triggers>
+
+    <Setter Property="Background" Value="#4f5370" />
+
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ListViewItem">
+          <Border
+            Height="60"
+            MaxWidth="180"
+            Margin="8,2,8,2"
+            Padding="5"
+            Background="{TemplateBinding Background}"
+            CornerRadius="5">
+
+            <StackPanel
+              Margin="5,0,0,0"
+              CanHorizontallyScroll="False"
+              Orientation="Horizontal">
+              <Ellipse Width="45" Height="45">
+                <Ellipse.Fill>
+                  <ImageBrush ImageSource="{Binding Owner.Image}" />
+                </Ellipse.Fill>
+              </Ellipse>
+              
+              <StackPanel
+                VerticalAlignment="Center"
+                CanHorizontallyScroll="False"
+                Orientation="Vertical">
+                <Label
+                  Margin="5,10,0,0"
+                  Padding="2"
+                  Content="{Binding Name}"
+                  FontFamily="/MVVM/View/Fonts/RedHatDisplay"
+                  FontSize="15"
+                  FontWeight="SemiBold"
+                  Foreground="#C9ADA7" />
+              </StackPanel>
+            </StackPanel>
+          </Border>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+</ResourceDictionary>
