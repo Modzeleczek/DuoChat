@@ -1,11 +1,10 @@
 ﻿<w:DialogWindow
   x:Class="Client.MVVM.View.Windows.SettingsWindow"
-  x:ClassModifier="public"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:l="clr-namespace:Shared.MVVM.View.Localization"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:h="clr-namespace:Shared.MVVM.View.Helpers"
+  xmlns:l="clr-namespace:Shared.MVVM.View.Localization"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:w="clr-namespace:Shared.MVVM.View.Windows"
   x:Name="SettingsWindowName"
@@ -14,6 +13,7 @@
   Height="300"
   MinWidth="300"
   MinHeight="100"
+  x:ClassModifier="public"
   AllowsTransparency="True"
   Background="Transparent"
   FontFamily="/MVVM/View/Fonts/RedHatDisplay"
@@ -23,151 +23,159 @@
   WindowStartupLocation="CenterOwner"
   WindowStyle="None"
   mc:Ignorable="d">
-  <Border
-    Background="#4A4E69"
-    BorderBrush="#9A8C98"
-    BorderThickness="1"
-    CornerRadius="10">
-    
-    <Grid>
-      <Grid.RowDefinitions>
-        <RowDefinition Height="40" />
-        <RowDefinition Height="*" />
-        <RowDefinition Height="Auto" />
-      </Grid.RowDefinitions>
-      <Border
-        Grid.Row="0"
-        h:EnableDragHelper.EnableDrag="True"
-        Background="#22223B"
-        CornerRadius="10,10,0,0">
-        <Grid VerticalAlignment="Center">
-          <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="*" />
-          </Grid.ColumnDefinitions>
-          <Label
-            Margin="15,0,0,0"
-            Content="{Binding ElementName=SettingsWindowName, Path=Title}"
-            FontSize="14"
-            FontWeight="SemiBold"
-            Foreground="#9A8C98" />
-          <StackPanel
-            Grid.Column="1"
-            HorizontalAlignment="Right"
-            Orientation="Horizontal">
+    <Border
+      Background="#4A4E69"
+      BorderBrush="#9A8C98"
+      BorderThickness="1"
+      CornerRadius="10">
 
-            <Button
-              Margin="4,1,16,0"
-              Command="{Binding Path=Close}"
-              Content="✕"
-              Style="{StaticResource TitleBarButtonStyle}" />
-          </StackPanel>
-        </Grid>
-      </Border>
-
-      <Grid Grid.Row="1">
-        <Grid.RowDefinitions>
-          <RowDefinition Height="Auto" />
-          <RowDefinition Height="Auto" />
-          <RowDefinition Height="Auto" />
-          <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
-
-        <Border
-          Grid.Row="0"
-          Margin="0,-1,0,0"
-          BorderBrush="#9A8C98"
-          BorderThickness="0,2,0,1">
-          <Grid>
-            <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="Auto" />
-              <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <Label
-              Grid.Column="0"
-              Margin="5,5,5,5"
-              VerticalAlignment="Center"
-              Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Nickname}"
-              FontFamily="/MVVM/View/Fonts/RedHatDisplay"
-              FontSize="18"
-              FontWeight="SemiBold"
-              Foreground="#C9ADA7" />
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
             <Border
-              Grid.Column="1"
-              MinWidth="100"
-              MaxWidth="300"
-              Margin="5,5,10,5"
-              HorizontalAlignment="Right"
-              BorderBrush="#9A8C98"
-              BorderThickness="1"
-              CornerRadius="10">
-              <TextBox
-                MinWidth="200"
-                MaxWidth="300"
-                Margin="3,0,3,0"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Center"
-                Background="Transparent"
-                BorderThickness="0"
-                CaretBrush="White"
-                
-                FontSize="16"
-                Foreground="White"/>
+              Grid.Row="0"
+              h:EnableDragHelper.EnableDrag="True"
+              Background="#22223B"
+              CornerRadius="10,10,0,0">
+                <Grid VerticalAlignment="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Label
+                      Margin="15,0,0,0"
+                      Content="{Binding ElementName=SettingsWindowName, Path=Title}"
+                      FontSize="14"
+                      FontWeight="SemiBold"
+                      Foreground="#9A8C98" />
+                    <StackPanel
+                      Grid.Column="1"
+                      HorizontalAlignment="Right"
+                      Orientation="Horizontal">
+
+                        <Button
+                          Margin="4,1,16,0"
+                          Command="{Binding Path=Close}"
+                          Content="✕"
+                          Style="{StaticResource TitleBarButtonStyle}" />
+                    </StackPanel>
+                </Grid>
             </Border>
-          </Grid>
-        </Border>
-        <Border
-          Grid.Row="1"
-          Margin="0,-1,0,0"
-          BorderBrush="#9A8C98"
-          BorderThickness="0,1,0,1">
-          <Label
-            Margin="5,5,5,5"
-            VerticalAlignment="Center"
-            Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Dark_theme}"
-            FontFamily="/MVVM/View/Fonts/RedHatDisplay"
-            FontSize="18"
-            FontWeight="SemiBold"
-            Foreground="#C9ADA7" />
-        </Border>
-        <Border
-          Grid.Row="2"
-          Margin="0,-1,0,0"
-          BorderBrush="#9A8C98"
-          BorderThickness="0,1,0,1">
-          <Button
-            Margin="10,6,5,6"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Center"
-            Command="{Binding LocalLogout}"
-            Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Log_local_user_out}"
-            FontFamily="/MVVM/View/Fonts/RedHatDisplay"
-            FontSize="18"
-            Foreground="#C9ADA7"
-            Style="{StaticResource MenuButtonStyle}" />
-        </Border>
-        
-        <Border
-          Grid.Row="3"
-          Margin="0,-1,0,0"
-          BorderBrush="#9A8C98"
-          BorderThickness="0,1,0,1">
-          <Button
-            Margin="10,6,5,6"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Center"
-            Command="{Binding ToggleLanguage}"
-            Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Toggle_language}"
-            FontFamily="/MVVM/View/Fonts/RedHatDisplay"
-            FontSize="18"
-            Foreground="#C9ADA7"
-            Style="{StaticResource MenuButtonStyle}" />
-        </Border>
-        
-      </Grid>
-    </Grid>
-  </Border>
+
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Border
+                  Grid.Row="0"
+                  Margin="0,-1,0,0"
+                  BorderBrush="#9A8C98"
+                  BorderThickness="0,2,0,1">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Label
+                          Grid.Column="0"
+                          Margin="5,5,5,5"
+                          VerticalAlignment="Center"
+                          Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Nickname}"
+                          FontFamily="/MVVM/View/Fonts/RedHatDisplay"
+                          FontSize="18"
+                          FontWeight="SemiBold"
+                          Foreground="#C9ADA7" />
+                        <Border
+                          Grid.Column="1"
+                          MinWidth="100"
+                          MaxWidth="300"
+                          Margin="5,5,10,5"
+                          HorizontalAlignment="Right"
+                          BorderBrush="#9A8C98"
+                          BorderThickness="1"
+                          CornerRadius="10">
+                            <TextBox
+                              MinWidth="200"
+                              MaxWidth="300"
+                              Margin="3,0,3,0"
+                              HorizontalAlignment="Right"
+                              VerticalAlignment="Center"
+                              Background="Transparent"
+                              BorderThickness="0"
+                              CaretBrush="White"
+                              FontSize="16"
+                              Foreground="White" />
+                            <Border.Resources>
+                                <Style TargetType="{x:Type Border}">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsFocused" Value="True">
+                                            <Setter Property="Background" Value="#22223B" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Resources>
+                        </Border>
+                    </Grid>
+                </Border>
+                <Border
+                  Grid.Row="1"
+                  Margin="0,-1,0,0"
+                  BorderBrush="#9A8C98"
+                  BorderThickness="0,1,0,1">
+                    <Label
+                      Margin="5,5,5,5"
+                      VerticalAlignment="Center"
+                      Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Dark_theme}"
+                      FontFamily="/MVVM/View/Fonts/RedHatDisplay"
+                      FontSize="18"
+                      FontWeight="SemiBold"
+                      Foreground="#C9ADA7" />
+                </Border>
+                <Border
+                  Grid.Row="2"
+                  Margin="0,-1,0,0"
+                  BorderBrush="#9A8C98"
+                  BorderThickness="0,1,0,1">
+                    <Button
+                      Margin="10,6,5,6"
+                      HorizontalAlignment="Left"
+                      VerticalAlignment="Center"
+                      Command="{Binding LocalLogout}"
+                      Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Log_local_user_out}"
+                      FontFamily="/MVVM/View/Fonts/RedHatDisplay"
+                      FontSize="18"
+                      Foreground="#C9ADA7"
+                      Style="{StaticResource MenuButtonStyle}" />
+                </Border>
+
+                <Border
+                  Grid.Row="3"
+                  Margin="0,-1,0,0"
+                  BorderBrush="#9A8C98"
+                  BorderThickness="0,1,0,1">
+                    <Button
+                      Margin="10,6,5,6"
+                      HorizontalAlignment="Left"
+                      VerticalAlignment="Center"
+                      Command="{Binding ToggleLanguage}"
+                      Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Toggle_language}"
+                      FontFamily="/MVVM/View/Fonts/RedHatDisplay"
+                      FontSize="18"
+                      Foreground="#C9ADA7"
+                      Style="{StaticResource MenuButtonStyle}" />
+                </Border>
+
+            </Grid>
+        </Grid>
+    </Border>
 </w:DialogWindow>

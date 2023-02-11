@@ -63,9 +63,10 @@
                 <StackPanel.Resources>
                     <Style BasedOn="{StaticResource StylishedLabel}" TargetType="Label" />
 
-                    <Style BasedOn="{StaticResource StylishedTextBox}" TargetType="TextBox" />
+                    <Style BasedOn="{StaticResource FormTextBox}" TargetType="TextBox" />
 
-                    <Style BasedOn="{StaticResource StylishedPasswordBox}" TargetType="PasswordBox" />
+                    <Style BasedOn="{StaticResource FormPasswordBox}" TargetType="PasswordBox" />
+
                 </StackPanel.Resources>
             </StackPanel>
             <Button
