@@ -16,6 +16,7 @@
                 <ResourceDictionary Source="/MVVM/View/Themes/ScrollBar.xaml" />
                 <ResourceDictionary Source="/MVVM/View/Themes/ResizableWindow.xaml" />
                 <ResourceDictionary Source="/MVVM/View/Themes/TextFields.xaml" />
+                <ResourceDictionary Source="/MVVM/View/Themes/Border.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

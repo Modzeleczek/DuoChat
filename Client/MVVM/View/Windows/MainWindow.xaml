@@ -27,78 +27,78 @@
             <i:InvokeCommandAction Command="{Binding WindowLoaded}" CommandParameter="{Binding ElementName=MainWindowName}" />
         </i:EventTrigger>
     </i:Interaction.Triggers>
-
     <Grid>
+        <Grid Name="ResizableGrid">
 
-        <Rectangle
-          x:Name="leftSizeGrip"
-          Width="7"
-          Margin="0,20,0,20"
-          HorizontalAlignment="Left"
-          Cursor="SizeWE"
-          Style="{StaticResource RectBorderStyle}" />
-        <Rectangle
-          x:Name="rightSizeGrip"
-          Width="7"
-          Margin="0,20,0,20"
-          HorizontalAlignment="Right"
-          Cursor="SizeWE"
-          Style="{StaticResource RectBorderStyle}" />
-        <Rectangle
-          x:Name="topSizeGrip"
-          Height="7"
-          Margin="20,0,20,0"
-          VerticalAlignment="Top"
-          Cursor="SizeNS"
-          Style="{StaticResource RectBorderStyle}" />
-        <Rectangle
-          x:Name="bottomSizeGrip"
-          Height="7"
-          Margin="20,0,20,0"
-          VerticalAlignment="Bottom"
-          Cursor="SizeNS"
-          Style="{StaticResource RectBorderStyle}" />
-        <Rectangle
-          Name="topLeftSizeGrip"
-          Width="50"
-          Height="50"
-          HorizontalAlignment="Left"
-          VerticalAlignment="Top"
-          Cursor="SizeNWSE"
-          RadiusX="10"
-          RadiusY="10"
-          Style="{StaticResource RectBorderStyle}" />
-        <Rectangle
-          Name="bottomRightSizeGrip"
-          Width="50"
-          Height="50"
-          HorizontalAlignment="Right"
-          VerticalAlignment="Bottom"
-          Cursor="SizeNWSE"
-          RadiusX="10"
-          RadiusY="10"
-          Style="{StaticResource RectBorderStyle}" />
-        <Rectangle
-          Name="topRightSizeGrip"
-          Width="50"
-          Height="50"
-          HorizontalAlignment="Right"
-          VerticalAlignment="Top"
-          Cursor="SizeNESW"
-          RadiusX="10"
-          RadiusY="10"
-          Style="{StaticResource RectBorderStyle}" />
-        <Rectangle
-          Name="bottomLeftSizeGrip"
-          Width="50"
-          Height="50"
-          HorizontalAlignment="Left"
-          VerticalAlignment="Bottom"
-          Cursor="SizeNESW"
-          RadiusX="10"
-          RadiusY="10"
-          Style="{StaticResource RectBorderStyle}" />
-
+            <Rectangle
+              x:Name="leftSizeGrip"
+              Width="7"
+              Margin="0,20,0,20"
+              HorizontalAlignment="Left"
+              Cursor="SizeWE"
+              Style="{StaticResource RectBorderStyle}" />
+            <Rectangle
+              x:Name="rightSizeGrip"
+              Width="7"
+              Margin="0,20,0,20"
+              HorizontalAlignment="Right"
+              Cursor="SizeWE"
+              Style="{StaticResource RectBorderStyle}" />
+            <Rectangle
+              x:Name="topSizeGrip"
+              Height="7"
+              Margin="20,0,20,0"
+              VerticalAlignment="Top"
+              Cursor="SizeNS"
+              Style="{StaticResource RectBorderStyle}" />
+            <Rectangle
+              x:Name="bottomSizeGrip"
+              Height="7"
+              Margin="20,0,20,0"
+              VerticalAlignment="Bottom"
+              Cursor="SizeNS"
+              Style="{StaticResource RectBorderStyle}" />
+            <Rectangle
+              Name="topLeftSizeGrip"
+              Width="50"
+              Height="50"
+              HorizontalAlignment="Left"
+              VerticalAlignment="Top"
+              Cursor="SizeNWSE"
+              RadiusX="10"
+              RadiusY="10"
+              Style="{StaticResource RectBorderStyle}" />
+            <Rectangle
+              Name="bottomRightSizeGrip"
+              Width="50"
+              Height="50"
+              HorizontalAlignment="Right"
+              VerticalAlignment="Bottom"
+              Cursor="SizeNWSE"
+              RadiusX="10"
+              RadiusY="10"
+              Style="{StaticResource RectBorderStyle}" />
+            <Rectangle
+              Name="topRightSizeGrip"
+              Width="50"
+              Height="50"
+              HorizontalAlignment="Right"
+              VerticalAlignment="Top"
+              Cursor="SizeNESW"
+              RadiusX="10"
+              RadiusY="10"
+              Style="{StaticResource RectBorderStyle}" />
+            <Rectangle
+              Name="bottomLeftSizeGrip"
+              Width="50"
+              Height="50"
+              HorizontalAlignment="Left"
+              VerticalAlignment="Bottom"
+              Cursor="SizeNESW"
+              RadiusX="10"
+              RadiusY="10"
+              Style="{StaticResource RectBorderStyle}" />
+        </Grid>
         <Border
           Margin="2"
           Background="#4A4E69"
@@ -111,12 +111,13 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition x:Name="ServersColumn" Width="0" />
                     <ColumnDefinition x:Name="AccountsColumn" Width="0" />
-                    <ColumnDefinition Width="200" MinWidth="70" />
+                    <ColumnDefinition Width="88" />
+                    <ColumnDefinition Width="112" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <Border
                   Grid.Row="0"
-                  Grid.ColumnSpan="4"
+                  Grid.ColumnSpan="5"
                   h:EnableDragHelper.EnableDrag="True"
                   Background="#22223B"
                   CornerRadius="10,10,0,0">
@@ -150,6 +151,8 @@
                 <Grid
                   Grid.Row="1"
                   Grid.Column="0"
+                  Grid.ColumnSpan="3"
+                  Margin="0,0,88,0"
                   Background="#3B3E54">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="50" />
@@ -188,6 +191,8 @@
                 <Grid
                   Grid.Row="1"
                   Grid.Column="1"
+                  Grid.ColumnSpan="2"
+                  Margin="0,0,88,0"
                   Background="#3B3E54">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="50" />
@@ -236,9 +241,10 @@
                 <Grid
                   Grid.Row="1"
                   Grid.Column="2"
+                  Grid.ColumnSpan="2"
                   Background="Transparent">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="50" />
+                        <RowDefinition Height="40" />
                         <RowDefinition Height="*" />
                         <RowDefinition Height="60" />
                     </Grid.RowDefinitions>
@@ -246,11 +252,12 @@
                         <StackPanel Orientation="Horizontal">
                             <Button
                               x:Name="ToggleServersAccountsButton"
-                              Width="25"
+                              Width="40"
+                              Height="40"
                               VerticalContentAlignment="Center"
                               Click="Button_ToggleServersAccounts_Click"
                               Content="&gt;"
-                              FontSize="40"
+                              FontSize="35"
                               Foreground="#C9ADA7"
                               Style="{StaticResource MenuButtonStyle}" />
                             <Label
@@ -289,7 +296,7 @@
                               CornerRadius="25"
                               DockPanel.Dock="Left" />
                             <TextBlock
-                              Width="105"
+                              Width="95"
                               Margin="5,0,0,0"
                               VerticalAlignment="Center"
                               DockPanel.Dock="Left"
@@ -305,16 +312,20 @@
                                 </TextBlock.Text>
                             </TextBlock>
                             <Button
-                              Width="25"
-                              Height="25"
-                              Margin="0,0,10,0"
+                              Width="32"
+                              Height="32"
+                              Margin="0,0,7,0"
                               HorizontalAlignment="Right"
                               Command="{Binding OpenSettings}"
                               DockPanel.Dock="Right"
                               FontSize="15"
                               Foreground="#9A8C98"
                               Style="{StaticResource MenuButtonStyle}">
-                                <Image Source="/MVVM/View/Icons/settings.png" />
+                                <Border CornerRadius="20">
+                                    <Image Margin="4" Source="/MVVM/View/Icons/settings.png" />
+                                    <Border.Resources />
+                                </Border>
+
                             </Button>
                         </DockPanel>
                     </Border>
@@ -322,7 +333,7 @@
 
                 <Grid
                   Grid.Row="1"
-                  Grid.Column="3"
+                  Grid.Column="4"
                   VerticalAlignment="Center">
                     <Grid.Style>
                         <Style TargetType="Grid">
@@ -344,11 +355,12 @@
                       Source="/MVVM/View/Icons/logo.png" />
                     <TextBlock
                       Grid.Row="1"
-                      Text="{Binding Source={x:Static l:Translator.Instance}, Path=D.Welcome_to_DuoChat}"
-                      TextAlignment="Center" />
+                      HorizontalAlignment="Center"
+                      Style="{StaticResource StylishedTextBlock}"
+                      Text="{Binding Source={x:Static l:Translator.Instance}, Path=D.Welcome_to_DuoChat}" />
                 </Grid>
 
-                <Grid Grid.Row="1" Grid.Column="3">
+                <Grid Grid.Row="1" Grid.Column="4">
                     <Grid.Style>
                         <Style TargetType="Grid">
                             <Setter Property="Visibility" Value="Visible" />
