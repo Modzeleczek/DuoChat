@@ -42,7 +42,7 @@
                       Background="{TemplateBinding Background}"
                       BorderBrush="{TemplateBinding BorderBrush}"
                       BorderThickness="{TemplateBinding BorderThickness}"
-                      CornerRadius="10"
+                      CornerRadius="8"
                       SnapsToDevicePixels="true">
                         <ScrollViewer
                           x:Name="PART_ContentHost"
@@ -87,7 +87,7 @@
                       Background="{TemplateBinding Background}"
                       BorderBrush="{TemplateBinding BorderBrush}"
                       BorderThickness="{TemplateBinding BorderThickness}"
-                      CornerRadius="10"
+                      CornerRadius="8"
                       SnapsToDevicePixels="true">
                         <ScrollViewer
                           x:Name="PART_ContentHost"

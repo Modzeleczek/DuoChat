@@ -124,6 +124,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="MVVM\View\Themes\Border.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MVVM\View\Themes\Buttons.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -222,6 +226,9 @@
     <Compile Include="MVVM\ViewModel\WindowViewModel.cs" />
     <Compile Include="MVVM\View\Converters\IPv4AddressToStringConverter.cs" />
     <Compile Include="MVVM\View\Converters\PortToStringConverter.cs" />
+    <Compile Include="MVVM\View\Themes\ResizableWindow.xaml.cs">
+      <DependentUpon>ResizableWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MVVM\View\Windows\AlertWindow.xaml.cs">
       <DependentUpon>AlertWindow.xaml</DependentUpon>
     </Compile>
