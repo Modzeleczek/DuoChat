@@ -1,55 +1,24 @@
-﻿using Client.MVVM.ViewModel;
-using Shared.MVVM.View.Windows;
+﻿using Client.MVVM.View.Windows;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Shapes;
 
-namespace Client.MVVM.View.Windows
+namespace Client.MVVM.View.Themes
 {
-    public partial class MainWindow : DialogWindow
+    public static class StringExtensions
     {
-        private bool serversAccountsVisible = false;
-
-        public MainWindow(Window owner, MainViewModel dataContext)
-            : base(owner, dataContext) { }
-
-        protected override void Initialize() => InitializeComponent();
-
-        private void Button_ToggleServersAccounts_Click(object sender, RoutedEventArgs e)
+        public static bool Contains(this string source, string toCheck, StringComparison comp)
         {
-            if (serversAccountsVisible)
-            {
-                ServersColumn.Width = new GridLength(0, GridUnitType.Pixel);
-                AccountsColumn.Width = new GridLength(0, GridUnitType.Pixel);
-                ToggleServersAccountsButton.Content = ">";
-            }
-            else
-            {
-                ServersColumn.Width = new GridLength(200, GridUnitType.Pixel);
-                AccountsColumn.Width = new GridLength(200, GridUnitType.Pixel);
-                ToggleServersAccountsButton.Content = "<";
-            }
-            serversAccountsVisible = !serversAccountsVisible;
+            return source?.IndexOf(toCheck, comp) >= 0;
         }
-
-        private void Button_Minimize_Click(object sender, RoutedEventArgs e)
-        {
-            WindowState = WindowState.Minimized;
-        }
-
-        private void Button_Maximize_Click(object sender, RoutedEventArgs e)
-        {
-            if (WindowState != WindowState.Maximized)
-            {
-                WindowState = WindowState.Maximized;
-                ResizableGrid.Visibility = Visibility.Hidden;
-            }
-            else
-                WindowState = WindowState.Normal;
-        }
+    }
+    public partial class ResizableWindow : ResourceDictionary
+    {
 
         #region ResizeWindows
         bool ResizeInProcess = false;
@@ -73,7 +42,7 @@ namespace Client.MVVM.View.Windows
             }
         }
 
-        private void Resizeing_Form(object sender, MouseEventArgs e)
+        private void Resizing_Form(object sender, MouseEventArgs e)
         {
             if (ResizeInProcess)
             {
@@ -123,21 +92,5 @@ namespace Client.MVVM.View.Windows
         
         #endregion
 
-        private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            /* potrzebne, aby po nieudanej próbie połączenia z serwerem,
-            kliknięte konto na liście kont zostało odznaczone */
-            var listView = (ListView)sender;
-            if (listView.SelectedItem == null)
-                listView.UnselectAll();
-        }
-
-    }
-    public static class StringExtensions
-    {
-        public static bool Contains(this string source, string toCheck, StringComparison comp)
-        {
-            return source?.IndexOf(toCheck, comp) >= 0;
-        }
     }
 }

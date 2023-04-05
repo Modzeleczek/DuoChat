@@ -18,7 +18,7 @@
   <l:Entry x:Key="Accounts" EN="Accounts" PL="Konta"/>
   <l:Entry x:Key="Conversations" EN="Conversations" PL="Konwersacje"/>
   <l:Entry x:Key="Nickname" EN="Nickname" PL="Pseudonim"/>
-  <l:Entry x:Key="Welcome_to_DuoChat" EN="Welcome to DuoChat" PL="Witaj w DuoChat"/>
+  <l:Entry x:Key="Welcome_to_DuoChat" EN="Welcome to DuoChat!" PL="Witaj w DuoChat!"/>
   <l:Entry x:Key="Conversation_name" EN="Conversation name" PL="Nazwa konwersacji"/>
   <l:Entry x:Key="Progress" EN="Progress" PL="Postęp"/>
   <l:Entry x:Key="Cancel" EN="Cancel" PL="Anuluj"/>
