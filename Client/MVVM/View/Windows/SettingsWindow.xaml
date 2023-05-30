@@ -24,8 +24,8 @@
   WindowStyle="None"
   mc:Ignorable="d">
     <Border
-      Background="#4A4E69"
-      BorderBrush="#9A8C98"
+      Background="{DynamicResource ThirdBackgroundColor}"
+      BorderBrush="{DynamicResource FirstBorderColor}"
       BorderThickness="1"
       CornerRadius="10">
 
@@ -38,7 +38,7 @@
             <Border
               Grid.Row="0"
               h:EnableDragHelper.EnableDrag="True"
-              Background="#22223B"
+              Background="{DynamicResource FirstBackgroundColor}"
               CornerRadius="10,10,0,0">
                 <Grid VerticalAlignment="Center">
                     <Grid.ColumnDefinitions>
@@ -50,7 +50,7 @@
                       Content="{Binding ElementName=SettingsWindowName, Path=Title}"
                       FontSize="14"
                       FontWeight="SemiBold"
-                      Foreground="#9A8C98" />
+                      Foreground="{DynamicResource FirstForegroundColor}" />
                     <StackPanel
                       Grid.Column="1"
                       HorizontalAlignment="Right"
@@ -60,7 +60,7 @@
                           Margin="4,1,16,0"
                           Command="{Binding Path=Close}"
                           Content="✕"
-                          Style="{StaticResource TitleBarButtonStyle}" />
+                          Style="{DynamicResource TitleBarButtonStyle}" />
                     </StackPanel>
                 </Grid>
             </Border>
@@ -79,7 +79,7 @@
                 <Border
                   Grid.Row="0"
                   Margin="0,-1,0,0"
-                  BorderBrush="#9A8C98"
+                  BorderBrush="{DynamicResource FirstBorderColor}"
                   BorderThickness="0,2,0,1">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -94,14 +94,14 @@
                           FontFamily="/MVVM/View/Fonts/RedHatDisplay"
                           FontSize="18"
                           FontWeight="SemiBold"
-                          Foreground="#C9ADA7" />
+                          Style="{DynamicResource StylishedLabel}" />
                         <Border
                           Grid.Column="1"
                           MinWidth="100"
                           MaxWidth="300"
                           Margin="5,5,10,5"
                           HorizontalAlignment="Right"
-                          BorderBrush="#9A8C98"
+                          BorderBrush="{DynamicResource FirstBorderColor}"
                           BorderThickness="1"
                           CornerRadius="10">
                             <TextBox
@@ -112,14 +112,15 @@
                               VerticalAlignment="Center"
                               Background="Transparent"
                               BorderThickness="0"
-                              CaretBrush="White"
+                              CaretBrush="{DynamicResource ThirdForegroundColor}"
                               FontSize="16"
-                              Foreground="White" />
+                              Foreground="{DynamicResource ThirdForegroundColor}"
+                              Style="{DynamicResource FormTextBox}" />
                             <Border.Resources>
                                 <Style TargetType="{x:Type Border}">
                                     <Style.Triggers>
                                         <Trigger Property="IsFocused" Value="True">
-                                            <Setter Property="Background" Value="#22223B" />
+                                            <Setter Property="Background" Value="{DynamicResource FirstBackgroundColor}" />
                                         </Trigger>
                                     </Style.Triggers>
                                 </Style>
@@ -130,21 +131,21 @@
                 <Border
                   Grid.Row="1"
                   Margin="0,-1,0,0"
-                  BorderBrush="#9A8C98"
+                  BorderBrush="{DynamicResource FirstBorderColor}"
                   BorderThickness="0,1,0,1">
-                    <Label
+                    <ToggleButton
+                      x:Name="Themes"
                       Margin="5,5,5,5"
-                      VerticalAlignment="Center"
-                      Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Dark_theme}"
-                      FontFamily="/MVVM/View/Fonts/RedHatDisplay"
-                      FontSize="18"
-                      FontWeight="SemiBold"
-                      Foreground="#C9ADA7" />
+                      Click="Themes_Click"
+                      Content="Change Theme"
+                      Foreground="{DynamicResource SecondForegroundColor}"
+                      IsChecked="False"
+                      Style="{DynamicResource StylishedToggleButton}" />
                 </Border>
                 <Border
                   Grid.Row="2"
                   Margin="0,-1,0,0"
-                  BorderBrush="#9A8C98"
+                  BorderBrush="{DynamicResource FirstForegroundColor}"
                   BorderThickness="0,1,0,1">
                     <Button
                       Margin="10,6,5,6"
@@ -154,14 +155,14 @@
                       Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Log_local_user_out}"
                       FontFamily="/MVVM/View/Fonts/RedHatDisplay"
                       FontSize="18"
-                      Foreground="#C9ADA7"
-                      Style="{StaticResource MenuButtonStyle}" />
+                      Foreground="{DynamicResource SecondForegroundColor}"
+                      Style="{DynamicResource MenuButtonStyle}" />
                 </Border>
 
                 <Border
                   Grid.Row="3"
                   Margin="0,-1,0,0"
-                  BorderBrush="#9A8C98"
+                  BorderBrush="{DynamicResource FirstBorderColor}"
                   BorderThickness="0,1,0,1">
                     <Button
                       Margin="10,6,5,6"
@@ -171,8 +172,8 @@
                       Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Toggle_language}"
                       FontFamily="/MVVM/View/Fonts/RedHatDisplay"
                       FontSize="18"
-                      Foreground="#C9ADA7"
-                      Style="{StaticResource MenuButtonStyle}" />
+                      Foreground="{DynamicResource SecondForegroundColor}"
+                      Style="{DynamicResource MenuButtonStyle}" />
                 </Border>
 
             </Grid>

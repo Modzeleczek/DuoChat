@@ -1,23 +1,20 @@
 ﻿<Application
   x:Class="Client.App"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:local="clr-namespace:Client">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <!--  ServerCard musi być po Buttons, bo go używa  -->
-                <ResourceDictionary Source="/MVVM/View/Themes/Buttons.xaml" />
-                <ResourceDictionary Source="/MVVM/View/Themes/HoverPanel.xaml" />
-                <ResourceDictionary Source="/MVVM/View/Themes/ServerCard.xaml" />
-                <ResourceDictionary Source="/MVVM/View/Themes/ConversationCard.xaml" />
-                <ResourceDictionary Source="/MVVM/View/Themes/AccountCard.xaml" />
-                <ResourceDictionary Source="/MVVM/View/Themes/ChatItem.xaml" />
-                <ResourceDictionary Source="/MVVM/View/Themes/MessageBox.xaml" />
-                <ResourceDictionary Source="/MVVM/View/Themes/ScrollBar.xaml" />
-                <ResourceDictionary Source="/MVVM/View/Themes/ResizableWindow.xaml" />
-                <ResourceDictionary Source="/MVVM/View/Themes/TextFields.xaml" />
-                <ResourceDictionary Source="/MVVM/View/Themes/Border.xaml" />
+
+                <ResourceDictionary>
+                    <ResourceDictionary.MergedDictionaries>
+                        <ResourceDictionary Source="/MVVM/View/Themes/DarkTheme.xaml" />
+                    </ResourceDictionary.MergedDictionaries>
+
+                </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
+
         </ResourceDictionary>
     </Application.Resources>
 </Application>

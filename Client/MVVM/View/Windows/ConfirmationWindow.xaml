@@ -19,8 +19,8 @@
   WindowStyle="None"
   mc:Ignorable="d">
     <Border
-      Background="#4A4E69"
-      BorderBrush="#9A8C98"
+      Background="{DynamicResource SecondBackgroundColor}"
+      BorderBrush="{DynamicResource FirstBorderColor}"
       BorderThickness="2"
       CornerRadius="10">
 
@@ -38,7 +38,7 @@
               Grid.Row="0"
               Grid.ColumnSpan="2"
               h:EnableDragHelper.EnableDrag="True"
-              Background="#22223B"
+              Background="{DynamicResource FirstBackgroundColor}"
               CornerRadius="9,9,0,0">
                 <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
                     <Label
@@ -46,7 +46,7 @@
                       Content="{Binding ElementName=ConfirmationWindowName, Path=Title}"
                       FontSize="14"
                       FontWeight="SemiBold"
-                      Foreground="#9A8C98" />
+                      Foreground="{DynamicResource FirstForegroundColor}" />
                     <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" />
                 </Grid>
             </Border>
@@ -58,7 +58,7 @@
               Margin="10,5,10,5"
               HorizontalAlignment="Center"
               VerticalAlignment="Center"
-              Style="{StaticResource StylishedTextBlock}"
+              Style="{DynamicResource StylishedTextBlock}"
               Text="{Binding Path=Description}"
               TextWrapping="Wrap" />
 
@@ -70,7 +70,7 @@
               Content="{Binding Path=CancelButtonText}"
               FontFamily="/MVVM/View/Fonts/RedHatDisplay"
               FontSize="18"
-              Style="{StaticResource CornerRadiusButtonStyle}" />
+              Style="{DynamicResource CornerRadiusButtonStyle}" />
 
             <Button
               Grid.Row="2"
@@ -80,7 +80,7 @@
               Content="{Binding Path=ConfirmButtonText}"
               FontFamily="/MVVM/View/Fonts/RedHatDisplay"
               FontSize="18"
-              Style="{StaticResource CornerRadiusButtonStyle}" />
+              Style="{DynamicResource CornerRadiusButtonStyle}" />
         </Grid>
     </Border>
 </w:DialogWindow>
