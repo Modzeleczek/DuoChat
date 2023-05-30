@@ -1,5 +1,6 @@
 ﻿using Client.MVVM.ViewModel;
 using Shared.MVVM.View.Windows;
+using System;
 using System.Windows;
 using System.Windows.Input;
 
@@ -15,6 +16,23 @@ namespace Client.MVVM.View.Windows
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             DragMove();
+        }
+        private void Themes_Click(object sender, RoutedEventArgs e)
+        {
+            if (Themes.IsChecked == true)
+            {
+                var app = (App)Application.Current;
+                app.ChangeTheme(new Uri("MVVM/View/Themes/DarkTheme.xaml", UriKind.Relative));
+                Properties.Settings.Default.CurrentTheme = "Dark";
+                Properties.Settings.Default.Save();
+            }
+            else
+            {
+                var app = (App)Application.Current;
+                app.ChangeTheme(new Uri("MVVM/View/Themes/LightTheme.xaml", UriKind.Relative));
+                Properties.Settings.Default.CurrentTheme = "Light";
+                Properties.Settings.Default.Save();
+            }
         }
     }
 }
