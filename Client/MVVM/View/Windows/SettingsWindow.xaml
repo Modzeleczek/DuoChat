@@ -135,7 +135,7 @@
                   BorderThickness="0,1,0,1">
                     <ToggleButton
                       x:Name="Themes"
-                      Margin="5,5,5,5"
+                      Margin="10,5,5,5"
                       Click="Themes_Click"
                       Content="Change Theme"
                       Foreground="{DynamicResource SecondForegroundColor}"
