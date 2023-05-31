@@ -701,5 +701,6 @@
 
     <Style x:Key="OptionImage" TargetType="Image">
         <Setter Property="Source" Value="/MVVM/View/Icons/settings_light.png" />
+
     </Style>
 </ResourceDictionary>
