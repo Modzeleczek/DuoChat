@@ -262,12 +262,15 @@
     <Resource Include="MVVM\View\Icons\send.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="MVVM\View\Icons\settings.png">
+    <Resource Include="MVVM\View\Icons\settings_dark.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MVVM\Model\client.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="MVVM\View\Icons\settings_light.png" />
   </ItemGroup>
   <Import Project="..\Shared\Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
