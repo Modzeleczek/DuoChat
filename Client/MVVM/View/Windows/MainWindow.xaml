@@ -322,7 +322,7 @@
                               Foreground="{DynamicResource FirstForegroundColor}"
                               Style="{DynamicResource MenuButtonStyle}">
                                 <Border CornerRadius="20">
-                                    <Image Margin="4" Source="/MVVM/View/Icons/settings.png" />
+                                    <Image Margin="4" Style="{DynamicResource OptionImage}" />
                                     <Border.Resources />
                                 </Border>
 

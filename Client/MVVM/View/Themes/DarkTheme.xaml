@@ -697,5 +697,10 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+
+    </Style>
+    <Style x:Key="OptionImage" TargetType="Image">
+        <Setter Property="Source" Value="/MVVM/View/Icons/settings_dark.png" />
+
     </Style>
 </ResourceDictionary>

@@ -137,7 +137,7 @@
                       x:Name="Themes"
                       Margin="10,5,5,5"
                       Click="Themes_Click"
-                      Content="Change Theme"
+                      Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Change_theme}"
                       Foreground="{DynamicResource SecondForegroundColor}"
                       IsChecked="False"
                       Style="{DynamicResource StylishedToggleButton}" />
