@@ -24,9 +24,9 @@
         </i:EventTrigger>
     </i:Interaction.Triggers>
     <Border
-      Background="#4A4E69"
-      BorderBrush="#9A8C98"
-      BorderThickness="2"
+      Background="{DynamicResource ThirdBackgroundColor}"
+      BorderBrush="{DynamicResource FirstForegroundColor}"
+      BorderThickness="3"
       CornerRadius="10">
 
         <Grid>
@@ -43,7 +43,7 @@
               Grid.Row="0"
               Grid.ColumnSpan="2"
               h:EnableDragHelper.EnableDrag="True"
-              Background="#22223B"
+              Background="{DynamicResource FirstBackgroundColor}"
               CornerRadius="9,9,0,0">
                 <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
                     <Label
@@ -78,7 +78,7 @@
               Content="{Binding Path=CancelButtonText}"
               FontFamily="/MVVM/View/Fonts/RedHatDisplay"
               FontSize="18"
-              Style="{StaticResource CornerRadiusButtonStyle}" />
+              Style="{DynamicResource CornerRadiusButtonStyle}" />
 
             <Button
               x:Name="ConfirmButton"
@@ -89,7 +89,7 @@
               Content="{Binding Path=ConfirmButtonText}"
               FontFamily="/MVVM/View/Fonts/RedHatDisplay"
               FontSize="18"
-              Style="{StaticResource CornerRadiusButtonStyle}" />
+              Style="{DynamicResource CornerRadiusButtonStyle}" />
         </Grid>
     </Border>
 </w:DialogWindow>

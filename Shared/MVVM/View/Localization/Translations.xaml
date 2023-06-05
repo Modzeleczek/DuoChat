@@ -27,9 +27,9 @@
   <l:Entry x:Key="Toggle_language" EN="Toggle language" PL="Przełącz język"/>
   <l:Entry x:Key="Server_name" EN="Server name" PL="Nazwa serwera"/>
   <l:Entry x:Key="Add_account" EN="Add account" PL="Dodaj konto"/>
-  <l:Entry x:Key="Edit" EN="Edit" PL="Edytuj"/>
+  <l:Entry x:Key="Change_theme" EN="Change theme" PL="Zmień motyw"/>
 
-  <!-- klucze używane w plikach .cs - nie muszą być prawidłowymi nazwami zmiennych -->
+    <!-- klucze używane w plikach .cs - nie muszą być prawidłowymi nazwami zmiennych -->
   <l:Entry x:Key="Users" EN="Users" PL="Użytkownicy"/>
   <l:Entry x:Key="Create user" EN="Create user" PL="Stwórz użytkownika"/>
   <l:Entry x:Key="Username" EN="Username" PL="Nazwa użytkownika"/>
