@@ -7,12 +7,28 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
 
+                <!-- Słownik z dynamicznymi zasobami. Resources.MergedDictionaries[0] -->
                 <ResourceDictionary>
+                    <!-- Podmienialny zasób z definicjami kolorów. -->
                     <ResourceDictionary.MergedDictionaries>
                         <ResourceDictionary Source="/MVVM/View/Themes/DarkTheme.xaml" />
                     </ResourceDictionary.MergedDictionaries>
-
                 </ResourceDictionary>
+
+                <!-- Statyczne zasoby stylów. ServerCard musi być po Buttons, bo go używa. -->
+                <ResourceDictionary Source="/MVVM/View/Themes/Buttons.xaml" />
+                <ResourceDictionary Source="/MVVM/View/Themes/ToggleButtons.xaml" />
+                <ResourceDictionary Source="/MVVM/View/Themes/HoverPanel.xaml" />
+                <ResourceDictionary Source="/MVVM/View/Themes/ServerCard.xaml" />
+                <ResourceDictionary Source="/MVVM/View/Themes/ConversationCard.xaml" />
+                <ResourceDictionary Source="/MVVM/View/Themes/AccountCard.xaml" />
+                <ResourceDictionary Source="/MVVM/View/Themes/ChatItem.xaml" />
+                <ResourceDictionary Source="/MVVM/View/Themes/MessageBox.xaml" />
+                <ResourceDictionary Source="/MVVM/View/Themes/ScrollBar.xaml" />
+                <ResourceDictionary Source="/MVVM/View/Themes/ResizableWindow.xaml" />
+                <ResourceDictionary Source="/MVVM/View/Themes/TextFields.xaml" />
+                <ResourceDictionary Source="/MVVM/View/Themes/Border.xaml" />
+
             </ResourceDictionary.MergedDictionaries>
 
         </ResourceDictionary>

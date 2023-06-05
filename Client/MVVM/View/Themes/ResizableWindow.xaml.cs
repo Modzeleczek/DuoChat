@@ -1,19 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Shapes;
-using System.Windows;
 
 namespace Client.MVVM.View.Themes
 {
-    public partial class ResizableWindowLight : ResourceDictionary
+    public static class StringExtensions
     {
-
+        public static bool Contains(this string source, string toCheck, StringComparison comp)
+        {
+            return source?.IndexOf(toCheck, comp) >= 0;
+        }
+    }
+    public partial class ResizableWindow : ResourceDictionary
+    {
+        #region ResizeWindows
         bool ResizeInProcess = false;
-        public void Resize_Init(object sender, MouseButtonEventArgs e)
+        private void Resize_Init(object sender, MouseButtonEventArgs e)
         {
             Rectangle senderRect = sender as Rectangle;
             if (senderRect != null)
@@ -23,7 +26,7 @@ namespace Client.MVVM.View.Themes
             }
         }
 
-        public void Resize_End(object sender, MouseButtonEventArgs e)
+        private void Resize_End(object sender, MouseButtonEventArgs e)
         {
             Rectangle senderRect = sender as Rectangle;
             if (senderRect != null)
@@ -33,7 +36,7 @@ namespace Client.MVVM.View.Themes
             }
         }
 
-        public void Resizing_Form(object sender, MouseEventArgs e)
+        private void Resizing_Form(object sender, MouseEventArgs e)
         {
             if (ResizeInProcess)
             {
@@ -80,5 +83,6 @@ namespace Client.MVVM.View.Themes
                 }
             }
         }
+        #endregion
     }
 }
