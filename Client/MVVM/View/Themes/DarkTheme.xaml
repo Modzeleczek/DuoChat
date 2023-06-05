@@ -16,8 +16,7 @@
   <SolidColorBrush x:Key="FirstBorderColor" Color="#9A8C98" />
   <SolidColorBrush x:Key="SecondBorderColor" Color="#C9ADA7" />
 
-  <Style x:Key="OptionImage" TargetType="Image">
-    <Setter Property="Source" Value="/MVVM/View/Icons/settings_dark.png" />
-  </Style>
+  <!-- Ustawiamy jako Source w Image wewnątrz przycisku ustawień. -->
+  <BitmapImage x:Key="SettingsButtonImage" UriSource="/MVVM/View/Icons/settings_dark.png"/>
 
 </ResourceDictionary>

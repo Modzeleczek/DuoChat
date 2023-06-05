@@ -16,8 +16,6 @@
   <SolidColorBrush x:Key="FirstBorderColor" Color="#22223B" />
   <SolidColorBrush x:Key="SecondBorderColor" Color="#3B3E54" />
 
-  <Style x:Key="OptionImage" TargetType="Image">
-    <Setter Property="Source" Value="/MVVM/View/Icons/settings_light.png" />
-  </Style>
+  <BitmapImage x:Key="SettingsButtonImage" UriSource="/MVVM/View/Icons/settings_light.png"/>
 
 </ResourceDictionary>
