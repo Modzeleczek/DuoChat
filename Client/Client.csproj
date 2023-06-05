@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\packages\EntityFramework.6.4.4\build\EntityFramework.props" Condition="Exists('..\packages\EntityFramework.6.4.4\build\EntityFramework.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
@@ -254,27 +254,15 @@
     <Folder Include="MVVM\View\Controls\" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="MVVM\View\Icons\add.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="MVVM\View\Icons\logo.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="MVVM\View\Icons\phone.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="MVVM\View\Icons\send.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="MVVM\View\Icons\settings_dark.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
+    <Resource Include="MVVM\View\Icons\add.png" />
+    <Resource Include="MVVM\View\Icons\logo.png" />
+    <Resource Include="MVVM\View\Icons\phone.png" />
+    <Resource Include="MVVM\View\Icons\send.png" />
+    <Resource Include="MVVM\View\Icons\settings_dark.png" />
+    <Resource Include="MVVM\View\Icons\settings_light.png" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MVVM\Model\client.sql" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="MVVM\View\Icons\settings_light.png" />
   </ItemGroup>
   <Import Project="..\Shared\Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
