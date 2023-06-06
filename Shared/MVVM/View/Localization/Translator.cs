@@ -62,7 +62,16 @@ namespace Shared.MVVM.View.Localization
                 if (!(resDict[k] is Entry entry))
                     throw new InvalidCastException($"Key {k} is not of type Entry.");
                 // nie można używać indeksera na referencji typu ExpandoObject - trzeba jawnie zrzutować na IDictionary
-                activeDict[k] = ActiveLanguageId == 0 ? entry.EN : entry.PL;
+                if (ActiveLanguageId == 0) // angielski
+                {
+                    /* jeżeli Entry nie ma w Translations.xaml ustawionego atrybutu EN,
+                    to używamy klucza jako angielskiego tłumaczenia */
+                    activeDict[k] = entry.EN ?? k;
+                }
+                else // 1 - polski
+                {
+                    activeDict[k] = entry.PL;
+                }
             }
         }
     }
