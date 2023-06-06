@@ -11,7 +11,7 @@
       </Trigger>
     </Style.Triggers>
 
-    <Setter Property="Background" Value="#4f5370" />
+    <Setter Property="Background" Value="{DynamicResource SecondBackgroundColor}" />
 
     <Setter Property="Template">
       <Setter.Value>

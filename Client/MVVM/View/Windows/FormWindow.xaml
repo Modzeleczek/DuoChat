@@ -51,7 +51,7 @@
                       Content="{Binding ElementName=FormWindowName, Path=Title}"
                       FontSize="14"
                       FontWeight="SemiBold"
-                      Foreground="#9A8C98" />
+                      Foreground="{DynamicResource FirstForegroundColor}" />
                     <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" />
                 </Grid>
             </Border>
