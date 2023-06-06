@@ -4,305 +4,279 @@
   xmlns:l="clr-namespace:Shared.MVVM.View.Localization">
 
   <!-- nie używać tu automatycznego formatowania XAMLa -->
-  
+
   <!-- tylko do klienta -->
   <!-- klucze używane w plikach .xaml - muszą być prawidłowymi nazwami zmiennych -->
   <l:Entry x:Key="At_message" EN="@message" PL="@wiadomość"/>
-  <l:Entry x:Key="Delete" EN="Delete" PL="Usuń"/>
+  <l:Entry x:Key="Delete" PL="Usuń"/>
   <l:Entry x:Key="Local_users" EN="Local users" PL="Lokalni użytkownicy"/>
   <l:Entry x:Key="Change_name" EN="Change name" PL="Zmień nazwę"/>
   <l:Entry x:Key="Change_password" EN="Change password" PL="Zmień hasło"/>
-  <l:Entry x:Key="DuoChat" EN="DuoChat" PL="DuoChat"/>
-  <l:Entry x:Key="Servers" EN="Servers" PL="Serwery"/>
+  <l:Entry x:Key="DuoChat" PL="DuoChat"/>
+  <l:Entry x:Key="Servers" PL="Serwery"/>
   <l:Entry x:Key="Add_server" EN="Add server" PL="Dodaj serwer"/>
-  <l:Entry x:Key="Accounts" EN="Accounts" PL="Konta"/>
-  <l:Entry x:Key="Conversations" EN="Conversations" PL="Konwersacje"/>
-  <l:Entry x:Key="Nickname" EN="Nickname" PL="Pseudonim"/>
+  <l:Entry x:Key="Accounts" PL="Konta"/>
+  <l:Entry x:Key="Conversations" PL="Konwersacje"/>
+  <l:Entry x:Key="Nickname" PL="Pseudonim"/>
   <l:Entry x:Key="Welcome_to_DuoChat" EN="Welcome to DuoChat!" PL="Witaj w DuoChat!"/>
   <l:Entry x:Key="Conversation_name" EN="Conversation name" PL="Nazwa konwersacji"/>
-  <l:Entry x:Key="Progress" EN="Progress" PL="Postęp"/>
-  <l:Entry x:Key="Cancel" EN="Cancel" PL="Anuluj"/>
+  <l:Entry x:Key="Progress" PL="Postęp"/>
+  <l:Entry x:Key="Cancel" PL="Anuluj"/>
   <l:Entry x:Key="Dark_theme" EN="Dark theme" PL="Ciemny motyw"/>
   <l:Entry x:Key="Log_local_user_out" EN="Log local user out" PL="Wyloguj lokalnego użytkownika"/>
   <l:Entry x:Key="Toggle_language" EN="Toggle language" PL="Przełącz język"/>
   <l:Entry x:Key="Server_name" EN="Server name" PL="Nazwa serwera"/>
   <l:Entry x:Key="Add_account" EN="Add account" PL="Dodaj konto"/>
-  <l:Entry x:Key="Edit" EN="Edit" PL="Edytuj"/>
+  <l:Entry x:Key="Edit" PL="Edytuj"/>
   <l:Entry x:Key="Change_theme" EN="Change theme" PL="Zmień motyw"/>
 
     <!-- klucze używane w plikach .cs - nie muszą być prawidłowymi nazwami zmiennych -->
-  <l:Entry x:Key="Users" EN="Users" PL="Użytkownicy"/>
-  <l:Entry x:Key="Create user" EN="Create user" PL="Stwórz użytkownika"/>
-  <l:Entry x:Key="Username" EN="Username" PL="Nazwa użytkownika"/>
-  <l:Entry x:Key="Profile" EN="Profile" PL="Profil"/>
-  <l:Entry x:Key="Create" EN="Create" PL="Stwórz"/>
-  <l:Entry x:Key="Password" EN="Password" PL="Hasło"/>
-  <l:Entry x:Key="Log in" EN="Log in" PL="Zaloguj"/>
-  <l:Entry x:Key="Create local user" EN="Create local user"
-    PL="Stwórz lokalnego użytkownika"/>
-  <l:Entry x:Key="Confirm password" EN="Confirm password" PL="Potwierdź hasło"/>
-  <l:Entry x:Key="Passwords do not match." EN="Passwords do not match."
-    PL="Hasła nie są zgodne."/>
-  <l:Entry x:Key="User with name" EN="User with name" PL="Użytkownik o nazwie"/>
-  <l:Entry x:Key="already exists." EN="already exists." PL="już istnieje."/>
-  <l:Entry x:Key="does not exist." EN="does not exist." PL="nie istnieje."/>
-  <l:Entry x:Key="Specify a password." EN="Specify a password." PL="Określ hasło."/>
+  <l:Entry x:Key="Users" PL="Użytkownicy"/>
+  <l:Entry x:Key="Create user" PL="Stwórz użytkownika"/>
+  <l:Entry x:Key="Username" PL="Nazwa użytkownika"/>
+  <l:Entry x:Key="Profile" PL="Profil"/>
+  <l:Entry x:Key="Create" PL="Stwórz"/>
+  <l:Entry x:Key="Password" PL="Hasło"/>
+  <l:Entry x:Key="Log in" PL="Zaloguj"/>
+  <l:Entry x:Key="Create local user" PL="Stwórz lokalnego użytkownika"/>
+  <l:Entry x:Key="Confirm password" PL="Potwierdź hasło"/>
+  <l:Entry x:Key="Passwords do not match." PL="Hasła nie są zgodne."/>
+  <l:Entry x:Key="User with name" PL="Użytkownik o nazwie"/>
+  <l:Entry x:Key="already exists." PL="już istnieje."/>
+  <l:Entry x:Key="does not exist." PL="nie istnieje."/>
+  <l:Entry x:Key="Specify a password." PL="Określ hasło."/>
   <l:Entry x:Key="Password should be at least 8 characters long."
-    EN="Password should be at least 8 characters long."
     PL="Hasło powinno mieć przynajmniej 8 znaków."/>
   <l:Entry x:Key="Password should contain at least one digit."
-    EN="Password should contain at least one digit."
     PL="Hasło powinno zawierać przynajmniej jedną cyfrę."/>
   <l:Entry x:Key="Password should contain at least one special character (not a letter or digit)."
-    EN="Password should contain at least one special character (not a letter or digit)."
     PL="Hasło powinno zawierać przynajmniej jeden znak specjalny (nie literę ani cyfrę)."/>
-  <l:Entry x:Key="Save" EN="Save" PL="Zapisz"/>
-  <l:Entry x:Key="New password" EN="New password" PL="Nowe hasło"/>
-  <l:Entry x:Key="Wrong password." EN="Wrong password." PL="Nieprawidłowe hasło."/>
-  <l:Entry x:Key="Confirm" EN="Confirm" PL="Zatwierdź"/>
-  <l:Entry x:Key="Decryption" EN="Decryption" PL="Odszyfrowywanie"/>
-  <l:Entry x:Key="Decrypting user's database." EN="Decrypting user's database."
+  <l:Entry x:Key="Save" PL="Zapisz"/>
+  <l:Entry x:Key="New password" PL="Nowe hasło"/>
+  <l:Entry x:Key="Wrong password." PL="Nieprawidłowe hasło."/>
+  <l:Entry x:Key="Confirm" PL="Zatwierdź"/>
+  <l:Entry x:Key="Decryption" PL="Odszyfrowywanie"/>
+  <l:Entry x:Key="Decrypting user's database."
     PL="Odszyfrowywanie bazy danych użytkownika."/>
-  <l:Entry x:Key="User's database decrypted." EN="User's database decrypted."
+  <l:Entry x:Key="User's database decrypted."
     PL="Baza danych użytkownika odszyfrowana."/>
-  <l:Entry x:Key="No user is logged." EN="No user is logged."
+  <l:Entry x:Key="No user is logged."
     PL="Żaden użytkownik nie jest zalogowany."/>
 
-  <l:Entry x:Key="Error occured while opening file" EN="Error occured while opening file"
+  <l:Entry x:Key="Error occured while opening file"
     PL="Wystąpił błąd podczas otwierania pliku"/>
-  <l:Entry x:Key="for reading." EN="for reading." PL="do odczytu."/>
-  <l:Entry x:Key="for writing." EN="for writing." PL="do zapisu."/>
-  
-  <l:Entry x:Key="File" EN="File" PL="Plik"/>
-  <l:Entry x:Key="User's directory with name" EN="User's directory with name"
+  <l:Entry x:Key="for reading." PL="do odczytu."/>
+  <l:Entry x:Key="for writing." PL="do zapisu."/>
+
+  <l:Entry x:Key="File" PL="Plik"/>
+  <l:Entry x:Key="User's directory with name"
     PL="Katalog użytkownika o nazwie"/>
-  <l:Entry x:Key="Error occured while" EN="Error occured while" PL="Wystąpił błąd podczas"/>
-  <l:Entry x:Key="creating" EN="creating" PL="tworzenia"/>
-  <l:Entry x:Key="renaming" EN="renaming" PL="zmiany nazwy"/>
-  <l:Entry x:Key="deleting" EN="deleting" PL="usuwania"/>
-  <l:Entry x:Key="user's directory." EN="user's directory." PL="katalogu użytkownika."/>
-  <l:Entry x:Key="user." EN="user." PL="użytkownika."/>
-  <l:Entry x:Key="the newly-added" EN="the newly-added" PL="nowo dodanego"/>
-  <l:Entry x:Key="restoring the updated" EN="restoring the updated"
-    PL="przywracania zaktualizowanego"/>
-  <l:Entry x:Key="restoring the deleted" EN="restoring the deleted"
-    PL="przywracania usuniętego"/>
-  <l:Entry x:Key="directory" EN="directory" PL="katalogu"/>
-  <l:Entry x:Key="file" EN="file" PL="pliku"/>
+  <l:Entry x:Key="Error occured while" PL="Wystąpił błąd podczas"/>
+  <l:Entry x:Key="creating" PL="tworzenia"/>
+  <l:Entry x:Key="renaming" PL="zmiany nazwy"/>
+  <l:Entry x:Key="deleting" PL="usuwania"/>
+  <l:Entry x:Key="user's directory." PL="katalogu użytkownika."/>
+  <l:Entry x:Key="user." PL="użytkownika."/>
+  <l:Entry x:Key="the newly-added" PL="nowo dodanego"/>
+  <l:Entry x:Key="restoring the updated" PL="przywracania zaktualizowanego"/>
+  <l:Entry x:Key="restoring the deleted" PL="przywracania usuniętego"/>
+  <l:Entry x:Key="directory" PL="katalogu"/>
+  <l:Entry x:Key="file" PL="pliku"/>
 
-  <l:Entry x:Key="Server's file with name" EN="Server's file with name" PL="Plik serwera o nazwie"/>
-  <l:Entry x:Key="server's file." EN="server's file." PL="pliku serwera."/>
-  <l:Entry x:Key="server." EN="server." PL="serwera."/>
+  <l:Entry x:Key="Server's file with name" PL="Plik serwera o nazwie"/>
+  <l:Entry x:Key="server's file." PL="pliku serwera."/>
+  <l:Entry x:Key="server." PL="serwera."/>
 
-  <l:Entry x:Key="File read timed out." EN="File read timed out."
+  <l:Entry x:Key="File read timed out."
     PL="Przekroczono czas oczekiwania na odczyt pliku."/>
   <l:Entry x:Key="Error occured while reading file."
-    EN="Error occured while reading file."
     PL="Wystąpił błąd podczas odczytywania pliku."/>
   <l:Entry x:Key="Error occured while writing file."
-    EN="Error occured while writing file."
     PL="Wystąpił błąd podczas zapisywania pliku."/>
-  <l:Entry x:Key="Encryption" EN="Encryption" PL="Szyfrowanie"/>
-  <l:Entry x:Key="Encrypting user's database." EN="Encrypting user's database."
+  <l:Entry x:Key="Encryption" PL="Szyfrowanie"/>
+  <l:Entry x:Key="Encrypting user's database."
     PL="Szyfrowanie bazy danych użytkownika."/>
-  <l:Entry x:Key="User set as logged does not exist." EN="User set as logged does not exist."
+  <l:Entry x:Key="User set as logged does not exist."
     PL="Użytkownik oznaczony jako zalogowany nie istnieje."/>
   <l:Entry x:Key="User's database is corrupted. An empty database will be created."
-    EN="User's database is corrupted. An empty database will be created."
     PL="Baza danych użytkownika jest uszkodzona. Stworzona zostanie pusta baza danych."/>
   <l:Entry x:Key="decrypting user's database."
-    EN="decrypting user's database."
     PL="odszyfrowywania bazy danych użytkownika."/>
   <l:Entry x:Key="encrypting user's database."
-    EN="encrypting user's database."
     PL="szyfrowania bazy danych użytkownika."/>
-  <l:Entry x:Key="Server with IP address" EN="Server with IP address" PL="Serwer z adresem IP"/>
-  <l:Entry x:Key="and port" EN="and port" PL="i portem"/>
-  <l:Entry x:Key="Server list may have been corrupted." EN="Server list may have been corrupted."
+  <l:Entry x:Key="Server with IP address" PL="Serwer z adresem IP"/>
+  <l:Entry x:Key="and port" PL="i portem"/>
+  <l:Entry x:Key="Server list may have been corrupted."
     PL="Lista serwerów mogła zostać uszkodzona."/>
   <l:Entry x:Key="You should not have canceled database encryption. It may have been corrupted."
-    EN="You should not have canceled database encryption. It may have been corrupted."
     PL="Nie powinieneś anulować szyfrowania bazy danych. Mogła zostać uszkodzona."/>
   <l:Entry x:Key="Database may have been corrupted."
-    EN="Database may have been corrupted."
     PL="Baza danych mogła zostać uszkodzona."/>
-  <l:Entry x:Key="Encrypting server's database." EN="Encrypting server's database."
+  <l:Entry x:Key="Encrypting server's database."
     PL="Szyfrowanie bazy danych serwera."/>
-  <l:Entry x:Key="OK" EN="OK" PL="OK"/>
-  <l:Entry x:Key="Alert" EN="Alert" PL="Alert"/>
-  <l:Entry x:Key="IP address" EN="IP address" PL="Adres IP"/>
-  <l:Entry x:Key="Port" EN="Port" PL="Port"/>
-  <l:Entry x:Key="Add" EN="Add" PL="Dodaj"/>
-  <l:Entry x:Key="Enter your password" EN="Enter your password" PL="Podaj hasło"/>
-  <l:Entry x:Key="Delete server" EN="Delete server" PL="Usuń serwer"/>
-  <l:Entry x:Key="Do you want to delete" EN="Do you want to delete"
-    PL="Czy chcesz usunąć"/>
-  <l:Entry x:Key="Username cannot be empty." EN="Username cannot be empty."
+  <l:Entry x:Key="OK" PL="OK"/>
+  <l:Entry x:Key="Alert" PL="Alert"/>
+  <l:Entry x:Key="IP address" PL="Adres IP"/>
+  <l:Entry x:Key="Port" PL="Port"/>
+  <l:Entry x:Key="Add" PL="Dodaj"/>
+  <l:Entry x:Key="Enter your password" PL="Podaj hasło"/>
+  <l:Entry x:Key="Delete server" PL="Usuń serwer"/>
+  <l:Entry x:Key="Do you want to delete" PL="Czy chcesz usunąć"/>
+  <l:Entry x:Key="Username cannot be empty."
     PL="Nazwa użytkownika nie może być pusta."/>
   <l:Entry x:Key="Username may contain only lowercase letters and digits."
-    EN="Username may contain only lowercase letters and digits."
     PL="Nazwa użytkownika może zawierać tylko małe litery i cyfry."/>
 
   <l:Entry x:Key="String does not consist of two parts separated with semicolon."
-    EN="String does not consist of two parts separated with semicolon."
     PL="Ciąg nie składa się z dwóch części rozdzielonych średnikiem."/>
-  <l:Entry x:Key="First" EN="First" PL="Pierwsza"/>
-  <l:Entry x:Key="number" EN="number" PL="liczba"/>
-  <l:Entry x:Key="Second" EN="Second" PL="Druga"/>
-  <l:Entry x:Key="is empty." EN="is empty." PL="jest pusta."/>
-  <l:Entry x:Key="is not valid Base64 string." EN="is not valid Base64 string."
+  <l:Entry x:Key="First" PL="Pierwsza"/>
+  <l:Entry x:Key="number" PL="liczba"/>
+  <l:Entry x:Key="Second" PL="Druga"/>
+  <l:Entry x:Key="is empty." PL="jest pusta."/>
+  <l:Entry x:Key="is not valid Base64 string."
     PL="nie jest poprawnym ciągiem w formacie Base64."/>
-  <l:Entry x:Key="is not prime." EN="is not prime." PL="nie jest liczbą pierwszą."/>
-  
-  <l:Entry x:Key="reading user's server list." EN="reading user's server list."
+  <l:Entry x:Key="is not prime." PL="nie jest liczbą pierwszą."/>
+
+  <l:Entry x:Key="reading user's server list."
     PL="odczytywania listy serwerów użytkownika."/>
-  <l:Entry x:Key="reading user's account list." EN="reading user's account list."
+  <l:Entry x:Key="reading user's account list."
     PL="odczytywania listy kont użytkownika."/>
-  <l:Entry x:Key="checking if" EN="checking if" PL="sprawdzania, czy"/>
-  <l:Entry x:Key="server" EN="server" PL="serwer"/>
-  <l:Entry x:Key="updating" EN="updating" PL="aktualizowania"/>
-  <l:Entry x:Key="user in database." EN="user in database." PL="użytkownika w bazie danych."/>
-  <l:Entry x:Key="adding" EN="adding" PL="dodawania"/>
-  <l:Entry x:Key="user to database." EN="user to database."
-    PL="użytkownika do bazy danych."/>
-  <l:Entry x:Key="user" EN="user" PL="użytkownik"/>
-  <l:Entry x:Key="reading user list." EN="reading user list." PL="odczytywania listy użytkowników."/>
-  <l:Entry x:Key="user from database." EN="user from database." PL="użytkownika z bazy danych."/>
-  <l:Entry x:Key="server to user's database." EN="server to user's database."
+  <l:Entry x:Key="checking if" PL="sprawdzania, czy"/>
+  <l:Entry x:Key="server" PL="serwer"/>
+  <l:Entry x:Key="updating" PL="aktualizowania"/>
+  <l:Entry x:Key="user in database." PL="użytkownika w bazie danych."/>
+  <l:Entry x:Key="adding" PL="dodawania"/>
+  <l:Entry x:Key="user to database." PL="użytkownika do bazy danych."/>
+  <l:Entry x:Key="user" PL="użytkownik"/>
+  <l:Entry x:Key="reading user list." PL="odczytywania listy użytkowników."/>
+  <l:Entry x:Key="user from database." PL="użytkownika z bazy danych."/>
+  <l:Entry x:Key="server to user's database."
     PL="serwera do bazy danych użytkownika."/>
   <l:Entry x:Key="executing DDL query creating server database."
-    EN="executing DDL query creating server database."
     PL="wykonywania zapytania DDL tworzącego bazę danych serwera."/>
-  <l:Entry x:Key="Server database file" EN="Server database file" PL="Plik bazy danych serwera"/>
-  <l:Entry x:Key="users" EN="users" PL="użytkowników"/>
-  <l:Entry x:Key="not having" EN="not having" PL="nieposiadających"/>
+  <l:Entry x:Key="Server database file" PL="Plik bazy danych serwera"/>
+  <l:Entry x:Key="users" PL="użytkowników"/>
+  <l:Entry x:Key="not having" PL="nieposiadających"/>
   <l:Entry x:Key="listing files and subdirectories in directory"
-    EN="listing files and subdirectories in directory"
     PL="tworzenia listy plików i podkatalogów w katalogu"/>
-  <l:Entry x:Key="ensuring valid user database state." EN="ensuring valid user database state."
+  <l:Entry x:Key="ensuring valid user database state."
     PL="zapewniania poprawnego stanu bazy danych użytkowników."/>
-  <l:Entry x:Key="executing SQLite integrity check." EN="executing SQLite integrity check."
+  <l:Entry x:Key="executing SQLite integrity check."
     PL="wykonywania sprawdzenia integralności SQLite."/>
-  <l:Entry x:Key="servers" EN="servers" PL="serwerów"/>
-  <l:Entry x:Key="files" EN="plików" PL="plików"/>
-  <l:Entry x:Key="ensuring valid server database state." EN="ensuring valid server database state."
+  <l:Entry x:Key="servers" PL="serwerów"/>
+  <l:Entry x:Key="files" PL="plików"/>
+  <l:Entry x:Key="ensuring valid server database state."
     PL="zapewniania poprawnego stanu bazy danych serwerów."/>
-  <l:Entry x:Key="the newly-added user's directory." EN="the newly-added user's directory."
+  <l:Entry x:Key="the newly-added user's directory."
     PL="katalogu nowo dodanego użytkownika."/>
-  <l:Entry x:Key="user's server database." EN="user's server database."
+  <l:Entry x:Key="user's server database."
     PL="bazy danych serwerów użytkownika."/>
-  <l:Entry x:Key="resetting server database." EN="resetting server database."
+  <l:Entry x:Key="resetting server database."
     PL="resetowania bazy danych serwera."/>
-  <l:Entry x:Key="the newly-added server's database." EN="the newly-added server's database."
+  <l:Entry x:Key="the newly-added server's database."
     PL="bazy danych nowo dodanego serwera."/>
-  <l:Entry x:Key="account" EN="account" PL="konto"/>
-  <l:Entry x:Key="Delete account" EN="Delete account" PL="Usuń konto"/>
-  <l:Entry x:Key="Login" EN="Login" PL="Login"/>
-  <l:Entry x:Key="Private key" EN="Private key" PL="Klucz prywatny"/>
-  <l:Entry x:Key="Login cannot be empty." EN="Login cannot be empty." PL="Login nie może być pusty."/>
-  <l:Entry x:Key="Invalid private key format." EN="Invalid private key format."
+  <l:Entry x:Key="account" PL="konto"/>
+  <l:Entry x:Key="Delete account" PL="Usuń konto"/>
+  <l:Entry x:Key="Login" PL="Login"/>
+  <l:Entry x:Key="Private key" PL="Klucz prywatny"/>
+  <l:Entry x:Key="Login cannot be empty." PL="Login nie może być pusty."/>
+  <l:Entry x:Key="Invalid private key format."
     PL="Nieprawidłowy format klucza prywatnego."/>
-  <l:Entry x:Key="executing query." EN="executing query." PL="wykonywania zapytania."/>
-  <l:Entry x:Key="More than one account with login" EN="More than one account with login"
+  <l:Entry x:Key="executing query." PL="wykonywania zapytania."/>
+  <l:Entry x:Key="More than one account with login"
     PL="Więcej niż jedno konto z loginem"/>
-  <l:Entry x:Key="exist." EN="exist." PL="istnieje."/>
-  <l:Entry x:Key="to server's database." EN="to server's database." PL="do bazy danych serwera."/>
-  <l:Entry x:Key="connecting to server's database file." EN="connecting to server's database file."
+  <l:Entry x:Key="exist." PL="istnieje."/>
+  <l:Entry x:Key="to server's database." PL="do bazy danych serwera."/>
+  <l:Entry x:Key="connecting to server's database file."
     PL="łączenia z plikiem bazy danych serwera."/>
   <l:Entry x:Key="Number of rows affected by the query is other than 1."
-    EN="Number of rows affected by the query is other than 1."
     PL="Liczba wierszy, na które wpływ miało zapytanie, jest inna niż 1."/>
-  <l:Entry x:Key="Account with login" EN="Account with login" PL="Konto o loginie"/>
-  <l:Entry x:Key="saving" EN="saving" PL="zapisywania"/>
-  <l:Entry x:Key="user's server database file." EN="user's server database file."
+  <l:Entry x:Key="Account with login" PL="Konto o loginie"/>
+  <l:Entry x:Key="saving" PL="zapisywania"/>
+  <l:Entry x:Key="user's server database file."
     PL="pliku bazy danych serwerów użytkownika."/>
-  <l:Entry x:Key="user database file." EN="user database file." PL="pliku bazy danych użytkowników."/>
-  <l:Entry x:Key="getting" EN="getting" PL="uzyskiwania"/>
-  <l:Entry x:Key="access to server's database." EN="access to server's database."
+  <l:Entry x:Key="user database file." PL="pliku bazy danych użytkowników."/>
+  <l:Entry x:Key="getting" PL="uzyskiwania"/>
+  <l:Entry x:Key="access to server's database."
     PL="dostępu do bazy danych serwera."/>
-  <l:Entry x:Key="Server connection timed out." EN="Server connection timed out."
+  <l:Entry x:Key="Server connection timed out."
     PL="Przekroczono czas oczekiwania na połączenie z serwerem."/>
-  <l:Entry x:Key="No response from the server." EN="No response from the server."
+  <l:Entry x:Key="No response from the server."
     PL="Brak odpowiedzi od serwera."/>
-  <l:Entry x:Key="connecting to the server." EN="connecting to the server." PL="łączenia z serwerem."/>
-  <l:Entry x:Key="Edit account" EN="Edit account" PL="Edytuj konto"/>
+  <l:Entry x:Key="connecting to the server." PL="łączenia z serwerem."/>
+  <l:Entry x:Key="Edit account" PL="Edytuj konto"/>
   <l:Entry x:Key="account;D" EN="account" PL="konta"/>
-  <l:Entry x:Key="from user's database." EN="from user's database." PL="z bazy danych użytkownika."/>
+  <l:Entry x:Key="from user's database." PL="z bazy danych użytkownika."/>
   <l:Entry x:Key="server;D" EN="server" PL="serwera"/>
-  <l:Entry x:Key="in server's database." EN="in server's database." PL="w bazie danych serwera."/>
-  <l:Entry x:Key="Edit server" EN="Edit server" PL="Edytuj serwer"/>
-  <l:Entry x:Key="Public key" EN="Public key" PL="Klucz publiczny"/>
-  <l:Entry x:Key="Number" EN="Number" PL="Liczba"/>
-  <l:Entry x:Key="Invalid public key format." EN="Invalid public key format."
+  <l:Entry x:Key="in server's database." PL="w bazie danych serwera."/>
+  <l:Entry x:Key="Edit server" PL="Edytuj serwer"/>
+  <l:Entry x:Key="Public key" PL="Klucz publiczny"/>
+  <l:Entry x:Key="Number" PL="Liczba"/>
+  <l:Entry x:Key="Invalid public key format."
     PL="Nieprawidłowy format klucza publicznego."/>
 
   <!-- tylko do serwera -->
   <!-- klucze używane w plikach .xaml - muszą być prawidłowymi nazwami zmiennych -->
-  <l:Entry x:Key="Server" EN="Server" PL="Serwer"/>
-  <l:Entry x:Key="Connected_clients" EN="Connected clients" PL="Połączone klienty"/>
-  <l:Entry x:Key="Capacity" EN="Capacity" PL="Pojemność"/>
-  <l:Entry x:Key="Start" EN="Start" PL="Uruchom"/>
-  <l:Entry x:Key="Stop" EN="Stop" PL="Zatrzymaj"/>
-  <l:Entry x:Key="IP_address" EN="IP address" PL="Adres IP"/>
-  <l:Entry x:Key="Private_key" EN="Private key" PL="Klucz prywatny"/>
-  <l:Entry x:Key="Generate" EN="Generate" PL="Wygeneruj"/>
-  <l:Entry x:Key="Load" EN="Load" PL="Wczytaj"/>
+  <l:Entry x:Key="Server" PL="Serwer"/>
+  <l:Entry x:Key="Connected_clients" PL="Połączone klienty"/>
+  <l:Entry x:Key="Capacity" PL="Pojemność"/>
+  <l:Entry x:Key="Start" PL="Uruchom"/>
+  <l:Entry x:Key="Stop" PL="Zatrzymaj"/>
+  <l:Entry x:Key="IP_address" PL="Adres IP"/>
+  <l:Entry x:Key="Private_key" PL="Klucz prywatny"/>
+  <l:Entry x:Key="Generate" PL="Wygeneruj"/>
+  <l:Entry x:Key="Load" PL="Wczytaj"/>
 
   <!-- klucze używane w plikach .cs - nie muszą być prawidłowymi nazwami zmiennych -->
-  <l:Entry x:Key="Invalid capacity format." EN="Invalid capacity format."
+  <l:Entry x:Key="Invalid capacity format."
     PL="Nieprawidłowy format pojemności."/>
-  <l:Entry x:Key="Server was started." EN="Server was started." PL="Serwer został uruchomiony."/>
-  <l:Entry x:Key="Server was not started." EN="Server was not started."
+  <l:Entry x:Key="Server was started." PL="Serwer został uruchomiony."/>
+  <l:Entry x:Key="Server was not started."
     PL="Serwer nie został uruchomiony."/>
-  <l:Entry x:Key="Server was safely stopped." EN="Server was safely stopped."
+  <l:Entry x:Key="Server was safely stopped."
     PL="Serwer został bezpiecznie zatrzymany."/>
-  <l:Entry x:Key="Server was suddenly stopped." EN="Server was suddenly stopped."
+  <l:Entry x:Key="Server was suddenly stopped."
     PL="Serwer został nagle zatrzymany."/>
-  <l:Entry x:Key="Capacity must be positive." EN="Capacity must be positive."
+  <l:Entry x:Key="Capacity must be positive."
     PL="Pojemność musi być dodatnia."/>
-  <l:Entry x:Key="Generate or enter a GUID." EN="Generate or enter a GUID."
+  <l:Entry x:Key="Generate or enter a GUID."
     PL="Wygeneruj lub wprowadź GUID."/>
-  <l:Entry x:Key="Invalid GUID format." EN="Invalid GUID format." PL="Nieprawidłowy format GUID."/>
-  <l:Entry x:Key="Generate or enter a private key." EN="Generate or enter a private key."
+  <l:Entry x:Key="Invalid GUID format." PL="Nieprawidłowy format GUID."/>
+  <l:Entry x:Key="Generate or enter a private key."
     PL="Wygeneruj lub wprowadź klucz prywatny."/>
   <l:Entry x:Key="Do you want to generate a new GUID? Users may not trust a server changing its GUID without prior notice."
-    EN="Do you want to generate a new GUID? Users may not trust a server changing its GUID without prior notice."
     PL="Czy chcesz wygenerować nowy GUID. Użytkownicy mogą nie ufać serwerowi zmieniającemu GUID bez uprzedniej zapowiedzi."/>
-  <l:Entry x:Key="Generate GUID" EN="Generate GUID" PL="Wygeneruj GUID"/>
+  <l:Entry x:Key="Generate GUID" PL="Wygeneruj GUID"/>
   <l:Entry x:Key="Settings file does not exist. Default settings will be loaded."
-    EN="Settings file does not exist. Default settings will be loaded."
     PL="Plik ustawień nie istnieje. Zostaną załadowane domyślne ustawienia."/>
   <l:Entry x:Key="Do you want to generate a new private key? Server's public key is derived from private key and users may not trust a server changing it without prior notice."
-    EN="Do you want to generate a new private key? Server's public key is derived from private key and users may not trust a server changing it without prior notice."
     PL="Czy chcesz wygenerować nowy klucz prywatny. Klucz publiczny serwera pochodzi od klucza prywatnego i użytkownicy mogą nie ufać serwerowi zmieniającemu go bez uprzedniej zapowiedzi."/>
-  <l:Entry x:Key="Private key validation" EN="Private key validation" PL="Walidacja klucza prywatnego"/>
+  <l:Entry x:Key="Private key validation" PL="Walidacja klucza prywatnego"/>
 
   <!-- do klienta i serwera -->
   <!-- klucze używane w plikach .xaml - muszą być prawidłowymi nazwami zmiennych -->
-  <l:Entry x:Key="Settings" EN="Settings" PL="Ustawienia"/>
-  <l:Entry x:Key="Name" EN="Name" PL="Nazwa"/>
-  <l:Entry x:Key="GUID" EN="GUID" PL="GUID"/>
+  <l:Entry x:Key="Settings" PL="Ustawienia"/>
+  <l:Entry x:Key="Name" PL="Nazwa"/>
+  <l:Entry x:Key="GUID" PL="GUID"/>
 
   <!-- klucze używane w plikach .cs - nie muszą być prawidłowymi nazwami zmiennych -->
   <l:Entry x:Key="No translation:" EN="" PL="Brak tłumaczenia:"/>
-  <l:Entry x:Key="No" EN="No" PL="Nie"/>
-  <l:Entry x:Key="Yes" EN="Yes" PL="Tak"/>
+  <l:Entry x:Key="No" PL="Nie"/>
+  <l:Entry x:Key="Yes" PL="Tak"/>
 
-  <l:Entry x:Key="Invalid IP address format." EN="Invalid IP address format."
+  <l:Entry x:Key="Invalid IP address format."
     PL="Nieprawidłowy format adresu IP."/>
-  <l:Entry x:Key="String is null." EN="String is null." PL="Ciąg jest nullem."/>
+  <l:Entry x:Key="String is null." PL="Ciąg jest nullem."/>
   <l:Entry x:Key="String does not consist of four octets separated with periods."
-    EN="String does not consist of four octets separated with periods."
     PL="Ciąg nie składa się z czterech oktetów oddzielonych kropkami."/>
   <l:Entry x:Key="octet from the left is not valid number in range"
-    EN="octet from the left is not valid number in range"
     PL="oktet od lewej nie jest poprawną liczbą z przedziału"/>
 
-  <l:Entry x:Key="Invalid port format." EN="Invalid port format." PL="Nieprawidłowy format portu."/>
-  <l:Entry x:Key="String is not a number." EN="String is not a number." PL="Ciąg nie jest liczbą."/>
-  <l:Entry x:Key="Port must be in range" EN="Port must be in range" PL="Port musi należeć do przedziału"/>
-  <l:Entry x:Key="Cancelling..." EN="Cancelling..." PL="Anulowanie..."/>
-  <l:Entry x:Key="Generate private key" EN="Generate private key" PL="Wygeneruj klucz prywatny"/>
-  <l:Entry x:Key="Private key generation" EN="Private key generation" PL="Generowanie klucza prywatnego"/>
+  <l:Entry x:Key="Invalid port format." PL="Nieprawidłowy format portu."/>
+  <l:Entry x:Key="String is not a number." PL="Ciąg nie jest liczbą."/>
+  <l:Entry x:Key="Port must be in range" PL="Port musi należeć do przedziału"/>
+  <l:Entry x:Key="Cancelling..." PL="Anulowanie..."/>
+  <l:Entry x:Key="Generate private key" PL="Wygeneruj klucz prywatny"/>
+  <l:Entry x:Key="Private key generation" PL="Generowanie klucza prywatnego"/>
 
 </ResourceDictionary>
