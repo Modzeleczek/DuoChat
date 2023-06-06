@@ -2,6 +2,7 @@
 using Client.MVVM.Model.BsonStorages;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model;
+using System.Windows;
 
 namespace Client.MVVM.ViewModel
 {
@@ -10,6 +11,7 @@ namespace Client.MVVM.ViewModel
         #region Commands
         public RelayCommand LocalLogout { get; }
         public RelayCommand ToggleLanguage { get; }
+        public RelayCommand ToggleTheme { get; }
         #endregion
 
         public SettingsViewModel(LocalUser user)
@@ -20,10 +22,18 @@ namespace Client.MVVM.ViewModel
                 OnRequestClose(new Status(2));
             });
 
+            var lus = new LocalUsersStorage();
             ToggleLanguage = new RelayCommand(_ =>
             {
                 d.ToggleLanguage();
-                new LocalUsersStorage().SetActiveLanguage(d.ActiveLanguageId);
+                lus.SetActiveLanguage(d.ActiveLanguageId);
+            });
+
+            ToggleTheme = new RelayCommand(_ =>
+            {
+                var app = (App)Application.Current;
+                app.ToggleTheme();
+                lus.SetActiveTheme((int)app.ActiveTheme);
             });
         }
     }

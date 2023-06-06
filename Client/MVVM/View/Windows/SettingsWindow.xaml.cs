@@ -18,15 +18,5 @@ namespace Client.MVVM.View.Windows
         {
             DragMove();
         }
-        private void Themes_Click(object sender, RoutedEventArgs e)
-        {
-            var theme = (Themes.IsChecked ?? false) ? App.Theme.Dark : App.Theme.Light;
-
-            var app = (App)Application.Current;
-            app.ActiveTheme = theme;
-
-            var lus = new LocalUsersStorage();
-            lus.SetActiveTheme((int)theme);
-        }
     }
 }

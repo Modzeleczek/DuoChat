@@ -1,5 +1,6 @@
 ﻿using Client.MVVM.View.Windows;
 using Client.MVVM.ViewModel;
+using Shared.MVVM.Core;
 using System;
 using System.Windows;
 
@@ -33,6 +34,11 @@ namespace Client
         public App()
         {
             InitializeComponent();
+        }
+
+        public void ToggleTheme()
+        {
+            ActiveTheme = ActiveTheme.Next();
         }
     }
 }

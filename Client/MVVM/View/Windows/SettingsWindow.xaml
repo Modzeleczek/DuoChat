@@ -136,8 +136,8 @@
                     <ToggleButton
                       x:Name="Themes"
                       Margin="10,5,5,5"
-                      Click="Themes_Click"
-                      Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Change_theme}"
+                      Command="{Binding ToggleTheme}"
+                      Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Toggle_theme}"
                       Foreground="{DynamicResource SecondForegroundColor}"
                       IsChecked="False"
                       Style="{DynamicResource StylishedToggleButton}" />
