@@ -22,14 +22,14 @@ namespace Client.MVVM.View.Windows
             if (Themes.IsChecked == true)
             {
                 var app = (App)Application.Current;
-                app.ChangeTheme(new Uri("MVVM/View/Themes/DarkTheme.xaml", UriKind.Relative));
+                app.ChangeTheme(new Uri("MVVM/View/DynamicResources/Themes/DarkTheme.xaml", UriKind.Relative));
                 Properties.Settings.Default.CurrentTheme = "Dark";
                 Properties.Settings.Default.Save();
             }
             else
             {
                 var app = (App)Application.Current;
-                app.ChangeTheme(new Uri("MVVM/View/Themes/LightTheme.xaml", UriKind.Relative));
+                app.ChangeTheme(new Uri("MVVM/View/DynamicResources/Themes/LightTheme.xaml", UriKind.Relative));
                 Properties.Settings.Default.CurrentTheme = "Light";
                 Properties.Settings.Default.Save();
             }

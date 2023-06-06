@@ -23,12 +23,12 @@ namespace Client
             {
                 
                 case "Light":
-                    ChangeTheme(new Uri("/MVVM/View/Themes/LightTheme.xaml", UriKind.Relative));
+                    ChangeTheme(new Uri("/MVVM/View/DynamicResources/Themes/LightTheme.xaml", UriKind.Relative));
                     Settings.Default.CurrentTheme = "Light";
                     Settings.Default.Save();
                     break;
                 default:
-                    ChangeTheme(new Uri("/MVVM/View/Themes/DarkTheme.xaml", UriKind.Relative));
+                    ChangeTheme(new Uri("/MVVM/View/DynamicResources/Themes/DarkTheme.xaml", UriKind.Relative));
                     Settings.Default.CurrentTheme = "Dark";
                     Settings.Default.Save();
                     break;

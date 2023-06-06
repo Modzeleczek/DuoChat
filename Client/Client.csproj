@@ -120,59 +120,59 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="MVVM\View\Themes\DarkTheme.xaml">
+    <Page Include="MVVM\View\DynamicResources\Themes\DarkTheme.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MVVM\View\Themes\LightTheme.xaml">
+    <Page Include="MVVM\View\DynamicResources\Themes\LightTheme.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MVVM\View\Themes\AccountCard.xaml">
+    <Page Include="MVVM\View\DynamicResources\Styles\AccountCard.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MVVM\View\Themes\Border.xaml">
+    <Page Include="MVVM\View\DynamicResources\Styles\Border.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MVVM\View\Themes\Buttons.xaml">
+    <Page Include="MVVM\View\DynamicResources\Styles\Buttons.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="MVVM\View\Themes\ChatItem.xaml">
+    <Page Include="MVVM\View\DynamicResources\Styles\ChatItem.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MVVM\View\Themes\ConversationCard.xaml">
+    <Page Include="MVVM\View\DynamicResources\Styles\ConversationCard.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MVVM\View\Themes\HoverPanel.xaml">
+    <Page Include="MVVM\View\DynamicResources\Styles\HoverPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MVVM\View\Themes\MessageBox.xaml">
+    <Page Include="MVVM\View\DynamicResources\Styles\MessageBox.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="MVVM\View\Themes\ResizableWindow.xaml">
+    <Page Include="MVVM\View\DynamicResources\Styles\ResizableWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MVVM\View\Themes\ScrollBar.xaml">
+    <Page Include="MVVM\View\DynamicResources\Styles\ScrollBar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MVVM\View\Themes\ServerCard.xaml">
+    <Page Include="MVVM\View\DynamicResources\Styles\ServerCard.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MVVM\View\Themes\TextFields.xaml">
+    <Page Include="MVVM\View\DynamicResources\Styles\TextFields.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MVVM\View\Themes\ToggleButtons.xaml">
+    <Page Include="MVVM\View\DynamicResources\Styles\ToggleButtons.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -242,7 +242,7 @@
     <Compile Include="MVVM\ViewModel\WindowViewModel.cs" />
     <Compile Include="MVVM\View\Converters\IPv4AddressToStringConverter.cs" />
     <Compile Include="MVVM\View\Converters\PortToStringConverter.cs" />
-    <Compile Include="MVVM\View\Themes\ResizableWindow.xaml.cs">
+    <Compile Include="MVVM\View\DynamicResources\Styles\ResizableWindow.xaml.cs">
       <DependentUpon>ResizableWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="MVVM\View\Windows\AlertWindow.xaml.cs">
