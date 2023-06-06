@@ -187,7 +187,17 @@ namespace Client.MVVM.ViewModel
                 Servers = new ObservableCollection<Server>();
                 Accounts = new ObservableCollection<Account>();
                 Conversations = new ObservableCollection<Conversation>();
-                d.ActiveLanguageId = (int)lus.GetActiveLanguage().Data;
+
+                var getActLangSta = lus.GetActiveLanguage();
+                if (getActLangSta.Code != 0)
+                    Alert(getActLangSta.Message);
+                d.ActiveLanguageId = (int)getActLangSta.Data;
+
+                var getActThmSta = lus.GetActiveTheme();
+                if (getActThmSta.Code != 0)
+                    Alert(getActThmSta.Message);
+                ((App)Application.Current).ActiveTheme = (App.Theme)getActThmSta.Data;
+
                 var getLogSta = lus.GetLogged();
                 if (getLogSta.Code == 0) // jakiś użytkownik jest już zalogowany
                 {

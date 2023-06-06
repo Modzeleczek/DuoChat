@@ -1,6 +1,5 @@
 ﻿using Client.MVVM.View.Windows;
 using Client.MVVM.ViewModel;
-using Client.Properties;
 using System;
 using System.Windows;
 
@@ -15,30 +14,25 @@ namespace Client
 
         private ResourceDictionary ThemeDictionary => Resources.MergedDictionaries[0];
 
+        public enum Theme { Dark, Light }
+        // domyślnie ustawiamy ciemny motyw
+        private Theme _activeTheme = Theme.Dark;
+        public Theme ActiveTheme
+        {
+            get => _activeTheme;
+            set
+            {
+                var uri = $"/MVVM/View/DynamicResources/Themes/{value}.xaml";
+                ThemeDictionary.MergedDictionaries.Clear();
+                ThemeDictionary.MergedDictionaries.Add(
+                    new ResourceDictionary() { Source = new Uri(uri, UriKind.Relative) });
+                _activeTheme = value;
+            }
+        }
+
         public App()
         {
             InitializeComponent();
-
-            switch (Settings.Default.CurrentTheme)
-            {
-                
-                case "Light":
-                    ChangeTheme(new Uri("/MVVM/View/DynamicResources/Themes/Light.xaml", UriKind.Relative));
-                    Settings.Default.CurrentTheme = "Light";
-                    Settings.Default.Save();
-                    break;
-                default:
-                    ChangeTheme(new Uri("/MVVM/View/DynamicResources/Themes/Dark.xaml", UriKind.Relative));
-                    Settings.Default.CurrentTheme = "Dark";
-                    Settings.Default.Save();
-                    break;
-            }
         }
-        public void ChangeTheme(Uri uri)
-        {
-            ThemeDictionary.MergedDictionaries.Clear();
-            ThemeDictionary.MergedDictionaries.Add(new ResourceDictionary() { Source = uri });
-        }
-
     }
 }

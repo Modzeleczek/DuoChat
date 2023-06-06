@@ -18,6 +18,7 @@ namespace Client.MVVM.Model.BsonStorages
             public bool IsLogged { get; set; } = false;
             public string LoggedUserName { get; set; } = "";
             public int ActiveLanguageId { get; set; } = 0;
+            public int ActiveThemeId { get; set; } = 0;
             public List<LocalUserSerializable> Users { get; set; } = new List<LocalUserSerializable>();
         }
 
@@ -441,6 +442,32 @@ namespace Client.MVVM.Model.BsonStorages
                     return new Status(2, null,
                         d["Username may contain only lowercase letters and digits."]);
             return new Status(0);
+        }
+
+        public Status SetActiveTheme(int id)
+        {
+            var loadStatus = Load();
+            if (loadStatus.Code != 0)
+                return loadStatus.Prepend(-1); // -1
+            var structure = (BsonStructure)loadStatus.Data;
+
+            structure.ActiveThemeId = id;
+
+            var saveStatus = Save(structure);
+            if (saveStatus.Code != 0)
+                return saveStatus.Prepend(-2); // -2
+
+            return new Status(0);
+        }
+
+        public Status GetActiveTheme()
+        {
+            var loadStatus = Load();
+            if (loadStatus.Code != 0)
+                return loadStatus.Prepend(-1); // -1
+            var structure = (BsonStructure)loadStatus.Data;
+
+            return new Status(0, structure.ActiveThemeId);
         }
     }
 }

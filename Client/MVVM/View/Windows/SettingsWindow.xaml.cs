@@ -1,4 +1,5 @@
-﻿using Client.MVVM.ViewModel;
+﻿using Client.MVVM.Model.BsonStorages;
+using Client.MVVM.ViewModel;
 using Shared.MVVM.View.Windows;
 using System;
 using System.Windows;
@@ -19,20 +20,13 @@ namespace Client.MVVM.View.Windows
         }
         private void Themes_Click(object sender, RoutedEventArgs e)
         {
-            if (Themes.IsChecked == true)
-            {
-                var app = (App)Application.Current;
-                app.ChangeTheme(new Uri("MVVM/View/DynamicResources/Themes/Dark.xaml", UriKind.Relative));
-                Properties.Settings.Default.CurrentTheme = "Dark";
-                Properties.Settings.Default.Save();
-            }
-            else
-            {
-                var app = (App)Application.Current;
-                app.ChangeTheme(new Uri("MVVM/View/DynamicResources/Themes/Light.xaml", UriKind.Relative));
-                Properties.Settings.Default.CurrentTheme = "Light";
-                Properties.Settings.Default.Save();
-            }
+            var theme = (Themes.IsChecked ?? false) ? App.Theme.Dark : App.Theme.Light;
+
+            var app = (App)Application.Current;
+            app.ActiveTheme = theme;
+
+            var lus = new LocalUsersStorage();
+            lus.SetActiveTheme((int)theme);
         }
     }
 }
