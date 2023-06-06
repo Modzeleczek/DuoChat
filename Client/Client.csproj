@@ -120,11 +120,11 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="MVVM\View\DynamicResources\Themes\DarkTheme.xaml">
+    <Page Include="MVVM\View\DynamicResources\Themes\Dark.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MVVM\View\DynamicResources\Themes\LightTheme.xaml">
+    <Page Include="MVVM\View\DynamicResources\Themes\Light.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

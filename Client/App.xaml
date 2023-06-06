@@ -11,7 +11,7 @@
                 <ResourceDictionary>
                     <!-- Podmienialny zasób z definicjami kolorów. -->
                     <ResourceDictionary.MergedDictionaries>
-                        <ResourceDictionary Source="/MVVM/View/DynamicResources/Themes/DarkTheme.xaml" />
+                        <ResourceDictionary Source="/MVVM/View/DynamicResources/Themes/Dark.xaml" />
                     </ResourceDictionary.MergedDictionaries>
                 </ResourceDictionary>
 
