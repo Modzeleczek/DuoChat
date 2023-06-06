@@ -1,4 +1,5 @@
-﻿using Client.MVVM.ViewModel;
+using Client.MVVM.ViewModel;
+using Shared.MVVM.Core;
 using Shared.MVVM.View.Windows;
 using System;
 using System.Linq;
@@ -130,14 +131,6 @@ namespace Client.MVVM.View.Windows
             var listView = (ListView)sender;
             if (listView.SelectedItem == null)
                 listView.UnselectAll();
-        }
-
-    }
-    public static class StringExtensions
-    {
-        public static bool Contains(this string source, string toCheck, StringComparison comp)
-        {
-            return source?.IndexOf(toCheck, comp) >= 0;
         }
     }
 }

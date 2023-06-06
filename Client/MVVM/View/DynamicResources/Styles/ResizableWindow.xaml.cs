@@ -1,3 +1,4 @@
+using Shared.MVVM.Core;
 using System;
 using System.Windows;
 using System.Windows.Input;
@@ -5,13 +6,6 @@ using System.Windows.Shapes;
 
 namespace Client.MVVM.View.Themes
 {
-    public static class StringExtensions
-    {
-        public static bool Contains(this string source, string toCheck, StringComparison comp)
-        {
-            return source?.IndexOf(toCheck, comp) >= 0;
-        }
-    }
     public partial class ResizableWindow : ResourceDictionary
     {
         #region ResizeWindows

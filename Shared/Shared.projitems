@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Core\Callback.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\Core\ExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Core\ObservableObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Core\RelayCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Cryptography\HybridCryptosystem.cs" />
