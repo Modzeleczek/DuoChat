@@ -1,26 +1,15 @@
 ﻿using Shared.MVVM.Model;
-using Shared.MVVM.View.Localization;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
 using System.IO;
-using System.Reflection;
 
 namespace Client.MVVM.Model
 {
-    public class ServerDatabase
+    public class ServerDatabase : SQLiteDatabase
     {
-        private static readonly Translator d = Translator.Instance;
-        private string path;
-
-        public ServerDatabase(string path)
-        {
-            this.path = path;
-        }
-
-        private Status FileDoesNotExistStatus(int code) =>
-            new Status(code, null, d["Server database file"], $"({path})", d["does not exist."]);
+        public ServerDatabase(string path) : base(path) { }
 
         private Status QueryErrorStatus(int code) =>
             new Status(code, null, d["Error occured while"], d["executing query."]);
@@ -29,54 +18,14 @@ namespace Client.MVVM.Model
             new Status(code, null, d["Error occured while"],
                 d["connecting to server's database file."]);
 
-        private SQLiteConnection CreateConnection()
+        protected override string DDLEmbeddedResource()
         {
-            var connectionString = $"Data Source={path}; Version=3; New=True; Compress=True; " +
-                $"foreign keys=true; Journal Mode=Off";
-            return new SQLiteConnection(connectionString, true);
-        }
-
-        // https://stackoverflow.com/a/3314213/14357934
-        private string ReadEmbeddedResource(string path)
-        {
-            var assembly = Assembly.GetExecutingAssembly();
-            // Format: "{Namespace}.{Folder}.{filename}.{Extension}"
-            using (Stream stream = assembly.GetManifestResourceStream(path))
-            {
-                if (stream == null) return null;
-                using (StreamReader reader = new StreamReader(stream))
-                    return reader.ReadToEnd();
-            }
-        }
-
-        public Status ResetDatabase()
-        {
-            string ddl = ReadEmbeddedResource("Client.MVVM.Model.client.sql");
-            if (ddl == null)
-                throw new KeyNotFoundException(
-                    "Embedded resource with client database SQL code does not exist.");
-            if (!File.Exists(path))
-                return FileDoesNotExistStatus(-1);
-            try
-            {
-                using (var con = CreateConnection())
-                using (var cmd = new SQLiteCommand(ddl, con))
-                {
-                    con.Open();
-                    cmd.ExecuteNonQuery();
-                    return new Status(0);
-                }
-            }
-            catch (Exception)
-            {
-                return new Status(-2, null, d["Error occured while"],
-                    d["executing DDL query creating server database."]); // -2
-            }
+            return "Client.MVVM.Model.client.sql";
         }
 
         private Status DatabaseFileHealthy()
         {
-            if (!File.Exists(path))
+            if (!File.Exists(_path))
                 return FileDoesNotExistStatus(-1); // -1
             try
             {

@@ -152,8 +152,6 @@
   <l:Entry x:Key="user from database." PL="użytkownika z bazy danych."/>
   <l:Entry x:Key="server to user's database."
     PL="serwera do bazy danych użytkownika."/>
-  <l:Entry x:Key="executing DDL query creating server database."
-    PL="wykonywania zapytania DDL tworzącego bazę danych serwera."/>
   <l:Entry x:Key="Server database file" PL="Plik bazy danych serwera"/>
   <l:Entry x:Key="users" PL="użytkowników"/>
   <l:Entry x:Key="not having" PL="nieposiadających"/>
@@ -263,6 +261,8 @@
   <l:Entry x:Key="No translation:" EN="" PL="Brak tłumaczenia:"/>
   <l:Entry x:Key="No" PL="Nie"/>
   <l:Entry x:Key="Yes" PL="Tak"/>
+  <l:Entry x:Key="executing DDL query creating database."
+    PL="wykonywania zapytania DDL tworzącego bazę danych."/>
 
   <l:Entry x:Key="Invalid IP address format."
     PL="Nieprawidłowy format adresu IP."/>
