@@ -26,7 +26,7 @@ namespace Client.MVVM.ViewModel
             ToggleLanguage = new RelayCommand(_ =>
             {
                 d.ToggleLanguage();
-                lus.SetActiveLanguage(d.ActiveLanguageId);
+                lus.SetActiveLanguage((int)d.ActiveLanguage);
             });
 
             ToggleTheme = new RelayCommand(_ =>

@@ -4,6 +4,7 @@ using Client.MVVM.View.Windows;
 using Client.MVVM.ViewModel.AccountActions;
 using Client.MVVM.ViewModel.ServerActions;
 using Shared.MVVM.Core;
+using Shared.MVVM.View.Localization;
 using Shared.MVVM.View.Windows;
 using System;
 using System.Collections.Generic;
@@ -191,7 +192,7 @@ namespace Client.MVVM.ViewModel
                 var getActLangSta = lus.GetActiveLanguage();
                 if (getActLangSta.Code != 0)
                     Alert(getActLangSta.Message);
-                d.ActiveLanguageId = (int)getActLangSta.Data;
+                d.ActiveLanguage = (Translator.Language)getActLangSta.Data;
 
                 var getActThmSta = lus.GetActiveTheme();
                 if (getActThmSta.Code != 0)

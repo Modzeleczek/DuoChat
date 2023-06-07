@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Shared.MVVM.Core;
+using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Windows;
@@ -8,16 +9,16 @@ namespace Shared.MVVM.View.Localization
     public class Translator
     {
         public static Translator Instance { get; } = new Translator();
-        private int _activeLanguageId = 0;
-        public int ActiveLanguageId
+
+        public enum Language { English, Polish }
+        // domyślnie ustawiamy język angielski
+        private Language _activeLanguage = Language.English;
+        public Language ActiveLanguage
         {
-            get => _activeLanguageId;
+            get => _activeLanguage;
             set
             {
-                if (!(value >= 0 && value <= 1))
-                    throw new ArgumentOutOfRangeException(
-                        $"Active language id must be in range <0,1>.");
-                _activeLanguageId = value;
+                _activeLanguage = value;
                 FillDictionary();
             }
         }
@@ -45,10 +46,7 @@ namespace Shared.MVVM.View.Localization
 
         public void ToggleLanguage()
         {
-            if (ActiveLanguageId == 1) // max
-                ActiveLanguageId = 0;
-            else
-                ActiveLanguageId += 1;
+            ActiveLanguage = ActiveLanguage.Next();
         }
 
         private void FillDictionary()
@@ -62,13 +60,13 @@ namespace Shared.MVVM.View.Localization
                 if (!(resDict[k] is Entry entry))
                     throw new InvalidCastException($"Key {k} is not of type Entry.");
                 // nie można używać indeksera na referencji typu ExpandoObject - trzeba jawnie zrzutować na IDictionary
-                if (ActiveLanguageId == 0) // angielski
+                if (ActiveLanguage == Language.English) // angielski
                 {
                     /* jeżeli Entry nie ma w Translations.xaml ustawionego atrybutu EN,
                     to używamy klucza jako angielskiego tłumaczenia */
                     activeDict[k] = entry.EN ?? k;
                 }
-                else // 1 - polski
+                else // polski
                 {
                     activeDict[k] = entry.PL;
                 }
