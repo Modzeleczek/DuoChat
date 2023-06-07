@@ -1,4 +1,4 @@
-﻿using System.Net.Sockets;
+using System.Net.Sockets;
 using System.Net;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -23,7 +23,6 @@ namespace Server.MVVM.Model
         private TcpListener _listener = null;
         private Guid _guid = Guid.Empty;
         private PrivateKey _privateKey = null;
-        private string _name = "";
         private int _capacity = 0;
         private Task _runner = null;
         private bool _stopRequested = false;
@@ -36,7 +35,7 @@ namespace Server.MVVM.Model
         public Server() { }
 
         public void Start(Guid guid, PrivateKey privateKey, IPv4Address ipAddress, Port port,
-            string name, int capacity)
+            int capacity)
         {
             Status status = null;
             try
@@ -46,7 +45,6 @@ namespace Server.MVVM.Model
                 _listener.Start(capacity);
                 _guid = guid;
                 _privateKey = privateKey;
-                _name = name;
                 _capacity = capacity;
                 _stopRequested = false;
                 _runner = Task.Run(Process);

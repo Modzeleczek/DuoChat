@@ -13,7 +13,7 @@ namespace Server.MVVM.ViewModel
     {
         private class SettingsJson
         {
-            public string Guid, PrivateKey, IpAddress, Port, Name, Capacity;
+            public string Guid, PrivateKey, IpAddress, Port, Capacity;
         }
 
         #region Commands
@@ -54,13 +54,6 @@ namespace Server.MVVM.ViewModel
         {
             get => _port;
             set { _port = value; OnPropertyChanged(); }
-        }
-
-        private string _name;
-        public string Name
-        {
-            get => _name;
-            set { _name = value; OnPropertyChanged(); }
         }
 
         private string _capacity;
@@ -105,7 +98,7 @@ namespace Server.MVVM.ViewModel
                 if (!ParsePort(out Port port)) return;
                 if (!ParseCapacity(out int capacity)) return;
                 if (!ParsePrivateKey(out PrivateKey privateKey)) return;
-                server.Start(guid, privateKey, ipAddress, port, Name, capacity);
+                server.Start(guid, privateKey, ipAddress, port, capacity);
             });
 
             GenerateGuid = new RelayCommand(_ =>
@@ -228,7 +221,6 @@ namespace Server.MVVM.ViewModel
                 IpAddress = "127.0.0.1";
                 // według https://stackoverflow.com/a/38141340, powinniśmy używać portów <1024, 49151>
                 Port = "13795";
-                Name = "Testowy serwer";
                 Capacity = "5";
                 return;
             }
@@ -238,7 +230,6 @@ namespace Server.MVVM.ViewModel
             PrivateKey = settings.PrivateKey;
             IpAddress = settings.IpAddress;
             Port = settings.Port;
-            Name = settings.Name;
             Capacity = settings.Capacity;
         }
 
@@ -251,7 +242,6 @@ namespace Server.MVVM.ViewModel
                 PrivateKey = PrivateKey,
                 IpAddress = IpAddress,
                 Port = Port,
-                Name = Name,
                 Capacity = Capacity
             };
             var json = JsonConvert.SerializeObject(settings);
