@@ -1,4 +1,4 @@
-using Shared.MVVM.Core;
+﻿using Shared.MVVM.Core;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -76,14 +76,16 @@ namespace Shared.MVVM.View.Localization
         private void FillDictionary()
         {
             var resDict = new ResourceDictionary();
-            resDict.Source = new Uri("/MVVM/View/Localization/Translations.xaml", UriKind.Relative);
+            resDict.Source = new Uri("/MVVM/View/Localization/Translations.xaml",
+                UriKind.Relative);
             var keys = resDict.Keys;
             var activeDict = (IDictionary<string, object>)D;
             foreach (string k in keys)
             {
                 if (!(resDict[k] is Entry entry))
                     throw new InvalidCastException($"Key {k} is not of type Entry.");
-                // nie można używać indeksera na referencji typu ExpandoObject - trzeba jawnie zrzutować na IDictionary
+                /* nie można używać indeksera na referencji typu ExpandoObject -
+                trzeba jawnie zrzutować na IDictionary */
                 if (ActiveLanguage == Language.English) // angielski
                 {
                     /* jeżeli Entry nie ma w Translations.xaml ustawionego atrybutu EN,

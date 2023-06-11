@@ -1,4 +1,4 @@
-using Shared.MVVM.Core;
+﻿using Shared.MVVM.Core;
 using Shared.MVVM.View.Windows;
 using System.ComponentModel;
 
@@ -45,7 +45,8 @@ namespace Shared.MVVM.ViewModel.LongBlockingOperation
         protected ProgressBarViewModel(Work work, string description, bool cancelable,
             bool progressBarVisible)
         {
-            // potrzebne, jeżeli chcemy pojawiać alerty nad oknem postępu (ProgressBarWindow)
+            /* potrzebne, jeżeli chcemy pojawiać alerty nad oknem postępu
+            (ProgressBarWindow) */
             WindowLoaded = new RelayCommand(e => window = (DialogWindow)e);
             /* worker.CancelAsync tylko ustawia worker.cancellationPending na true;
             getterem do worker.cancellationPending jest worker.CancellationPending */
@@ -87,6 +88,7 @@ namespace Shared.MVVM.ViewModel.LongBlockingOperation
         }
 
         // wywoływane po wyjściu z handlera DoWork poprzez return lub wyjątek
-        protected abstract void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e);
+        protected abstract void Worker_RunWorkerCompleted(object sender,
+            RunWorkerCompletedEventArgs e);
     }
 }
