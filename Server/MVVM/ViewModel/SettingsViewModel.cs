@@ -104,8 +104,8 @@ namespace Server.MVVM.ViewModel
             GenerateGuid = new RelayCommand(_ =>
             {
                 var status = ConfirmationViewModel.ShowDialog(window,
-                    d["Do you want to generate a new GUID? Users may not trust a server changing its GUID without prior notice."],
-                    d["Generate GUID"], d["No"], d["Yes"]);
+                    "|Do you want to generate a new GUID? Users may not trust a server changing its GUID without prior notice.|",
+                    "|Generate GUID|", "|No|", "|Yes|");
                 if (status.Code == 0)
                     Guid = System.Guid.NewGuid().ToString();
             });
@@ -113,12 +113,12 @@ namespace Server.MVVM.ViewModel
             GeneratePrivateKey = new RelayCommand(_ =>
             {
                 var confStatus = ConfirmationViewModel.ShowDialog(window,
-                    d["Do you want to generate a new private key? Server's public key is derived from private key and users may not trust a server changing it without prior notice."],
-                    d["Generate private key"], d["No"], d["Yes"]);
+                    "|Do you want to generate a new private key? Server's public key is derived from private key and users may not trust a server changing it without prior notice.|",
+                    "|Generate private key|", "|No|", "|Yes|");
                 if (confStatus.Code == 0)
                 {
                     var genStatus = ProgressBarViewModel.ShowDialog(window,
-                        d["Private key generation"], true,
+                        "|Private key generation|", true,
                         (reporter) => Shared.MVVM.Model.Cryptography.PrivateKey.Random(reporter));
                     if (genStatus.Code == 1) return; // anulowano
                     PrivateKey = ((PrivateKey)genStatus.Data).ToString();
@@ -134,12 +134,12 @@ namespace Server.MVVM.ViewModel
             guid = System.Guid.Empty;
             if (string.IsNullOrEmpty(Guid))
             {
-                Alert(d["Generate or enter a GUID."]);
+                Alert("|Generate or enter a GUID.|");
                 return false;
             }
             if (!System.Guid.TryParse(Guid, out Guid value))
             {
-                Alert(d["Invalid GUID format."]);
+                Alert("|Invalid GUID format.|");
                 return false;
             }
             guid = value;
@@ -151,11 +151,11 @@ namespace Server.MVVM.ViewModel
             privateKey = null;
             if (string.IsNullOrEmpty(PrivateKey))
             {
-                Alert(d["Generate or enter a private key."]);
+                Alert("|Generate or enter a private key.|");
                 return false;
             }
             var status = ProgressBarViewModel.ShowDialog(window,
-                d["Private key validation"], true,
+                "|Private key validation|", true,
                 (reporter) => Shared.MVVM.Model.Cryptography.PrivateKey.TryParse(
                     reporter, PrivateKey));
             if (status.Code == 1) return false; // anulowano
@@ -172,7 +172,7 @@ namespace Server.MVVM.ViewModel
             var status = IPv4Address.TryParse(IpAddress);
             if (status.Code != 0)
             {
-                status.Prepend(d["Invalid IP address format."]);
+                status.Prepend("|Invalid IP address format.|");
                 Alert(status.Message);
                 return false;
             }
@@ -186,7 +186,7 @@ namespace Server.MVVM.ViewModel
             var status = Shared.MVVM.Model.Networking.Port.TryParse(Port);
             if (status.Code != 0)
             {
-                status.Prepend(d["Invalid port format."]);
+                status.Prepend("|Invalid port format.|");
                 Alert(status.Message);
                 return false;
             }
@@ -199,12 +199,12 @@ namespace Server.MVVM.ViewModel
             capacity = 0;
             if (!int.TryParse(Capacity, out int value))
             {
-                Alert(d["Invalid capacity format."]);
+                Alert("|Invalid capacity format.|");
                 return false;
             }
             if (value <= 0)
             {
-                Alert(d["Capacity must be positive."]);
+                Alert("|Capacity must be positive.|");
                 return false;
             }
             capacity = value;
@@ -215,7 +215,7 @@ namespace Server.MVVM.ViewModel
         {
             if (!File.Exists(PATH))
             {
-                Alert(d["Settings file does not exist. Default settings will be loaded."]);
+                Alert("|Settings file does not exist. Default settings will be loaded.|");
                 Guid = "5b8d0d10-d6d0-42af-8e35-6bcb4bf18872";
                 PrivateKey = "cm0iaUQj443FfN49ph9E9tFuOURkFrM6U8mya7bVclipEiYYucYIAkCMs4gz1sVgYF3TMNXDI2tW3essYROD22xMHRkQRZDy54LxaB8peto3DfSA7g1uW/l6kZhzQBB0QDhWjbxrfNV9vQCL1GhX3yPD7bFp1Hdb2ROJxXlB9ac=;VzcEpdIXqHpyn8+ol80vUkTX1LNHduUC/sCwNom9WH+ergMlBfEEcE7RlZ+dvdGC/Ji2elbnvJBZAGWH13MImUGMEGEoiphCrfGttbqTntoUpL34WRfC+ttxFRgmstCSQKQkuiAz+FqhM7QzesW49bTEH0tcwJf026QMvxEgqgk=";
                 IpAddress = "127.0.0.1";

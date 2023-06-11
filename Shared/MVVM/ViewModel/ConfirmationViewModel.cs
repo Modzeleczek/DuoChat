@@ -12,10 +12,11 @@ namespace Shared.MVVM.ViewModel
         {
             Confirm = new RelayCommand(e => OnRequestClose(new Status(0)));
 
+            // setter w FormViewModel używa indexera Translatora do tłumaczenia
             Title = title;
-            Description = description;
-            CancelButtonText = cancelButtonText;
-            ConfirmButtonText = confirmButtonText;
+            Description = d[description];
+            CancelButtonText = cancelButtonText; // patrz Title
+            ConfirmButtonText = confirmButtonText; // patrz Title
         }
     }
 }

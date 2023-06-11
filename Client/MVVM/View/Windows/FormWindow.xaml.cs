@@ -1,4 +1,5 @@
 ﻿using Client.MVVM.ViewModel;
+using Shared.MVVM.View.Localization;
 using Shared.MVVM.View.Windows;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ namespace Client.MVVM.View.Windows
 {
     public partial class FormWindow : DialogWindow
     {
+        private static readonly Translator d = Translator.Instance;
         private List<Control> _fields = new List<Control>();
 
         public FormWindow(Window owner, FormViewModel dataContext) : base(owner, dataContext)
@@ -24,7 +26,7 @@ namespace Client.MVVM.View.Windows
         public void AddTextField(string label, string initialValue = "")
         {
             var children = FieldsStackPanel.Children;
-            children.Add(new Label { Content = label });
+            children.Add(new Label { Content = d[label] });
             var textBox = new TextBox { Text = initialValue };
             children.Add(textBox);
             _fields.Add(textBox);
@@ -33,7 +35,7 @@ namespace Client.MVVM.View.Windows
         public void AddPasswordField(string label, string initialValue = "")
         {
             var children = FieldsStackPanel.Children;
-            children.Add(new Label { Content = label });
+            children.Add(new Label { Content = d[label] });
             var passwordBox = new PasswordBox { Password = initialValue };
             children.Add(passwordBox);
             _fields.Add(passwordBox);
@@ -46,7 +48,7 @@ namespace Client.MVVM.View.Windows
                 throw new ArgumentException(
                     $"{nameof(buttonCommandPaths)} must be the same length as {nameof(buttonTexts)}");
 
-            FieldsStackPanel.Children.Add(new Label { Content = label });
+            FieldsStackPanel.Children.Add(new Label { Content = d[label] });
 
             var grid = new Grid();
             grid.ColumnDefinitions.Add(new ColumnDefinition
@@ -98,7 +100,7 @@ namespace Client.MVVM.View.Windows
                     Path = new PropertyPath($"{nameof(translator.D)}.{buttonTexts[i]}"),
                     Mode = BindingMode.OneWay
                 }); */
-                button.Content = buttonTexts[i];
+                button.Content = d[buttonTexts[i]];
             }
         }
 

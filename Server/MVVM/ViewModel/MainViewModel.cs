@@ -1,4 +1,4 @@
-﻿using Shared.MVVM.Core;
+using Shared.MVVM.Core;
 using Shared.MVVM.View.Windows;
 using Shared.MVVM.ViewModel;
 using BaseViewModel = Shared.MVVM.ViewModel.ViewModel;
@@ -66,15 +66,15 @@ namespace Server.MVVM.ViewModel
                 server.Started += (status) =>
                 {
                     string message = null;
-                    if (status.Code == 0) message = d["Server was started."];
-                    else message = status.Prepend(d["Server was not started."]).Message;
+                    if (status.Code == 0) message = "|Server was started.|";
+                    else message = status.Prepend("|Server was not started.|").Message;
                     UIInvoke(() => Alert(message));
                 };
                 server.Stopped += (status) =>
                 {
                     string message = null;
-                    if (status.Code == 0) message = d["Server was safely stopped."];
-                    else message = status.Prepend(d["Server was suddenly stopped."]).Message;
+                    if (status.Code == 0) message = "|Server was safely stopped.|";
+                    else message = status.Prepend("|Server was suddenly stopped.|").Message;
                     UIInvoke(() => Alert(message));
                 };
 

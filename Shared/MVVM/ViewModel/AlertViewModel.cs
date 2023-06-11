@@ -8,9 +8,9 @@
 
         protected AlertViewModel(string title, string description, string buttonText)
         {
-            Title = title;
-            Description = description;
-            ButtonText = buttonText;
+            Title = d[title];
+            Description = d[description];
+            ButtonText = d[buttonText];
         }
     }
 }

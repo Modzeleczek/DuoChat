@@ -20,10 +20,10 @@ namespace Client.MVVM.ViewModel.AccountActions
             {
                 currentWindowLoadedHandler.Execute(e);
                 var win = (FormWindow)window;
-                win.AddTextField(d["Login"], account.Login);
-                win.AddHoverableTextField(d["Private key"],
+                win.AddTextField("|Login|", account.Login);
+                win.AddHoverableTextField("|Private key|",
                     new string[] { nameof(GeneratePrivateKey) },
-                    new string[] { d["Generate private key"] },
+                    new string[] { "|Generate private key|" },
                     account.PrivateKey.ToString());
             });
 
@@ -71,8 +71,8 @@ namespace Client.MVVM.ViewModel.AccountActions
                     account.Login, updatedAccount);
                 if (updateStatus.Code != 0)
                 {
-                    updateStatus.Prepend(d["Error occured while"], d["updating"],
-                        d["account;D"], d["in server's database."]);
+                    updateStatus.Prepend("|Error occured while| |updating| |account;D| " +
+                        "|in server's database.|");
                     Alert(updateStatus.Message);
                     return;
                 }

@@ -1,4 +1,4 @@
-﻿using Shared.MVVM.Core;
+using Shared.MVVM.Core;
 using Shared.MVVM.View.Windows;
 using System.ComponentModel;
 
@@ -20,7 +20,7 @@ namespace Shared.MVVM.ViewModel.LongBlockingOperation
         public string Description
         {
             get => description;
-            set { description = value; OnPropertyChanged(); }
+            set { description = d[value]; OnPropertyChanged(); }
         }
 
         private bool cancelable;
@@ -54,7 +54,7 @@ namespace Shared.MVVM.ViewModel.LongBlockingOperation
                 if (!worker.CancellationPending)
                 {
                     worker.CancelAsync();
-                    Description = d["Cancelling..."];
+                    Description = "|Cancelling...|";
                     Cancelable = false; // deaktywujemy przycisk anulowania
                 }
             });

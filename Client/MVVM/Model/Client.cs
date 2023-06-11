@@ -1,6 +1,5 @@
-﻿using Shared.MVVM.Core;
+using Shared.MVVM.Core;
 using Shared.MVVM.Model;
-using Shared.MVVM.View.Localization;
 using System;
 using System.Net.Sockets;
 using System.Threading;
@@ -15,7 +14,6 @@ namespace Client.MVVM.Model
         #endregion
 
         #region Fields
-        private Translator d = Translator.Instance;
         private TcpClient _socket = null;
         private Task _runner = null;
         private bool _disconnectRequested = false;
@@ -68,17 +66,17 @@ namespace Client.MVVM.Model
             }
             catch (OperationCanceledException)
             {
-                status = new Status(-1, null, d["Server connection timed out."]); // -1
+                status = new Status(-1, null, "|Server connection timed out.|"); // -1
             }
             catch (SocketException)
             {
-                status = new Status(-2, null, d["No response from the server."]); // -2
+                status = new Status(-2, null, "|No response from the server.|"); // -2
                 // dokładna przyczyna braku połączenia jest w SocketException.Message
             }
             catch (Exception)
             {
-                status = new Status(-3, null, d["Error occured while"],
-                    d["connecting to the server."]); // -3
+                status = new Status(-3, null, "|Error occured while| " +
+                    "|connecting to the server.|"); // -3
             }
             /* System.ArgumentNullException - nie może wystąpić, bo walidujemy adres IP
             System.ArgumentOutOfRangeException - nie może wystąpić, bo walidujemy port
@@ -102,7 +100,7 @@ namespace Client.MVVM.Model
             }
             catch (Exception ex)
             {
-                status = new Status(-1, null, d["No translation:"], ex.Message);
+                status = new Status(-1, null, "|No translation:| " + ex.Message);
             }
             finally
             {

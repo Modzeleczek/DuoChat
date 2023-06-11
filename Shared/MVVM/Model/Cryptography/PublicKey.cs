@@ -1,7 +1,6 @@
-﻿using System.IO;
+using System.IO;
 using System;
 using System.Security.Cryptography;
-using Shared.MVVM.View.Localization;
 
 namespace Shared.MVVM.Model.Cryptography
 {
@@ -19,18 +18,16 @@ namespace Shared.MVVM.Model.Cryptography
 
         public static Status TryParse(string text)
         {
-            var d = Translator.Instance;
-
             if (text == null)
-                return new Status(-1, null, d["String is null."]); // -1
+                return new Status(-1, null, "|String is null.|"); // -1
 
             if (text == "")
-                return new Status(-2, null, d["String is empty."]); // -2
+                return new Status(-2, null, "|String is empty.|"); // -2
 
             try
             { return new Status(0, new PublicKey(Convert.FromBase64String(text))); } // 0
             catch (FormatException)
-            { return new Status(-3, null, d["Number"], d["is not valid Base64 string."]); } // -3
+            { return new Status(-3, null, "|Number| |is not valid Base64 string.|"); } // -3
         }
 
         public override string ToString()

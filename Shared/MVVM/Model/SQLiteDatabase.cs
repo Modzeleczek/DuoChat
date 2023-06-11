@@ -1,5 +1,4 @@
-﻿using Shared.MVVM.View.Localization;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
 using System.IO;
@@ -9,7 +8,6 @@ namespace Shared.MVVM.Model
 {
     public abstract class SQLiteDatabase
     {
-        protected readonly Translator d = Translator.Instance;
         protected readonly string _path;
 
         protected SQLiteDatabase(string path)
@@ -18,7 +16,7 @@ namespace Shared.MVVM.Model
         }
 
         protected Status FileDoesNotExistStatus(int code) =>
-            new Status(code, null, d["Database file"], $"{_path}", d["does not exist."]);
+            new Status(code, null, $"|Database file| {_path} |does not exist.|");
 
         protected SQLiteConnection CreateConnection()
         {
@@ -47,8 +45,8 @@ namespace Shared.MVVM.Model
             }
             catch (Exception)
             {
-                return new Status(-2, null, d["Error occured while"],
-                    d["executing DDL query creating database."]); // -2
+                return new Status(-2, null, "|Error occured while| " +
+                    "|executing DDL query creating database.|"); // -2
             }
         }
 

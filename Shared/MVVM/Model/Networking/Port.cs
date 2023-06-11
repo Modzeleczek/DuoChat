@@ -1,5 +1,4 @@
-﻿using Shared.MVVM.View.Localization;
-using System.Net;
+﻿using System.Net;
 using System.Numerics;
 
 namespace Shared.MVVM.Model.Networking
@@ -24,16 +23,15 @@ namespace Shared.MVVM.Model.Networking
 
         public static Status TryParse(string text)
         {
-            var d = Translator.Instance;
             if (text == null)
-                return new Status(-1, null, d["String is null."]);
+                return new Status(-1, null, "|String is null.|");
 
             if (!BigInteger.TryParse(text, out BigInteger value))
-                return new Status(-2, null, d["String is not a number."]);
+                return new Status(-2, null, "|String is not a number.|");
 
             int min = IPEndPoint.MinPort, max = IPEndPoint.MaxPort;
             if (!(value >= min && value <= max))
-                return new Status(-3, null, d["Port must be in range"], $"<{min}, {max}>.");
+                return new Status(-3, null, $"|Port must be in range| <{min}, {max}>.");
 
             return new Status(0, new Port((ushort)value));
         }

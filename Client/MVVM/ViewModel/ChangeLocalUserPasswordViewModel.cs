@@ -20,8 +20,8 @@ namespace Client.MVVM.ViewModel
             {
                 var win = (FormWindow)e;
                 window = win;
-                win.AddPasswordField(d["New password"]);
-                win.AddPasswordField(d["Confirm password"]);
+                win.AddPasswordField("|New password|");
+                win.AddPasswordField("|Confirm password|");
                 RequestClose += () => win.Close();
             });
 
@@ -33,7 +33,7 @@ namespace Client.MVVM.ViewModel
                 var confirmedPassword = ((PasswordBox)fields[1]).SecurePassword;
                 if (!pc.SecureStringsEqual(password, confirmedPassword))
                 {
-                    Alert(d["Passwords do not match."]);
+                    Alert("|Passwords do not match.|");
                     return;
                 }
                 var valSta = pc.ValidatePassword(password);
@@ -46,15 +46,15 @@ namespace Client.MVVM.ViewModel
                 var ensureStatus = lus.EnsureValidDatabaseState();
                 if (ensureStatus.Code != 0)
                 {
-                    ensureStatus.Prepend(d["Error occured while"],
-                        d["ensuring valid user database state."]);
+                    ensureStatus.Prepend("|Error occured while| " +
+                        "|ensuring valid user database state.|");
                     Alert(ensureStatus.Message);
                     return;
                 }
 
                 // jeżeli katalog z plikami bazy danych istnieje, to odszyfrowujemy je starym hasłem
                 var decryptStatus = ProgressBarViewModel.ShowDialog(window,
-                    d["Decrypting user's database."], true,
+                    "|Decrypting user's database.|", true,
                     (reporter) =>
                     pc.DecryptDirectory(reporter,
                         user.DirectoryPath,
@@ -65,8 +65,7 @@ namespace Client.MVVM.ViewModel
                 // nie udało się odszyfrować katalogu użytkownika, więc anulujemy zmianę hasła
                 else if (decryptStatus.Code != 0)
                 {
-                    decryptStatus.Prepend(d["Error occured while"],
-                        d["decrypting user's database."]);
+                    decryptStatus.Prepend("|Error occured while| |decrypting user's database.|");
                     Alert(decryptStatus.Message);
                     return;
                 }
@@ -76,7 +75,7 @@ namespace Client.MVVM.ViewModel
 
                 // zaszyfrowujemy katalog użytkownika nowym hasłem
                 var encryptStatus = ProgressBarViewModel.ShowDialog(window,
-                    d["Encrypting user's database."], false,
+                    "|Encrypting user's database.|", false,
                     (reporter) =>
                     pc.EncryptDirectory(reporter,
                         user.DirectoryPath,
@@ -84,14 +83,15 @@ namespace Client.MVVM.ViewModel
                         user.DbInitializationVector));
                 if (encryptStatus.Code == 1)
                 {
-                    encryptStatus.Prepend(d["You should not have canceled database encryption. It may have been corrupted."]);
+                    encryptStatus.Prepend("|You should not have canceled database encryption. " +
+                        "It may have been corrupted.|");
                     Alert(encryptStatus.Message);
                     return;
                 }
                 else if (encryptStatus.Code != 0)
                 {
-                    encryptStatus.Prepend(d["Error occured while"], d["encrypting user's database."],
-                        d["Database may have been corrupted."]);
+                    encryptStatus.Prepend("|Error occured while| " +
+                        "|encrypting user's database.| |Database may have been corrupted.|");
                     Alert(encryptStatus.Message);
                     return;
                 }
@@ -99,8 +99,7 @@ namespace Client.MVVM.ViewModel
                 var updateStatus = lus.Update(user.Name, user);
                 if (updateStatus.Code != 0)
                 {
-                    updateStatus.Prepend(d["Error occured while"], d["updating"],
-                        d["user in database."]);
+                    updateStatus.Prepend("|Error occured while| |updating| |user in database.|");
                     Alert(updateStatus.Message);
                     return;
                 }

@@ -42,7 +42,7 @@ namespace Client.MVVM.ViewModel
                 var getAllStatus = lus.GetAll();
                 if (getAllStatus.Code != 0)
                 {
-                    getAllStatus.Prepend(d["Error occured while"], d["reading user list."]);
+                    getAllStatus.Prepend("|Error occured while| |reading user list.|");
                     Alert(getAllStatus.Message);
                     LocalUsers = new ObservableCollection<LocalUser>();
                 }
@@ -54,8 +54,8 @@ namespace Client.MVVM.ViewModel
             {
                 var vm = new CreateLocalUserViewModel
                 {
-                    Title = d["Create local user"],
-                    ConfirmButtonText = d["Create"]
+                    Title = "|Create local user|",
+                    ConfirmButtonText = "|Create|"
                 };
                 new FormWindow(window, vm).ShowDialog();
                 /* ShowDialog blokuje wykonanie kodu z tego obiektu typu command
@@ -67,7 +67,8 @@ namespace Client.MVVM.ViewModel
             Login = new RelayCommand(clickedUser =>
             {
                 var user = (LocalUser)clickedUser;
-                var status = LocalLoginViewModel.ShowDialog(window, user, true, d["Log in"]);
+                var status = LocalLoginViewModel.ShowDialog(window, user, true,
+                    "|Log in|");
                 if (status.Code != 0) return;
                 OnRequestClose(new Status(0, new { LoggedUser = user, Password = status.Data }));
             });
@@ -79,8 +80,8 @@ namespace Client.MVVM.ViewModel
                 // udało się zalogować
                 var vm = new ChangeLocalUserNameViewModel(user)
                 {
-                    Title = d["Change_name"],
-                    ConfirmButtonText = d["Save"]
+                    Title = "|Change_name|",
+                    ConfirmButtonText = "|Save|"
                 };
                 new FormWindow(window, vm).ShowDialog();
                 if (vm.Status.Code != 0)
@@ -98,8 +99,8 @@ namespace Client.MVVM.ViewModel
                 var currentPassword = (SecureString)loginStatus.Data;
                 var vm = new ChangeLocalUserPasswordViewModel(user, currentPassword)
                 {
-                    Title = d["Change_password"],
-                    ConfirmButtonText = d["Save"]
+                    Title = "|Change_password|",
+                    ConfirmButtonText = "|Save|"
                 };
                 new FormWindow(window, vm).ShowDialog();
                 currentPassword.Dispose();
@@ -111,7 +112,8 @@ namespace Client.MVVM.ViewModel
                 var status = lus.Delete(user.Name);
                 if (status.Code != 0)
                 {
-                    status.Prepend(d["Error occured while"], d["deleting"], d["user from database."]);
+                    status.Prepend("|Error occured while| |deleting| " +
+                        "|user from database.|");
                     Alert(status.Message);
                     return;
                 }

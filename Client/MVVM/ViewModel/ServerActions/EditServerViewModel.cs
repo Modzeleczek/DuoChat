@@ -19,13 +19,13 @@ namespace Client.MVVM.ViewModel.ServerActions
             {
                 currentWindowLoadedHandler.Execute(e);
                 var win = (FormWindow)window;
-                win.AddTextField(d["Name"], server.Name);
-                win.AddTextField(d["IP address"], server.IpAddress.ToString());
-                win.AddTextField(d["Port"], server.Port.ToString());
-                win.AddTextField(d["GUID"], server.Guid.ToString());
+                win.AddTextField("|Name|", server.Name);
+                win.AddTextField("|IP address|", server.IpAddress.ToString());
+                win.AddTextField("|Port|", server.Port.ToString());
+                win.AddTextField("|GUID|", server.Guid.ToString());
 
                 var publicKey = server.PublicKey;
-                win.AddTextField(d["Public key"], publicKey != null ? publicKey.ToString() : "");
+                win.AddTextField("|Public key|", publicKey != null ? publicKey.ToString() : "");
             });
 
             Confirm = new RelayCommand(e =>
@@ -79,8 +79,8 @@ namespace Client.MVVM.ViewModel.ServerActions
                     updatedServer);
                 if (updateStatus.Code != 0)
                 {
-                    updateStatus.Prepend(d["Error occured while"], d["updating"],
-                        d["server;D"], d["in user's database."]);
+                    updateStatus.Prepend("|Error occured while| |updating| |server;D| " +
+                        "|in user's database.|");
                     Alert(updateStatus.Message);
                     return;
                 }
@@ -97,7 +97,7 @@ namespace Client.MVVM.ViewModel.ServerActions
                 return true;
             if (!Guid.TryParse(text, out Guid value))
             {
-                Alert(d["Invalid GUID format."]);
+                Alert("|Invalid GUID format.|");
                 return false;
             }
             guid = value;
@@ -112,7 +112,7 @@ namespace Client.MVVM.ViewModel.ServerActions
             var status = PublicKey.TryParse(text);
             if (status.Code < 0)
             {
-                status.Prepend(d["Invalid public key format."]);
+                status.Prepend("|Invalid public key format.|");
                 Alert(status.Message);
                 return false;
             }

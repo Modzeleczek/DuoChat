@@ -30,6 +30,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\ViewModel\WindowViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\View\Helpers\EnableDragHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\View\Localization\Entry.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\View\Localization\Parser.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\View\Localization\Translator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\View\Windows\DialogWindow.cs" />
   </ItemGroup>

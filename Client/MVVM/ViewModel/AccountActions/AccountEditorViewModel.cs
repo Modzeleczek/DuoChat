@@ -28,7 +28,7 @@ namespace Client.MVVM.ViewModel.AccountActions
                 var fields = (List<Control>)e;
 
                 var status = ProgressBarViewModel.ShowDialog(window,
-                    d["Private key generation"], true,
+                    "|Private key generation|", true,
                     (reporter) => PrivateKey.Random(reporter));
                 if (status.Code == 1) return; // anulowano
 
@@ -42,8 +42,7 @@ namespace Client.MVVM.ViewModel.AccountActions
             var status = user.ServerExists(server.IpAddress, server.Port);
             if (status.Code < 0)
             {
-                status.Prepend(d["Error occured while"],
-                    d["checking if"], d["server"], d["already exists."]);
+                status.Prepend("|Error occured while| |checking if| |server| |already exists.|");
                 Alert(status.Message);
                 return false;
             }
@@ -60,14 +59,14 @@ namespace Client.MVVM.ViewModel.AccountActions
         {
             if (string.IsNullOrWhiteSpace(login))
             {
-                Alert(d["Login cannot be empty."]);
+                Alert("|Login cannot be empty.|");
                 return false;
             }
             // aby zapobiec SQLInjection, dopuszczamy tylko duże i małe litery oraz cyfry
             foreach (var c in login)
                 if (!((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')))
                 {
-                    Alert(d["Login may contain only letters and digits."]);
+                    Alert("|Login may contain only letters and digits.|");
                     return false;
                 }
             return true;
@@ -77,8 +76,8 @@ namespace Client.MVVM.ViewModel.AccountActions
         {
             var status = user.AccountExists(server.IpAddress, server.Port, login);
             if (status.Code < 0)
-                status.Prepend(d["Error occured while"],
-                    d["checking if"], d["account"], d["already exists."]);
+                status.Prepend("|Error occured while| |checking if| |account| " +
+                    "|already exists.|");
             return status;
         }
 
@@ -87,7 +86,7 @@ namespace Client.MVVM.ViewModel.AccountActions
             privateKey = null;
             // klucz prywatny walidujemy jako ostatni, bo najdłużej to trwa
             var status = ProgressBarViewModel.ShowDialog(window,
-                d["Private key validation"], true,
+                "|Private key validation|", true,
                 (reporter) => PrivateKey.TryParse(reporter, text));
             if (status.Code == 1)
                 return false; // anulowano

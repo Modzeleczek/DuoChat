@@ -20,10 +20,10 @@ namespace Client.MVVM.ViewModel.AccountActions
             {
                 currentWindowLoadedHandler.Execute(e);
                 var win = (FormWindow)window;
-                win.AddTextField(d["Login"]);
-                win.AddHoverableTextField(d["Private key"],
+                win.AddTextField("|Login|");
+                win.AddHoverableTextField("|Private key|",
                     new string[] { nameof(GeneratePrivateKey)},
-                    new string[] { d["Generate private key"] });
+                    new string[] { "|Generate private key|" });
             });
 
             Confirm = new RelayCommand(e =>
@@ -57,8 +57,8 @@ namespace Client.MVVM.ViewModel.AccountActions
                 var addStatus = loggedUser.AddAccount(server.IpAddress, server.Port, newAccount);
                 if (addStatus.Code != 0)
                 {
-                    addStatus.Prepend(d["Error occured while"], d["adding"],
-                        d["account;D"], d["to server's database."]);
+                    addStatus.Prepend("|Error occured while| |adding| " +
+                        "|account;D| |to server's database.|");
                     Alert(addStatus.Message);
                     return;
                 }

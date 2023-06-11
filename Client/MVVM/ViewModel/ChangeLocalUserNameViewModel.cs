@@ -18,7 +18,7 @@ namespace Client.MVVM.ViewModel
             {
                 var win = (FormWindow)e;
                 window = win;
-                win.AddTextField(d["Username"], user.Name);
+                win.AddTextField("|Username|", user.Name);
                 RequestClose += () => win.Close();
             });
 
@@ -37,8 +37,8 @@ namespace Client.MVVM.ViewModel
                 var existsStatus = lus.Exists(newUsername);
                 if (existsStatus.Code < 0)
                 {
-                    existsStatus.Prepend(d["Error occured while"],
-                       d["checking if"], d["user"], d["already exists."]);
+                    existsStatus.Prepend("|Error occured while| |checking if| |user|" +
+                        "|already exists.|");
                     Alert(existsStatus.Message);
                     return;
                 }
@@ -55,8 +55,7 @@ namespace Client.MVVM.ViewModel
                 if (updateStatus.Code != 0)
                 {
                     user.Name = oldUserName;
-                    updateStatus.Prepend(d["Error occured while"], d["updating"],
-                        d["user in database."]);
+                    updateStatus.Prepend("|Error occured while| |updating |user in database.|");
                     Alert(updateStatus.Message);
                     return;
                 }

@@ -12,11 +12,11 @@ namespace Client.MVVM.Model
         public ServerDatabase(string path) : base(path) { }
 
         private Status QueryErrorStatus(int code) =>
-            new Status(code, null, d["Error occured while"], d["executing query."]);
+            new Status(code, null, "|Error occured while| |executing query.|");
 
         private Status ConnectionErrorStatus(int code) =>
-            new Status(code, null, d["Error occured while"],
-                d["connecting to server's database file."]);
+            new Status(code, null, "|Error occured while| " +
+                "|connecting to server's database file.|");
 
         protected override string DDLEmbeddedResource()
         {
@@ -52,8 +52,8 @@ namespace Client.MVVM.Model
             }
             catch (Exception)
             {
-                return new Status(-2, null, d["Error occured while"],
-                    d["executing SQLite integrity check."]); // -2
+                return new Status(-2, null, "|Error occured while| " +
+                    "|executing SQLite integrity check.|"); // -2
             }
         }
 
@@ -61,8 +61,8 @@ namespace Client.MVVM.Model
         {
             var healthyStatus = DatabaseFileHealthy();
             if (healthyStatus.Code < 0)
-                return healthyStatus.Prepend(-1, d["Error occured while"],
-                    d["validating server's database."]); // -1
+                return healthyStatus.Prepend(-1, "|Error occured while| " +
+                    "|validating server's database.|"); // -1
             return healthyStatus; // 0, 1
         }
 
@@ -76,8 +76,8 @@ namespace Client.MVVM.Model
             {
                 var existsStatus = AccountExists(account.Login);
                 if (existsStatus.Code < 0)
-                    return existsStatus.Prepend(-3, d["Error occured while"],
-                        d["checking if"], d["account"], d["already exists."]); // -3
+                    return existsStatus.Prepend(-3, "|Error occured while| " +
+                        "|checking if| |account| |already exists.|"); // -3
                 if (existsStatus.Code == 0)
                     return existsStatus.Prepend(-4); // -4
 
@@ -92,7 +92,7 @@ namespace Client.MVVM.Model
                     var count = cmd.ExecuteNonQuery();
                     if (count != 1)
                         return new Status(-5,
-                            d["Number of rows affected by the query is other than 1."]); // -5
+                            "|Number of rows affected by the query is other than 1.|"); // -5
                     return new Status(0); // 0
                 }
             }
@@ -150,14 +150,14 @@ namespace Client.MVVM.Model
                     con.Open();
                     var count = (long)cmd.ExecuteScalar(); // nie da się zrzutować na int
                     if (count > 1)
-                        return new Status(-3, null, d["More than one account with login"],
-                            $"'{login}'", d["exist."]); // -3
+                        return new Status(-3, null, "|More than one account with login| " +
+                            $"'{login}' |exist.|"); // -3
                     // powinno być możliwe tylko 0 lub 1, bo "login" to klucz główny tabeli Account
                     if (count == 1)
-                        return new Status(0, null, d["Account with login"], $"{login}",
-                            d["already exists."]); // 0
-                    return new Status(1, null, d["Account with login"], $"{login}",
-                            d["does not exist."]); // 1
+                        return new Status(0, null, $"|Account with login| {login} " +
+                            "|already exists.|"); // 0
+                    return new Status(1, null, $"|Account with login| {login} " +
+                            "|does not exist.|"); // 1
                 }
             }
             catch (Exception) { return QueryErrorStatus(-2); } // -2
@@ -178,8 +178,8 @@ namespace Client.MVVM.Model
 
             try
             {
-                var existsError = new string[] { d["Error occured while"],
-                    d["checking if"], d["account"], d["already exists."] };
+                var existsError = "|Error occured while| " +
+                    "|checking if| |account| |already exists.|";
                 var oldAccExStatus = AccountExists(login);
                 if (oldAccExStatus.Code < 0)
                     return oldAccExStatus.Prepend(-3, existsError); // -3
@@ -207,7 +207,7 @@ namespace Client.MVVM.Model
                     var count = cmd.ExecuteNonQuery();
                     if (count != 1)
                         return new Status(-7,
-                            d["Number of rows affected by the query is other than 1."]); // -7
+                            "|Number of rows affected by the query is other than 1.|"); // -7
                     return new Status(0); // 0
                 }
             }
@@ -225,8 +225,8 @@ namespace Client.MVVM.Model
             {
                 var existsStatus = AccountExists(login);
                 if (existsStatus.Code < 0)
-                    return existsStatus.Prepend(-3, d["Error occured while"],
-                        d["checking if"], d["account"], d["already exists."]); // -3
+                    return existsStatus.Prepend(-3, "|Error occured while| " +
+                        "|checking if| |account| |already exists.|"); // -3
                 if (existsStatus.Code == 1)
                     return existsStatus.Prepend(-4); // -4
 
@@ -239,7 +239,7 @@ namespace Client.MVVM.Model
                     var count = cmd.ExecuteNonQuery();
                     if (count != 1)
                         return new Status(-5,
-                            d["Number of rows affected by the query is other than 1."]); // -5
+                            "|Number of rows affected by the query is other than 1.|"); // -5
                     return new Status(0); // 0
                 }
             }

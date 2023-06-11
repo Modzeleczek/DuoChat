@@ -1,6 +1,5 @@
 ﻿using Client.MVVM.View.Windows;
 using Shared.MVVM.Model;
-using Shared.MVVM.View.Localization;
 using System.Windows;
 using BaseConfirmationViewModel = Shared.MVVM.ViewModel.ConfirmationViewModel;
 
@@ -15,10 +14,9 @@ namespace Client.MVVM.ViewModel
         public static Status ShowDialog(Window owner, string description, string title = null,
             string cancelButtonText = null, string confirmButtonText = null)
         {
-            var d = Translator.Instance;
-            string finalTitle = title ?? d["Confirmation"];
-            string finalCancButTxt = cancelButtonText ?? d["Cancel"];
-            string finalConfButTxt = confirmButtonText ?? d["Confirm"];
+            string finalTitle = title ?? "|Confirmation|";
+            string finalCancButTxt = cancelButtonText ?? "|Cancel|";
+            string finalConfButTxt = confirmButtonText ?? "|Confirm|";
             var vm = new ConfirmationViewModel(finalTitle, description,
                 finalCancButTxt, finalConfButTxt);
             var win = new ConfirmationWindow(owner, vm);

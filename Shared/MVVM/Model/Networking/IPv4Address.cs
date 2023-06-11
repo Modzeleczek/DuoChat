@@ -1,5 +1,4 @@
-﻿using Shared.MVVM.View.Localization;
-using System.Net;
+﻿using System.Net;
 
 namespace Shared.MVVM.Model.Networking
 {
@@ -23,19 +22,18 @@ namespace Shared.MVVM.Model.Networking
 
         public static Status TryParse(string text)
         {
-            var d = Translator.Instance;
             if (text == null)
-                return new Status(-1, null, d["String is null."]);
+                return new Status(-1, null, "|String is null.|");
             var split = text.Split('.');
             if (split.Length != 4)
-                return new Status(-2, null, d["String does not consist of four octets separated with periods."]);
+                return new Status(-2, null, "|String does not consist of four octets separated with periods.|");
             int binRepr = 0;
             for (int i = 3; i >= 0; --i)
             {
                 binRepr <<= 8;
                 if (!byte.TryParse(split[i], out byte parsedByte))
-                    return new Status(-3, null, $"{i + 1}.",
-                        d["octet from the left is not valid number in range"], "<0,255>.");
+                    return new Status(-3, null, $"{i + 1}. " +
+                        "|octet from the left is not valid number in range| <0,255>.");
                 // trzymamy bajty adresu w kolejności big-endian, czyli prawy (ostatni z oddzielonych kropkami) oktet jest zapisany w najbardziej znaczącym bajcie _binaryRepresentation
                 binRepr |= parsedByte;
             }

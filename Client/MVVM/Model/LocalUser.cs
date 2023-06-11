@@ -3,7 +3,6 @@ using Client.MVVM.Model.JsonSerializables;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model;
 using Shared.MVVM.Model.Networking;
-using Shared.MVVM.View.Localization;
 using System.IO;
 using System.Security;
 using System.Security.Cryptography;
@@ -33,10 +32,6 @@ namespace Client.MVVM.Model
         public string DirectoryPath => Path.Combine(LocalUsersStorage.USERS_DIRECTORY_NAME, Name);
 
         private ServersStorage serversStorage => new ServersStorage(this);
-        #endregion
-
-        #region Fields
-        private static readonly Translator d = Translator.Instance;
         #endregion
 
         public LocalUser() { }
@@ -94,8 +89,8 @@ namespace Client.MVVM.Model
         {
             var getDbStatus = serversStorage.GetServerDatabase(ipAddress, port);
             if (getDbStatus.Code != 0)
-                return getDbStatus.Prepend(-1, d["Error occured while"], d["getting"],
-                    d["access to server's database."]); // -1
+                return getDbStatus.Prepend(-1, "|Error occured while| |getting| " +
+                    "|access to server's database.|"); // -1
             return getDbStatus; // 0
         }
 

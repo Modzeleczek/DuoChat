@@ -27,20 +27,20 @@ namespace Client.MVVM.Model.BsonStorages
         }
 
         private Status ServerAlreadyExistsStatus(int code, IPv4Address ipAddress, Port port) =>
-            new Status(code, null, d["Server with IP address"], ipAddress,
-                d["and port"], port, d["already exists."]);
+            new Status(code, null, $"|Server with IP address| {ipAddress} " +
+                $"|and port| {port} |already exists.|");
 
         private Status ServerDoesNotExistStatus(int code, IPv4Address ipAddress, Port port) =>
-            new Status(code, null, d["Server with IP address"], ipAddress,
-                d["and port"], port, d["does not exist."]);
+            new Status(code, null, $"|Server with IP address| {ipAddress} " +
+                $"|and port| {port} |does not exist.|");
 
         private Status ServerFileAlreadyExistsStatus(int code, IPv4Address ipAddress, Port port) =>
-            new Status(code, null, d["Server's file with name"], ServerFileName(ipAddress, port),
-                d["already exists."]);
-        
+            new Status(code, null, "|Server's file with name| " +
+                $"{ServerFileName(ipAddress, port)} |already exists.|");
+
         private Status ServerFileDoesNotExistStatus(int code, IPv4Address ipAddress, Port port) =>
-            new Status(code, null, d["Server's file with name"], ServerFileName(ipAddress, port),
-                d["does not exist."]);
+            new Status(code, null, "|Server's file with name| " +
+                $"{ServerFileName(ipAddress, port)} |does not exist.|");
 
         public Status EnsureValidDatabaseState()
         {
@@ -51,8 +51,8 @@ namespace Client.MVVM.Model.BsonStorages
                 { Directory.CreateDirectory(path); }
                 catch (Exception)
                 {
-                    return new Status(-1, null, d["Error occured while"], d["creating"],
-                        d["directory"], $"{path}."); // -1
+                    return new Status(-1, null, "|Error occured while| |creating| " +
+                        $"|directory| {path}."); // -1
                 }
             }
             path = serversBsonPath;
@@ -60,8 +60,8 @@ namespace Client.MVVM.Model.BsonStorages
             {
                 var saveStatus = Save(new BsonStructure());
                 if (saveStatus.Code != 0)
-                    return saveStatus.Prepend(-2, d["Error occured while"], d["creating"],
-                        d["file"], $"{path}."); // -2
+                    return saveStatus.Prepend(-2, "|Error occured while| |creating| " +
+                        $"|file| {path}."); // -2
             }
 
             var loadStatus = Load<BsonStructure>(path);
@@ -89,8 +89,8 @@ namespace Client.MVVM.Model.BsonStorages
                 structure.Servers = filteredServers;
                 var saveStatus = Save(structure);
                 if (saveStatus.Code != 0)
-                    return saveStatus.Prepend(-4, d["Error occured while"], d["deleting"],
-                        d["servers"], d["not having"], d["files"]); // -4
+                    return saveStatus.Prepend(-4, "|Error occured while| |deleting| " +
+                        "|servers| |not having| |files|."); // -4
             }
 
             // usuwamy pliki i katalogi z katalogu użytkownika, do których nie ma w BSONie serwerów
@@ -103,9 +103,9 @@ namespace Client.MVVM.Model.BsonStorages
             { di = new DirectoryInfo(user.DirectoryPath); }
             catch (Exception)
             {
-                return new Status(-5, null, d["Error occured while"],
-                    d["listing files and subdirectories in directory"],
-                    $"'{user.DirectoryPath}'"); // -5
+                return new Status(-5, null, "|Error occured while| " +
+                    "|listing files and subdirectories in directory| " +
+                    $"'{user.DirectoryPath}'."); // -5
             }
             foreach (FileInfo file in di.GetFiles())
             {
@@ -114,8 +114,8 @@ namespace Client.MVVM.Model.BsonStorages
                     try { file.Delete(); }
                     catch (Exception)
                     {
-                        return new Status(-6, null, d["Error occured while"],
-                            d["deleting"], d["file"], file.Name); // -6
+                        return new Status(-6, null, "|Error occured while| " +
+                            $"|deleting| |file| {file.Name}."); // -6
                     }
                 }
             }
@@ -124,8 +124,8 @@ namespace Client.MVVM.Model.BsonStorages
                 try { dir.Delete(true); }
                 catch (Exception)
                 {
-                    return new Status(-7, null, d["Error occured while"],
-                        d["deleting"], d["directory"], dir.Name); // -7
+                    return new Status(-7, null, "|Error occured while| " +
+                        $"|deleting| |directory| {dir.Name}."); // -7
                 }
             }
             return new Status(0, structure); // 0
@@ -135,8 +135,8 @@ namespace Client.MVVM.Model.BsonStorages
         {
             var ensureStatus = EnsureValidDatabaseState();
             if (ensureStatus.Code != 0)
-                return ensureStatus.Prepend(-1, d["Error occured while"],
-                    d["ensuring valid server database state."]); // -1
+                return ensureStatus.Prepend(-1, "|Error occured while| " +
+                    "|ensuring valid server database state.|"); // -1
             return ensureStatus; // 0
         }
 
@@ -169,8 +169,8 @@ namespace Client.MVVM.Model.BsonStorages
             servers.Add(server.ToSerializable());
             var saveStatus = Save(structure);
             if (saveStatus.Code != 0)
-                return saveStatus.Prepend(-4, d["Error occured while"],
-                    d["saving"], d["user's server database file."]); // -4
+                return saveStatus.Prepend(-4, "|Error occured while| " +
+                    "|saving| |user's server database file.|"); // -4
 
             try
             /* jeżeli użyjemy tu zwykłego File.Create, to SQLite nie chce się łączyć
@@ -178,34 +178,34 @@ namespace Client.MVVM.Model.BsonStorages
             { SQLiteConnection.CreateFile(filePath); }
             catch (Exception)
             {
-                var createFileStatus = new Status(-5, null, d["Error occured while"],
-                    d["creating"], d["server's file."]);
+                var createFileStatus = new Status(-5, null, "|Error occured while| " +
+                    "|creating| |server's file.|");
 
                 servers.RemoveAt(servers.Count - 1); // usuwamy ostatnio dodanego
                 saveStatus = Save(structure);
                 if (saveStatus.Code != 0)
-                    return createFileStatus.Append(-6, d["Error occured while"],
-                        d["deleting"], d["the newly-added"] + d["server."], saveStatus.Message); // -6
+                    return createFileStatus.Append(-6, "|Error occured while| " +
+                        "|deleting| |the newly-added| |server.| " + saveStatus.Message); // -6
                 return createFileStatus; // -5
             }
 
             var resetStatus = new ServerDatabase(filePath).ResetDatabase();
             if (resetStatus.Code != 0)
             {
-                resetStatus.Prepend(-7, d["Error occured while"],
-                    d["resetting server database."]); // -7
+                resetStatus.Prepend(-7, "|Error occured while| " +
+                    "|resetting server database.|"); // -7
 
                 servers.RemoveAt(servers.Count - 1); // usuwamy ostatnio dodanego
                 saveStatus = Save(structure);
                 if (saveStatus.Code != 0)
-                    resetStatus.Append(-8, d["Error occured while"],
-                        d["deleting"], d["the newly-added"], d["server."], saveStatus.Message); // -8
+                    resetStatus.Append(-8, "|Error occured while| " +
+                        "|deleting| |the newly-added| |server.| " + saveStatus.Message); // -8
 
                 try { File.Delete(filePath); }
                 catch (Exception)
                 {
-                    resetStatus.Append(-9, d["Error occured while"],
-                        d["deleting"], d["the newly-added server's database."]); // -9
+                    resetStatus.Append(-9, "|Error occured while| " +
+                        "|deleting| |the newly-added server's database.|"); // -9
                 }
                 return resetStatus;
             }
@@ -293,8 +293,8 @@ namespace Client.MVVM.Model.BsonStorages
                         if (servers[j].Equals(serverSerializable))
                             return ServerAlreadyExistsStatus(-2, newIpAddress, newPort); // -2
 
-                    string[] dbSaveError = { d["Error occured while"],
-                        d["saving"], d["user's server database file."] };
+                    string dbSaveError = "|Error occured while| " +
+                        "|saving| |user's server database file.|";
                     if (serverSerializable.KeyEquals(ipAddress.BinaryRepresentation, port.Value))
                     {
                         // jeżeli metodą Update nie zmieniamy pary (adres IP, port) serwera
@@ -322,14 +322,14 @@ namespace Client.MVVM.Model.BsonStorages
                             { File.Move(oldFilePath, newFilePath); }
                             catch (Exception)
                             {
-                                var renameFileStatus = new Status(-6, null, d["Error occured while"],
-                                    d["renaming"], d["server's file."]); // -6
+                                var renameFileStatus = new Status(-6, null,
+                                    "|Error occured while| |renaming| |server's file.|"); // -6
 
                                 servers[i] = oldServerBackup; // przywracamy ostatnio zastąpionego
                                 saveStatus = Save(structure);
                                 if (saveStatus.Code != 0)
-                                    return renameFileStatus.Append(-7, d["Error occured while"],
-                                        d["restoring the updated"], d["server."],
+                                    return renameFileStatus.Append(-7, "|Error occured while| " +
+                                        "|restoring the updated| |server.| " +
                                         saveStatus.Message); // -7
                                 return renameFileStatus; // -6
                             }
@@ -357,8 +357,8 @@ namespace Client.MVVM.Model.BsonStorages
                     servers.RemoveAt(i);
                     var saveStatus = Save(structure);
                     if (saveStatus.Code != 0)
-                        return saveStatus.Prepend(-2, d["Error occured while"],
-                            d["saving"], d["user's server database file."]); // -2
+                        return saveStatus.Prepend(-2, "|Error occured while| |saving| " +
+                            "|user's server database file.|"); // -2
 
                     var filePath = ServerFilePath(ipAddress, port);
                     if (File.Exists(filePath))
@@ -367,14 +367,15 @@ namespace Client.MVVM.Model.BsonStorages
                         { File.Delete(filePath); }
                         catch (Exception)
                         {
-                            var deleteFileStatus = new Status(-3, null, d["Error occured while"],
-                                d["deleting"], d["server's file."]); // -3
+                            var deleteFileStatus = new Status(-3, null, "|Error occured while| " +
+                                "|deleting| |server's file.|"); // -3
 
                             servers.Insert(i, serverBackup); // przywracamy ostatnio usuniętego
                             saveStatus = Save(structure);
                             if (saveStatus.Code != 0)
-                                return deleteFileStatus.Append(-4, d["Error occured while"],
-                                    d["restoring the deleted"], d["server."], saveStatus.Message); // -4
+                                return deleteFileStatus.Append(-4, "|Error occured while| " +
+                                    "|restoring the deleted| |server.| " +
+                                    saveStatus.Message); // -4
                             return deleteFileStatus; // -3
                         }
                     }
@@ -388,8 +389,8 @@ namespace Client.MVVM.Model.BsonStorages
         {
             var existsStatus = Exists(ipAddress, port);
             if (existsStatus.Code < 0)
-                return existsStatus.Prepend(-1, d["Error occured while"], d["checking if"],
-                    d["server"], d["already exists"]); // -1
+                return existsStatus.Prepend(-1, "|Error occured while| |checking if| " +
+                    "|server| |already exists.|"); // -1
             if (existsStatus.Code == 1)
                 return existsStatus.Prepend(-2); // -2
 

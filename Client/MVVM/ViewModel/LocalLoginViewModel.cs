@@ -1,5 +1,4 @@
 ﻿using Client.MVVM.Model;
-using Shared.MVVM.View.Localization;
 using Client.MVVM.View.Windows;
 using Shared.MVVM.Core;
 using System.Windows;
@@ -20,7 +19,7 @@ namespace Client.MVVM.ViewModel
             {
                 var win = (FormWindow)e;
                 window = win;
-                win.AddPasswordField(d["Password"]);
+                win.AddPasswordField("|Password|");
                 RequestClose += () => win.Close();
             });
 
@@ -31,7 +30,7 @@ namespace Client.MVVM.ViewModel
                 var password = ((PasswordBox)fields[0]).SecurePassword;
                 if (!pc.DigestsEqual(password, user.PasswordSalt, user.PasswordDigest))
                 {
-                    Alert(d["Wrong password."]);
+                    Alert("|Wrong password.|");
                     return;
                 }
                 SecureString statusData = null;
@@ -54,10 +53,9 @@ namespace Client.MVVM.ViewModel
         public static Status ShowDialog(Window owner,
             LocalUser user, bool returnEnteredPassword, string title = null)
         {
-            var d = Translator.Instance;
             var vm = new LocalLoginViewModel(user, returnEnteredPassword);
-            vm.Title = title ?? d["Enter your password"];
-            vm.ConfirmButtonText = d["OK"];
+            vm.Title = title ?? "|Enter your password|";
+            vm.ConfirmButtonText = "|OK|";
             new FormWindow(owner, vm).ShowDialog();
             return vm.Status;
         }

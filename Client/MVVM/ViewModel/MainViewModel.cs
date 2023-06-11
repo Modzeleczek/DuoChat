@@ -1,4 +1,4 @@
-﻿using Client.MVVM.Model;
+using Client.MVVM.Model;
 using Client.MVVM.Model.BsonStorages;
 using Client.MVVM.View.Windows;
 using Client.MVVM.ViewModel.AccountActions;
@@ -96,8 +96,8 @@ namespace Client.MVVM.ViewModel
                     var getAllStatus = loggedUser.GetAllAccounts(value.IpAddress, value.Port);
                     if (getAllStatus.Code != 0)
                     {
-                        getAllStatus.Prepend(d["Error occured while"],
-                            d["reading user's account list."]);
+                        getAllStatus.Prepend("|Error occured while| " +
+                            "|reading user's account list.|");
                         Alert(getAllStatus.Message);
                     }
                     else
@@ -210,7 +210,7 @@ namespace Client.MVVM.ViewModel
                         ResetLists();
                         return;
                     }
-                    Alert(d["User set as logged does not exist."]);
+                    Alert("|User set as logged does not exist.|");
                 }
                 ShowLocalUsersDialog();
             });
@@ -219,8 +219,8 @@ namespace Client.MVVM.ViewModel
             {
                 var vm = new CreateServerViewModel(loggedUser)
                 {
-                    Title = d["Add_server"],
-                    ConfirmButtonText = d["Add"]
+                    Title = "|Add_server|",
+                    ConfirmButtonText = "|Add|"
                 };
                 new FormWindow(window, vm).ShowDialog();
                 var status = vm.Status;
@@ -234,8 +234,8 @@ namespace Client.MVVM.ViewModel
                     SelectedServer = null;
                 var vm = new EditServerViewModel(loggedUser, server)
                 {
-                    Title = d["Edit server"],
-                    ConfirmButtonText = d["Save"]
+                    Title = "|Edit server|",
+                    ConfirmButtonText = "|Save|"
                 };
                 new FormWindow(window, vm).ShowDialog();
             });
@@ -243,9 +243,9 @@ namespace Client.MVVM.ViewModel
             {
                 var server = (Server)obj;
                 var confirmStatus = ConfirmationViewModel.ShowDialog(window,
-                    d["Do you want to delete"] + " " + d["server"] +
+                    "|Do you want to delete| |server|" +
                     $" {server.IpAddress}:{server.Port}?",
-                    d["Delete server"], d["No"], d["Yes"]);
+                    "|Delete server|", "|No|", "|Yes|");
                 if (confirmStatus.Code != 0)
                     return; 
                 if (SelectedServer == server)
@@ -254,8 +254,8 @@ namespace Client.MVVM.ViewModel
                 var deleteStatus = loggedUser.DeleteServer(server.IpAddress, server.Port);
                 if (deleteStatus.Code != 0)
                 {
-                    deleteStatus.Prepend(d["Error occured while"], d["deleting"],
-                        d["server;D"], d["from user's database."]);
+                    deleteStatus.Prepend("|Error occured while| |deleting| " +
+                        "|server;D| |from user's database.|");
                     Alert(deleteStatus.Message);
                     return;
                 }
@@ -266,8 +266,8 @@ namespace Client.MVVM.ViewModel
             {
                 var vm = new CreateAccountViewModel(loggedUser, SelectedServer)
                 {
-                    Title = d["Add_account"],
-                    ConfirmButtonText = d["Add"]
+                    Title = "|Add_account|",
+                    ConfirmButtonText = "|Add|"
                 };
                 new FormWindow(window, vm).ShowDialog();
                 var status = vm.Status;
@@ -281,8 +281,8 @@ namespace Client.MVVM.ViewModel
                     SelectedAccount = null;
                 var vm = new EditAccountViewModel(loggedUser, SelectedServer, account)
                 {
-                    Title = d["Edit account"],
-                    ConfirmButtonText = d["Save"]
+                    Title = "|Edit account|",
+                    ConfirmButtonText = "|Save|"
                 };
                 new FormWindow(window, vm).ShowDialog();
             });
@@ -290,8 +290,8 @@ namespace Client.MVVM.ViewModel
             {
                 var account = (Account)obj;
                 var confirmStatus = ConfirmationViewModel.ShowDialog(window,
-                    d["Do you want to delete"] + " " + d["account"] + $" {account.Login}?",
-                    d["Delete account"], d["No"], d["Yes"]);
+                    "|Do you want to delete| |account|" + $" {account.Login}?",
+                    "|Delete account|", "|No|", "|Yes|");
                 if (confirmStatus.Code != 0)
                     return;
                 if (SelectedAccount == account)
@@ -302,8 +302,8 @@ namespace Client.MVVM.ViewModel
                     account.Login);
                 if (deleteStatus.Code != 0)
                 {
-                    deleteStatus.Prepend(d["Error occured while"], d["deleting"],
-                        d["account;D"], d["from user's database."]);
+                    deleteStatus.Prepend("|Error occured while| |deleting| " +
+                        "|account;D| |from user's database.|");
                     Alert(deleteStatus.Message);
                     return;
                 }
@@ -349,7 +349,7 @@ namespace Client.MVVM.ViewModel
 
                     var pc = new PasswordCryptography();
                     var encSta = ProgressBarViewModel.ShowDialog(window,
-                        d["Encrypting user's database."], true,
+                        "|Encrypting user's database.|", true,
                         (reporter) =>
                         pc.EncryptDirectory(reporter,
                             loggedUser.DirectoryPath,
@@ -386,7 +386,7 @@ namespace Client.MVVM.ViewModel
 
                 var pc = new PasswordCryptography();
                 var decryptionStatus = ProgressBarViewModel.ShowDialog(window,
-                    d["Decrypting user's database."], true,
+                    "|Decrypting user's database.|", true,
                     (reporter) =>
                     pc.DecryptDirectory(reporter,
                         user.DirectoryPath,
@@ -394,7 +394,7 @@ namespace Client.MVVM.ViewModel
                         user.DbInitializationVector));
                 curPas.Dispose();
                 if (decryptionStatus.Code == 1)
-                    Alert(d["User's database decryption canceled. Logging out."]);
+                    Alert("|User's database decryption canceled. Logging out.|");
                 /* jeżeli status.Code < 0, to alert z błędem został już wyświetlony w
                 ProgressBarViewModel.Worker_RunWorkerCompleted */
                 else if (decryptionStatus.Code == 0)
@@ -425,7 +425,7 @@ namespace Client.MVVM.ViewModel
             var getAllStatus = loggedUser.GetAllServers();
             if (getAllStatus.Code != 0)
             {
-                getAllStatus.Prepend(d["Error occured while"], d["reading user's server list."]);
+                getAllStatus.Prepend("|Error occured while| |reading user's server list.|");
                 Alert(getAllStatus.Message);
                 return;
             }

@@ -2,15 +2,12 @@
 using Newtonsoft.Json;
 using System;
 using System.IO;
-using Shared.MVVM.View.Localization;
 using Shared.MVVM.Model;
 
 namespace Client.MVVM.Model.BsonStorages
 {
     public class BsonStorage
     {
-        protected static readonly Translator d = Translator.Instance;
-
         protected Status Load<BsonStructure>(string bsonPath) where BsonStructure : new()
         {
             if (File.Exists(bsonPath))
@@ -28,11 +25,11 @@ namespace Client.MVVM.Model.BsonStorages
                 }
                 catch (Exception)
                 {
-                    return new Status(-1, null, d["Error occured while opening file"],
-                        bsonPath, d["for reading."]); // -1
+                    return new Status(-1, null, "|Error occured while opening file| " +
+                        $"{bsonPath} |for reading.|"); // -1
                 }
             }
-            else return new Status(-2, null, d["File"], bsonPath, d["does not exist."]); // -2
+            else return new Status(-2, null, $"|File| {bsonPath} |does not exist.|"); // -2
         }
 
         protected Status Save<BsonStructure>(string bsonPath, BsonStructure data)
@@ -51,8 +48,8 @@ namespace Client.MVVM.Model.BsonStorages
             }
             catch (Exception)
             {
-                return new Status(-1, null, d["Error occured while opening file"],
-                    bsonPath, d["for writing."]); // -1
+                return new Status(-1, null, "|Error occured while opening file| " +
+                    $"{bsonPath} |for writing.|"); // -1
             }
         }
     }

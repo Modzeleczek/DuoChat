@@ -18,9 +18,9 @@ namespace Client.MVVM.ViewModel.ServerActions
             {
                 currentWindowLoadedHandler.Execute(e);
                 var win = (FormWindow)window;
-                win.AddTextField(d["Name"]);
-                win.AddTextField(d["IP address"]);
-                win.AddTextField(d["Port"]);
+                win.AddTextField("|Name|");
+                win.AddTextField("|IP address|");
+                win.AddTextField("|Port|");
             });
 
             Confirm = new RelayCommand(e =>
@@ -55,8 +55,8 @@ namespace Client.MVVM.ViewModel.ServerActions
                 var addStatus = loggedUser.AddServer(newServer);
                 if (addStatus.Code != 0)
                 {
-                    addStatus.Prepend(d["Error occured while"], d["adding"],
-                        d["server;D"], d["to user's database."]);
+                    addStatus.Prepend("|Error occured while| |adding| |server;D| " +
+                        "|to user's database.|");
                     Alert(addStatus.Message);
                     return;
                 }

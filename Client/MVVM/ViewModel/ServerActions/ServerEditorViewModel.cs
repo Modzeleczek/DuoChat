@@ -24,7 +24,7 @@ namespace Client.MVVM.ViewModel.ServerActions
             var status = IPv4Address.TryParse(text);
             if (status.Code != 0)
             {
-                status.Prepend(d["Invalid IP address format."]);
+                status.Prepend("|Invalid IP address format.|");
                 Alert(status.Message);
                 return false;
             }
@@ -38,7 +38,7 @@ namespace Client.MVVM.ViewModel.ServerActions
             var status = Port.TryParse(text);
             if (status.Code != 0)
             {
-                status.Prepend(d["Invalid port format."]);
+                status.Prepend("|Invalid port format.|");
                 Alert(status.Message);
                 return false;
             }
@@ -50,8 +50,8 @@ namespace Client.MVVM.ViewModel.ServerActions
         {
             var status = user.ServerExists(ipAddress, port);
             if (status.Code < 0)
-                status.Prepend(d["Error occured while"],
-                    d["checking if"], d["server"], d["already exists."]);
+                status.Prepend("|Error occured while| |checking if| |server| " +
+                    "|already exists.|");
             return status;
         }
     }

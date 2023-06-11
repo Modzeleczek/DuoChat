@@ -1,6 +1,5 @@
 ﻿using Shared.MVVM.Core;
 using Shared.MVVM.Model;
-using Shared.MVVM.View.Localization;
 
 namespace Shared.MVVM.ViewModel
 {
@@ -20,28 +19,28 @@ namespace Shared.MVVM.ViewModel
         public string Title
         {
             get => _title;
-            set { _title = value; OnPropertyChanged(); }
+            set { _title = d[value]; OnPropertyChanged(); }
         }
 
         private string _cancelButtonText;
         public string CancelButtonText
         {
             get => _cancelButtonText;
-            set { _cancelButtonText = value; OnPropertyChanged(); }
+            set { _cancelButtonText = d[value]; OnPropertyChanged(); }
         }
 
         private string _confirmButtonText;
         public string ConfirmButtonText
         {
             get => _confirmButtonText;
-            set { _confirmButtonText = value; OnPropertyChanged(); }
+            set { _confirmButtonText = d[value]; OnPropertyChanged(); }
         }
         #endregion
 
         protected FormViewModel()
         {
             Close = new RelayCommand(e => OnRequestClose(new Status(1)));
-            CancelButtonText = Translator.Instance["Cancel"];
+            CancelButtonText = "|Cancel|";
         }
     }
 }

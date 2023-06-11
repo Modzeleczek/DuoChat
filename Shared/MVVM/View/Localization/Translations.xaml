@@ -1,4 +1,4 @@
-﻿<ResourceDictionary
+<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:l="clr-namespace:Shared.MVVM.View.Localization">
@@ -30,7 +30,7 @@
   <l:Entry x:Key="Edit" PL="Edytuj"/>
   <l:Entry x:Key="Toggle_theme" EN="Toggle theme" PL="Przełącz motyw"/>
 
-    <!-- klucze używane w plikach .cs - nie muszą być prawidłowymi nazwami zmiennych -->
+  <!-- klucze używane w plikach .cs - nie muszą być prawidłowymi nazwami zmiennych -->
   <l:Entry x:Key="Users" PL="Użytkownicy"/>
   <l:Entry x:Key="Create user" PL="Stwórz użytkownika"/>
   <l:Entry x:Key="Username" PL="Nazwa użytkownika"/>
@@ -43,7 +43,6 @@
   <l:Entry x:Key="Passwords do not match." PL="Hasła nie są zgodne."/>
   <l:Entry x:Key="User with name" PL="Użytkownik o nazwie"/>
   <l:Entry x:Key="already exists." PL="już istnieje."/>
-  <l:Entry x:Key="does not exist." PL="nie istnieje."/>
   <l:Entry x:Key="Specify a password." PL="Określ hasło."/>
   <l:Entry x:Key="Password should be at least 8 characters long."
     PL="Hasło powinno mieć przynajmniej 8 znaków."/>
@@ -155,6 +154,7 @@
   <l:Entry x:Key="Server database file" PL="Plik bazy danych serwera"/>
   <l:Entry x:Key="users" PL="użytkowników"/>
   <l:Entry x:Key="not having" PL="nieposiadających"/>
+  <l:Entry x:Key="a directory" PL="katalogu"/>
   <l:Entry x:Key="listing files and subdirectories in directory"
     PL="tworzenia listy plików i podkatalogów w katalogu"/>
   <l:Entry x:Key="ensuring valid user database state."
@@ -278,5 +278,6 @@
   <l:Entry x:Key="Cancelling..." PL="Anulowanie..."/>
   <l:Entry x:Key="Generate private key" PL="Wygeneruj klucz prywatny"/>
   <l:Entry x:Key="Private key generation" PL="Generowanie klucza prywatnego"/>
+  <l:Entry x:Key="does not exist." PL="nie istnieje."/>
 
 </ResourceDictionary>
