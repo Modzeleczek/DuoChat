@@ -13,9 +13,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Core\ExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Core\ObservableObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Core\RelayCommand.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Cryptography\HybridCryptosystem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Cryptography\Aes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Cryptography\PrivateKey.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Cryptography\PublicKey.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Cryptography\Rsa.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Cryptography\RsaKey.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\IPv4Address.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Port.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\SQLiteDatabase.cs" />

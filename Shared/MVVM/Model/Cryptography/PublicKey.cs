@@ -1,17 +1,17 @@
-using System.IO;
+﻿using System.IO;
 using System;
 using System.Security.Cryptography;
 
 namespace Shared.MVVM.Model.Cryptography
 {
-    public class PublicKey
+    public class PublicKey : RsaKey
     {
         // często używana jako e liczba pierwsza Fermata 2^(2^4) + 1 65537; w big-endian
         public static readonly byte[] PUBLIC_EXPONENT = { 0b0000_0001, 0b0000_0000, 0b0000_0001 };
 
         private byte[] _modulus;
 
-        private PublicKey(byte[] modulus)
+        public PublicKey(byte[] modulus)
         {
             _modulus = modulus;
         }
@@ -61,7 +61,7 @@ namespace Shared.MVVM.Model.Cryptography
             }
         }
 
-        public void ImportTo(RSA rsa)
+        public override void ImportTo(RSA rsa)
         {
             var par = new RSAParameters();
             par.Exponent = PUBLIC_EXPONENT;

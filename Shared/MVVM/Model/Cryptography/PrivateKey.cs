@@ -7,7 +7,7 @@ using System.Security.Cryptography;
 
 namespace Shared.MVVM.Model.Cryptography
 {
-    public class PrivateKey
+    public class PrivateKey : RsaKey
     {
         private const string DLL_PATH = "Prime.dll";
         private const CallingConvention CONVENTION = CallingConvention.Cdecl;
@@ -36,12 +36,18 @@ namespace Shared.MVVM.Model.Cryptography
                 // generujemy 2 losowe liczby z zakresu <0, 2^(8*128)-1>
                 BigInteger p = GenerateRandom(128, false, rng);
                 BigInteger q = GenerateRandom(128, false, rng);
-                /* zapewniamy, że obie wylosowane liczby są większe lub równe 2^(8*64) = 2^512;
-                 * wówczas ich iloczyn zawsze będzie większy lub równy 2^512 * 2^512 = 2^1024;
-                 * włączamy najmniej znaczący bit bajtu o indeksie 64 (licząc od 0) */
+                /* Zapewniamy, że losowo wybrana liczba spośród losowych liczb p i q,
+                jest większa lub równa 2^(8*64) = 2^512. Wówczas iloczyn p*q (q >= 2)
+                zawsze jest większy lub równy 2^512. Włączamy najmniej znaczący bit
+                bajtu o indeksie 64 (licząc od 0). */
                 var one = new BigInteger(1);
-                p |= (one << (64 * 8));
-                q |= (one << (64 * 8));
+                var randomByte = new byte[1];
+                rng.GetBytes(randomByte);
+                // najmniej znaczący bit jest 0
+                if ((randomByte[0] & 0b0000_0001) == 0)
+                    p |= (one << (64 * 8));
+                else // najmniej znaczący bit jest 1
+                    q |= (one << (64 * 8));
 
                 p = FirstProbablePrimeGreaterThan(p);
                 reporter.FineProgress = 1;
@@ -270,7 +276,7 @@ namespace Shared.MVVM.Model.Cryptography
             return new BigInteger(clone);
         }
 
-        public void ImportTo(RSA rsa)
+        public override void ImportTo(RSA rsa)
         {
             BigInteger mod = ToBigInteger(_p) * ToBigInteger(_q);
             var par = new RSAParameters();
@@ -279,6 +285,12 @@ namespace Shared.MVVM.Model.Cryptography
             par.Exponent = PublicKey.PUBLIC_EXPONENT;
             par.Modulus = ToUnsignedBigEndian(mod);
             rsa.ImportParameters(par);
+        }
+
+        public PublicKey ToPublicKey()
+        {
+            BigInteger mod = ToBigInteger(_p) * ToBigInteger(_q);
+            return new PublicKey(ToUnsignedBigEndian(mod));
         }
 
         [DllImport(DLL_PATH, CallingConvention = CONVENTION)]

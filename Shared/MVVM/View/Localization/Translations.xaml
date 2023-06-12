@@ -280,4 +280,9 @@
   <l:Entry x:Key="Private key generation" PL="Generowanie klucza prywatnego"/>
   <l:Entry x:Key="does not exist." PL="nie istnieje."/>
 
+  <l:Entry x:Key="AES transforming." PL="przekształcania AESem."/>
+  <l:Entry x:Key="writing to AES transformation stream."
+    PL="pisania do strumienia przekształcającego AESem."/>
+  <l:Entry x:Key="RSA encrypting." PL="szyfrowania RSA."/>
+  <l:Entry x:Key="RSA decrypting." PL="odszyfrowywania RSA."/>
 </ResourceDictionary>
