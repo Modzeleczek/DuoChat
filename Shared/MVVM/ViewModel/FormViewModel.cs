@@ -1,5 +1,5 @@
 ﻿using Shared.MVVM.Core;
-using Shared.MVVM.Model;
+using Shared.MVVM.ViewModel.Results;
 
 namespace Shared.MVVM.ViewModel
 {
@@ -39,7 +39,7 @@ namespace Shared.MVVM.ViewModel
 
         protected FormViewModel()
         {
-            Close = new RelayCommand(e => OnRequestClose(new Status(1)));
+            Close = new RelayCommand(e => OnRequestClose(new Cancellation()));
             CancelButtonText = "|Cancel|";
         }
     }

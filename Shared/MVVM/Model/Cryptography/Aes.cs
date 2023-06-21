@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Shared.MVVM.Core;
+using System;
 using System.IO;
 using System.Security.Cryptography;
 using LibraryAes = System.Security.Cryptography.Aes;
@@ -15,17 +16,23 @@ namespace Shared.MVVM.Model.Cryptography
             this.iv = iv;
         }
 
-        public Status Encrypt(byte[] plain)
+        public byte[] Encrypt(byte[] plain)
         {
-            using (var aes = CreateAes())
-            using (var encryptor = aes.CreateEncryptor(key, iv))
+            try
             {
-                var status = AesTransform(encryptor, plain);
-                if (status.Code != 0)
-                    status.Prepend(-1, "|Error occured while| |AES transforming.|"); // -1
-                return status;
+                using (var aes = CreateAes())
+                using (var encryptor = aes.CreateEncryptor(key, iv))
+                    return AesTransform(encryptor, plain);
+            }
+            catch (Error e)
+            {
+                e.Prepend(AesTransformingError());
+                throw;
             }
         }
+
+        private string AesTransformingError() =>
+            "|Error occured while| |AES transforming.|";
 
         private LibraryAes CreateAes()
         {
@@ -35,7 +42,7 @@ namespace Shared.MVVM.Model.Cryptography
             return aes;
         }
 
-        private Status AesTransform(ICryptoTransform transform, byte[] bytes)
+        private byte[] AesTransform(ICryptoTransform transform, byte[] bytes)
         {
             using (var output = new MemoryStream())
             using (var cs = new CryptoStream(output, transform, CryptoStreamMode.Write))
@@ -43,25 +50,28 @@ namespace Shared.MVVM.Model.Cryptography
                 try
                 {
                     cs.Write(bytes, 0, bytes.Length);
-                    return new Status(0, output.GetBuffer());
+                    return output.GetBuffer();
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-                    return new Status(-1, null, "|Error occured while| " +
+                    throw new Error(e, "|Error occured while| " +
                         "|writing to AES transformation stream.|");
                 }
             }
         }
 
-        public Status Decrypt(byte[] cipher)
+        public byte[] Decrypt(byte[] cipher)
         {
-            using (var aes = CreateAes())
-            using (var encryptor = aes.CreateDecryptor(key, iv))
+            try
             {
-                var status = AesTransform(encryptor, cipher);
-                if (status.Code != 0)
-                    status.Prepend(-1, "|Error occured while| |AES transforming.|"); // -1
-                return status;
+                using (var aes = CreateAes())
+                using (var decryptor = aes.CreateDecryptor(key, iv))
+                    return AesTransform(decryptor, cipher);
+            }
+            catch (Error e)
+            {
+                e.Prepend(AesTransformingError());
+                throw;
             }
         }
     }

@@ -2,13 +2,13 @@
 using Newtonsoft.Json;
 using System;
 using System.IO;
-using Shared.MVVM.Model;
+using Shared.MVVM.Core;
 
 namespace Client.MVVM.Model.BsonStorages
 {
     public class BsonStorage
     {
-        protected Status Load<BsonStructure>(string bsonPath) where BsonStructure : new()
+        protected BsonStructure Load<BsonStructure>(string bsonPath) where BsonStructure : new()
         {
             if (File.Exists(bsonPath))
             {
@@ -20,19 +20,19 @@ namespace Client.MVVM.Model.BsonStorages
                     {
                         var ser = new JsonSerializer();
                         var structure = ser.Deserialize<BsonStructure>(bdr);
-                        return new Status(0, structure); // 0
+                        return structure;
                     }
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-                    return new Status(-1, null, "|Error occured while opening file| " +
-                        $"{bsonPath} |for reading.|"); // -1
+                    throw new Error(e, "|Error occured while opening file| " +
+                        $"{bsonPath} |for reading.|");
                 }
             }
-            else return new Status(-2, null, $"|File| {bsonPath} |does not exist.|"); // -2
+            else throw new Error($"|File| {bsonPath} |does not exist.|");
         }
 
-        protected Status Save<BsonStructure>(string bsonPath, BsonStructure data)
+        protected void Save<BsonStructure>(string bsonPath, BsonStructure data)
         {
             // jeżeli plik nie istnieje, to zostanie stworzony
             try
@@ -43,13 +43,13 @@ namespace Client.MVVM.Model.BsonStorages
                 {
                     var ser = new JsonSerializer();
                     ser.Serialize(bdw, data);
-                    return new Status(0); // 0
+                    return;
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return new Status(-1, null, "|Error occured while opening file| " +
-                    $"{bsonPath} |for writing.|"); // -1
+                throw new Error(e, "|Error occured while opening file| " +
+                    $"{bsonPath} |for writing.|");
             }
         }
     }

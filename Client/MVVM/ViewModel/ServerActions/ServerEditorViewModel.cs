@@ -1,7 +1,6 @@
 ﻿using Client.MVVM.Model;
 using Client.MVVM.View.Windows;
 using Shared.MVVM.Core;
-using Shared.MVVM.Model;
 using Shared.MVVM.Model.Networking;
 
 namespace Client.MVVM.ViewModel.ServerActions
@@ -20,39 +19,49 @@ namespace Client.MVVM.ViewModel.ServerActions
 
         protected bool ParseIpAddress(string text, out IPv4Address ipAddress)
         {
-            ipAddress = null;
-            var status = IPv4Address.TryParse(text);
-            if (status.Code != 0)
+            try
             {
-                status.Prepend("|Invalid IP address format.|");
-                Alert(status.Message);
+                ipAddress = IPv4Address.Parse(text);
+                return true;
+            }
+            catch (Error e)
+            {
+                e.Prepend("|Invalid IP address format.|");
+                Alert(e.Message);
+                ipAddress = null;
                 return false;
             }
-            ipAddress = (IPv4Address)status.Data;
-            return true;
         }
 
         protected bool ParsePort(string text, out Port port)
         {
-            port = null;
-            var status = Port.TryParse(text);
-            if (status.Code != 0)
+            try
             {
-                status.Prepend("|Invalid port format.|");
-                Alert(status.Message);
+                port = Port.Parse(text);
+                return true;
+            }
+            catch (Error e)
+            {
+                e.Prepend("|Invalid port format.|");
+                Alert(e.Message);
+                port = null;
                 return false;
             }
-            port = (Port)status.Data;
-            return true;
         }
 
-        protected Status ServerExists(LocalUser user, IPv4Address ipAddress, Port port)
+        protected bool ServerExists(LocalUser user, IPv4Address ipAddress, Port port)
         {
-            var status = user.ServerExists(ipAddress, port);
-            if (status.Code < 0)
-                status.Prepend("|Error occured while| |checking if| |server| " +
+            try { return user.ServerExists(ipAddress, port); }
+            catch (Error e)
+            {
+                e.Prepend("|Error occured while| |checking if| |server| " +
                     "|already exists.|");
-            return status;
+                Alert(e.Message);
+                throw;
+            }
         }
+
+        protected string ServerAlreadyExistsError(IPv4Address ipAddress, Port port) =>
+            $"|Server with IP address| {ipAddress} |and port| {port} |already exists.|";
     }
 }

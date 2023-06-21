@@ -2,7 +2,7 @@
 using Client.MVVM.Model.BsonStorages;
 using Client.MVVM.View.Windows;
 using Shared.MVVM.Core;
-using Shared.MVVM.Model;
+using Shared.MVVM.ViewModel.Results;
 using System.Collections.Generic;
 using System.Windows.Controls;
 
@@ -25,15 +25,15 @@ namespace Client.MVVM.ViewModel
                 RequestClose += () => win.Close();
             });
 
-            Confirm = new RelayCommand(e =>
+            Confirm = new RelayCommand(controls =>
             {
-                var fields = (List<Control>)e;
+                var fields = (List<Control>)controls;
 
                 var userName = ((TextBox)fields[0]).Text;
-                var unValSta = LocalUsersStorage.ValidateUserName(userName);
-                if (unValSta.Code != 0)
+                var userNameVal = LocalUsersStorage.ValidateUserName(userName);
+                if (!(userNameVal is null))
                 {
-                    Alert(unValSta.Message);
+                    Alert(userNameVal);
                     return;
                 }
 
@@ -44,62 +44,67 @@ namespace Client.MVVM.ViewModel
                     Alert("|Passwords do not match.|");
                     return;
                 }
-                var valSta = pc.ValidatePassword(password);
-                if (valSta.Code != 0)
+
+                var passwordVal = pc.ValidatePassword(password);
+                if (!(passwordVal is null))
                 {
-                    Alert(valSta.Message);
+                    Alert(passwordVal);
                     return;
                 }
 
-                var existsStatus = lus.Exists(userName);
-                if (existsStatus.Code < 0)
+                try
                 {
-                    existsStatus.Prepend("|Error occured while| |checking if| |user| " +
-                        "|already exists.");
-                    Alert(existsStatus.Message);
-                    return;
+                    if (lus.Exists(userName))
+                    {
+                        Alert($"|User with name| {userName} |already exists.|");
+                        return;
+                    }
                 }
-                if (existsStatus.Code == 0)
+                catch (Error e)
                 {
-                    Alert(existsStatus.Message);
-                    return;
+                    e.Prepend("|Error occured while| |checking if| |user| " +
+                        "|already exists.|");
+                    Alert(e.Message);
+                    throw;
                 }
+
                 // użytkownik jeszcze nie istnieje
                 var newUser = new LocalUser(userName, password);
-                var addStatus = lus.Add(newUser);
-                if (addStatus.Code != 0)
+                try { lus.Add(newUser); }
+                catch (Error e)
                 {
-                    addStatus.Prepend("|Error occured while| |adding| |user to database.|");
-                    Alert(addStatus.Message);
-                    return;
+                    e.Prepend("|Error occured while| |adding| |user to database.|");
+                    Alert(e.Message);
+                    throw;
                 }
 
                 // zaszyfrowujemy katalog użytkownika jego hasłem
-                var encryptStatus = ProgressBarViewModel.ShowDialog(window,
+                var encryptRes = ProgressBarViewModel.ShowDialog(window,
                     "|Encrypting user's database.|", false,
                     (reporter) =>
                     pc.EncryptDirectory(reporter,
                         newUser.DirectoryPath,
                         pc.ComputeDigest(password, newUser.DbSalt),
                         newUser.DbInitializationVector));
-                if (encryptStatus.Code == 1)
+                if (encryptRes is Cancellation)
                 {
-                    encryptStatus.Prepend("|You should not have canceled database encryption. " +
+                    var e = new Error("|You should not have canceled database encryption. " +
                         "It may have been corrupted.|");
-                    Alert(encryptStatus.Message);
-                    return;
+                    Alert(e.Message);
+                    throw e;
                 }
-                else if (encryptStatus.Code != 0)
+                else if (encryptRes is Failure failure)
                 {
-                    encryptStatus.Prepend("|Error occured while| " +
+                    var e = failure.Reason;
+                    e.Prepend("|Error occured while| " +
                         "|encrypting user's database.| |Database may have been corrupted.|");
-                    Alert(encryptStatus.Message);
-                    return;
+                    Alert(e.Message);
+                    throw e;
                 }
 
                 password.Dispose();
                 confirmedPassword.Dispose();
-                OnRequestClose(new Status(0, newUser));
+                OnRequestClose(new Success(newUser));
             });
 
             var defaultCloseHandler = Close;

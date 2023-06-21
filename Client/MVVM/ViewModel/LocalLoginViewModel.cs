@@ -3,9 +3,9 @@ using Client.MVVM.View.Windows;
 using Shared.MVVM.Core;
 using System.Windows;
 using System.Windows.Controls;
-using Shared.MVVM.Model;
 using System.Collections.Generic;
 using System.Security;
+using Shared.MVVM.ViewModel.Results;
 
 namespace Client.MVVM.ViewModel
 {
@@ -33,12 +33,12 @@ namespace Client.MVVM.ViewModel
                     Alert("|Wrong password.|");
                     return;
                 }
-                SecureString statusData = null;
+                SecureString resultData = null;
                 if (returnEnteredPassword)
-                    statusData = password;
+                    resultData = password;
                 else
                     password.Dispose();
-                OnRequestClose(new Status(0, statusData));
+                OnRequestClose(new Success(resultData));
             });
 
             var defaultCloseHandler = Close;
@@ -50,14 +50,14 @@ namespace Client.MVVM.ViewModel
             });
         }
 
-        public static Status ShowDialog(Window owner,
+        public static Result ShowDialog(Window owner,
             LocalUser user, bool returnEnteredPassword, string title = null)
         {
             var vm = new LocalLoginViewModel(user, returnEnteredPassword);
             vm.Title = title ?? "|Enter your password|";
             vm.ConfirmButtonText = "|OK|";
             new FormWindow(owner, vm).ShowDialog();
-            return vm.Status;
+            return vm.Result;
         }
     }
 }

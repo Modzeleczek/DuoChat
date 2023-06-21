@@ -1,6 +1,6 @@
 ﻿using Server.MVVM.View.Windows;
-using Shared.MVVM.Model;
 using Shared.MVVM.ViewModel.LongBlockingOperation;
+using Shared.MVVM.ViewModel.Results;
 using System.ComponentModel;
 using System.Windows;
 using BaseProgressBarViewModel = Shared.MVVM.ViewModel.LongBlockingOperation.ProgressBarViewModel;
@@ -14,17 +14,16 @@ namespace Server.MVVM.ViewModel
             base(work, description, cancelable, progressBarVisible) { }
 
         // wywoływane po wyjściu z handlera DoWork poprzez return lub wyjątek
-        protected override void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        protected override void Worker_RunWorkerCompleted(object sender,
+            RunWorkerCompletedEventArgs e)
         {
-            var status = (Status)e.Result;
-            /* if (e.Error != null) // wystąpił błąd
-            else if (e.Cancelled) // użytkownik anulował
-            else // zakończono powodzeniem */
-            if (status.Code < 0) Alert(status.Message);
-            OnRequestClose(status); // we wszystkich 3 przypadkach (błąd, anulowanie, powodzenie) informacja dla wywołującego viewmodelu jest w statusie
+            var result = (Result)e.Result;
+            if (result is Failure failure)
+                Alert(failure.Reason.Message);
+            OnRequestClose(result);
         }
 
-        public static Status ShowDialog(Window owner, string operationDescriptionText,
+        public static Result ShowDialog(Window owner, string operationDescriptionText,
             bool cancelable, Work work, bool progressBarVisible = true)
         {
             var vm = new ProgressBarViewModel(work, operationDescriptionText, cancelable,
@@ -39,7 +38,7 @@ namespace Server.MVVM.ViewModel
             };
             vm.BeginWorking();
             win.ShowDialog();
-            return vm.Status;
+            return vm.Result;
         }
 
         private void Alert(string description) => AlertViewModel.ShowDialog(window, description);

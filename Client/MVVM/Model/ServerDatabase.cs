@@ -1,4 +1,5 @@
-﻿using Shared.MVVM.Model;
+﻿using Shared.MVVM.Core;
+using Shared.MVVM.Model;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -11,11 +12,11 @@ namespace Client.MVVM.Model
     {
         public ServerDatabase(string path) : base(path) { }
 
-        private Status QueryErrorStatus(int code) =>
-            new Status(code, null, "|Error occured while| |executing query.|");
+        private Error QueryError(Exception inner = null) =>
+            new Error(inner, "|Error occured while| |executing query.|");
 
-        private Status ConnectionErrorStatus(int code) =>
-            new Status(code, null, "|Error occured while| " +
+        private Error ConnectionError() =>
+            new Error("|Error occured while| " +
                 "|connecting to server's database file.|");
 
         protected override string DDLEmbeddedResource()
@@ -23,10 +24,10 @@ namespace Client.MVVM.Model
             return "Client.MVVM.Model.client.sql";
         }
 
-        private Status DatabaseFileHealthy()
+        private void ValidateDatabase()
         {
             if (!File.Exists(_path))
-                return FileDoesNotExistStatus(-1); // -1
+                throw FileDoesNotExistError();
             try
             {
                 var query = "PRAGMA integrity_check;";
@@ -43,44 +44,39 @@ namespace Client.MVVM.Model
                             {
                                 // w wyniku zapytania nie może być więcej niż tylko 1 rekord "ok"
                                 if (!reader.Read())
-                                    return new Status(0); // 0
+                                    return;
+                                else
+                                    throw new Error("|SQLite integrity check returned " +
+                                        "more than single 'ok' row.|");
                             }
                         }
-                        return new Status(1); // 1
+                        throw new Error("|SQLite integrity check returned no rows.|");
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return new Status(-2, null, "|Error occured while| " +
-                    "|executing SQLite integrity check.|"); // -2
+                throw new Error(e, "|Error occured while| " +
+                    "|executing SQLite integrity check.|");
             }
         }
 
-        private Status DatabaseStateValid()
+        public void AddAccount(Account account)
         {
-            var healthyStatus = DatabaseFileHealthy();
-            if (healthyStatus.Code < 0)
-                return healthyStatus.Prepend(-1, "|Error occured while| " +
-                    "|validating server's database.|"); // -1
-            return healthyStatus; // 0, 1
-        }
-
-        public Status AddAccount(Account account)
-        {
-            var checkStatus = DatabaseStateValid();
-            if (checkStatus.Code != 0)
-                return checkStatus.Prepend(-1); // -1
+            ValidateDatabase();
 
             try
             {
-                var existsStatus = AccountExists(account.Login);
-                if (existsStatus.Code < 0)
-                    return existsStatus.Prepend(-3, "|Error occured while| " +
-                        "|checking if| |account| |already exists.|"); // -3
-                if (existsStatus.Code == 0)
-                    return existsStatus.Prepend(-4); // -4
+                if (AccountExists(account.Login))
+                    throw AccountExistsError(account.Login);
+            }
+            catch (Error e)
+            {
+                e.Prepend(CheckingAccountExistError());
+            }
 
+            try
+            {
                 var query = "INSERT INTO Account (login, private_key) VALUES (@p0, @p1);";
                 using (var con = CreateConnection())
                 using (var cmd = new SQLiteCommand(query, con))
@@ -91,20 +87,16 @@ namespace Client.MVVM.Model
                     con.Open();
                     var count = cmd.ExecuteNonQuery();
                     if (count != 1)
-                        return new Status(-5,
-                            "|Number of rows affected by the query is other than 1.|"); // -5
-                    return new Status(0); // 0
+                        throw new Error(
+                            "|Number of rows affected by the query is other than 1.|");
                 }
             }
-            catch (Exception)
-            { return QueryErrorStatus(-2); } // -2
+            catch (Exception e) { throw QueryError(e); }
         }
 
-        public Status GetAllAccounts()
+        public List<Account> GetAllAccounts()
         {
-            var checkStatus = DatabaseStateValid();
-            if (checkStatus.Code != 0)
-                return checkStatus.Prepend(-1); // -1
+            ValidateDatabase();
 
             try
             {
@@ -127,18 +119,16 @@ namespace Client.MVVM.Model
                                     .FromBytes(privateKey)
                             });
                         }
-                        return new Status(0, list); // 0
+                        return list;
                     }
                 }
             }
-            catch (Exception) { return QueryErrorStatus(-2); } // -2
+            catch (Exception e) { throw QueryError(e); }
         }
 
-        public Status AccountExists(string login)
+        public bool AccountExists(string login)
         {
-            var checkStatus = DatabaseStateValid();
-            if (checkStatus.Code != 0)
-                return checkStatus.Prepend(-1); // -1
+            ValidateDatabase();
 
             try
             {
@@ -150,86 +140,101 @@ namespace Client.MVVM.Model
                     con.Open();
                     var count = (long)cmd.ExecuteScalar(); // nie da się zrzutować na int
                     if (count > 1)
-                        return new Status(-3, null, "|More than one account with login| " +
-                            $"'{login}' |exist.|"); // -3
+                        throw new Error("|More than one account with login| " +
+                            $"'{login}' |exist.|");
                     // powinno być możliwe tylko 0 lub 1, bo "login" to klucz główny tabeli Account
                     if (count == 1)
-                        return new Status(0, null, $"|Account with login| {login} " +
-                            "|already exists.|"); // 0
-                    return new Status(1, null, $"|Account with login| {login} " +
-                            "|does not exist.|"); // 1
+                        return true;
+                    return false;
                 }
             }
-            catch (Exception) { return QueryErrorStatus(-2); } // -2
+            catch (Exception e) { throw QueryError(e); }
         }
 
-        /* public Status GetAccount(string login)
+        /* public Account GetAccount(string login)
         {
-            var checkStatus = DatabaseStateValid();
-            if (checkStatus.Code != 0)
-                return checkStatus.Prepend(-1); // -1
+            ValidateDatabase();
         } */
 
-        public Status UpdateAccount(string login, Account account)
+        public void UpdateAccount(string login, Account account)
         {
-            var checkStatus = DatabaseStateValid();
-            if (checkStatus.Code != 0)
-                return checkStatus.Prepend(-1); // -1
+            ValidateDatabase();
 
             try
             {
-                var existsError = "|Error occured while| " +
-                    "|checking if| |account| |already exists.|";
-                var oldAccExStatus = AccountExists(login);
-                if (oldAccExStatus.Code < 0)
-                    return oldAccExStatus.Prepend(-3, existsError); // -3
-                if (oldAccExStatus.Code == 1) // stare konto nie istnieje
-                    return oldAccExStatus.Prepend(-4); // -4
+                // stare konto nie istnieje
+                if (!AccountExists(login))
+                    throw AccountDoesNotExistError(login);
+            }
+            catch (Error e)
+            {
+                e.Prepend(CheckingAccountExistError());
+                throw;
+            }
 
-                if (account.Login != login) // jeżeli zmieniamy login
+            if (account.Login != login) // jeżeli zmieniamy login
+            {
+                try
                 {
-                    var newAccExStatus = AccountExists(account.Login);
-                    if (newAccExStatus.Code < 0)
-                        return newAccExStatus.Prepend(-5, existsError); // -5
-                    if (newAccExStatus.Code == 0) // nowe konto istnieje
-                        return newAccExStatus.Prepend(-6); // -6
+                    // nowe konto już istnieje
+                    if (AccountExists(account.Login))
+                        throw AccountExistsError(account.Login);
                 }
+                catch (Error e)
+                {
+                    e.Prepend(CheckingAccountExistError());
+                    throw;
+                }
+            }
 
-                var query = "UPDATE Account SET login = @p0, private_key = @p1 WHERE login = @p3;";
+            try
+            {
+                var query = "UPDATE Account SET login = @p0, private_key = @p1 WHERE login = @p2;";
                 using (var con = CreateConnection())
                 using (var cmd = new SQLiteCommand(query, con))
                 {
                     cmd.Parameters.AddWithValue("@p0", account.Login);
                     var bytes = account.PrivateKey.ToBytes();
                     cmd.Parameters.Add("@p1", DbType.Binary, bytes.Length).Value = bytes;
-                    cmd.Parameters.AddWithValue("@p3", login);
+                    cmd.Parameters.AddWithValue("@p2", login);
                     con.Open();
                     var count = cmd.ExecuteNonQuery();
+                    /* po sprawdzeniu na górze, że jest dokładnie 1 wiersz z loginem
+                    "login" (nie account.Login), nie powinno się wykonać */
                     if (count != 1)
-                        return new Status(-7,
-                            "|Number of rows affected by the query is other than 1.|"); // -7
-                    return new Status(0); // 0
+                        throw new Error(
+                            "|Number of rows affected by the query is other than 1.|");
                 }
             }
-            catch (Exception)
-            { return QueryErrorStatus(-2); } // -2
+            catch (Exception e) { throw QueryError(e); }
         }
 
-        public Status DeleteAccount(string login)
+        private Error AccountDoesNotExistError(string login) =>
+            new Error($"|Account with login| {login} |does not exist.|");
+
+        private string CheckingAccountExistError() =>
+            "|Error occured while| |checking if| |account| |already exists.|";
+
+        private Error AccountExistsError(string login) =>
+            new Error($"|Account with login| {login} |already exists.|");
+
+        public void DeleteAccount(string login)
         {
-            var checkStatus = DatabaseStateValid();
-            if (checkStatus.Code != 0)
-                return checkStatus.Prepend(-1); // -1
+            ValidateDatabase();
 
             try
             {
-                var existsStatus = AccountExists(login);
-                if (existsStatus.Code < 0)
-                    return existsStatus.Prepend(-3, "|Error occured while| " +
-                        "|checking if| |account| |already exists.|"); // -3
-                if (existsStatus.Code == 1)
-                    return existsStatus.Prepend(-4); // -4
+                if (!AccountExists(login))
+                    throw AccountDoesNotExistError(login);
+            }
+            catch (Error e)
+            {
+                e.Prepend(CheckingAccountExistError());
+                throw;
+            }
 
+            try
+            {
                 var query = "DELETE FROM Account WHERE login = @p0;";
                 using (var con = CreateConnection())
                 using (var cmd = new SQLiteCommand(query, con))
@@ -237,13 +242,14 @@ namespace Client.MVVM.Model
                     cmd.Parameters.AddWithValue("@p0", login);
                     con.Open();
                     var count = cmd.ExecuteNonQuery();
+                    /* AccountExists wyrzuciłoby wyjątek, jeżeli istniałoby
+                    kilka kont o tym samym loginie, który jest kluczem głównym */
                     if (count != 1)
-                        return new Status(-5,
-                            "|Number of rows affected by the query is other than 1.|"); // -5
-                    return new Status(0); // 0
+                        throw new Error(
+                            "|Number of rows affected by the query is other than 1.|");
                 }
             }
-            catch (Exception) { return QueryErrorStatus(-2); } // -2
+            catch (Exception e) { throw QueryError(e); }
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using Shared.MVVM.ViewModel.Results;
+using System.ComponentModel;
 
 namespace Shared.MVVM.ViewModel.LongBlockingOperation
 {
@@ -25,7 +26,7 @@ namespace Shared.MVVM.ViewModel.LongBlockingOperation
 
         public bool CancellationPending { get => worker.CancellationPending; }
 
-        public object Result { set => args.Result = value; }
+        public Result Result { set => args.Result = value; }
         #endregion
 
         #region Fields

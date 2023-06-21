@@ -1,5 +1,5 @@
 ﻿using Shared.MVVM.Core;
-using Shared.MVVM.Model;
+using Shared.MVVM.ViewModel.Results;
 
 namespace Shared.MVVM.ViewModel
 {
@@ -10,7 +10,7 @@ namespace Shared.MVVM.ViewModel
         protected ConfirmationViewModel(string title, string description,
             string cancelButtonText, string confirmButtonText)
         {
-            Confirm = new RelayCommand(e => OnRequestClose(new Status(0)));
+            Confirm = new RelayCommand(e => OnRequestClose(new Success()));
 
             // setter w FormViewModel używa indexera Translatora do tłumaczenia
             Title = title;

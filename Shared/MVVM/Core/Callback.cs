@@ -1,6 +1,6 @@
-﻿using Shared.MVVM.Model;
+﻿using Shared.MVVM.ViewModel.Results;
 
 namespace Shared.MVVM.Core
 {
-    public delegate void Callback(Status status);
+    public delegate void Callback(Result result);
 }

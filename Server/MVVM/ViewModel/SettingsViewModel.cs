@@ -3,6 +3,7 @@ using Shared.MVVM.Core;
 using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking;
 using Shared.MVVM.View.Windows;
+using Shared.MVVM.ViewModel.Results;
 using System;
 using System.IO;
 using System.Text;
@@ -103,25 +104,25 @@ namespace Server.MVVM.ViewModel
 
             GenerateGuid = new RelayCommand(_ =>
             {
-                var status = ConfirmationViewModel.ShowDialog(window,
+                var result = ConfirmationViewModel.ShowDialog(window,
                     "|Do you want to generate a new GUID? Users may not trust a server changing its GUID without prior notice.|",
                     "|Generate GUID|", "|No|", "|Yes|");
-                if (status.Code == 0)
+                if (result is Success)
                     Guid = System.Guid.NewGuid().ToString();
             });
 
             GeneratePrivateKey = new RelayCommand(_ =>
             {
-                var confStatus = ConfirmationViewModel.ShowDialog(window,
+                var result = ConfirmationViewModel.ShowDialog(window,
                     "|Do you want to generate a new private key? Server's public key is derived from private key and users may not trust a server changing it without prior notice.|",
                     "|Generate private key|", "|No|", "|Yes|");
-                if (confStatus.Code == 0)
+                if (result is Success)
                 {
-                    var genStatus = ProgressBarViewModel.ShowDialog(window,
+                    var genRes = ProgressBarViewModel.ShowDialog(window,
                         "|Private key generation|", true,
                         (reporter) => Shared.MVVM.Model.Cryptography.PrivateKey.Random(reporter));
-                    if (genStatus.Code == 1) return; // anulowano
-                    PrivateKey = ((PrivateKey)genStatus.Data).ToString();
+                    if (!(genRes is Success success)) return; // anulowano (Cancellation)
+                    PrivateKey = ((PrivateKey)success.Data).ToString();
                 }
             });
 
@@ -149,49 +150,57 @@ namespace Server.MVVM.ViewModel
         private bool ParsePrivateKey(out PrivateKey privateKey)
         {
             privateKey = null;
+
             if (string.IsNullOrEmpty(PrivateKey))
             {
                 Alert("|Generate or enter a private key.|");
                 return false;
             }
-            var status = ProgressBarViewModel.ShowDialog(window,
+
+            var result = ProgressBarViewModel.ShowDialog(window,
                 "|Private key validation|", true,
-                (reporter) => Shared.MVVM.Model.Cryptography.PrivateKey.TryParse(
+                (reporter) => Shared.MVVM.Model.Cryptography.PrivateKey.Parse(
                     reporter, PrivateKey));
-            if (status.Code == 1) return false; // anulowano
-            // błędy zostały już wyświetlone w ProgressBarViewModelu
-            if (status.Code < 0)
+
+            // anulowano lub błąd (błędy zostały już wyświetlone w ProgressBarViewModelu)
+            if (!(result is Success success))
                 return false;
-            privateKey = (PrivateKey)status.Data;
+
+            // powodzenie
+            privateKey = (PrivateKey)success.Data;
             return true;
         }
 
         private bool ParseIpAddress(out IPv4Address ipAddress)
         {
-            ipAddress = null;
-            var status = IPv4Address.TryParse(IpAddress);
-            if (status.Code != 0)
+            try
             {
-                status.Prepend("|Invalid IP address format.|");
-                Alert(status.Message);
+                ipAddress = IPv4Address.Parse(IpAddress);
+                return true;
+            }
+            catch (Error e)
+            {
+                e.Prepend("|Invalid IP address format.|");
+                Alert(e.Message);
+                ipAddress = null;
                 return false;
             }
-            ipAddress = (IPv4Address)status.Data;
-            return true;
         }
 
         private bool ParsePort(out Port port)
         {
-            port = null;
-            var status = Shared.MVVM.Model.Networking.Port.TryParse(Port);
-            if (status.Code != 0)
+            try
             {
-                status.Prepend("|Invalid port format.|");
-                Alert(status.Message);
+                port = Shared.MVVM.Model.Networking.Port.Parse(Port);
+                return true;
+            }
+            catch (Error e)
+            {
+                e.Prepend("|Invalid port format.|");
+                Alert(e.Message);
+                port = null;
                 return false;
             }
-            port = (Port)status.Data;
-            return true;
         }
 
         private bool ParseCapacity(out int capacity)

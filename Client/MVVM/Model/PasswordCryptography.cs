@@ -1,22 +1,25 @@
-﻿using Shared.MVVM.Model;
+﻿using Shared.MVVM.Core;
 using Shared.MVVM.ViewModel.LongBlockingOperation;
+using Shared.MVVM.ViewModel.Results;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace Client.MVVM.Model
 {
     public class PasswordCryptography
     {
-        public Status ValidatePassword(SecureString password)
+        public string ValidatePassword(SecureString password)
         {
             if (password == null)
-                return new Status(1, null, "|Specify a password.|");
+                return "|Specify a password.|";
             IntPtr bstr = IntPtr.Zero;
             if (password.Length < 8)
-                return new Status(2, null, "|Password should be at least 8 characters long.|");
+                return "|Password should be at least 8 characters long.|";
             try
             {
                 bstr = Marshal.SecureStringToBSTR(password);
@@ -27,14 +30,14 @@ namespace Client.MVVM.Model
                         if (!char.IsWhiteSpace(*p))
                         { allWhiteSpace = false; break; }
                     if (allWhiteSpace)
-                        return new Status(3, null, "|Specify a password.|");
+                        return "|Specify a password.|";
 
                     bool hasDigit = false;
                     for (char* p = (char*)bstr.ToPointer(); *p != 0; ++p)
                         if (*p >= '0' && *p <= '9')
                         { hasDigit = true; break; }
                     if (!hasDigit)
-                        return new Status(4, null, "|Password should contain at least one digit.|");
+                        return "|Password should contain at least one digit.|";
 
                     bool hasSpecial = false;
                     for (char* p = (char*)bstr.ToPointer(); *p != 0; ++p)
@@ -42,9 +45,9 @@ namespace Client.MVVM.Model
                             (*p >= '0' && *p <= '9')))
                         { hasSpecial = true; break; }
                     if (!hasSpecial)
-                        return new Status(5, null, "|Password should contain at least one special character (not a letter or digit).|");
+                        return "|Password should contain at least one special character (not a letter or digit).|";
                 }
-                return new Status(0);
+                return null;
             }
             finally
             {
@@ -132,21 +135,22 @@ namespace Client.MVVM.Model
             }
         }
 
+        // TODO: wydzielić wszystko poniżej do nowej klasy (np. FileEncryptor)
         public void EncryptFile(ProgressReporter reporter,
             string path, byte[] key, byte[] initializationVector)
         {
-            var status = EncryptSingleFile(reporter, path, key, initializationVector);
-            FileTransformationCleanup(reporter, status, path);
+            var result = EncryptSingleFile(reporter, path, key, initializationVector);
+            FileTransformationCleanup(reporter, result, path);
         }
 
         public void DecryptFile(ProgressReporter reporter,
             string path, byte[] key, byte[] initializationVector)
         {
-            var status = EncryptSingleFile(reporter, path, key, initializationVector);
-            FileTransformationCleanup(reporter, status, path);
+            var result = EncryptSingleFile(reporter, path, key, initializationVector);
+            FileTransformationCleanup(reporter, result, path);
         }
-        
-        private Status EncryptSingleFile(ProgressReporter reporter,
+
+        private Result EncryptSingleFile(ProgressReporter reporter,
             string path, byte[] key, byte[] initializationVector)
         {
             using (var aes = CreateAes())
@@ -159,8 +163,8 @@ namespace Client.MVVM.Model
                 return TransformFile(reporter, inFS, cs);
             }
         }
-            
-        private Status DecryptSingleFile(ProgressReporter reporter,
+
+        private Result DecryptSingleFile(ProgressReporter reporter,
             string path, byte[] key, byte[] initializationVector)
         {
             using (var aes = CreateAes())
@@ -183,7 +187,7 @@ namespace Client.MVVM.Model
         }
 
         // https://stackoverflow.com/a/32437759/14357934
-        private Status TransformFile(ProgressReporter reporter, Stream readFrom, Stream writeTo)
+        private Result TransformFile(ProgressReporter reporter, Stream readFrom, Stream writeTo)
         {
             const int bufferSize = 4096;
             reporter.FineProgress = 0;
@@ -201,12 +205,12 @@ namespace Client.MVVM.Model
                 while (true)
                 {
                     if (timeoutCounter == 1000)
-                        return new Status(-1, null, "|File read timed out.|");
+                        return new Failure("|File read timed out.|");
                     if (remainingBytes == 0) break;
                     try
                     { bytesRead = readFrom.Read(buffer, position, remainingBytes); }
-                    catch (Exception)
-                    { return new Status(-2, null, "|Error occured while reading file.|"); }
+                    catch (Exception e)
+                    { return new Failure(e, "|Error occured while reading file.|"); }
                     if (bytesRead == 0) break;
                     // O liczbę bajtów odczytanych w aktualnej iteracji zmniejszamy liczbę pozostałych bajtów i
                     remainingBytes -= bytesRead;
@@ -218,36 +222,55 @@ namespace Client.MVVM.Model
                 remainingBytes = bufferSize - remainingBytes; // zapisujemy całkowitą liczbę odczytanych bajtów, która zawsze jest mniejsza lub równa rozmiarowi bufora
                 try
                 { writeTo.Write(buffer, position, remainingBytes); }
-                catch (Exception)
-                { return new Status(-3, null, "|Error occured while writing file.|"); }
+                catch (Exception e)
+                { return new Failure(e, "|Error occured while writing file.|"); }
                 reporter.FineProgress += remainingBytes;
                 // int progress = (int)(((double)bytesProcessed / inStreamSize) * 100.0);
                 if (reporter.CancellationPending)
-                    return new Status(1);
+                    return new Cancellation();
                 // Jeżeli bez problemów doszliśmy do końca pliku (EOF)
                 // Przerywamy pętlę while (true).
                 if (bytesRead == 0)
-                    return new Status(0);
+                    return new Success();
             }
         }
 
         private void FileTransformationCleanup(ProgressReporter reporter,
-            Status status, string path)
+            Result result, string path)
         {
-            if (reporter.CancellationPending)
-                status = new Status(1);
+            if (!(result is Failure) && reporter.CancellationPending)
+                result = new Cancellation();
+
             var tempPath = path + ".temp";
-            if (status.Code == 0)
+            // if (result is Failure || result is Cancellation)
+            if (!(result is Success))
             {
-                File.Delete(path); // usuwamy stary plik
-                // zmieniamy tymczasową nazwę nowego na nazwę starego
-                File.Move(tempPath, path);
+                try { File.Delete(tempPath); }
+                catch (Exception e) { result = new Failure(e, FileDeleteError(tempPath)); }
             }
-            // jeżeli użytkownik anulował lub wystąpił błąd, usuwamy nowy plik
-            else if (File.Exists(tempPath))
-                File.Delete(tempPath);
-            reporter.Result = status;
+            else
+            {
+                // usuwamy stary plik
+                try { File.Delete(path); }
+                catch (Exception e)
+                {
+                    result = new Failure(e, FileDeleteError(path));
+                    goto FINISH;
+                }
+
+                // zmieniamy tymczasową nazwę nowego na nazwę starego
+                try { File.Move(tempPath, path); }
+                catch (Exception e) { result = new Failure(e, FileMoveError(tempPath, path)); }
+            }
+        FINISH:
+            reporter.Result = result;
         }
+
+        private string FileDeleteError(string path) =>
+            $"|Error occured while| |deleting| |file| {path}.";
+
+        private string FileMoveError(string source, string destination) =>
+            $"|Error occured while| |moving| |file| {source} to {destination}.";
 
         public void EncryptDirectory(ProgressReporter reporter,
             string path, byte[] key, byte[] initializationVector) =>
@@ -257,7 +280,7 @@ namespace Client.MVVM.Model
             string path, byte[] key, byte[] initializationVector) =>
             TransformDirectory(reporter, path, key, initializationVector, DecryptSingleFile);
 
-        private delegate Status FileTransformation(ProgressReporter reporter,
+        private delegate Result FileTransformation(ProgressReporter reporter,
             string path, byte[] key, byte[] initializationVector);
 
         private void TransformDirectory(ProgressReporter reporter,
@@ -267,44 +290,77 @@ namespace Client.MVVM.Model
             var files = Directory.GetFiles(path);
             reporter.CoarseMax = files.Length - 1;
             reporter.CoarseProgress = 0;
-            var status = new Status(0);
+            Result result = new Success();
             for (int i = 0; i < files.Length; ++i)
             {
-                if (reporter.CancellationPending) // nie ustawiamy tu status.Code = 1, bo zostanie ustawione w DirectoryTransformationCleanup
+                if (reporter.CancellationPending)
+                {
+                    result = new Cancellation();
                     goto DIRECTORY_CLEANUP;
-                status = transformation(reporter, files[i], key, initializationVector);
-                if (status.Code != 0)
+                }
+                result = transformation(reporter, files[i], key, initializationVector);
+                if (!(result is Success))
                     goto DIRECTORY_CLEANUP;
                 reporter.CoarseProgress += 1;
             }
         DIRECTORY_CLEANUP:
-            DirectoryTransformationCleanup(reporter, status, files);
+            DirectoryTransformationCleanup(reporter, result, files);
         }
 
         private void DirectoryTransformationCleanup(ProgressReporter reporter,
-            Status status, string[] files)
+            Result result, string[] files)
         {
-            if (reporter.CancellationPending)
-                status = new Status(1);
-            if (status.Code == 0)
+            if (!(result is Failure) && reporter.CancellationPending)
+                result = new Cancellation();
+
+            LinkedList<Error> errors = new LinkedList<Error>();
+            if (!(result is Success))
             {
-                foreach (var f in files)
-                {
-                    var temp = f + ".temp";
-                    File.Delete(f); // usuwamy stary plik
-                    // zmieniamy tymczasową nazwę nowego na nazwę starego
-                    File.Move(temp, f);
-                }
-            }
-            // jeżeli użytkownik anulował lub wystąpił błąd, usuwamy nowe pliki
-            else
+                // jeżeli użytkownik anulował lub wystąpił błąd, usuwamy nowe pliki
                 foreach (var f in files)
                 {
                     var temp = f + ".temp";
                     if (File.Exists(temp))
-                        File.Delete(temp);
+                    {
+                        try { File.Delete(temp); }
+                        catch (Exception e) { errors.AddLast(new Error(e, FileDeleteError(temp))); }
+                    }
                 }
-            reporter.Result = status;
+            }
+            else
+            {
+                foreach (var f in files)
+                {
+                    var temp = f + ".temp";
+                    // usuwamy stary plik
+                    try { File.Delete(f); }
+                    catch (Exception e)
+                    {
+                        errors.AddLast(new Error(e, FileDeleteError(f)));
+                        continue;
+                    }
+
+                    // zmieniamy tymczasową nazwę nowego na nazwę starego
+                    try { File.Move(temp, f); }
+                    catch (Exception e) { errors.AddLast(new Error(e, FileMoveError(temp, f))); }
+                }
+            }
+
+            if (errors.Count > 0)
+                result = new Failure(MergeErrorMessages(errors));
+
+            reporter.Result = result;
+        }
+
+        private string MergeErrorMessages(LinkedList<Error> errors)
+        {
+            var sb = new StringBuilder();
+            foreach (var e in errors)
+            {
+                sb.Append(e.Message);
+                sb.Append('\n');
+            }
+            return sb.ToString();
         }
     }
 }

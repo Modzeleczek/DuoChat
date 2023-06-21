@@ -1,4 +1,5 @@
-﻿using Shared.MVVM.Model.Networking;
+﻿using Shared.MVVM.Core;
+using Shared.MVVM.Model.Networking;
 using System;
 using System.Globalization;
 using System.Windows.Data;
@@ -19,9 +20,8 @@ namespace Client.MVVM.View.Converters
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var status = Port.TryParse((string)value);
-            if (status.Code != 0) return null;
-            return (Port)status.Data;
+            try { return Port.Parse((string)value); }
+            catch (Error) { return null; }
         }
     }
 }

@@ -1,4 +1,5 @@
 using Shared.MVVM.ViewModel.LongBlockingOperation;
+using Shared.MVVM.ViewModel.Results;
 using System;
 using System.IO;
 using System.Numerics;
@@ -27,7 +28,7 @@ namespace Shared.MVVM.Model.Cryptography
             reporter.Result = RandomInner(reporter);
         }
 
-        private static Status RandomInner(ProgressReporter reporter)
+        private static Result RandomInner(ProgressReporter reporter)
         {
             reporter.FineMax = 2;
             reporter.FineProgress = 0;
@@ -51,13 +52,15 @@ namespace Shared.MVVM.Model.Cryptography
 
                 p = FirstProbablePrimeGreaterThan(p);
                 reporter.FineProgress = 1;
-                if (reporter.CancellationPending) return new Status(1);
+                if (reporter.CancellationPending)
+                    return new Cancellation();
 
                 q = FirstProbablePrimeGreaterThan(q);
                 reporter.FineProgress = 2;
-                if (reporter.CancellationPending) return new Status(1);
+                if (reporter.CancellationPending)
+                    return new Cancellation();
 
-                return new Status(0, new PrivateKey(
+                return new Success(new PrivateKey(
                     ToUnsignedBigEndian(p), ToUnsignedBigEndian(q)));
             }
         }
@@ -83,56 +86,60 @@ namespace Shared.MVVM.Model.Cryptography
             }
         }
 
-        public static void TryParse(ProgressReporter reporter, string text)
+        public static void Parse(ProgressReporter reporter, string text)
         {
-            reporter.Result = TryParseInner(reporter, text);
+            reporter.Result = ParseInner(reporter, text);
         }
 
-        private static Status TryParseInner(ProgressReporter reporter, string text)
+        private static Result ParseInner(ProgressReporter reporter, string text)
         {
             reporter.FineMax = 2;
             reporter.FineProgress = 0;
 
             if (text == null)
-                return new Status(-1, null, "|String is null.|"); // -1
+                return new Failure("|String is null.|");
 
             var split = text.Split(';');
             if (split.Length != 2)
-                return new Status(-2, null,
-                    "|String does not consist of two parts separated with semicolon.|"); // -2
+                return new Failure(
+                    "|String does not consist of two parts separated with semicolon.|");
 
             // np. gdy text == ";"
             if (string.IsNullOrEmpty(split[0]))
-                return new Status(-3, null, "|First| |number| (p) |is empty.|"); // -3
+                return new Failure("|First| |number| (p) |is empty.|");
 
             if (string.IsNullOrEmpty(split[1]))
-                return new Status(-4, null, "|Second| |number| (q) |is empty.|"); // -4
+                return new Failure("|Second| |number| (q) |is empty.|");
 
             byte[] p = null;
-            try
-            { p = Convert.FromBase64String(split[0]); }
-            catch (FormatException)
-            { return new Status(-5, null, "|First| |number| (p) " +
-                "|is not valid Base64 string.|"); } // -5
+            try { p = Convert.FromBase64String(split[0]); }
+            catch (FormatException e)
+            {
+                return new Failure(e, "|First| |number| (p) " +
+                    "|is not valid Base64 string.|");
+            }
 
             byte[] q = null;
-            try
-            { q = Convert.FromBase64String(split[1]); }
-            catch (FormatException)
-            { return new Status(-6, null, "|Second| |number (q) " +
-                "|is not valid Base64 string.|"); } // -6
+            try { q = Convert.FromBase64String(split[1]); }
+            catch (FormatException e)
+            {
+                return new Failure(e, "|Second| |number (q) " +
+                    "|is not valid Base64 string.|");
+            }
 
             if (!IsProbablePrime(p))
-                return new Status(-7, null, "|First| |number| (p) |is not prime.|"); // -7
+                return new Failure("|First| |number| (p) |is not prime.|");
             reporter.FineProgress = 1;
-            if (reporter.CancellationPending) return new Status(1);
+            if (reporter.CancellationPending)
+                return new Cancellation();
 
             if (!IsProbablePrime(q))
-                return new Status(-8, null, "|Second| |number| (q) |is not prime.|"); // -8
+                return new Failure("|Second| |number| (q) |is not prime.|");
             reporter.FineProgress = 2;
-            if (reporter.CancellationPending) return new Status(1);
+            if (reporter.CancellationPending)
+                return new Cancellation();
 
-            return new Status(0, new PrivateKey(p, q));
+            return new Success(new PrivateKey(p, q));
         }
 
         private static bool IsProbablePrime(byte[] number)

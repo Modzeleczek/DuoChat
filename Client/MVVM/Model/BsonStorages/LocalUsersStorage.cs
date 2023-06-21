@@ -1,5 +1,5 @@
 ﻿using Client.MVVM.Model.JsonSerializables;
-using Shared.MVVM.Model;
+using Shared.MVVM.Core;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,7 +13,7 @@ namespace Client.MVVM.Model.BsonStorages
 
         private string usersBsonPath => Path.Combine(USERS_DIRECTORY_NAME, USERS_BSON_NAME);
 
-        private class BsonStructure
+        public class BsonStructure
         {
             public bool IsLogged { get; set; } = false;
             public string LoggedUserName { get; set; } = "";
@@ -22,45 +22,42 @@ namespace Client.MVVM.Model.BsonStorages
             public List<LocalUserSerializable> Users { get; set; } = new List<LocalUserSerializable>();
         }
 
-        private Status UserAlreadyExistsStatus(int code, string name) =>
-            new Status(code, null, $"|User with name| {name} |already exists.|");
+        private Error UserAlreadyExistsError(string name) =>
+            new Error($"|User with name| {name} |already exists.|");
 
-        private Status UserDoesNotExistStatus(int code, string name) =>
-            new Status(code, null, $"|User with name| {name} |does not exist.|");
+        private Error UserDoesNotExistError(string name) =>
+            new Error($"|User with name| {name} |does not exist.|");
 
-        private Status UsersDirectoryAlreadyExistsStatus(int code, string name) =>
-            new Status(code, null, $"|User's directory with name| {name} |already exists.|");
+        private Error UsersDirectoryAlreadyExistsError(string name) =>
+            new Error($"|User's directory with name| {name} |already exists.|");
 
-        private Status UsersDirectoryDoesNotExistStatus(int code, string name) =>
-            new Status(code, null, $"|User's directory with name| {name} |does not exist.|");
+        private Error UsersDirectoryDoesNotExistError(string name) =>
+            new Error($"|User's directory with name| {name} |does not exist.|");
 
-        public Status EnsureValidDatabaseState()
+        public BsonStructure EnsureValidDatabaseState()
         {
             var path = USERS_DIRECTORY_NAME;
             if (!Directory.Exists(path))
             {
-                try
-                { Directory.CreateDirectory(path); }
-                catch (Exception)
+                try { Directory.CreateDirectory(path); }
+                catch (Exception e)
                 {
-                    return new Status(-1, null, "|Error occured while| |creating| " +
-                        $"|directory| {path}."); // -1
+                    throw new Error(e, "|Error occured while| |creating| " +
+                        $"|directory| {path}.");
                 }
             }
             path = usersBsonPath;
             if (!File.Exists(path))
             {
-                var saveStatus = Save(new BsonStructure());
-                if (saveStatus.Code != 0)
-                    return saveStatus.Prepend(-2, "|Error occured while| |creating| " +
-                        $"|file| {path}."); // -2
+                try { Save(new BsonStructure()); }
+                catch (Error e)
+                {
+                    e.Prepend($"|Error occured while| |creating| |file| {path}.");
+                    throw;
+                }
             }
 
-            var loadStatus = Load<BsonStructure>(usersBsonPath);
-            if (loadStatus.Code != 0)
-                return loadStatus.Prepend(-3); // -3
-
-            var structure = (BsonStructure)loadStatus.Data;
+            var structure = Load<BsonStructure>(usersBsonPath);
             /* usuwamy użytkowników obecnych w BSONie, ale
             nieposiadających swoich katalogów z plikiem "servers.bson" */
             var users = structure.Users;
@@ -79,10 +76,13 @@ namespace Client.MVVM.Model.BsonStorages
             if (shouldOverwrite)
             {
                 structure.Users = filteredUsers;
-                var saveStatus = Save(structure);
-                if (saveStatus.Code != 0)
-                    return saveStatus.Prepend(-4, "|Error occured while| |deleting| " +
-                        "|users| |not having| |a directory|."); // -4
+                try { Save(structure); }
+                catch (Error e)
+                {
+                    e.Prepend("|Error occured while| |deleting| " +
+                        "|users| |not having| |a directory|.");
+                    throw;
+                }
             }
 
             // usuwamy pliki i katalogi z katalogu "databases", do których nie ma w BSONie użytkowników
@@ -91,23 +91,22 @@ namespace Client.MVVM.Model.BsonStorages
             foreach (var u in users)
                 hashSet.Add(u.Name);
             DirectoryInfo di;
-            try
-            { di = new DirectoryInfo(USERS_DIRECTORY_NAME); }
-            catch (Exception)
+            try { di = new DirectoryInfo(USERS_DIRECTORY_NAME); }
+            catch (Exception e)
             {
-                return new Status(-5, null, "|Error occured while| " +
+                throw new Error(e, "|Error occured while| " +
                     "|listing files and subdirectories in directory|" +
-                    $"'{USERS_DIRECTORY_NAME}'."); // -5
+                    $"'{USERS_DIRECTORY_NAME}'.");
             }
             foreach (FileInfo file in di.GetFiles())
             {
                 if (file.Name != USERS_BSON_NAME)
                 {
                     try { file.Delete(); }
-                    catch (Exception)
+                    catch (Exception e)
                     {
-                        return new Status(-6, null, "|Error occured while| " +
-                            $"|deleting| |file| {file.Name}."); // -6
+                        throw new Error(e, "|Error occured while| " +
+                            $"|deleting| |file| {file.Name}.");
                     }
                 }
             }
@@ -116,103 +115,101 @@ namespace Client.MVVM.Model.BsonStorages
                 if (!hashSet.Contains(dir.Name))
                 {
                     try { dir.Delete(true); }
-                    catch (Exception)
+                    catch (Exception e)
                     {
-                        return new Status(-7, null, "|Error occured while| " +
-                            $"|deleting| |directory| {dir.Name}."); // -7
+                        throw new Error(e, "|Error occured while| " +
+                            $"|deleting| |directory| {dir.Name}.");
                     }
                 }
             }
-            return new Status(0, structure); // 0
+            return structure;
         }
 
-        private Status Load()
+        private BsonStructure Load()
         {
-            var ensureStatus = EnsureValidDatabaseState();
-            if (ensureStatus.Code != 0)
-                return ensureStatus.Prepend(-1, "|Error occured while| " +
-                    "|ensuring valid user database state.|"); // -1
-            return ensureStatus; // 0
+            try { return EnsureValidDatabaseState(); }
+            catch (Error e)
+            {
+                e.Prepend("|Error occured while| " +
+                    "|ensuring valid user database state.|");
+                throw;
+            }
         }
 
-        private Status Save(BsonStructure users) => Save(usersBsonPath, users);
+        private void Save(BsonStructure users) => Save(usersBsonPath, users);
 
         private string UserDirectoryPath(string userName) =>
             Path.Combine(USERS_DIRECTORY_NAME, userName);
 
-        public Status Add(LocalUser user)
+        public void Add(LocalUser user)
         {
-            var loadStatus = Load();
-            if (loadStatus.Code != 0)
-                return loadStatus.Prepend(-1); // -1
-            var structure = (BsonStructure)loadStatus.Data;
+            var structure = Load();
 
             var users = structure.Users;
             var name = user.Name;
             if (Exists(name, users))
-                return UserAlreadyExistsStatus(-2, name); // -2
+                throw UserAlreadyExistsError(name);
 
             var directoryPath = UserDirectoryPath(name);
             if (Directory.Exists(directoryPath))
-                return UsersDirectoryAlreadyExistsStatus(-3, name); // -3
+                throw UsersDirectoryAlreadyExistsError(name);
 
             users.Add(user.ToSerializable());
-            var saveStatus = Save(structure);
-            if (saveStatus.Code != 0)
-                return saveStatus.Prepend(-4, "|Error occured while| " +
-                    "|saving| |user database file.|"); // -4
-
-            try
-            { Directory.CreateDirectory(directoryPath); }
-            catch (Exception)
+            try { Save(structure); }
+            catch (Error e)
             {
-                var createDirStatus = new Status(-5, null, "|Error occured while| " +
+                e.Prepend("|Error occured while| |saving| |user database file.|");
+                throw;
+            }
+
+            try { Directory.CreateDirectory(directoryPath); }
+            catch (Exception e)
+            {
+                var createDirError = new Error(e, "|Error occured while| " +
                     "|creating| |user's directory.|");
 
                 users.RemoveAt(users.Count - 1); // usuwamy ostatnio dodanego
-                saveStatus = Save(structure);
-                if (saveStatus.Code != 0)
-                    return createDirStatus.Append(-6, "|Error occured while| " +
-                        "|deleting| |the newly-added| |user.| " + saveStatus.Message); // -6
-                return createDirStatus; // -5
+                try { Save(structure); }
+                catch (Error saveError)
+                {
+                    createDirError.Append("|Error occured while| " +
+                        "|deleting| |the newly-added| |user.| " + saveError.Message);
+                }
+                throw createDirError;
             }
 
-            var ensureStatus = new ServersStorage(user).EnsureValidDatabaseState();
-            if (ensureStatus.Code != 0)
+            try { new ServersStorage(user).EnsureValidDatabaseState(); }
+            catch (Error ensureError)
             {
-                ensureStatus.Prepend(-7, "|Error occured while| " +
-                    "|creating| |user's server database.|"); // -7
+                ensureError.Prepend("|Error occured while| " +
+                    "|creating| |user's server database.|");
 
                 users.RemoveAt(users.Count - 1); // usuwamy ostatnio dodanego
-                saveStatus = Save(structure);
-                if (saveStatus.Code != 0)
-                    ensureStatus.Append(-8, "|Error occured while| " +
-                        "|deleting| |the newly-added| |user.| " + saveStatus.Message); // -8
+                try { Save(structure); }
+                catch (Error saveError)
+                {
+                    ensureError.Append("|Error occured while| " +
+                        "|deleting| |the newly-added| |user.| " + saveError.Message);
+                }
 
                 try { Directory.Delete(directoryPath); }
                 catch (Exception)
                 {
-                    ensureStatus.Append(-9, "|Error occured while| " +
-                        "|deleting| |the newly-added user's directory.|"); // -9
+                    ensureError.Append("|Error occured while| " +
+                        "|deleting| |the newly-added user's directory.|");
                 }
-                return ensureStatus;
+                throw ensureError;
             }
-
-            return new Status(0); // 0
         }
 
-        public Status GetAll()
+        public List<LocalUser> GetAll()
         {
-            var loadStatus = Load();
-            if (loadStatus.Code != 0)
-                return loadStatus.Prepend(-1); // -1
-            var structure = (BsonStructure)loadStatus.Data;
-            var users = structure.Users;
+            var users = Load().Users;
 
             var observableUsers = new List<LocalUser>(users.Count);
             foreach (var su in users)
                 observableUsers.Add(su.ToObservable());
-            return new Status(0, observableUsers); // 0
+            return observableUsers;
         }
 
         private bool Exists(string userName, List<LocalUserSerializable> users)
@@ -223,44 +220,27 @@ namespace Client.MVVM.Model.BsonStorages
             return false;
         }
 
-        public Status Exists(string userName)
+        public bool Exists(string userName)
         {
-            var loadStatus = Load();
-            if (loadStatus.Code != 0)
-                return loadStatus.Prepend(-1); // -1
-            var structure = (BsonStructure)loadStatus.Data;
-
-            if (Exists(userName, structure.Users))
-            {
-                return UserAlreadyExistsStatus(0, userName); // 0
-            }
-            else
-                return UserDoesNotExistStatus(1, userName); // 1
+            return Exists(userName, Load().Users);
         }
 
-        public Status Get(string userName)
+        public LocalUser Get(string userName)
         {
-            var loadStatus = Load();
-            if (loadStatus.Code != 0)
-                return loadStatus.Prepend(-1); // -1
-            var structure = (BsonStructure)loadStatus.Data;
-            var users = structure.Users;
+            var users = Load().Users;
 
             for (int i = 0; i < users.Count; ++i)
             {
                 var u = users[i];
                 if (u.KeyEquals(userName))
-                    return new Status(0, u.ToObservable()); // 0
+                    return u.ToObservable();
             }
-            return UserDoesNotExistStatus(-2, userName); // -2
+            return null;
         }
 
-        public Status Update(string userName, LocalUser user)
+        public void Update(string userName, LocalUser user)
         {
-            var loadStatus = Load();
-            if (loadStatus.Code != 0)
-                return loadStatus.Prepend(-1); // -1
-            var structure = (BsonStructure)loadStatus.Data;
+            var structure = Load();
             var users = structure.Users;
 
             /* var oldDirectoryExistsStatus = DirectoryExists(userName);
@@ -277,10 +257,10 @@ namespace Client.MVVM.Model.BsonStorages
                     int j;
                     for (j = 0; j < i; ++j)
                         if (users[j].Equals(userSerializable))
-                            return UserAlreadyExistsStatus(-2, newUserName); // -2
+                            throw UserAlreadyExistsError(newUserName);
                     for (j = i + 1; j < users.Count; ++j)
                         if (users[j].Equals(userSerializable))
-                            return UserAlreadyExistsStatus(-2, newUserName); // -2
+                            throw UserAlreadyExistsError(newUserName);
 
                     string dbSaveError = "|Error occured while| " +
                         "|saving| |user database file.|";
@@ -288,54 +268,58 @@ namespace Client.MVVM.Model.BsonStorages
                     {
                         // jeżeli metodą Update nie zmieniamy nazwy użytkownika
                         users[i] = userSerializable;
-                        var saveStatus = Save(structure);
-                        if (saveStatus.Code != 0)
-                            return saveStatus.Prepend(-3, dbSaveError); // -3
+                        try { Save(structure); }
+                        catch (Error e)
+                        {
+                            e.Prepend(dbSaveError);
+                            throw;
+                        }
                     }
                     else
                     {
                         var newDirectoryPath = UserDirectoryPath(newUserName);
                         if (Directory.Exists(newDirectoryPath))
-                            return UsersDirectoryAlreadyExistsStatus(-4, newUserName); // -4
+                            throw UsersDirectoryAlreadyExistsError(newUserName);
 
                         var oldUserBackup = users[i];
                         users[i] = userSerializable;
-                        var saveStatus = Save(structure);
-                        if (saveStatus.Code != 0)
-                            return saveStatus.Prepend(-5, dbSaveError); // -5
+                        try { Save(structure); }
+                        catch (Error e)
+                        {
+                            e.Prepend(dbSaveError);
+                            throw;
+                        }
 
                         var oldDirectoryPath = UserDirectoryPath(userName);
                         if (Directory.Exists(oldDirectoryPath))
                         {
-                            try
-                            { Directory.Move(oldDirectoryPath, newDirectoryPath); }
-                            catch (Exception)
+                            try { Directory.Move(oldDirectoryPath, newDirectoryPath); }
+                            catch (Exception e)
                             {
-                                var renameDirStatus = new Status(-6, null,
-                                    "|Error occured while| |renaming| |user's directory.|"); // -6
+                                var renameDirError = new Error(e,
+                                    "|Error occured while| |renaming| |user's directory.|");
 
                                 users[i] = oldUserBackup; // przywracamy ostatnio zastąpionego
-                                saveStatus = Save(structure);
-                                if (saveStatus.Code != 0)
-                                    return renameDirStatus.Append(-7, "|Error occured while| " +
+                                try { Save(structure); }
+                                catch (Error saveError)
+                                {
+                                    renameDirError.Append("|Error occured while| " +
                                         "|restoring the updated| |user.| " +
-                                        saveStatus.Message); // -7
-                                return renameDirStatus; // -6
+                                        saveError.Message);
+                                }
+                                throw renameDirError;
                             }
                         }
                     }
-                    return new Status(0); // 0
+                    return;
                 }
             }
-            return UserDoesNotExistStatus(-8, userName); // -8
+            throw UserDoesNotExistError(userName);
         }
 
-        public Status Delete(string userName)
+        public void Delete(string userName)
         {
-            var loadStatus = Load();
-            if (loadStatus.Code != 0)
-                return loadStatus.Prepend(-1); // -1
-            var structure = (BsonStructure)loadStatus.Data;
+            var structure = Load();
             var users = structure.Users;
 
             for (int i = 0; i < users.Count; ++i)
@@ -344,130 +328,91 @@ namespace Client.MVVM.Model.BsonStorages
                 {
                     var userBackup = users[i];
                     users.RemoveAt(i);
-                    var saveStatus = Save(structure);
-                    if (saveStatus.Code != 0)
-                        return saveStatus.Prepend(-2, "|Error occured while| " +
-                            "|saving| |user database file.|"); // -2
+                    try { Save(structure); }
+                    catch (Error e)
+                    {
+                        e.Prepend("|Error occured while| |saving| |user database file.|");
+                        throw;
+                    }
 
                     var directoryPath = UserDirectoryPath(userName);
                     if (Directory.Exists(directoryPath))
                     {
-                        try
-                        { Directory.Delete(directoryPath, true); }
-                        catch (Exception)
+                        try { Directory.Delete(directoryPath, true); }
+                        catch (Exception e)
                         {
-                            var deleteDirStatus = new Status(-3, null, "|Error occured while| " +
-                                "|deleting| |user's directory.|"); // -3
+                            var deleteDirError = new Error(e, "|Error occured while| " +
+                                "|deleting| |user's directory.|");
 
                             users.Insert(i, userBackup); // przywracamy ostatnio usuniętego
-                            saveStatus = Save(structure);
-                            if (saveStatus.Code != 0)
-                                return deleteDirStatus.Append(-4, "|Error occured while| " +
-                                    "|restoring the deleted| |user.| " + saveStatus.Message); // -4
-                            return deleteDirStatus; // -3
+                            try { Save(structure); }
+                            catch (Error saveError)
+                            {
+                                deleteDirError.Append("|Error occured while| " +
+                                    "|restoring the deleted| |user.| " + saveError.Message);
+                            }
+                            throw deleteDirError;
                         }
                     }
-                    return new Status(0); // 0
+                    return;
                 }
             }
-            return UserDoesNotExistStatus(-5, userName); // -5
+            throw UserDoesNotExistError(userName);
         }
 
-        public Status SetLogged(bool isLogged, string userName = "")
+        public void SetLogged(bool isLogged, string userName = "")
         {
-            var loadStatus = Load();
-            if (loadStatus.Code != 0)
-                return loadStatus.Prepend(-1); // -1
-            var structure = (BsonStructure)loadStatus.Data;
-
+            var structure = Load();
             structure.IsLogged = isLogged;
             structure.LoggedUserName = userName;
-
-            var saveStatus = Save(structure);
-            if (saveStatus.Code != 0)
-                return saveStatus.Prepend(-2); // -2
-
-            return new Status(0); // 0
+            Save(structure);
         }
 
-        public Status GetLogged()
+        public string GetLogged()
         {
-            var loadStatus = Load();
-            if (loadStatus.Code != 0)
-                return loadStatus.Prepend(-1); // -1
-            var structure = (BsonStructure)loadStatus.Data;
-
+            var structure = Load();
             if (!structure.IsLogged)
-                return new Status(-2, null, "|No user is logged.|"); // -2
-            
-            return new Status(0, structure.LoggedUserName);
+                return null;
+            return structure.LoggedUserName;
         }
 
-        public Status SetActiveLanguage(int id)
+        public void SetActiveLanguage(int id)
         {
-            var loadStatus = Load();
-            if (loadStatus.Code != 0)
-                return loadStatus.Prepend(-1); // -1
-            var structure = (BsonStructure)loadStatus.Data;
-
+            var structure = Load();
             structure.ActiveLanguageId = id;
-
-            var saveStatus = Save(structure);
-            if (saveStatus.Code != 0)
-                return saveStatus.Prepend(-2); // -2
-
-            return new Status(0);
+            Save(structure);
         }
 
-        public Status GetActiveLanguage()
+        public int GetActiveLanguage()
         {
-            var loadStatus = Load();
-            if (loadStatus.Code != 0)
-                return loadStatus.Prepend(-1); // -1
-            var structure = (BsonStructure)loadStatus.Data;
-
-            return new Status(0, structure.ActiveLanguageId);
+            return Load().ActiveLanguageId;
         }
 
-        public static Status ValidateUserName(string userName)
+        // zwraca null lub opis błędu
+        public static string ValidateUserName(string userName)
         {
             if (string.IsNullOrWhiteSpace(userName))
-                return new Status(1, null, "|Username cannot be empty.|");
+                return "|Username cannot be empty.|";
             /* nie możemy pozwolić na stworzenie drugiego użytkownika o takiej samej nazwie
              * case-insensitive, ponieważ NTFS ma case-insensitive nazwy plików i katalogów;
              * najprościej temu zapobiec, wymuszając nazwy użytkowników
              * złożone z tylko małych liter */
             foreach (var c in userName)
                 if (!((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9')))
-                    return new Status(2, null,
-                        "|Username may contain only lowercase letters and digits.|");
-            return new Status(0);
+                    return "|Username may contain only lowercase letters and digits.|";
+            return null;
         }
 
-        public Status SetActiveTheme(int id)
+        public void SetActiveTheme(int id)
         {
-            var loadStatus = Load();
-            if (loadStatus.Code != 0)
-                return loadStatus.Prepend(-1); // -1
-            var structure = (BsonStructure)loadStatus.Data;
-
+            var structure = Load();
             structure.ActiveThemeId = id;
-
-            var saveStatus = Save(structure);
-            if (saveStatus.Code != 0)
-                return saveStatus.Prepend(-2); // -2
-
-            return new Status(0);
+            Save(structure);
         }
 
-        public Status GetActiveTheme()
+        public int GetActiveTheme()
         {
-            var loadStatus = Load();
-            if (loadStatus.Code != 0)
-                return loadStatus.Prepend(-1); // -1
-            var structure = (BsonStructure)loadStatus.Data;
-
-            return new Status(0, structure.ActiveThemeId);
+            return Load().ActiveThemeId;
         }
     }
 }

@@ -2,10 +2,10 @@
 using Shared.MVVM.Core;
 using System.Windows.Controls;
 using System;
-using Shared.MVVM.Model;
 using Shared.MVVM.Model.Networking;
 using System.Collections.Generic;
 using Client.MVVM.View.Windows;
+using Shared.MVVM.ViewModel.Results;
 
 namespace Client.MVVM.ViewModel.ServerActions
 {
@@ -23,9 +23,9 @@ namespace Client.MVVM.ViewModel.ServerActions
                 win.AddTextField("|Port|");
             });
 
-            Confirm = new RelayCommand(e =>
+            Confirm = new RelayCommand(controls =>
             {
-                var fields = (List<Control>)e;
+                var fields = (List<Control>)controls;
 
                 // nie walidujemy, bo jest to przechowywane w polu w BSONie, a nie w SQLu
                 var name = ((TextBox)fields[0]).Text;
@@ -36,11 +36,9 @@ namespace Client.MVVM.ViewModel.ServerActions
                 if (!ParsePort(((TextBox)fields[2]).Text, out Port port))
                     return;
 
-                var existsStatus = ServerExists(loggedUser, ipAddress, port);
-                if (existsStatus.Code != 1)
+                if (ServerExists(loggedUser, ipAddress, port))
                 {
-                    // błąd lub serwer istnieje
-                    Alert(existsStatus.Message);
+                    Alert(ServerAlreadyExistsError(ipAddress, port));
                     return;
                 }
 
@@ -52,15 +50,15 @@ namespace Client.MVVM.ViewModel.ServerActions
                     Guid = Guid.Empty,
                     PublicKey = null,
                 };
-                var addStatus = loggedUser.AddServer(newServer);
-                if (addStatus.Code != 0)
+                try { loggedUser.AddServer(newServer); }
+                catch (Error e)
                 {
-                    addStatus.Prepend("|Error occured while| |adding| |server;D| " +
+                    e.Prepend("|Error occured while| |adding| |server;D| " +
                         "|to user's database.|");
-                    Alert(addStatus.Message);
-                    return;
+                    Alert(e.Message);
+                    throw;
                 }
-                OnRequestClose(new Status(0, newServer));
+                OnRequestClose(new Success(newServer));
             });
         }
     }

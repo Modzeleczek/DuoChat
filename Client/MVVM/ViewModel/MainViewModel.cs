@@ -6,8 +6,8 @@ using Client.MVVM.ViewModel.ServerActions;
 using Shared.MVVM.Core;
 using Shared.MVVM.View.Localization;
 using Shared.MVVM.View.Windows;
+using Shared.MVVM.ViewModel.Results;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Security;
 using System.Windows;
@@ -93,18 +93,18 @@ namespace Client.MVVM.ViewModel
                 Accounts.Clear();
                 if (value != null)
                 {
-                    var getAllStatus = loggedUser.GetAllAccounts(value.IpAddress, value.Port);
-                    if (getAllStatus.Code != 0)
+                    try
                     {
-                        getAllStatus.Prepend("|Error occured while| " +
-                            "|reading user's account list.|");
-                        Alert(getAllStatus.Message);
-                    }
-                    else
-                    {
-                        var accounts = (List<Account>)getAllStatus.Data;
+                        var accounts = loggedUser.GetAllAccounts(value.IpAddress, value.Port);
                         for (int i = 0; i < accounts.Count; ++i)
                             Accounts.Add(accounts[i]);
+                    }
+                    catch (Error e)
+                    {
+                        e.Prepend("|Error occured while| " +
+                            "|reading user's account list.|");
+                        Alert(e.Message);
+                        throw;
                     }
                 }
                 OnPropertyChanged();
@@ -133,17 +133,17 @@ namespace Client.MVVM.ViewModel
                 Conversations.Clear();
                 if (value != null)
                 {
-                    var status = _client.Connect(SelectedServer);
-                    if (status.Code != 0)
+                    try
                     {
-                        selectedAccount = null;
-                        Alert(status.Message);
-                    }
-                    else
-                    {
+                        _client.Connect(SelectedServer);
                         var cnvCnt = rng.Next(0, 5);
                         for (int i = 0; i < cnvCnt; ++i)
                             Conversations.Add(Conversation.Random(rng));
+                    }
+                    catch (Error e)
+                    {
+                        selectedAccount = null;
+                        Alert(e.Message);
                     }
                 }
                 OnPropertyChanged();
@@ -189,29 +189,41 @@ namespace Client.MVVM.ViewModel
                 Accounts = new ObservableCollection<Account>();
                 Conversations = new ObservableCollection<Conversation>();
 
-                var getActLangSta = lus.GetActiveLanguage();
-                if (getActLangSta.Code != 0)
-                    Alert(getActLangSta.Message);
-                d.ActiveLanguage = (Translator.Language)getActLangSta.Data;
-
-                var getActThmSta = lus.GetActiveTheme();
-                if (getActThmSta.Code != 0)
-                    Alert(getActThmSta.Message);
-                ((App)Application.Current).ActiveTheme = (App.Theme)getActThmSta.Data;
-
-                var getLogSta = lus.GetLogged();
-                if (getLogSta.Code == 0) // jakiś użytkownik jest już zalogowany
+                try
                 {
-                    var userName = (string)getLogSta.Data;
-                    var getSta = lus.Get(userName);
-                    if (getSta.Code == 0) // zalogowany użytkownik istnieje w BSONie
+                    d.ActiveLanguage = (Translator.Language)lus.GetActiveLanguage();
+                }
+                catch (Error e)
+                {
+                    Alert(e.Message);
+                    // przekazanie dalej wyjątku spowoduje zamknięcie programu
+                    throw;
+                }
+
+                try
+                {
+                    ((App)Application.Current).ActiveTheme = (App.Theme)lus.GetActiveTheme();
+                }
+                catch (Error e)
+                {
+                    Alert(e.Message);
+                    throw;
+                }
+
+                var loggedUserName = lus.GetLogged();
+                if (!(loggedUserName is null)) // jakiś użytkownik jest już zalogowany
+                {
+                    var user = lus.Get(loggedUserName);
+                    if (!(user is null)) // zalogowany użytkownik istnieje w BSONie
                     {
-                        loggedUser = (LocalUser)getSta.Data;
+                        loggedUser = user;
                         ResetLists();
                         return;
                     }
                     Alert("|User set as logged does not exist.|");
                 }
+                else
+                    Alert("|No user is logged.|");
                 ShowLocalUsersDialog();
             });
 
@@ -223,9 +235,9 @@ namespace Client.MVVM.ViewModel
                     ConfirmButtonText = "|Add|"
                 };
                 new FormWindow(window, vm).ShowDialog();
-                var status = vm.Status;
-                if (status.Code == 0)
-                    Servers.Add((Server)status.Data);
+                var result = vm.Result;
+                if (result is Success success)
+                    Servers.Add((Server)success.Data);
             });
             EditServer = new RelayCommand(obj =>
             {
@@ -242,22 +254,21 @@ namespace Client.MVVM.ViewModel
             DeleteServer = new RelayCommand(obj =>
             {
                 var server = (Server)obj;
-                var confirmStatus = ConfirmationViewModel.ShowDialog(window,
+                var confirmRes = ConfirmationViewModel.ShowDialog(window,
                     "|Do you want to delete| |server|" +
                     $" {server.IpAddress}:{server.Port}?",
                     "|Delete server|", "|No|", "|Yes|");
-                if (confirmStatus.Code != 0)
-                    return; 
+                if (!(confirmRes is Success)) return;
                 if (SelectedServer == server)
                     // setter rozłącza, jeżeli jesteśmy połączeni, bo ustawia SelectedAccount na null
                     SelectedServer = null;
-                var deleteStatus = loggedUser.DeleteServer(server.IpAddress, server.Port);
-                if (deleteStatus.Code != 0)
+                try { loggedUser.DeleteServer(server.IpAddress, server.Port); }
+                catch (Error e)
                 {
-                    deleteStatus.Prepend("|Error occured while| |deleting| " +
+                    e.Prepend("|Error occured while| |deleting| " +
                         "|server;D| |from user's database.|");
-                    Alert(deleteStatus.Message);
-                    return;
+                    Alert(e.Message);
+                    throw;
                 }
                 Servers.Remove(server);
             });
@@ -270,9 +281,9 @@ namespace Client.MVVM.ViewModel
                     ConfirmButtonText = "|Add|"
                 };
                 new FormWindow(window, vm).ShowDialog();
-                var status = vm.Status;
-                if (status.Code == 0)
-                    Accounts.Add((Account)status.Data);
+                var result = vm.Result;
+                if (result is Success success)
+                    Accounts.Add((Account)success.Data);
             });
             EditAccount = new RelayCommand(obj =>
             {
@@ -289,23 +300,22 @@ namespace Client.MVVM.ViewModel
             DeleteAccount = new RelayCommand(obj =>
             {
                 var account = (Account)obj;
-                var confirmStatus = ConfirmationViewModel.ShowDialog(window,
+                var confirmRes = ConfirmationViewModel.ShowDialog(window,
                     "|Do you want to delete| |account|" + $" {account.Login}?",
                     "|Delete account|", "|No|", "|Yes|");
-                if (confirmStatus.Code != 0)
-                    return;
+                if (!(confirmRes is Success)) return;
                 if (SelectedAccount == account)
                     // setter rozłącza, jeżeli jesteśmy połączeni
                     SelectedAccount = null;
                 var server = SelectedServer;
-                var deleteStatus = loggedUser.DeleteAccount(server.IpAddress, server.Port,
-                    account.Login);
-                if (deleteStatus.Code != 0)
+                try { loggedUser.DeleteAccount(server.IpAddress, server.Port,
+                    account.Login); }
+                catch (Error e)
                 {
-                    deleteStatus.Prepend("|Error occured while| |deleting| " +
+                    e.Prepend("|Error occured while| |deleting| " +
                         "|account;D| |from user's database.|");
-                    Alert(deleteStatus.Message);
-                    return;
+                    Alert(e.Message);
+                    throw;
                 }
                 Accounts.Remove(account);
             });
@@ -334,21 +344,23 @@ namespace Client.MVVM.ViewModel
                 var win = new SettingsWindow(window, vm);
                 vm.RequestClose += () => win.Close();
                 win.ShowDialog();
-                if (vm.Status.Code == 2) // wylogowanie
+                if (vm.Result is Success settingsSuc &&
+                    (SettingsViewModel.Operations)settingsSuc.Data ==
+                    SettingsViewModel.Operations.LocalLogout) // wylogowanie
                 {
                     ClearLists();
-                    var loginStatus = LocalLoginViewModel.ShowDialog(window, loggedUser, true);
-                    if (loginStatus.Code != 0)
+                    var loginRes = LocalLoginViewModel.ShowDialog(window, loggedUser, true);
+                    if (!(loginRes is Success loginSuc))
                     {
                         ResetLists();
                         return;
                     }
-                    var currentPassword = (SecureString)loginStatus.Data;
+                    var currentPassword = (SecureString)loginSuc.Data;
 
                     lus.SetLogged(false);
 
                     var pc = new PasswordCryptography();
-                    var encSta = ProgressBarViewModel.ShowDialog(window,
+                    var encryptRes = ProgressBarViewModel.ShowDialog(window,
                         "|Encrypting user's database.|", true,
                         (reporter) =>
                         pc.EncryptDirectory(reporter,
@@ -356,10 +368,17 @@ namespace Client.MVVM.ViewModel
                             pc.ComputeDigest(currentPassword, loggedUser.DbSalt),
                             loggedUser.DbInitializationVector));
                     currentPassword.Dispose();
-                    if (encSta.Code == 1)
+                    if (encryptRes is Cancellation)
                         return;
-                    // nie udało się zaszyfrować katalogu użytkownika, więc też nie wylogowujemy
-                    else if (encSta.Code != 0) return;
+                    else if (encryptRes is Failure failure)
+                    {
+                        // nie udało się zaszyfrować katalogu użytkownika, więc crashujemy program
+                        var e = failure.Reason;
+                        e.Prepend("|Error occured while| " +
+                            "|encrypting user's database.| |Database may have been corrupted.|");
+                        Alert(e.Message);
+                        throw e;
+                    }
                     loggedUser = null;
                     ShowLocalUsersDialog();
                 }
@@ -371,21 +390,21 @@ namespace Client.MVVM.ViewModel
             var lus = new LocalUsersStorage();
             while (true)
             {
-                var loginStatus = LocalUsersViewModel.ShowDialog(window);
+                var loginRes = LocalUsersViewModel.ShowDialog(window);
                 /* jeżeli użytkownik zamknął okno bez zalogowania się
-                (nie ma innych możliwych kodów niż 0 i 1) */
-                if (loginStatus.Code == 1)
+                (nie ma innych możliwych wyników niż Success i Cancellation) */
+                if (!(loginRes is Success loginSuc))
                 {
                     Application.Current.Shutdown();
                     return;
                 }
-                // jeżeli użytkownik się zalogował, to vm.Status.Code == 0
-                var dat = (dynamic)loginStatus.Data;
+                // jeżeli użytkownik się zalogował, to vm.Result is Success
+                var dat = (dynamic)loginSuc.Data;
                 var curPas = (SecureString)dat.Password;
                 var user = (LocalUser)dat.LoggedUser;
 
                 var pc = new PasswordCryptography();
-                var decryptionStatus = ProgressBarViewModel.ShowDialog(window,
+                var decryptRes = ProgressBarViewModel.ShowDialog(window,
                     "|Decrypting user's database.|", true,
                     (reporter) =>
                     pc.DecryptDirectory(reporter,
@@ -393,11 +412,11 @@ namespace Client.MVVM.ViewModel
                         pc.ComputeDigest(curPas, user.DbSalt),
                         user.DbInitializationVector));
                 curPas.Dispose();
-                if (decryptionStatus.Code == 1)
+                if (decryptRes is Cancellation)
                     Alert("|User's database decryption canceled. Logging out.|");
-                /* jeżeli status.Code < 0, to alert z błędem został już wyświetlony w
+                /* jeżeli decryptRes is Failure, to alert z błędem został już wyświetlony w
                 ProgressBarViewModel.Worker_RunWorkerCompleted */
-                else if (decryptionStatus.Code == 0)
+                else if (decryptRes is Success)
                 {
                     lus.SetLogged(true, user.Name);
                     loggedUser = user;
@@ -422,16 +441,18 @@ namespace Client.MVVM.ViewModel
             Servers.Clear();
             Accounts.Clear();
             Conversations.Clear();
-            var getAllStatus = loggedUser.GetAllServers();
-            if (getAllStatus.Code != 0)
+            try
             {
-                getAllStatus.Prepend("|Error occured while| |reading user's server list.|");
-                Alert(getAllStatus.Message);
-                return;
+                var servers = loggedUser.GetAllServers();
+                for (int i = 0; i < servers.Count; ++i)
+                    Servers.Add(servers[i]);
             }
-            var servers = (List<Server>)getAllStatus.Data;
-            for (int i = 0; i < servers.Count; ++i)
-                Servers.Add(servers[i]);
+            catch (Error e)
+            {
+                e.Prepend("|Error occured while| |reading user's server list.|");
+                Alert(e.Message);
+                throw;
+            }
         }
     }
 }

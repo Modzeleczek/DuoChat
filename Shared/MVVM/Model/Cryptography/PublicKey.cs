@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System;
 using System.Security.Cryptography;
+using Shared.MVVM.Core;
 
 namespace Shared.MVVM.Model.Cryptography
 {
@@ -16,18 +17,17 @@ namespace Shared.MVVM.Model.Cryptography
             _modulus = modulus;
         }
 
-        public static Status TryParse(string text)
+        public static PublicKey Parse(string text)
         {
             if (text == null)
-                return new Status(-1, null, "|String is null.|"); // -1
+                throw new Error("|String is null.|");
 
             if (text == "")
-                return new Status(-2, null, "|String is empty.|"); // -2
+                throw new Error("|String is empty.|");
 
-            try
-            { return new Status(0, new PublicKey(Convert.FromBase64String(text))); } // 0
-            catch (FormatException)
-            { return new Status(-3, null, "|Number| |is not valid Base64 string.|"); } // -3
+            try { return new PublicKey(Convert.FromBase64String(text)); }
+            catch (FormatException e)
+            { throw new Error(e, "|Number| |is not valid Base64 string.|"); }
         }
 
         public override string ToString()

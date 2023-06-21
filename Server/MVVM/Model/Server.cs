@@ -3,11 +3,11 @@ using System.Net;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Threading;
-using Shared.MVVM.Model;
 using Shared.MVVM.Core;
 using System;
 using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking;
+using Shared.MVVM.ViewModel.Results;
 
 namespace Server.MVVM.Model
 {
@@ -36,7 +36,7 @@ namespace Server.MVVM.Model
         public void Start(Guid guid, PrivateKey privateKey, IPv4Address ipAddress, Port port,
             int capacity)
         {
-            Status status = null;
+            Result result = null;
             try
             {
                 var localEndPoint = new IPEndPoint(ipAddress.ToIPAddress(), port.Value);
@@ -48,23 +48,23 @@ namespace Server.MVVM.Model
                 _stopRequested = false;
                 _runner = Task.Run(Process);
                 IsRunning = true;
-                status = new Status(0);
+                result = new Success();
             }
             catch (SocketException se)
             {
                 _listener.Stop();
                 IsRunning = false;
-                status = new Status(-1, null, "|No translation:| " + se.Message);
+                result = new Failure(se, "|No translation:|");
             }
             finally
             {
-                Started?.Invoke(status);
+                Started?.Invoke(result);
             }
         }
 
         private void Process()
         {
-            Status status = null;
+            Result result = null;
             try
             {
                 while (true)
@@ -83,20 +83,20 @@ namespace Server.MVVM.Model
                 }
                 foreach (var c in _clients)
                     c.Disconnect();
-                status = new Status(0);
+                result = new Success();
             }
             // nie łapiemy InvalidOperationException, bo _listener.AcceptTcpClient() może je wyrzucić tylko jeżeli nie wywołaliśmy wcześniej _listener.Start()
             catch (SocketException se)
             {
                 // według dokumentacji funkcji TcpListener.AcceptTcpClient, se.ErrorCode jest kodem błędu, którego opis można zobaczyć w "Windows Sockets version 2 API error code documentation"
-                status = new Status(-1, null, "|No translation:| " + se.Message);
+                result = new Failure(se, "|No translation:|");
             }
             finally
             {
                 _clients.Clear();
                 _listener.Stop();
                 IsRunning = false;
-                Stopped?.Invoke(status); // jeżeli nie ma żadnych obserwatorów (nikt nie ustawił callbacków (handlerów)) i Stopped == null, to Invoke się nie wykona
+                Stopped?.Invoke(result); // jeżeli nie ma żadnych obserwatorów (nikt nie ustawił callbacków (handlerów)) i Stopped == null, to Invoke się nie wykona
             }
         }
 
@@ -105,7 +105,7 @@ namespace Server.MVVM.Model
             // jeżeli serwer nie działa, to udajemy, że się od razu zamknął
             if (!IsRunning)
             {
-                Stopped?.Invoke(new Status(0));
+                Stopped?.Invoke(new Success());
                 return;
             }
             lock (_listener) _stopRequested = true;

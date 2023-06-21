@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Shared.MVVM.Core;
+using System;
 using System.Security.Cryptography;
 
 namespace Shared.MVVM.Model.Cryptography
@@ -10,35 +11,35 @@ namespace Shared.MVVM.Model.Cryptography
 
         public Rsa(RsaKey key) => Key = key;
 
-        public Status Encrypt(byte[] plain)
+        public byte[] Encrypt(byte[] plain)
         {
             try
             {
                 using (var rsa = RSA.Create())
                 {
                     Key.ImportTo(rsa);
-                    return new Status(0, rsa.Encrypt(plain, RSA_PADDING)); // 0
+                    return rsa.Encrypt(plain, RSA_PADDING);
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return new Status(-1, null, "|Error occured while| |RSA encrypting.|"); // -1
+                throw new Error(e, "|Error occured while| |RSA encrypting.|");
             }
         }
 
-        public Status Decrypt(byte[] cipher)
+        public byte[] Decrypt(byte[] cipher)
         {
             try
             {
                 using (var rsa = RSA.Create())
                 {
                     Key.ImportTo(rsa);
-                    return new Status(0, rsa.Decrypt(cipher, RSA_PADDING)); // 0
+                    return rsa.Decrypt(cipher, RSA_PADDING);
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return new Status(-1, null, "|Error occured while| |RSA decrypting.|"); // -1
+                throw new Error(e, "|Error occured while| |RSA decrypting.|");
             }
         }
     }

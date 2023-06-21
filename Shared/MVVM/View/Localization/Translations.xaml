@@ -92,6 +92,7 @@
     PL="Wystąpił błąd podczas odczytywania pliku."/>
   <l:Entry x:Key="Error occured while writing file."
     PL="Wystąpił błąd podczas zapisywania pliku."/>
+  <l:Entry x:Key="moving" PL="przenoszenia"/>
   <l:Entry x:Key="Encryption" PL="Szyfrowanie"/>
   <l:Entry x:Key="Encrypting user's database."
     PL="Szyfrowanie bazy danych użytkownika."/>
@@ -159,6 +160,10 @@
     PL="tworzenia listy plików i podkatalogów w katalogu"/>
   <l:Entry x:Key="ensuring valid user database state."
     PL="zapewniania poprawnego stanu bazy danych użytkowników."/>
+  <l:Entry x:Key="SQLite integrity check returned more than single 'ok' row."
+    PL="Sprawdzenie integralności SQLite zwróciło więcej niż pojedynczy wiersz 'ok'."/>
+  <l:Entry x:Key="SQLite integrity check returned no rows."
+    PL="Sprawdzenie integralności SQLite nie zwróciło żadnego wiersza."/>
   <l:Entry x:Key="executing SQLite integrity check."
     PL="wykonywania sprawdzenia integralności SQLite."/>
   <l:Entry x:Key="servers" PL="serwerów"/>

@@ -1,7 +1,7 @@
 ﻿using Client.MVVM.Model;
 using Client.MVVM.Model.BsonStorages;
 using Shared.MVVM.Core;
-using Shared.MVVM.Model;
+using Shared.MVVM.ViewModel.Results;
 using System.Windows;
 
 namespace Client.MVVM.ViewModel
@@ -14,12 +14,14 @@ namespace Client.MVVM.ViewModel
         public RelayCommand ToggleTheme { get; }
         #endregion
 
+        public enum Operations { LocalLogout }
+
         public SettingsViewModel(LocalUser user)
         {
             // nie trzeba robić obsługi WindowLoaded ani ustawiać pola window, jeżeli nie chcemy otwierać potomnych okien w tym viewmodelu
             LocalLogout = new RelayCommand(_ =>
             {
-                OnRequestClose(new Status(2));
+                OnRequestClose(new Success(Operations.LocalLogout));
             });
 
             var lus = new LocalUsersStorage();

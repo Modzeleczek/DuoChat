@@ -2,7 +2,7 @@
 using Client.MVVM.Model.BsonStorages;
 using Client.MVVM.View.Windows;
 using Shared.MVVM.Core;
-using Shared.MVVM.Model;
+using Shared.MVVM.ViewModel.Results;
 using System.Collections.Generic;
 using System.Security;
 using System.Windows.Controls;
@@ -25,9 +25,9 @@ namespace Client.MVVM.ViewModel
                 RequestClose += () => win.Close();
             });
 
-            Confirm = new RelayCommand(e =>
+            Confirm = new RelayCommand(controls =>
             {
-                var fields = (List<Control>)e;
+                var fields = (List<Control>)controls;
 
                 var password = ((PasswordBox)fields[0]).SecurePassword;
                 var confirmedPassword = ((PasswordBox)fields[1]).SecurePassword;
@@ -36,76 +36,79 @@ namespace Client.MVVM.ViewModel
                     Alert("|Passwords do not match.|");
                     return;
                 }
-                var valSta = pc.ValidatePassword(password);
-                if (valSta.Code != 0)
+
+                var passwordVal = pc.ValidatePassword(password);
+                if (!(passwordVal is null))
                 {
-                    Alert(valSta.Message);
+                    Alert(passwordVal);
                     return;
                 }
 
-                var ensureStatus = lus.EnsureValidDatabaseState();
-                if (ensureStatus.Code != 0)
+                try { lus.EnsureValidDatabaseState(); }
+                catch (Error e)
                 {
-                    ensureStatus.Prepend("|Error occured while| " +
+                    e.Prepend("|Error occured while| " +
                         "|ensuring valid user database state.|");
-                    Alert(ensureStatus.Message);
-                    return;
+                    Alert(e.Message);
+                    throw;
                 }
 
-                // jeżeli katalog z plikami bazy danych istnieje, to odszyfrowujemy je starym hasłem
-                var decryptStatus = ProgressBarViewModel.ShowDialog(window,
+                // jeżeli katalog z plikami bazy danych istnieje, to odszyfrowujemy go starym hasłem
+                var decryptRes = ProgressBarViewModel.ShowDialog(window,
                     "|Decrypting user's database.|", true,
                     (reporter) =>
                     pc.DecryptDirectory(reporter,
                         user.DirectoryPath,
                         pc.ComputeDigest(oldPassword, user.DbSalt),
                         user.DbInitializationVector));
-                if (decryptStatus.Code == 1)
+                if (decryptRes is Cancellation)
                     return;
-                // nie udało się odszyfrować katalogu użytkownika, więc anulujemy zmianę hasła
-                else if (decryptStatus.Code != 0)
+                else if (decryptRes is Failure failure)
                 {
-                    decryptStatus.Prepend("|Error occured while| |decrypting user's database.|");
-                    Alert(decryptStatus.Message);
-                    return;
+                    var e = failure.Reason;
+                    // nie udało się odszyfrować katalogu użytkownika, więc crashujemy program
+                    e.Prepend("|Error occured while| |decrypting user's database.|");
+                    Alert(e.Message);
+                    throw e;
                 }
 
                 // wyznaczamy nową sól i skrót hasła oraz IV i sól bazy danych
                 user.ResetPassword(password);
 
                 // zaszyfrowujemy katalog użytkownika nowym hasłem
-                var encryptStatus = ProgressBarViewModel.ShowDialog(window,
+                var encryptRes = ProgressBarViewModel.ShowDialog(window,
                     "|Encrypting user's database.|", false,
                     (reporter) =>
                     pc.EncryptDirectory(reporter,
                         user.DirectoryPath,
                         pc.ComputeDigest(password, user.DbSalt),
                         user.DbInitializationVector));
-                if (encryptStatus.Code == 1)
+                if (encryptRes is Cancellation)
                 {
-                    encryptStatus.Prepend("|You should not have canceled database encryption. " +
+                    var e = new Error("|You should not have canceled database encryption. " +
                         "It may have been corrupted.|");
-                    Alert(encryptStatus.Message);
-                    return;
+                    Alert(e.Message);
+                    throw e;
                 }
-                else if (encryptStatus.Code != 0)
+                else if (encryptRes is Failure failure)
                 {
-                    encryptStatus.Prepend("|Error occured while| " +
+                    var e = failure.Reason;
+                    e.Prepend("|Error occured while| " +
                         "|encrypting user's database.| |Database may have been corrupted.|");
-                    Alert(encryptStatus.Message);
-                    return;
+                    Alert(e.Message);
+                    throw e;
                 }
 
-                var updateStatus = lus.Update(user.Name, user);
-                if (updateStatus.Code != 0)
+                try { lus.Update(user.Name, user); }
+                catch (Error e)
                 {
-                    updateStatus.Prepend("|Error occured while| |updating| |user in database.|");
-                    Alert(updateStatus.Message);
-                    return;
+                    e.Prepend("|Error occured while| |updating| |user in database.|");
+                    Alert(e.Message);
+                    throw;
                 }
                 password.Dispose();
                 confirmedPassword.Dispose();
-                OnRequestClose(new Status(0));
+                OnRequestClose(new Success());
             });
 
             var defaultCloseHandler = Close;

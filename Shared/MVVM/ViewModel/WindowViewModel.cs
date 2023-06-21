@@ -1,5 +1,5 @@
 ﻿using Shared.MVVM.Core;
-using Shared.MVVM.Model;
+using Shared.MVVM.ViewModel.Results;
 using System;
 
 namespace Shared.MVVM.ViewModel
@@ -24,18 +24,18 @@ namespace Shared.MVVM.ViewModel
 
         protected WindowViewModel()
         {
-            Close = new RelayCommand(e => OnRequestClose(new Status(1)));
+            Close = new RelayCommand(e => OnRequestClose(new Cancellation()));
         }
 
-        public Status Status { get; protected set; } = new Status(1);
+        public Result Result { get; protected set; } = new Cancellation();
         public event Action RequestClose = null;
 
-        protected void OnRequestClose(Status status)
+        protected void OnRequestClose(Result result)
         {
-            Status = status;
+            Result = result;
             /* używamy typu Action jako handlerów eventu RequestClose, bo we
             wszystkich miejscach w programie status viewmodelu pobieramy z
-            settera Status, a nie poprzez parametr handlera eventu RequestClose */
+            gettera Result, a nie poprzez parametr handlera eventu RequestClose */
             if (RequestClose != null) RequestClose();
         }
     }

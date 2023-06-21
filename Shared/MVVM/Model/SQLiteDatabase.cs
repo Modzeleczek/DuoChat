@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Shared.MVVM.Core;
+using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
 using System.IO;
@@ -15,8 +16,8 @@ namespace Shared.MVVM.Model
             _path = path;
         }
 
-        protected Status FileDoesNotExistStatus(int code) =>
-            new Status(code, null, $"|Database file| {_path} |does not exist.|");
+        protected Error FileDoesNotExistError() =>
+            new Error($"|Database file| {_path} |does not exist.|");
 
         protected SQLiteConnection CreateConnection()
         {
@@ -25,14 +26,14 @@ namespace Shared.MVVM.Model
             return new SQLiteConnection(connectionString, true);
         }
 
-        public Status ResetDatabase()
+        public void ResetDatabase()
         {
             string ddl = ReadEmbeddedResource(DDLEmbeddedResource());
             if (ddl == null)
                 throw new KeyNotFoundException(
                     "Embedded resource with database DDL code does not exist.");
             if (!File.Exists(_path))
-                return FileDoesNotExistStatus(-1);
+                throw FileDoesNotExistError();
             try
             {
                 using (var con = CreateConnection())
@@ -40,13 +41,13 @@ namespace Shared.MVVM.Model
                 {
                     con.Open();
                     cmd.ExecuteNonQuery();
-                    return new Status(0);
+                    return;
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return new Status(-2, null, "|Error occured while| " +
-                    "|executing DDL query creating database.|"); // -2
+                throw new Error(e, "|Error occured while| " +
+                    "|executing DDL query creating database.|");
             }
         }
 

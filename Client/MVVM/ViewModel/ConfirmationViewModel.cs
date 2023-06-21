@@ -1,5 +1,5 @@
 ﻿using Client.MVVM.View.Windows;
-using Shared.MVVM.Model;
+using Shared.MVVM.ViewModel.Results;
 using System.Windows;
 using BaseConfirmationViewModel = Shared.MVVM.ViewModel.ConfirmationViewModel;
 
@@ -11,7 +11,7 @@ namespace Client.MVVM.ViewModel
             string cancelButtonText, string confirmButtonText) :
             base(title, description, cancelButtonText, confirmButtonText) { }
 
-        public static Status ShowDialog(Window owner, string description, string title = null,
+        public static Result ShowDialog(Window owner, string description, string title = null,
             string cancelButtonText = null, string confirmButtonText = null)
         {
             string finalTitle = title ?? "|Confirmation|";
@@ -22,7 +22,7 @@ namespace Client.MVVM.ViewModel
             var win = new ConfirmationWindow(owner, vm);
             vm.RequestClose += () => win.Close();
             win.ShowDialog();
-            return vm.Status;
+            return vm.Result;
         }
     }
 }

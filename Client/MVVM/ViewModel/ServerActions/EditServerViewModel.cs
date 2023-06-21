@@ -2,11 +2,11 @@
 using Shared.MVVM.Core;
 using System.Windows.Controls;
 using System;
-using Shared.MVVM.Model;
 using Shared.MVVM.Model.Networking;
 using System.Collections.Generic;
 using Client.MVVM.View.Windows;
 using Shared.MVVM.Model.Cryptography;
+using Shared.MVVM.ViewModel.Results;
 
 namespace Client.MVVM.ViewModel.ServerActions
 {
@@ -28,9 +28,9 @@ namespace Client.MVVM.ViewModel.ServerActions
                 win.AddTextField("|Public key|", publicKey != null ? publicKey.ToString() : "");
             });
 
-            Confirm = new RelayCommand(e =>
+            Confirm = new RelayCommand(controls =>
             {
-                var fields = (List<Control>)e;
+                var fields = (List<Control>)controls;
 
                 // nie walidujemy, bo jest to przechowywane w polu w BSONie, a nie w SQLu
                 var name = ((TextBox)fields[0]).Text;
@@ -47,22 +47,19 @@ namespace Client.MVVM.ViewModel.ServerActions
                 if (!ParsePublicKey(((TextBox)fields[4]).Text, out PublicKey publicKey))
                     return;
 
-                var oldExStatus = ServerExists(loggedUser, server.IpAddress, server.Port);
-                if (oldExStatus.Code != 0)
+                if (!ServerExists(loggedUser, server.IpAddress, server.Port))
                 {
-                    // błąd lub serwer nie istnieje
-                    Alert(oldExStatus.Message);
+                    Alert($"|Server with IP address| {ipAddress} " +
+                        $"|and port| {port} |does not exist.|");
                     return;
                 }
 
                 // jeżeli zmieniamy klucz główny, czyli (ip, port)
                 if (!server.KeyEquals(ipAddress, port))
                 {
-                    var newExStatus = ServerExists(loggedUser, ipAddress, port);
-                    if (newExStatus.Code != 1)
+                    if (ServerExists(loggedUser, ipAddress, port))
                     {
-                        // błąd lub serwer istnieje
-                        Alert(newExStatus.Message);
+                        Alert(ServerAlreadyExistsError(ipAddress, port));
                         return;
                     }
                 }
@@ -75,17 +72,17 @@ namespace Client.MVVM.ViewModel.ServerActions
                     Guid = guid,
                     PublicKey = publicKey,
                 };
-                var updateStatus = loggedUser.UpdateServer(server.IpAddress, server.Port,
-                    updatedServer);
-                if (updateStatus.Code != 0)
+                try { loggedUser.UpdateServer(server.IpAddress, server.Port,
+                    updatedServer); }
+                catch (Error e)
                 {
-                    updateStatus.Prepend("|Error occured while| |updating| |server;D| " +
+                    e.Prepend("|Error occured while| |updating| |server;D| " +
                         "|in user's database.|");
-                    Alert(updateStatus.Message);
-                    return;
+                    Alert(e.Message);
+                    throw;
                 }
                 updatedServer.CopyTo(server);
-                OnRequestClose(new Status(0));
+                OnRequestClose(new Success());
             });
         }
 
@@ -95,12 +92,13 @@ namespace Client.MVVM.ViewModel.ServerActions
             if (string.IsNullOrEmpty(text))
                 // uznajemy, że użytkownik nie chce podać GUIDu, więc zostawiamy Guid.Empty
                 return true;
-            if (!Guid.TryParse(text, out Guid value))
+            try { guid = Guid.Parse(text); }
+            catch (Exception e)
             {
-                Alert("|Invalid GUID format.|");
+                var error = new Error(e, "|Invalid GUID format.|");
+                Alert(error.Message);
                 return false;
             }
-            guid = value;
             return true;
         }
 
@@ -109,14 +107,13 @@ namespace Client.MVVM.ViewModel.ServerActions
             publicKey = null;
             if (string.IsNullOrEmpty(text))
                 return true;
-            var status = PublicKey.TryParse(text);
-            if (status.Code < 0)
+            try { publicKey = PublicKey.Parse(text); }
+            catch (Error e)
             {
-                status.Prepend("|Invalid public key format.|");
-                Alert(status.Message);
+                e.Prepend("|Invalid public key format.|");
+                Alert(e.Message);
                 return false;
             }
-            publicKey = (PublicKey)status.Data;
             return true;
         }
     }

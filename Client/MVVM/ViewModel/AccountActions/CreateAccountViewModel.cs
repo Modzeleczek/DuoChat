@@ -2,8 +2,8 @@
 using Client.MVVM.Model.BsonStorages;
 using Client.MVVM.View.Windows;
 using Shared.MVVM.Core;
-using Shared.MVVM.Model;
 using Shared.MVVM.Model.Cryptography;
+using Shared.MVVM.ViewModel.Results;
 using System.Collections.Generic;
 using System.Windows.Controls;
 
@@ -26,26 +26,28 @@ namespace Client.MVVM.ViewModel.AccountActions
                     new string[] { "|Generate private key|" });
             });
 
-            Confirm = new RelayCommand(e =>
+            Confirm = new RelayCommand(controls =>
             {
-                var fields = (List<Control>)e;
+                var fields = (List<Control>)controls;
 
                 if (!ServerExists(loggedUser, server))
-                    // błąd lub serwer nie istnieje
-                    return;
+                {
+                    var e = new Error($"|Server with IP address| {server.IpAddress} " +
+                        $"|and port| {server.Port} |does not exist.|");
+                    Alert(e.Message);
+                    throw e;
+                }
 
                 var login = ((TextBox)fields[0]).Text;
                 if (!ValidateLogin(login))
                     return;
 
-                var existsStatus = AccountExists(loggedUser, server, login);
-                if (existsStatus.Code != 1)
+                if (AccountExists(loggedUser, server, login))
                 {
-                    // błąd lub konto istnieje
-                    Alert(existsStatus.Message);
+                    Alert(AccountExistsError(login));
                     return;
                 }
-
+                
                 if (!ParsePrivateKey(((TextBox)fields[1]).Text, out PrivateKey privateKey))
                     return;
 
@@ -54,15 +56,15 @@ namespace Client.MVVM.ViewModel.AccountActions
                     Login = login,
                     PrivateKey = privateKey
                 };
-                var addStatus = loggedUser.AddAccount(server.IpAddress, server.Port, newAccount);
-                if (addStatus.Code != 0)
+                try { loggedUser.AddAccount(server.IpAddress, server.Port, newAccount); }
+                catch (Error e)
                 {
-                    addStatus.Prepend("|Error occured while| |adding| " +
+                    e.Prepend("|Error occured while| |adding| " +
                         "|account;D| |to server's database.|");
-                    Alert(addStatus.Message);
-                    return;
+                    Alert(e.Message);
+                    throw;
                 }
-                OnRequestClose(new Status(0, newAccount));
+                OnRequestClose(new Success(newAccount));
             });
         }
     }

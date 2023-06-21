@@ -1,8 +1,8 @@
 ﻿using Client.MVVM.Model;
 using Client.MVVM.View.Windows;
 using Shared.MVVM.Core;
-using Shared.MVVM.Model;
 using Shared.MVVM.Model.Cryptography;
+using Shared.MVVM.ViewModel.Results;
 using System.Collections.Generic;
 using System.Windows.Controls;
 
@@ -27,32 +27,25 @@ namespace Client.MVVM.ViewModel.AccountActions
             {
                 var fields = (List<Control>)e;
 
-                var status = ProgressBarViewModel.ShowDialog(window,
+                var result = ProgressBarViewModel.ShowDialog(window,
                     "|Private key generation|", true,
                     (reporter) => PrivateKey.Random(reporter));
-                if (status.Code == 1) return; // anulowano
+                if (!(result is Success success)) return; // anulowano
 
                 var textBox = (TextBox)fields[1];
-                textBox.Text = ((PrivateKey)status.Data).ToString();
+                textBox.Text = ((PrivateKey)success.Data).ToString();
             });
         }
 
         protected bool ServerExists(LocalUser user, Server server)
         {
-            var status = user.ServerExists(server.IpAddress, server.Port);
-            if (status.Code < 0)
+            try { return user.ServerExists(server.IpAddress, server.Port); }
+            catch (Error e)
             {
-                status.Prepend("|Error occured while| |checking if| |server| |already exists.|");
-                Alert(status.Message);
-                return false;
+                e.Prepend("|Error occured while| |checking if| |server| |already exists.|");
+                Alert(e.Message);
+                throw;
             }
-            else if (status.Code == 1)
-            {
-                Alert(status.Message);
-                return false;
-            }
-            // status.Code == 0, czyli serwer istnieje
-            return true;
         }
 
         protected bool ValidateLogin(string login)
@@ -72,29 +65,35 @@ namespace Client.MVVM.ViewModel.AccountActions
             return true;
         }
 
-        protected Status AccountExists(LocalUser user, Server server, string login)
+        protected bool AccountExists(LocalUser user, Server server, string login)
         {
-            var status = user.AccountExists(server.IpAddress, server.Port, login);
-            if (status.Code < 0)
-                status.Prepend("|Error occured while| |checking if| |account| " +
+            try { return user.AccountExists(server.IpAddress, server.Port, login); }
+            catch (Error e)
+            {
+                e.Prepend("|Error occured while| |checking if| |account| " +
                     "|already exists.|");
-            return status;
+                Alert(e.Message);
+                throw;
+            }
         }
+
+        protected string AccountExistsError(string login) =>
+            $"|Account with login| {login} |already exists.|";
 
         protected bool ParsePrivateKey(string text, out PrivateKey privateKey)
         {
             privateKey = null;
             // klucz prywatny walidujemy jako ostatni, bo najdłużej to trwa
-            var status = ProgressBarViewModel.ShowDialog(window,
+            var result = ProgressBarViewModel.ShowDialog(window,
                 "|Private key validation|", true,
-                (reporter) => PrivateKey.TryParse(reporter, text));
-            if (status.Code == 1)
-                return false; // anulowano
-            // błędy zostały już wyświetlone w ProgressBarViewModelu
-            if (status.Code < 0)
+                (reporter) => PrivateKey.Parse(reporter, text));
+
+            // anulowano lub błąd (błędy zostały już wyświetlone w ProgressBarViewModelu)
+            if (!(result is Success success))
                 return false;
-            // status.Code == 0
-            privateKey = (PrivateKey)status.Data;
+
+            // powodzenie
+            privateKey = (PrivateKey)success.Data;
             return true;
         }
     }

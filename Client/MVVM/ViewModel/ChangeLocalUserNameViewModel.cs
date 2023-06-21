@@ -2,7 +2,7 @@
 using Client.MVVM.Model.BsonStorages;
 using Client.MVVM.View.Windows;
 using Shared.MVVM.Core;
-using Shared.MVVM.Model;
+using Shared.MVVM.ViewModel.Results;
 using System.Collections.Generic;
 using System.Windows.Controls;
 
@@ -22,44 +22,45 @@ namespace Client.MVVM.ViewModel
                 RequestClose += () => win.Close();
             });
 
-            Confirm = new RelayCommand(e =>
+            Confirm = new RelayCommand(controls =>
             {
-                var fields = (List<Control>)e;
+                var fields = (List<Control>)controls;
 
                 var newUsername = ((TextBox)fields[0]).Text;
-                var unValSta = LocalUsersStorage.ValidateUserName(newUsername);
-                if (unValSta.Code != 0)
+                var userNameVal = LocalUsersStorage.ValidateUserName(newUsername);
+                if (!(userNameVal is null))
                 {
-                    Alert(unValSta.Message);
+                    Alert(userNameVal);
                     return;
                 }
 
-                var existsStatus = lus.Exists(newUsername);
-                if (existsStatus.Code < 0)
+                try
                 {
-                    existsStatus.Prepend("|Error occured while| |checking if| |user|" +
+                    if (lus.Exists(newUsername))
+                    {
+                        Alert($"|User with name| {newUsername} |already exists.|");
+                        return;
+                    }
+                }
+                catch (Error e)
+                {
+                    e.Prepend("|Error occured while| |checking if| |user|" +
                         "|already exists.|");
-                    Alert(existsStatus.Message);
-                    return;
+                    Alert(e.Message);
+                    throw;
                 }
-                if (existsStatus.Code == 0)
-                {
-                    Alert(existsStatus.Message);
-                    return;
-                }
-                // użytkownik nie istnieje
 
+                // użytkownik jeszcze nie istnieje
                 var oldUserName = user.Name;
                 user.Name = newUsername;
-                var updateStatus = lus.Update(oldUserName, user);
-                if (updateStatus.Code != 0)
+                try { lus.Update(oldUserName, user); }
+                catch (Error e)
                 {
-                    user.Name = oldUserName;
-                    updateStatus.Prepend("|Error occured while| |updating |user in database.|");
-                    Alert(updateStatus.Message);
-                    return;
+                    e.Prepend("|Error occured while| |updating| |user in database.|");
+                    Alert(e.Message);
+                    throw;
                 }
-                OnRequestClose(new Status(0));
+                OnRequestClose(new Success());
             });
         }
     }

@@ -1,6 +1,7 @@
 using Shared.MVVM.Core;
 using Shared.MVVM.View.Windows;
 using Shared.MVVM.ViewModel;
+using Shared.MVVM.ViewModel.Results;
 using BaseViewModel = Shared.MVVM.ViewModel.ViewModel;
 
 namespace Server.MVVM.ViewModel
@@ -8,7 +9,9 @@ namespace Server.MVVM.ViewModel
     public class MainViewModel : WindowViewModel
     {
         #region Commands
-        // setujemy te właściwości w callbacku (RelayCommandzie) zdarzenia WindowLoaded, a nie w konstruktorze MainViewModel, więc potrzebne są settery z wywołaniami OnPropertyChanged
+        /* setujemy te właściwości w callbacku (RelayCommandzie) zdarzenia
+        WindowLoaded, a nie w konstruktorze MainViewModel, więc potrzebne
+        są settery z wywołaniami OnPropertyChanged */
         private RelayCommand _selectTab;
         public RelayCommand SelectTab
         {
@@ -63,18 +66,18 @@ namespace Server.MVVM.ViewModel
                     SelectedTab = tabs[index];
                 });
 
-                server.Started += (status) =>
+                server.Started += (result) =>
                 {
                     string message = null;
-                    if (status.Code == 0) message = "|Server was started.|";
-                    else message = status.Prepend("|Server was not started.|").Message;
+                    if (!(result is Failure failure)) message = "|Server was started.|";
+                    else message = failure.Reason.Prepend("|Server was not started.|").Message;
                     UIInvoke(() => Alert(message));
                 };
-                server.Stopped += (status) =>
+                server.Stopped += (result) =>
                 {
                     string message = null;
-                    if (status.Code == 0) message = "|Server was safely stopped.|";
-                    else message = status.Prepend("|Server was suddenly stopped.|").Message;
+                    if (!(result is Failure failure)) message = "|Server was safely stopped.|";
+                    else message = failure.Reason.Prepend("|Server was suddenly stopped.|").Message;
                     UIInvoke(() => Alert(message));
                 };
 

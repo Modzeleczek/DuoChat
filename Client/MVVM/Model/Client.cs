@@ -1,5 +1,5 @@
 using Shared.MVVM.Core;
-using Shared.MVVM.Model;
+using Shared.MVVM.ViewModel.Results;
 using System;
 using System.Net.Sockets;
 using System.Threading;
@@ -26,9 +26,9 @@ namespace Client.MVVM.Model
 
         public Client() { }
 
-        public Status Connect(Server server)
+        public void Connect(Server server)
         {
-            Status status = null;
+            Error error = null;
             // https://stackoverflow.com/a/43237063
             _socket = new TcpClient();
             var timeOut = TimeSpan.FromSeconds(2);
@@ -62,33 +62,33 @@ namespace Client.MVVM.Model
                 _disconnectRequested = false;
                 _runner = Task.Run(Process);
                 IsConnected = true;
-                return new Status(0); // 0
+                return;
             }
-            catch (OperationCanceledException)
+            catch (OperationCanceledException e)
             {
-                status = new Status(-1, null, "|Server connection timed out.|"); // -1
+                error = new Error(e, "|Server connection timed out.|");
             }
-            catch (SocketException)
+            catch (SocketException e)
             {
-                status = new Status(-2, null, "|No response from the server.|"); // -2
+                error = new Error(e, "|No response from the server.|");
                 // dokładna przyczyna braku połączenia jest w SocketException.Message
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                status = new Status(-3, null, "|Error occured while| " +
-                    "|connecting to the server.|"); // -3
+                error = new Error(e, "|Error occured while| " +
+                    "|connecting to the server.|");
             }
             /* System.ArgumentNullException - nie może wystąpić, bo walidujemy adres IP
             System.ArgumentOutOfRangeException - nie może wystąpić, bo walidujemy port
             System.ObjectDisposedException - nie może wystąpić, bo tworzymy nowy,
             niezdisposowany obiekt TcpClient */
             _socket.Close();
-            return status;
+            throw error;
         }
 
         private void Process()
         {
-            Status status = null;
+            Result result = null;
             try
             {
                 var stream = _socket.GetStream();
@@ -96,24 +96,24 @@ namespace Client.MVVM.Model
                 {
                     lock (_socket) if (_disconnectRequested) break;
                 }
-                status = new Status(0);
+                result = new Success();
             }
             catch (Exception ex)
             {
-                status = new Status(-1, null, "|No translation:| " + ex.Message);
+                result = new Failure(ex, "|No translation:|");
             }
             finally
             {
                 _socket.Close();
                 IsConnected = false;
-                Disconnected?.Invoke(status);
+                Disconnected?.Invoke(result);
             }
         }
 
-        public Status Disconnect()
+        public Result Disconnect()
         {
-            Status ret = null;
-            Callback disconnectHandler = (status) => ret = status;
+            Result ret = null;
+            Callback disconnectHandler = (result) => ret = result;
             Disconnected += disconnectHandler;
             RequestDisconnect();
             // czekamy na zakończenie wątku (taska) obsługującego klienta

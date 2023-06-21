@@ -2,8 +2,8 @@
 using Client.MVVM.Model.BsonStorages;
 using Client.MVVM.View.Windows;
 using Shared.MVVM.Core;
-using Shared.MVVM.Model;
 using Shared.MVVM.Model.Cryptography;
+using Shared.MVVM.ViewModel.Results;
 using System.Collections.Generic;
 using System.Windows.Controls;
 
@@ -27,9 +27,9 @@ namespace Client.MVVM.ViewModel.AccountActions
                     account.PrivateKey.ToString());
             });
 
-            Confirm = new RelayCommand(e =>
+            Confirm = new RelayCommand(controls =>
             {
-                var fields = (List<Control>)e;
+                var fields = (List<Control>)controls;
 
                 if (!ServerExists(loggedUser, server))
                     // błąd lub serwer nie istnieje
@@ -39,22 +39,18 @@ namespace Client.MVVM.ViewModel.AccountActions
                 if (!ValidateLogin(login))
                     return;
 
-                var oldExStatus = AccountExists(loggedUser, server, account.Login);
-                if (oldExStatus.Code != 0)
+                if (!AccountExists(loggedUser, server, account.Login))
                 {
-                    // błąd lub konto nie istnieje
-                    Alert(oldExStatus.Message);
+                    Alert($"|Account with login| {login} |does not exist.|");
                     return;
                 }
 
                 // jeżeli zmieniamy klucz główny, czyli (login)
                 if (account.Login != login)
                 {
-                    var newExStatus = AccountExists(loggedUser, server, login);
-                    if (newExStatus.Code != 1)
+                    if (AccountExists(loggedUser, server, login))
                     {
-                        // błąd lub konto istnieje
-                        Alert(newExStatus.Message);
+                        Alert(AccountExistsError(login));
                         return;
                     }
                 }
@@ -67,17 +63,17 @@ namespace Client.MVVM.ViewModel.AccountActions
                     Login = login,
                     PrivateKey = privateKey
                 };
-                var updateStatus = loggedUser.UpdateAccount(server.IpAddress, server.Port,
-                    account.Login, updatedAccount);
-                if (updateStatus.Code != 0)
+                try { loggedUser.UpdateAccount(server.IpAddress, server.Port,
+                    account.Login, updatedAccount); }
+                catch (Error e)
                 {
-                    updateStatus.Prepend("|Error occured while| |updating| |account;D| " +
+                    e.Prepend("|Error occured while| |updating| |account;D| " +
                         "|in server's database.|");
-                    Alert(updateStatus.Message);
-                    return;
+                    Alert(e.Message);
+                    throw;
                 }
                 updatedAccount.CopyTo(account);
-                OnRequestClose(new Status(0));
+                OnRequestClose(new Success());
             });
         }
     }
