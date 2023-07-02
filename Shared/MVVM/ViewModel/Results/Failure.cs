@@ -7,12 +7,12 @@ namespace Shared.MVVM.ViewModel.Results
     {
         public Error Reason { get; }
 
-        public Failure(Exception reason, string message)
+        public Failure(Exception reason, params string[] message)
         {
             Reason = new Error(reason, message);
         }
 
-        public Failure(string message)
+        public Failure(params string[] message)
         {
             Reason = new Error(message);
         }

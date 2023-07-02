@@ -126,7 +126,12 @@ namespace Client.MVVM.ViewModel
             {
                 /* nie sprawdzamy, czy value == SelectedServer, aby można było reconnectować
                 poprzez kliknięcie na już zaznaczony serwer */
-                if (_client.IsConnected) _client.Disconnect();
+                if (_client.IsConnected)
+                {
+                    Disconnecting = true;
+                    // Asynchroniczne rozłączanie.
+                    _client.RequestDisconnect();
+                }
 
                 selectedAccount = value;
                 SelectedConversation = null;
@@ -135,7 +140,9 @@ namespace Client.MVVM.ViewModel
                 {
                     try
                     {
-                        _client.Connect(SelectedServer);
+                        var ser = SelectedServer;
+                        // Synchroniczne łączenie.
+                        _client.Connect(ser.IpAddress.ToIPAddress(), ser.Port.Value);
                         var cnvCnt = rng.Next(0, 5);
                         for (int i = 0; i < cnvCnt; ++i)
                             Conversations.Add(Conversation.Random(rng));
@@ -170,12 +177,23 @@ namespace Client.MVVM.ViewModel
             get => writtenMessage;
             set { writtenMessage= value; OnPropertyChanged(); }
         }
+
+        private bool disconnecting = false;
+        public bool Disconnecting
+        {
+            get => disconnecting;
+            set { disconnecting = value; OnPropertyChanged(nameof(NotDisconnecting)); }
+        }
+        // Do bindingu w widoku MainWindow.
+        public bool NotDisconnecting { get => !Disconnecting; }
         #endregion
 
+        #region Fields
         private LocalUser loggedUser = null;
         private Model.Client _client = new Model.Client();
         private Random rng = new Random();
-        
+        #endregion
+
         public MainViewModel()
         {
             var lus = new LocalUsersStorage();
@@ -383,6 +401,8 @@ namespace Client.MVVM.ViewModel
                     ShowLocalUsersDialog();
                 }
             });
+
+            SetClientEventHandlers();
         }
 
         private void ShowLocalUsersDialog()
@@ -453,6 +473,31 @@ namespace Client.MVVM.ViewModel
                 Alert(e.Message);
                 throw;
             }
+        }
+
+        private void SetClientEventHandlers()
+        {
+            _client.Disconnected += (result) =>
+            {
+                Disconnecting = false;
+                if (result is Failure failure)
+                    UIInvoke(() => Alert(failure.Reason.Message));
+            };
+
+            _client.ReceivedPacket += (result) =>
+            {
+                var packet = (byte[])((Success)result).Data;
+                var operationCode = packet[0];
+                switch (operationCode)
+                {
+                    case 1: HandleNoSlots(); break;
+                }
+            };
+        }
+
+        private void HandleNoSlots()
+        {
+            UIInvoke(() => Alert("No slots."));
         }
     }
 }

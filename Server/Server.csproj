@@ -142,7 +142,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="MVVM\Model\Client.cs" />
-    <Compile Include="MVVM\Model\PacketBuilder.cs" />
     <Compile Include="MVVM\Model\Server.cs" />
     <Compile Include="MVVM\ViewModel\AccountsViewModel.cs" />
     <Compile Include="MVVM\ViewModel\AlertViewModel.cs" />

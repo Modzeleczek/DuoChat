@@ -1,32 +1,23 @@
 using Shared.MVVM.Core;
 using Shared.MVVM.ViewModel.Results;
 using System;
+using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using BaseClient = Shared.MVVM.Model.Networking.Client;
 
 namespace Client.MVVM.Model
 {
-    public class Client
+    public class Client : BaseClient
     {
-        #region Properties
-        public bool IsConnected { get; private set; } = false;
-        #endregion
-
         #region Fields
-        private TcpClient _socket = null;
-        private Task _runner = null;
-        private bool _disconnectRequested = false;
         private Server _server = null;
-        #endregion
-
-        #region Events
-        public event Callback Disconnected;
         #endregion
 
         public Client() { }
 
-        public void Connect(Server server)
+        public void Connect(IPAddress ipAddress, int port)
         {
             Error error = null;
             // https://stackoverflow.com/a/43237063
@@ -40,8 +31,9 @@ namespace Client.MVVM.Model
                 using (var cts = new CancellationTokenSource(timeOut))
                 {
                     // rozpoczynamy taska "łączącego", który łączy TcpClienta z serwerem
-                    var task = _socket.ConnectAsync(server.IpAddress.ToIPAddress(), server.Port.Value);
-                    /* ustawiamy funkcję, która zostanie wykonana w momencie anulowania taska obiektu CancellationTokenSource (czyli po czasie timeOut) */
+                    var task = _socket.ConnectAsync(ipAddress, port);
+                    /* ustawiamy funkcję, która zostanie wykonana w momencie anulowania taska
+                    obiektu CancellationTokenSource (czyli po czasie timeOut) */
                     using (cts.Token.Register(() => cancellationCompletionSource.TrySetResult(true)))
                     {
                         /* synchronicznie czekamy na zakończenie pierwszego z dwóch tasków:
@@ -58,10 +50,17 @@ namespace Client.MVVM.Model
                             throw task.Exception.InnerException;
                     }
                 }
-                _server = server;
                 _disconnectRequested = false;
-                _runner = Task.Run(Process);
+
+                /* w Server.Server.MVVM.Model.Client.Start uzasadnienie,
+                czemu IsConnected = true wykonujemy przed uruchomieniem Process */
                 IsConnected = true;
+                /* zamiast poniższego taska można użyć tego:
+                var receiver = Task.Factory.StartNew(ProcessReceive, TaskCreationOptions.LongRunning);
+                var sender = Task.Factory.StartNew(ProcessSend, TaskCreationOptions.LongRunning);
+                Task.Factory.ContinueWhenAll(new Task[] { receiver, sender }, Process); */
+                _runner = Task.Factory.StartNew(Process, TaskCreationOptions.LongRunning);
+
                 return;
             }
             catch (OperationCanceledException e)
@@ -82,50 +81,22 @@ namespace Client.MVVM.Model
             System.ArgumentOutOfRangeException - nie może wystąpić, bo walidujemy port
             System.ObjectDisposedException - nie może wystąpić, bo tworzymy nowy,
             niezdisposowany obiekt TcpClient */
+            // wykonuje się, jeżeli złapiemy jakikolwiek wyjątek
             _socket.Close();
             throw error;
         }
 
-        private void Process()
-        {
-            Result result = null;
-            try
-            {
-                var stream = _socket.GetStream();
-                while (true)
-                {
-                    lock (_socket) if (_disconnectRequested) break;
-                }
-                result = new Success();
-            }
-            catch (Exception ex)
-            {
-                result = new Failure(ex, "|No translation:|");
-            }
-            finally
-            {
-                _socket.Close();
-                IsConnected = false;
-                Disconnected?.Invoke(result);
-            }
-        }
-
+        // Synchroniczne rozłączenie.
         public Result Disconnect()
         {
-            Result ret = null;
-            Callback disconnectHandler = (result) => ret = result;
+            Result res = null;
+            Callback disconnectHandler = (result) => res = result;
             Disconnected += disconnectHandler;
             RequestDisconnect();
             // czekamy na zakończenie wątku (taska) obsługującego klienta
             _runner.Wait();
             Disconnected -= disconnectHandler;
-            return ret;
-        }
-
-        public void RequestDisconnect()
-        {
-            if (!IsConnected) return;
-            lock (_socket) _disconnectRequested = true;
+            return res;
         }
     }
 }

@@ -70,6 +70,9 @@
         </ControlTemplate>
       </Setter.Value>
     </Setter>
+
+    <Setter Property="IsEnabled" Value="{Binding Path=DataContext.NotDisconnecting,
+      RelativeSource={RelativeSource Mode=FindAncestor, AncestorLevel=1, AncestorType=Window}}" />
   </Style>
 
 </ResourceDictionary>

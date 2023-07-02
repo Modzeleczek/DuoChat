@@ -24,7 +24,7 @@ namespace Server.MVVM.Model
         private PrivateKey _privateKey = null;
         private int _capacity = 0;
         private Task _runner = null;
-        private bool _stopRequested = false;
+        private volatile bool _stopRequested = false;
         #endregion
 
         #region Events
@@ -69,26 +69,43 @@ namespace Server.MVVM.Model
             {
                 while (true)
                 {
-                    lock (_listener) if (_stopRequested) break;
+                    if (_stopRequested) break;
                     // https://stackoverflow.com/a/365533
                     if (!_listener.Pending())
                     {
                         Thread.Sleep(500); // choose a number (in milliseconds) that makes sense
                         continue; // skip to next iteration of loop
                     }
-                    if (!(_clients.Count < _capacity)) continue;
+
                     var client = new Client(_listener.AcceptTcpClient());
-                    _clients.Add(client);
-                    client.Start();
+                    lock (_clients)
+                    {
+                        if (_clients.Count < _capacity)
+                        {
+                            // TODO: trzymać klientów w mapie, żeby przyspieszyć usuwanie
+                            client.Disconnected += (s) =>
+                            {
+                                lock (_clients)
+                                    _clients.Remove(client);
+                            };
+                            client.Introduce(_guid, _privateKey.ToPublicKey());
+                            _clients.Add(client);
+                        }
+                        else // nie ma wolnych slotów
+                            client.NoSlots();
+                    }
                 }
                 foreach (var c in _clients)
                     c.Disconnect();
                 result = new Success();
             }
-            // nie łapiemy InvalidOperationException, bo _listener.AcceptTcpClient() może je wyrzucić tylko jeżeli nie wywołaliśmy wcześniej _listener.Start()
+            /* nie łapiemy InvalidOperationException, bo _listener.AcceptTcpClient()
+            może je wyrzucić tylko jeżeli nie wywołaliśmy wcześniej _listener.Start() */
             catch (SocketException se)
             {
-                // według dokumentacji funkcji TcpListener.AcceptTcpClient, se.ErrorCode jest kodem błędu, którego opis można zobaczyć w "Windows Sockets version 2 API error code documentation"
+                /* według dokumentacji funkcji TcpListener.AcceptTcpClient,
+                se.ErrorCode jest kodem błędu, którego opis można zobaczyć
+                w "Windows Sockets version 2 API error code documentation" */
                 result = new Failure(se, "|No translation:|");
             }
             finally
@@ -96,7 +113,9 @@ namespace Server.MVVM.Model
                 _clients.Clear();
                 _listener.Stop();
                 IsRunning = false;
-                Stopped?.Invoke(result); // jeżeli nie ma żadnych obserwatorów (nikt nie ustawił callbacków (handlerów)) i Stopped == null, to Invoke się nie wykona
+                /* jeżeli nie ma żadnych obserwatorów (nikt nie ustawił callbacków
+                (handlerów)) i Stopped == null, to Invoke się nie wykona */
+                Stopped?.Invoke(result);
             }
         }
 
@@ -108,7 +127,7 @@ namespace Server.MVVM.Model
                 Stopped?.Invoke(new Success());
                 return;
             }
-            lock (_listener) _stopRequested = true;
+            _stopRequested = true;
         }
     }
 }

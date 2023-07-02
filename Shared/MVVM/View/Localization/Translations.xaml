@@ -255,6 +255,7 @@
   <l:Entry x:Key="Do you want to generate a new private key? Server's public key is derived from private key and users may not trust a server changing it without prior notice."
     PL="Czy chcesz wygenerować nowy klucz prywatny. Klucz publiczny serwera pochodzi od klucza prywatnego i użytkownicy mogą nie ufać serwerowi zmieniającemu go bez uprzedniej zapowiedzi."/>
   <l:Entry x:Key="Private key validation" PL="Walidacja klucza prywatnego"/>
+  <l:Entry x:Key="Database file" PL="Plik bazy danych"/>
 
   <!-- do klienta i serwera -->
   <!-- klucze używane w plikach .xaml - muszą być prawidłowymi nazwami zmiennych -->
@@ -290,4 +291,38 @@
     PL="pisania do strumienia przekształcającego AESem."/>
   <l:Entry x:Key="RSA encrypting." PL="szyfrowania RSA."/>
   <l:Entry x:Key="RSA decrypting." PL="odszyfrowywania RSA."/>
+
+  <l:Entry x:Key="encrypting merged packet parts."
+    PL="szyfrowania połączonych części pakietu."/>
+  <l:Entry x:Key="AES encrypting packet data."
+    PL="szyfrowania AESem danych pakietu."/>
+  <l:Entry x:Key="RSA encrypting AES key and IV"
+    PL="szyfrowania RSA klucza i wektora inicjującego AESa"/>
+  <l:Entry x:Key="using sender's private key." PL="kluczem prywatnym nadawcy."/>
+  <l:Entry x:Key="using receivers's public key."
+    PL="kluczem publicznym odbiorcy."/>
+
+  <l:Entry x:Key="Connection interrupted." PL="Połączenie przerwane."/>
+  <l:Entry x:Key="Operating system error." PL="Błąd systemu operacyjnego."/>
+  <l:Entry x:Key="Socket already disposed."
+    PL="Gniazdo już zostało zamknięte."/>
+  <l:Entry x:Key="Connection closed." PL="Połączenie zakończone."/>
+  <l:Entry x:Key="TCP socket's receive buffer"
+    PL="Bufor odbiorczy gniazda TCP"/>
+  <l:Entry x:Key="has insufficient capacity."
+    PL="ma niewystarczającą pojemność."/>
+  <l:Entry x:Key="Received packet too large for PacketBuffer."
+    PL="Odebrano pakiet za duży dla PacketBuffera."/>
+  <l:Entry x:Key="Received fabricated packet."
+    PL="Odebrano sfabrykowany pakiet."/>
+  <l:Entry x:Key="Received packet's body is larger than its prefix value."
+    PL="Ciało odebranego pakietu jest większe niż wartość jego prefiksu."/>
+  <l:Entry x:Key="received packet to queue."
+    PL="odebranego pakietu do kolejki."/>
+  <l:Entry x:Key="TCP socket's send buffer" PL="Bufor nadawczy gniazda TCP"/>
+  <l:Entry x:Key="Tried to send a packet larger than send buffer size."
+    PL="Próbowano wysłać pakiet większy niż rozmiar bufora nadawczego."/>
+  <l:Entry x:Key="Lost connection to the server."
+    PL="Utracono połączenie z serwerem."/>
+
 </ResourceDictionary>

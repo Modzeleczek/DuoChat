@@ -35,6 +35,7 @@ namespace Server.MVVM.ViewModel
             {
                 window = (DialogWindow)windowLoadedE;
 
+                // klasy, które mogą mieć tylko 1 instancję, ale nie używamy singletona
                 var server = new Model.Server();
 
                 // zapobiega ALT + F4 w głównym oknie
