@@ -124,6 +124,8 @@ namespace Client.MVVM.ViewModel
             get => selectedAccount;
             set
             {
+                if (Disconnecting) return;
+
                 /* nie sprawdzamy, czy value == SelectedServer, aby można było reconnectować
                 poprzez kliknięcie na już zaznaczony serwer */
                 if (_client.IsConnected)
@@ -182,10 +184,8 @@ namespace Client.MVVM.ViewModel
         public bool Disconnecting
         {
             get => disconnecting;
-            set { disconnecting = value; OnPropertyChanged(nameof(NotDisconnecting)); }
+            set { disconnecting = value; OnPropertyChanged(); }
         }
-        // Do bindingu w widoku MainWindow.
-        public bool NotDisconnecting { get => !Disconnecting; }
         #endregion
 
         #region Fields
