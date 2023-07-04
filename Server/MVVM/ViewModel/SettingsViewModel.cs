@@ -80,14 +80,21 @@ namespace Server.MVVM.ViewModel
 
             LoadFromFile();
 
-            server.Stopped += (_) => RefreshServerStopped();
+            server.Stopped += (result) =>
+            {
+                RefreshServerStopped(server);
+                string message = null;
+                if (!(result is Failure failure)) message = "|Server was safely stopped.|";
+                else message = failure.Reason.Prepend("|Server was suddenly stopped.|").Message;
+                Alert(message);
+            };
 
             ToggleServer = new RelayCommand(_ =>
             {
                 // if (!ServerStopped)
                 if (server.IsRunning)
                 {
-                    server.RequestStop();
+                    server.Stop();
                     return;
                 }
                 if (!ParseGuid(out Guid guid)) return;

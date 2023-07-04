@@ -40,20 +40,15 @@ namespace Server.MVVM.ViewModel
 
                 // zapobiega ALT + F4 w głównym oknie
                 window.Closable = false;
-                Callback closeApplication = (_) =>
-                {
-                    window.Closable = true;
-                    // zamknięcie MainWindow powoduje zakończenie programu
-                    UIInvoke(() => window.Close());
-                };
                 Close = new RelayCommand(_ =>
                 {
                     if (server.IsRunning)
                     {
-                        server.Stopped += closeApplication;
-                        server.RequestStop();
+                        // Synchroniczne zatrzymanie.
+                        server.Stop();
+                        CloseApplication();
                     }
-                    else closeApplication(null);
+                    else CloseApplication();
                 });
 
                 var setVM = new SettingsViewModel(window, server);
@@ -67,18 +62,17 @@ namespace Server.MVVM.ViewModel
                     SelectedTab = tabs[index];
                 });
 
-                server.Stopped += (result) =>
-                {
-                    string message = null;
-                    if (!(result is Failure failure)) message = "|Server was safely stopped.|";
-                    else message = failure.Reason.Prepend("|Server was suddenly stopped.|").Message;
-                    UIInvoke(() => Alert(message));
-                };
-
                 SelectTab.Execute("0");
             });
         }
 
         private void Alert(string description) => AlertViewModel.ShowDialog(window, description);
+
+        private void CloseApplication()
+        {
+            window.Closable = true;
+            // zamknięcie MainWindow powoduje zakończenie programu
+            window.Close();
+        }
     }
 }

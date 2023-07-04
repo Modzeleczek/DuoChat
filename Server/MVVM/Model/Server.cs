@@ -23,7 +23,7 @@ namespace Server.MVVM.Model
         private Guid _guid = Guid.Empty;
         private PrivateKey _privateKey = null;
         private int _capacity = 0;
-        private Task _runner = null;
+        private Task<Result> _runner = null;
         private volatile bool _stopRequested = false;
         #endregion
 
@@ -57,7 +57,7 @@ namespace Server.MVVM.Model
             }
         }
 
-        private void Process()
+        private Result Process()
         {
             Result result = null;
             try
@@ -110,19 +110,25 @@ namespace Server.MVVM.Model
                 IsRunning = false;
                 /* jeżeli nie ma żadnych obserwatorów (nikt nie ustawił callbacków
                 (handlerów)) i Stopped == null, to Invoke się nie wykona */
-                Stopped?.Invoke(result);
             }
+            return result;
         }
 
         public void RequestStop()
         {
-            // jeżeli serwer nie działa, to udajemy, że się od razu zamknął
-            if (!IsRunning)
-            {
-                Stopped?.Invoke(new Success());
-                return;
-            }
             _stopRequested = true;
+        }
+
+        /* Synchroniczne zatrzymanie z wykonaniem kodu obsługi zatrzymania serwera
+        (event Stopped). */
+        public void Stop()
+        {
+            if (!IsRunning)
+                throw new Error("|Server is not running.|");
+            RequestStop();
+            // czekamy na zakończenie wątku (taska) serwera
+            _runner.Wait();
+            Stopped?.Invoke(_runner.Result);
         }
     }
 }
