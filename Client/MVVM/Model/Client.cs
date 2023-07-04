@@ -87,16 +87,15 @@ namespace Client.MVVM.Model
         }
 
         // Synchroniczne rozłączenie.
-        public Result Disconnect()
+        public void Disconnect()
         {
-            Result res = null;
-            Callback disconnectHandler = (result) => res = result;
-            Disconnected += disconnectHandler;
+            if (!IsConnected)
+                throw new Error("|Client is not connected.|");
             RequestDisconnect();
-            // czekamy na zakończenie wątku (taska) obsługującego klienta
+            /* czekamy na zakończenie wątku (taska) obsługującego
+            połączenie z serwerem */
             _runner.Wait();
-            Disconnected -= disconnectHandler;
-            return res;
+            OnDisconnected(_runner.Result);
         }
     }
 }

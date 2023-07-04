@@ -124,16 +124,12 @@ namespace Client.MVVM.ViewModel
             get => selectedAccount;
             set
             {
-                if (Disconnecting) return;
-
                 /* nie sprawdzamy, czy value == SelectedServer, aby można było reconnectować
                 poprzez kliknięcie na już zaznaczony serwer */
                 if (_client.IsConnected)
-                {
-                    Disconnecting = true;
-                    // Asynchroniczne rozłączanie.
-                    _client.RequestDisconnect();
-                }
+                    /* Synchroniczne rozłączenie - blokuje UI do momentu powrotu
+                    z metody Disconnect. */
+                    _client.Disconnect();
 
                 selectedAccount = value;
                 SelectedConversation = null;
@@ -178,13 +174,6 @@ namespace Client.MVVM.ViewModel
         {
             get => writtenMessage;
             set { writtenMessage= value; OnPropertyChanged(); }
-        }
-
-        private bool disconnecting = false;
-        public bool Disconnecting
-        {
-            get => disconnecting;
-            set { disconnecting = value; OnPropertyChanged(); }
         }
         #endregion
 
@@ -479,9 +468,8 @@ namespace Client.MVVM.ViewModel
         {
             _client.Disconnected += (result) =>
             {
-                Disconnecting = false;
                 if (result is Failure failure)
-                    UIInvoke(() => Alert(failure.Reason.Message));
+                    Alert(failure.Reason.Message);
             };
 
             _client.ReceivedPacket += (result) =>

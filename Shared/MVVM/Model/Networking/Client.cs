@@ -37,7 +37,7 @@ namespace Shared.MVVM.Model.Networking
 
         #region Fields
         protected TcpClient _socket = null;
-        protected Task _runner = null;
+        protected Task<Result> _runner = null;
         protected volatile bool _disconnectRequested = false;
 
         protected BlockingCollection<PacketToSend> _sendQueue = new BlockingCollection<PacketToSend>();
@@ -46,9 +46,11 @@ namespace Shared.MVVM.Model.Networking
 
         #region Events
         public event Callback Disconnected, ReceivedPacket;
+
+        protected void OnDisconnected(Result result) => Disconnected?.Invoke(result);
         #endregion
 
-        protected void Process()
+        protected Result Process()
         {
             Result result = null;
             try
@@ -86,8 +88,8 @@ namespace Shared.MVVM.Model.Networking
             {
                 _socket.Close();
                 IsConnected = false;
-                Disconnected?.Invoke(result);
             }
+            return result;
         }
 
         private Result ProcessSend()

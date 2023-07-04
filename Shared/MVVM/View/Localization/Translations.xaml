@@ -217,6 +217,8 @@
   <l:Entry x:Key="Number" PL="Liczba"/>
   <l:Entry x:Key="Invalid public key format."
     PL="Nieprawidłowy format klucza publicznego."/>
+  <l:Entry x:Key="Client is not connected."
+    PL="Klient nie jest połączony."/>
 
   <!-- tylko do serwera -->
   <!-- klucze używane w plikach .xaml - muszą być prawidłowymi nazwami zmiennych -->
