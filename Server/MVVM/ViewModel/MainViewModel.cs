@@ -67,13 +67,6 @@ namespace Server.MVVM.ViewModel
                     SelectedTab = tabs[index];
                 });
 
-                server.Started += (result) =>
-                {
-                    string message = null;
-                    if (!(result is Failure failure)) message = "|Server was started.|";
-                    else message = failure.Reason.Prepend("|Server was not started.|").Message;
-                    UIInvoke(() => Alert(message));
-                };
                 server.Stopped += (result) =>
                 {
                     string message = null;

@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking;
@@ -80,11 +80,7 @@ namespace Server.MVVM.ViewModel
 
             LoadFromFile();
 
-            Callback startStopHandler = (_) => ServerStopped = !server.IsRunning;
-            server.Started += startStopHandler;
-            server.Stopped += startStopHandler;
-            // server.Started += (_) => ServerStopped = false;
-            // server.Stopped += (_) => ServerStopped = true;
+            server.Stopped += (_) => RefreshServerStopped();
 
             ToggleServer = new RelayCommand(_ =>
             {
@@ -99,7 +95,19 @@ namespace Server.MVVM.ViewModel
                 if (!ParsePort(out Port port)) return;
                 if (!ParseCapacity(out int capacity)) return;
                 if (!ParsePrivateKey(out PrivateKey privateKey)) return;
-                server.Start(guid, privateKey, ipAddress, port, capacity);
+
+                try
+                {
+                    server.Start(guid, privateKey, ipAddress, port, capacity);
+                    RefreshServerStopped(server);
+                    Alert("|Server was started.|");
+                }
+                catch (Error e)
+                {
+                    e.Prepend("|Server was not started.|");
+                    Alert(e.Message);
+                    throw;
+                };
             });
 
             GenerateGuid = new RelayCommand(_ =>
@@ -255,6 +263,11 @@ namespace Server.MVVM.ViewModel
             };
             var json = JsonConvert.SerializeObject(settings);
             File.WriteAllText(PATH, json, Encoding.UTF8);
+        }
+
+        private void RefreshServerStopped(Model.Server server)
+        {
+            ServerStopped = !server.IsRunning;
         }
     }
 }

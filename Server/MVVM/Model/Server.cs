@@ -28,7 +28,7 @@ namespace Server.MVVM.Model
         #endregion
 
         #region Events
-        public event Callback Started, Stopped;
+        public event Callback Stopped;
         #endregion
 
         public Server() { }
@@ -36,7 +36,6 @@ namespace Server.MVVM.Model
         public void Start(Guid guid, PrivateKey privateKey, IPv4Address ipAddress, Port port,
             int capacity)
         {
-            Result result = null;
             try
             {
                 var localEndPoint = new IPEndPoint(ipAddress.ToIPAddress(), port.Value);
@@ -46,19 +45,15 @@ namespace Server.MVVM.Model
                 _privateKey = privateKey;
                 _capacity = capacity;
                 _stopRequested = false;
-                _runner = Task.Run(Process);
+                _runner = Task.Factory.StartNew(Process, TaskCreationOptions.LongRunning);
                 IsRunning = true;
-                result = new Success();
+                return;
             }
             catch (SocketException se)
             {
                 _listener.Stop();
                 IsRunning = false;
-                result = new Failure(se, "|No translation:|");
-            }
-            finally
-            {
-                Started?.Invoke(result);
+                throw new Error(se, "|No translation:|");
             }
         }
 
