@@ -1,4 +1,4 @@
-﻿using Shared.MVVM.View.Windows;
+using Shared.MVVM.View.Windows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,8 +10,9 @@ namespace Server.MVVM.ViewModel
     public class ConnectedClientsViewModel : ViewModel
     {
         public ConnectedClientsViewModel(DialogWindow owner, Model.Server server)
+            : base(owner)
         {
-            window = owner;
+            
         }
     }
 }

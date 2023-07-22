@@ -75,9 +75,8 @@ namespace Server.MVVM.ViewModel
         private const string PATH = "settings.json";
 
         public SettingsViewModel(DialogWindow owner, Model.Server server)
+            : base(owner)
         {
-            window = owner;
-
             LoadFromFile();
 
             server.Stopped += (result) =>
