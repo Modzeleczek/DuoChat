@@ -75,19 +75,21 @@ namespace Server.MVVM.Model
                     var client = new Client(_listener.AcceptTcpClient());
                     lock (_clients)
                     {
-                        if (_clients.Count < _capacity)
+                        // nie ma wolnych slotów
+                        if (!(_clients.Count < _capacity))
                         {
-                            // TODO: trzymać klientów w mapie, żeby przyspieszyć usuwanie
-                            client.Disconnected += (s) =>
-                            {
-                                lock (_clients)
-                                    _clients.Remove(client);
-                            };
-                            client.Introduce(_guid, _privateKey.ToPublicKey());
-                            _clients.Add(client);
-                        }
-                        else // nie ma wolnych slotów
                             client.NoSlots();
+                            continue;
+                        }
+
+                        // TODO: trzymać klientów w mapie, żeby przyspieszyć usuwanie
+                        client.Disconnected += (s) =>
+                        {
+                            lock (_clients)
+                                _clients.Remove(client);
+                        };
+                        client.Introduce(_guid, _privateKey.ToPublicKey());
+                        _clients.Add(client);
                     }
                 }
                 DisconnectAllClients();
