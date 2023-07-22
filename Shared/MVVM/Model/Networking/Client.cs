@@ -40,6 +40,7 @@ namespace Shared.MVVM.Model.Networking
         protected Task<Result> _runner = null;
         // boole są flagami
         private volatile bool _stopProcessing = false;
+        private volatile bool _disconnectRequested = false;
 
         protected BlockingCollection<PacketToSend> _sendQueue = new BlockingCollection<PacketToSend>();
         protected BlockingCollection<byte[]> _receiveQueue = new BlockingCollection<byte[]>();
@@ -54,6 +55,7 @@ namespace Shared.MVVM.Model.Networking
         protected void ResetFlags()
         {
             _stopProcessing = false;
+            _disconnectRequested = false;
             /* ustawiamy przed uruchomieniem Process, bo Process mógłby zakończyć się
             (i ustawić IsConnected = false) szybciej niż wykona się IsConnected = true */
             IsConnected = true;
@@ -70,6 +72,14 @@ namespace Shared.MVVM.Model.Networking
                 var receiver = Task.Factory.StartNew(ProcessReceive, option);
                 var handler = Task.Factory.StartNew(ProcessHandle, option);
                 Task.WaitAll(sender, receiver, handler);
+
+                /* Rozłączenie przez nas - ignorujemy potencjalne błędy z procesów
+                (sender, receiver, handler). */
+                if (_disconnectRequested)
+                {
+                    result = new Success();
+                    return result;
+                }
 
                 var results = new Result[] { sender.Result, receiver.Result, handler.Result };
                 var error = new Error("|Lost connection to the server.|");
@@ -425,6 +435,7 @@ namespace Shared.MVVM.Model.Networking
         {
             /* Do interaktywnego (poprzez GUI) rozłączania należy używać
             tej funkcji (DisconnectAsync). */
+            _disconnectRequested = true;
             StopProcessing();
             return _runner;
         }
