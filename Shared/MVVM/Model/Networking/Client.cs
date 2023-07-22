@@ -1,4 +1,4 @@
-using Shared.MVVM.Core;
+﻿using Shared.MVVM.Core;
 using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.ViewModel.Results;
 using System;
@@ -419,6 +419,14 @@ namespace Shared.MVVM.Model.Networking
         protected void StopProcessing()
         {
             _stopProcessing = true;
+        }
+
+        public Task<Result> DisconnectAsync()
+        {
+            /* Do interaktywnego (poprzez GUI) rozłączania należy używać
+            tej funkcji (DisconnectAsync). */
+            StopProcessing();
+            return _runner;
         }
 
         private void HandlePacket(byte[] packet)

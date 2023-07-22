@@ -16,12 +16,6 @@ namespace Server.MVVM.Model
             _runner = Task.Factory.StartNew(Process, TaskCreationOptions.LongRunning);
         }
 
-        public void Disconnect()
-        {
-            StopProcessing();
-            _runner.Wait();
-        }
-
         public void Introduce(Guid guid, PublicKey publicKey)
         {
             // 0 Przedstawienie się serwera (00)

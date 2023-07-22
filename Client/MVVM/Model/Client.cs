@@ -86,10 +86,9 @@ namespace Client.MVVM.Model
         {
             if (!IsConnected)
                 throw new Error("|Client is not connected.|");
-            StopProcessing();
             /* czekamy na zakończenie wątku (taska) obsługującego
             połączenie z serwerem */
-            _runner.Wait();
+            DisconnectAsync().Wait();
             OnDisconnected(_runner.Result);
         }
     }

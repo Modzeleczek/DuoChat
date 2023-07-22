@@ -90,8 +90,15 @@ namespace Server.MVVM.Model
                             client.NoSlots();
                     }
                 }
-                foreach (var c in _clients)
-                    c.Disconnect();
+                
+                // zbieramy wątki (taski) obsługujące wszystkich klientów
+                var clientRunners = new LinkedList<Task>();
+                foreach (Client c in _clients)
+                    clientRunners.AddLast(c.DisconnectAsync());
+
+                // czekamy na zakończenie wątków obsługujących wszystkich klientów
+                Task.WhenAll(clientRunners);
+
                 result = new Success();
             }
             /* nie łapiemy InvalidOperationException, bo _listener.AcceptTcpClient()
