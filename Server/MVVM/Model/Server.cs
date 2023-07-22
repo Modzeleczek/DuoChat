@@ -90,15 +90,7 @@ namespace Server.MVVM.Model
                             client.NoSlots();
                     }
                 }
-                
-                // zbieramy wątki (taski) obsługujące wszystkich klientów
-                var clientRunners = new LinkedList<Task>();
-                foreach (Client c in _clients)
-                    clientRunners.AddLast(c.DisconnectAsync());
-
-                // czekamy na zakończenie wątków obsługujących wszystkich klientów
-                Task.WhenAll(clientRunners);
-
+                DisconnectAllClients();
                 result = new Success();
             }
             /* nie łapiemy InvalidOperationException, bo _listener.AcceptTcpClient()
@@ -136,6 +128,18 @@ namespace Server.MVVM.Model
             // czekamy na zakończenie wątku (taska) serwera
             _runner.Wait();
             Stopped?.Invoke(_runner.Result);
+        }
+
+
+        private void DisconnectAllClients()
+        {
+            // zbieramy wątki (taski) obsługujące wszystkich klientów
+            var clientRunners = new LinkedList<Task>();
+            foreach (Client c in _clients)
+                clientRunners.AddLast(c.DisconnectAsync());
+
+            // czekamy na zakończenie wątków obsługujących wszystkich klientów
+            Task.WhenAll(clientRunners);
         }
     }
 }
