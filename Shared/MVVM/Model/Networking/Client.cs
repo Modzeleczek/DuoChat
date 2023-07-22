@@ -1,4 +1,4 @@
-﻿using Shared.MVVM.Core;
+using Shared.MVVM.Core;
 using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.ViewModel.Results;
 using System;
@@ -49,6 +49,14 @@ namespace Shared.MVVM.Model.Networking
 
         protected void OnDisconnected(Result result) => Disconnected?.Invoke(result);
         #endregion
+
+        protected void ResetFlags()
+        {
+            _disconnectRequested = false;
+            /* ustawiamy przed uruchomieniem Process, bo Process mógłby zakończyć się
+            (i ustawić IsConnected = false) szybciej niż wykona się IsConnected = true */
+            IsConnected = true;
+        }
 
         protected Result Process()
         {

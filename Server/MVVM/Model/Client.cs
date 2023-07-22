@@ -1,4 +1,4 @@
-﻿using Shared.MVVM.Model.Cryptography;
+using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking;
 using System;
 using System.Net.Sockets;
@@ -12,10 +12,7 @@ namespace Server.MVVM.Model
         public Client(TcpClient socket)
         {
             _socket = socket;
-            _disconnectRequested = false;
-            /* ustawiamy przed uruchomieniem Process, bo Process mógłby zakończyć się
-            (i ustawić IsConnected = false) szybciej niż wykona się IsConnected = true */
-            IsConnected = true;
+            ResetFlags();
             _runner = Task.Factory.StartNew(Process, TaskCreationOptions.LongRunning);
         }
 

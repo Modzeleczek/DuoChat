@@ -50,11 +50,7 @@ namespace Client.MVVM.Model
                             throw task.Exception.InnerException;
                     }
                 }
-                _disconnectRequested = false;
-
-                /* w Server.Server.MVVM.Model.Client.Start uzasadnienie,
-                czemu IsConnected = true wykonujemy przed uruchomieniem Process */
-                IsConnected = true;
+                ResetFlags();
                 /* zamiast poniższego taska można użyć tego:
                 var receiver = Task.Factory.StartNew(ProcessReceive, TaskCreationOptions.LongRunning);
                 var sender = Task.Factory.StartNew(ProcessSend, TaskCreationOptions.LongRunning);
