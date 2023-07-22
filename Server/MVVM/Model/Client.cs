@@ -18,7 +18,7 @@ namespace Server.MVVM.Model
 
         public void Disconnect()
         {
-            RequestDisconnect();
+            StopProcessing();
             _runner.Wait();
         }
 
@@ -37,7 +37,7 @@ namespace Server.MVVM.Model
         public void NoSlots()
         {
             // 1 Brak wolnych połączeń (slotów) (00)
-            EnqueueToSend(1, new PacketBuilder(), () => RequestDisconnect());
+            EnqueueToSend(1, new PacketBuilder(), () => StopProcessing());
         }
     }
 }

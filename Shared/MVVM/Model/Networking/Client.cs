@@ -38,7 +38,8 @@ namespace Shared.MVVM.Model.Networking
         #region Fields
         protected TcpClient _socket = null;
         protected Task<Result> _runner = null;
-        protected volatile bool _disconnectRequested = false;
+        // boole są flagami
+        private volatile bool _stopProcessing = false;
 
         protected BlockingCollection<PacketToSend> _sendQueue = new BlockingCollection<PacketToSend>();
         protected BlockingCollection<byte[]> _receiveQueue = new BlockingCollection<byte[]>();
@@ -52,7 +53,7 @@ namespace Shared.MVVM.Model.Networking
 
         protected void ResetFlags()
         {
-            _disconnectRequested = false;
+            _stopProcessing = false;
             /* ustawiamy przed uruchomieniem Process, bo Process mógłby zakończyć się
             (i ustawić IsConnected = false) szybciej niż wykona się IsConnected = true */
             IsConnected = true;
@@ -103,7 +104,7 @@ namespace Shared.MVVM.Model.Networking
         private Result ProcessSend()
         {
             var result = ProcessSendInner();
-            RequestDisconnect();
+            StopProcessing();
             return result;
         }
 
@@ -119,7 +120,7 @@ namespace Shared.MVVM.Model.Networking
             var interruptedMsg = "|Connection interrupted.|";
             while (true)
             {
-                if (_disconnectRequested)
+                if (_stopProcessing)
                     return new Cancellation();
 
                 int prefixValue = 0;
@@ -167,7 +168,9 @@ namespace Shared.MVVM.Model.Networking
                     /* Według https://stackoverflow.com/a/1337117 Socket.Send i Receive
                     są wzajemnie thread-safe, więc nie musimy używać locka do synchronizowania
                     Send i Receive. Jeżeli w wątku odbierającym Receive spowoduje zdisposowanie
-                    socketa, to wykonany po nim Send wyrzuci ObjectDisposedException lub odwrotnie. */
+                    socketa, to wykonany po nim Send wyrzuci ObjectDisposedException lub odwrotnie.
+                    Raczej nie powinno się wydarzyć, bo _socket.Close wykonujemy dopiero na końcu
+                    Process, kiedy procesy (sender, receiver i handler) są już zakończone. */
                     return new Failure(e, interruptedMsg, "|Socket already disposed.|");
                 }
 
@@ -288,7 +291,7 @@ namespace Shared.MVVM.Model.Networking
         private Result ProcessReceive()
         {
             var result = ProcessReceiveInner();
-            RequestDisconnect();
+            StopProcessing();
             return result;
         }
 
@@ -307,7 +310,7 @@ namespace Shared.MVVM.Model.Networking
             var closedMsg = "|Connection closed.|";
             while (true)
             {
-                if (_disconnectRequested)
+                if (_stopProcessing)
                     return new Cancellation();
 
                 /* if (!IsSocketConnected(client))
@@ -387,7 +390,7 @@ namespace Shared.MVVM.Model.Networking
         private Result ProcessHandle()
         {
             var result = ProcessHandleInner();
-            RequestDisconnect();
+            StopProcessing();
             return result;
         }
 
@@ -403,7 +406,7 @@ namespace Shared.MVVM.Model.Networking
             ostatnie powiadomienie jako aktualny stan */
             while (true)
             {
-                if (_disconnectRequested)
+                if (_stopProcessing)
                     return new Cancellation();
 
                 if (!_receiveQueue.TryTake(out byte[] packet, 1000))
@@ -413,9 +416,9 @@ namespace Shared.MVVM.Model.Networking
             }
         }
 
-        public void RequestDisconnect()
+        protected void StopProcessing()
         {
-            _disconnectRequested = true;
+            _stopProcessing = true;
         }
 
         private void HandlePacket(byte[] packet)

@@ -1,5 +1,4 @@
 using Shared.MVVM.Core;
-using Shared.MVVM.ViewModel.Results;
 using System;
 using System.Net;
 using System.Net.Sockets;
@@ -87,7 +86,7 @@ namespace Client.MVVM.Model
         {
             if (!IsConnected)
                 throw new Error("|Client is not connected.|");
-            RequestDisconnect();
+            StopProcessing();
             /* czekamy na zakończenie wątku (taska) obsługującego
             połączenie z serwerem */
             _runner.Wait();
