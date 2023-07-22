@@ -335,9 +335,9 @@ namespace Shared.MVVM.Model.Networking
                 if (receivedBytes == 0)
                     return new Success(closedMsg);
 
-                foreach (var b in receiveBuffer)
+                for (int i = 0; i < receivedBytes; ++i)
                 {
-                    if (!packetBuffer.Write(b))
+                    if (!packetBuffer.Write(receiveBuffer[i]))
                         return new Failure(packetBuffer.ErrorMessage);
 
                     if (packetBuffer.PacketReady)
