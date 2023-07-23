@@ -83,11 +83,7 @@ namespace Server.MVVM.Model
                         }
 
                         // TODO: trzymać klientów w mapie, żeby przyspieszyć usuwanie
-                        client.Disconnected += (s) =>
-                        {
-                            lock (_clients)
-                                _clients.Remove(client);
-                        };
+                        SetUpDisconnectedHandler(client);
                         client.Introduce(_guid, _privateKey.ToPublicKey());
                         _clients.Add(client);
                     }
@@ -132,6 +128,14 @@ namespace Server.MVVM.Model
             Stopped?.Invoke(_runner.Result);
         }
 
+        private void SetUpDisconnectedHandler(Client client)
+        {
+            client.Disconnected += (_) =>
+            {
+                lock (_clients)
+                    _clients.Remove(client);
+            };
+        }
 
         private void DisconnectAllClients()
         {
