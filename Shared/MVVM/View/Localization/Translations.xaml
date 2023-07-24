@@ -258,6 +258,7 @@
     PL="Czy chcesz wygenerować nowy klucz prywatny. Klucz publiczny serwera pochodzi od klucza prywatnego i użytkownicy mogą nie ufać serwerowi zmieniającemu go bez uprzedniej zapowiedzi."/>
   <l:Entry x:Key="Private key validation" PL="Walidacja klucza prywatnego"/>
   <l:Entry x:Key="Database file" PL="Plik bazy danych"/>
+  <l:Entry x:Key="Server is not running." PL="Serwer nie jest uruchomiony."/>
 
   <l:Entry x:Key="Client disconnected." PL="Klient się rozłączył."/>
 
