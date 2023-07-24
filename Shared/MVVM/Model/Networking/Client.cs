@@ -1,4 +1,4 @@
-﻿using Shared.MVVM.Core;
+using Shared.MVVM.Core;
 using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.ViewModel.Results;
 using System;
@@ -47,9 +47,9 @@ namespace Shared.MVVM.Model.Networking
         #endregion
 
         #region Events
-        public event Callback Disconnected, ReceivedPacket;
+        public event Callback LostConnection, ReceivedPacket;
 
-        protected void OnDisconnected(Result result) => Disconnected?.Invoke(result);
+        protected void OnLostConnection(Result result) => LostConnection?.Invoke(result);
         #endregion
 
         protected void ResetFlags()

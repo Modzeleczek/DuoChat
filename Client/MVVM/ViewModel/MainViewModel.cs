@@ -466,7 +466,7 @@ namespace Client.MVVM.ViewModel
 
         private void SetClientEventHandlers()
         {
-            _client.Disconnected += (result) =>
+            _client.LostConnection += (result) =>
             {
                 if (result is Failure failure)
                     Alert(failure.Reason.Message);

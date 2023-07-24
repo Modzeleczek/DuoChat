@@ -43,7 +43,7 @@ namespace Server.MVVM.ViewModel
                 var model = (Model.Client)((Success)modelClient).Data;
                 var observableClient = new Observables.Anonymous(model);
 
-                model.Disconnected += (lostConRes) =>
+                model.LostConnection += (lostConRes) =>
                 {
                     UIInvoke(() =>
                     {
