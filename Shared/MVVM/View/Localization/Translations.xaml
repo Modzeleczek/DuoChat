@@ -223,12 +223,12 @@
   <!-- tylko do serwera -->
   <!-- klucze używane w plikach .xaml - muszą być prawidłowymi nazwami zmiennych -->
   <l:Entry x:Key="Server" PL="Serwer"/>
-  <l:Entry x:Key="Connected_clients" PL="Połączone klienty"/>
+  <l:Entry x:Key="Connected_clients" EN="Connected clients" PL="Połączone klienty"/>
   <l:Entry x:Key="Capacity" PL="Pojemność"/>
   <l:Entry x:Key="Start" PL="Uruchom"/>
   <l:Entry x:Key="Stop" PL="Zatrzymaj"/>
-  <l:Entry x:Key="IP_address" PL="Adres IP"/>
-  <l:Entry x:Key="Private_key" PL="Klucz prywatny"/>
+  <l:Entry x:Key="IP_address" EN="IP address" PL="Adres IP"/>
+  <l:Entry x:Key="Private_key" EN="Private key" PL="Klucz prywatny"/>
   <l:Entry x:Key="Generate" PL="Wygeneruj"/>
   <l:Entry x:Key="Load" PL="Wczytaj"/>
 
