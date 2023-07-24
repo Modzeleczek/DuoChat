@@ -1,4 +1,4 @@
-﻿<Application
+<Application
   x:Class="Server.App"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -9,10 +9,15 @@
       <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/MVVM/View/Themes/Buttons.xaml" />
         <ResourceDictionary Source="/MVVM/View/Themes/HoverPanel.xaml" />
+        <ResourceDictionary Source="/MVVM/View/Themes/ClientListItem.xaml" />
       </ResourceDictionary.MergedDictionaries>
 
       <DataTemplate DataType="{x:Type vm:SettingsViewModel}">
         <ctrl:SettingsView />
+      </DataTemplate>
+      
+      <DataTemplate DataType="{x:Type vm:ConnectedClientsViewModel}">
+        <ctrl:ConnectedClientsView />
       </DataTemplate>
     </ResourceDictionary>
   </Application.Resources>

@@ -1,6 +1,7 @@
 using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking;
 using System;
+using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using BaseClient = Shared.MVVM.Model.Networking.Client;
@@ -9,6 +10,10 @@ namespace Server.MVVM.Model
 {
     public class Client : BaseClient
     {
+        #region Properties
+        public IPEndPoint RemoteEndPoint { get => (IPEndPoint)_socket.Client.RemoteEndPoint; }
+        #endregion
+
         public Client(TcpClient socket)
         {
             _socket = socket;

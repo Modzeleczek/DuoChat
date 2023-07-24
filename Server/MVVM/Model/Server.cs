@@ -28,7 +28,7 @@ namespace Server.MVVM.Model
         #endregion
 
         #region Events
-        public event Callback Stopped;
+        public event Callback Stopped, ClientConnected;
         #endregion
 
         public Server() { }
@@ -86,6 +86,7 @@ namespace Server.MVVM.Model
                         SetUpDisconnectedHandler(client);
                         client.Introduce(_guid, _privateKey.ToPublicKey());
                         _clients.Add(client);
+                        ClientConnected?.Invoke(new Success(client));
                     }
                 }
                 DisconnectAllClients();

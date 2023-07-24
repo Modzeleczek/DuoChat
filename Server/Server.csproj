@@ -113,11 +113,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="MVVM\View\Controls\ConnectedClientsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MVVM\View\Controls\SettingsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MVVM\View\Themes\Buttons.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\View\Themes\ClientListitem.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -148,9 +156,15 @@
     <Compile Include="MVVM\ViewModel\ConfirmationViewModel.cs" />
     <Compile Include="MVVM\ViewModel\ConnectedClientsViewModel.cs" />
     <Compile Include="MVVM\ViewModel\MainViewModel.cs" />
+    <Compile Include="MVVM\ViewModel\Observables\Anonymous.cs" />
+    <Compile Include="MVVM\ViewModel\Observables\Client.cs" />
     <Compile Include="MVVM\ViewModel\ProgressBarViewModel.cs" />
     <Compile Include="MVVM\ViewModel\SettingsViewModel.cs" />
     <Compile Include="MVVM\ViewModel\ViewModel.cs" />
+    <Compile Include="MVVM\View\Controls\ConnectedClientsView.xaml.cs">
+      <DependentUpon>ConnectedClientsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MVVM\View\Controls\ListViewControl.cs" />
     <Compile Include="MVVM\View\Controls\SettingsView.xaml.cs">
       <DependentUpon>SettingsView.xaml</DependentUpon>
     </Compile>
