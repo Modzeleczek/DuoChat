@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
@@ -20,6 +20,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Cryptography\Rsa.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Cryptography\RsaKey.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Client.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\InterlocutorFailure.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\IPv4Address.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\PacketBuffer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\PacketBuilder.cs" />

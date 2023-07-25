@@ -220,6 +220,10 @@
   <l:Entry x:Key="Client is not connected."
     PL="Klient nie jest połączony."/>
 
+  <l:Entry x:Key="Disconnected by server." PL="Rozłączono przez serwer."/>
+  <l:Entry x:Key="Server crashed." PL="Serwer zcrashował."/>
+  <l:Entry x:Key="Disconnected." PL="Rozłączono."/>
+
   <!-- tylko do serwera -->
   <!-- klucze używane w plikach .xaml - muszą być prawidłowymi nazwami zmiennych -->
   <l:Entry x:Key="Server" PL="Serwer"/>
@@ -261,6 +265,8 @@
   <l:Entry x:Key="Server is not running." PL="Serwer nie jest uruchomiony."/>
 
   <l:Entry x:Key="Client disconnected." PL="Klient się rozłączył."/>
+  <l:Entry x:Key="Client crashed." PL="Klient zcrashował."/>
+  <l:Entry x:Key="Disconnected client." PL="Rozłączono klienta."/>
 
   <!-- do klienta i serwera -->
   <!-- klucze używane w plikach .xaml - muszą być prawidłowymi nazwami zmiennych -->
@@ -307,7 +313,6 @@
   <l:Entry x:Key="using receivers's public key."
     PL="kluczem publicznym odbiorcy."/>
 
-  <l:Entry x:Key="Connection interrupted." PL="Połączenie przerwane."/>
   <l:Entry x:Key="Operating system error." PL="Błąd systemu operacyjnego."/>
   <l:Entry x:Key="Socket already disposed."
     PL="Gniazdo już zostało zamknięte."/>
@@ -327,7 +332,9 @@
   <l:Entry x:Key="TCP socket's send buffer" PL="Bufor nadawczy gniazda TCP"/>
   <l:Entry x:Key="Tried to send a packet larger than send buffer size."
     PL="Próbowano wysłać pakiet większy niż rozmiar bufora nadawczego."/>
-  <l:Entry x:Key="Lost connection to the server."
-    PL="Utracono połączenie z serwerem."/>
+  <l:Entry x:Key="Connection broken." PL="Połączenie zerwane."/>
+  <l:Entry x:Key="Unexpected connection ending."
+    PL="Niespodziewane zakończenie połączenia."/>
+  <l:Entry x:Key="Interlocutor crashed." PL="Rozmówca zcrashował."/>
 
 </ResourceDictionary>

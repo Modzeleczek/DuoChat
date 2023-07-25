@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Security.Cryptography;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Shared.MVVM.Model.Networking
@@ -37,7 +38,7 @@ namespace Shared.MVVM.Model.Networking
 
         #region Fields
         protected TcpClient _socket = null;
-        protected Task<Result> _runner = null;
+        protected Task _runner = null;
         // boole są flagami
         private volatile bool _stopProcessing = false;
         private volatile bool _disconnectRequested = false;
@@ -49,6 +50,7 @@ namespace Shared.MVVM.Model.Networking
         #region Events
         public event Callback LostConnection, ReceivedPacket;
 
+        // wywoływane, kiedy my się rozłączamy
         protected void OnLostConnection(Result result) => LostConnection?.Invoke(result);
         #endregion
 
@@ -61,9 +63,9 @@ namespace Shared.MVVM.Model.Networking
             IsConnected = true;
         }
 
-        protected Result Process()
+        protected void Process()
         {
-            Result result = null;
+            Result result;
             try
             {
                 const TaskCreationOptions option = TaskCreationOptions.LongRunning;
@@ -74,41 +76,129 @@ namespace Shared.MVVM.Model.Networking
                 Task.WaitAll(sender, receiver, handler);
 
                 /* Rozłączenie przez nas - ignorujemy potencjalne błędy z procesów
-                (sender, receiver, handler). */
+                (sender, receiver, handler). Event
+                LostConnection służy do obsługi asynchronicznego rozłączenia przez
+                rozmówcę, a nie przez nas. */
                 if (_disconnectRequested)
                 {
-                    result = new Success();
-                    return result;
+                    FinishConnection();
+                    return;
                 }
 
-                var results = new Result[] { sender.Result, receiver.Result, handler.Result };
-                var error = new Error("|Lost connection to the server.|");
-                bool appendedErrorMsg = false;
-                foreach (var res in results)
-                {
-                    if (res is Failure failure)
-                    {
-                        // Przyczyny kilku niepowodzeń wypisujemy w oddzielnych liniach.
-                        if (appendedErrorMsg)
-                            error.Append("\n");
-                        error.Append(failure.Reason.Message);
-                        appendedErrorMsg = true;
-                    }
-                }
-                if (appendedErrorMsg)
-                    result = new Failure(error.Message);
-                else
-                    // Jeżeli nie było żadnego niepowodzenia.
-                    result = new Success();
+                result = SpecifyConnectionEnding(sender.Result, receiver.Result, handler.Result);
             }
             catch (Exception e)
-            { result = new Failure(e, "|No translation:|"); }
-            finally
             {
-                _socket.Close();
-                IsConnected = false;
+                result = new Failure(e, "|No translation:|");
             }
-            return result;
+            FinishConnection();
+            LostConnection?.Invoke(result);
+        }
+
+        private void FinishConnection()
+        {
+            _socket.Close();
+            IsConnected = false;
+        }
+
+        private Result SpecifyConnectionEnding(Result senderRes, Result receiverRes, Result handlerRes)
+        {
+            const string interlocutorCrashed = "|Interlocutor crashed.|";
+            /* Wątek wysyłający złapał SocketException z Socket.Send -
+            rozmówca (konkretnie odbiorca) wykonał Socket.Close lub zcrashował. */
+            if (senderRes is InterlocutorFailure senderIF)
+            {
+                /* Wątek odbierający złapał SocketException z Socket.Receive -
+                rozmówca (konkretnie nadawca) zcrashował. */
+                if (receiverRes is InterlocutorFailure receiverIF)
+                {
+                    return new Failure(interlocutorCrashed);
+                }
+                else // Wątek odbierający nie złapał SocketException.
+                {
+                    try
+                    {
+                        int receivedBytes = _socket.Client.Receive(new byte[1], 0, 1, SocketFlags.None);
+                        if (receivedBytes == 0)
+                        {
+                            // Rozmówca wykonał Socket.Close.
+                            return new Success();
+                        }
+                        else
+                        {
+                            /* Rozmówca wysłał niezerową liczbę bajtów, więc chce jeszcze rozmawiać.
+                            Rozłączenie jest z naszej inicjatywy. */
+                            return new Cancellation();
+                        }
+                    }
+                    catch (SocketException)
+                    {
+                        // Rozmówca zcrashował.
+                        return new Failure(interlocutorCrashed);
+                    }
+                }
+            }
+            else // Wątek wysyłający nie złapał SocketException.
+            {
+                // Wątek odbierający złapał SocketException.
+                if (receiverRes is InterlocutorFailure receiverIF)
+                {
+                    /* Rozmówca zcrashował. Jeżeli wykonamy Socket.Send, to na pewno
+                    wyrzuci SocketException, niezależnie czy rozmówca wykonał Socket.Close,
+                    czy zcrashował. */
+                    return new Failure(interlocutorCrashed);
+                }
+                else // Wątek odbierający nie złapał SocketException.
+                {
+                    return SpecifyNonExceptionalEnding(senderRes, receiverRes, handlerRes);
+                }
+            }
+        }
+
+        private Result SpecifyNonExceptionalEnding(Result senderRes, Result receiverRes, Result handlerRes)
+        {
+            /* senderRes może być Cancellation lub Failure.
+            receiverRes może być Cancellation, Failure lub Success.
+            handlerRes może być tylko Cancellation. */
+
+            // Wątek odbierający w Socket.Receive odczytał 0 bajtów.
+            if (receiverRes is Success)
+            {
+                return receiverRes;
+            }
+
+            var error = new Error("|Connection broken.|");
+            bool appendedErrorMsg = false;
+            if (senderRes is Failure senderFail)
+            {
+                error.Append(senderFail.Reason.Message);
+                appendedErrorMsg = true;
+            }
+            
+            if (receiverRes is Failure receiverFail)
+            {
+                /* Przyczyny kilku (dokładnie dwóch) niepowodzeń
+                wypisujemy w oddzielnych liniach. */
+                if (appendedErrorMsg)
+                    error.Append("\n");
+                error.Append(receiverFail.Reason.Message);
+                appendedErrorMsg = true;
+            }
+
+            /* Rozłączenie przez błąd, ale nie wywołany przez SocketException,
+            co zostało obsłużone w SpecifyConnectionEnding. */
+            if (appendedErrorMsg)
+                return new Failure(error.Message);
+
+            /* W tym miejscu jest możliwe tylko, że senderRes i receiverRes są Cancellation.
+            Rozłączenie przez _stopProcessing, ale bez żadnego błędu. Nie powinno się wydarzyć
+            przy synchronicznym rozłączaniu, bo wtedy ustawiamy _disconnectRequested = true przed
+            wykonaniem StopProcessing, więc SpecifyConnectionEnding w Process się nie wykonuje. */
+            if (senderRes is Cancellation && receiverRes is Cancellation)
+                return new Cancellation();
+
+            // Nie powinno nigdy się wydarzyć.
+            return new Failure("|Unexpected connection ending.|");
         }
 
         private Result ProcessSend()
@@ -127,7 +217,6 @@ namespace Shared.MVVM.Model.Networking
 
             client.SendTimeout = 5000;
 
-            var interruptedMsg = "|Connection interrupted.|";
             while (true)
             {
                 if (_stopProcessing)
@@ -171,7 +260,7 @@ namespace Shared.MVVM.Model.Networking
                 }
                 catch (SocketException e)
                 {
-                    return new Failure(e, interruptedMsg, "|Operating system error.|");
+                    return new InterlocutorFailure(e, "|No translation:|");
                 }
                 catch (ObjectDisposedException e)
                 {
@@ -181,7 +270,7 @@ namespace Shared.MVVM.Model.Networking
                     socketa, to wykonany po nim Send wyrzuci ObjectDisposedException lub odwrotnie.
                     Raczej nie powinno się wydarzyć, bo _socket.Close wykonujemy dopiero na końcu
                     Process, kiedy procesy (sender, receiver i handler) są już zakończone. */
-                    return new Failure(e, interruptedMsg, "|Socket already disposed.|");
+                    return new Failure(e, "|Socket already disposed.|");
                 }
 
                 /* jeżeli wysyłamy pakiet, a nie keep alive;
@@ -316,8 +405,6 @@ namespace Shared.MVVM.Model.Networking
 
             client.ReceiveTimeout = 5000;
 
-            var interruptedMsg = "|Connection interrupted.|";
-            var closedMsg = "|Connection closed.|";
             while (true)
             {
                 if (_stopProcessing)
@@ -336,17 +423,17 @@ namespace Shared.MVVM.Model.Networking
                 po przekroczeniu client.ReceiveTimeout */
                 catch (SocketException e)
                 {
-                    return new Failure(e, interruptedMsg, "|Operating system error.|");
+                    return new InterlocutorFailure(e, "|No translation:|");
                 }
                 catch (ObjectDisposedException e)
                 {
                     // Patrz ProcessSendInner
-                    return new Failure(e, interruptedMsg, "|Socket already disposed.|");
+                    return new Failure(e, "|Socket already disposed.|");
                 }
 
                 // odebrano 0 bajtów, co oznacza, że rozmówca bezpiecznie zamknął socket
                 if (receivedBytes == 0)
-                    return new Success(closedMsg);
+                    return new Success();
 
                 for (int i = 0; i < receivedBytes; ++i)
                 {
@@ -431,10 +518,11 @@ namespace Shared.MVVM.Model.Networking
             _stopProcessing = true;
         }
 
-        public Task<Result> DisconnectAsync()
+        public Task DisconnectAsync()
         {
             /* Do interaktywnego (poprzez GUI) rozłączania należy używać
-            tej funkcji (DisconnectAsync). */
+            tej funkcji (DisconnectAsync). Najpierw ustawiamy _disconnectRequested,
+            aby w Process nie wykonało się SpecifyConnectionEnding. */
             _disconnectRequested = true;
             StopProcessing();
             return _runner;

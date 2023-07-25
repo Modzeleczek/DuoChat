@@ -1,4 +1,4 @@
-using Shared.MVVM.Core;
+﻿using Shared.MVVM.Core;
 using Shared.MVVM.View.Windows;
 using Shared.MVVM.ViewModel.Results;
 using System.Collections.ObjectModel;
@@ -45,10 +45,17 @@ namespace Server.MVVM.ViewModel
 
                 model.LostConnection += (lostConRes) =>
                 {
+                    string message;
+                    if (lostConRes is Success)
+                        message = "|Client disconnected.|";
+                    else if (lostConRes is Failure failure)
+                        message = failure.Reason.Prepend("|Client crashed.|").Message;
+                    else // result is Cancellation
+                        message = "|Disconnected client.|";
                     UIInvoke(() =>
                     {
                         Clients.Remove(observableClient);
-                        Alert("|Client disconnected.|");
+                        Alert(message);
                     });
                 };
 

@@ -89,7 +89,6 @@ namespace Client.MVVM.Model
             /* czekamy na zakończenie wątku (taska) obsługującego
             połączenie z serwerem */
             DisconnectAsync().Wait();
-            OnLostConnection(_runner.Result);
         }
     }
 }

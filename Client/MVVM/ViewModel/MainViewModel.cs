@@ -468,8 +468,22 @@ namespace Client.MVVM.ViewModel
         {
             _client.LostConnection += (result) =>
             {
-                if (result is Failure failure)
-                    Alert(failure.Reason.Message);
+                /* Jeżeli my się rozłączamy, czyli
+                _disconnectRequested == true, to w
+                Client.Process po Task.WaitAll nie wykona się
+                LostConnection?.Invoke. */
+                string message;
+                if (result is Success)
+                    message = "|Disconnected by server.|";
+                else if (result is Failure failure)
+                    message = failure.Reason.Prepend("|Server crashed.|").Message;
+                else // result is Cancellation
+                    message = "|Disconnected.|";
+                UIInvoke(() =>
+                {
+                    SelectedAccount = null;
+                    Alert(message);
+                });
             };
 
             _client.ReceivedPacket += (result) =>
