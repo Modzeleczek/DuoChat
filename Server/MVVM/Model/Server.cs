@@ -19,6 +19,8 @@ namespace Server.MVVM.Model
 
         #region Fields
         private List<Client> _clients = new List<Client>();
+        private readonly object _clientsLock = new object();
+
         private TcpListener _listener = null;
         private Guid _guid = Guid.Empty;
         private PrivateKey _privateKey = null;
@@ -73,7 +75,7 @@ namespace Server.MVVM.Model
                     }
 
                     var client = new Client(_listener.AcceptTcpClient());
-                    lock (_clients)
+                    lock (_clientsLock)
                     {
                         // nie ma wolnych slotów
                         if (!(_clients.Count < _capacity))
@@ -133,7 +135,7 @@ namespace Server.MVVM.Model
         {
             client.LostConnection += (_) =>
             {
-                lock (_clients)
+                lock (_clientsLock)
                     _clients.Remove(client);
             };
         }

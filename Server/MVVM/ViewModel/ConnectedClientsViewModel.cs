@@ -1,3 +1,4 @@
+using Server.MVVM.ViewModel.Observables;
 using Shared.MVVM.Core;
 using Shared.MVVM.View.Windows;
 using Shared.MVVM.ViewModel.Results;
@@ -28,7 +29,11 @@ namespace Server.MVVM.ViewModel
         }
         #endregion
 
-        public ConnectedClientsViewModel(DialogWindow owner, Model.Server server)
+        #region Fields
+        private readonly object _uiLock = new object();
+        #endregion
+
+        public ConnectedClientsViewModel(DialogWindow owner, Model.Server server, Log log)
             : base(owner)
         {
             DisconnectClient = new RelayCommand(obj =>
@@ -41,7 +46,7 @@ namespace Server.MVVM.ViewModel
             server.ClientConnected += (modelClient) =>
             {
                 var model = (Model.Client)((Success)modelClient).Data;
-                var observableClient = new Observables.Anonymous(model);
+                var anonymous = new Observables.Anonymous(model);
 
                 model.LostConnection += (lostConRes) =>
                 {
@@ -52,14 +57,25 @@ namespace Server.MVVM.ViewModel
                         message = failure.Reason.Prepend("|Client crashed.|").Message;
                     else // result is Cancellation
                         message = "|Disconnected client.|";
-                    UIInvoke(() =>
+                    /* Synchronizujemy wszystkie operacje wykonywane na
+                    kolekcji ObservableCollection. */
+                    lock (_uiLock) UIInvoke(() =>
                     {
-                        Clients.Remove(observableClient);
-                        Alert(message);
+                        Clients.Remove(anonymous);
+                        /* Log jest thread safe, bo w Append używamy lock,
+                        ale bierzemy go w "lock (_clientsLock)", żeby mieć
+                        pewność, że wiadomość w logu o aktualnym dostępie do
+                        ObservableCollection (Remove) nie zostanie wyprzedzona
+                        przez wiadomość z jakiegokolwiek innego dostępu. */
+                        log.Append(message);
                     });
                 };
 
-                UIInvoke(() => Clients.Add(observableClient));
+                lock (_uiLock) UIInvoke(() =>
+                {
+                    Clients.Add(anonymous);
+                    log.Append("|Client connected.|");
+                });
             };
         }
     }

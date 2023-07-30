@@ -75,10 +75,15 @@
           Command="{Binding SelectTab}"
           CommandParameter="1"/>
         <RadioButton
-          Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Accounts}"
+          Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Log}"
           GroupName="Tabs"
           Command="{Binding SelectTab}"
           CommandParameter="2"/>
+        <RadioButton
+          Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Accounts}"
+          GroupName="Tabs"
+          Command="{Binding SelectTab}"
+          CommandParameter="3"/>
       </StackPanel>
 
       <ContentControl Grid.Row="2"

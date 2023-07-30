@@ -235,6 +235,7 @@
   <l:Entry x:Key="Private_key" EN="Private key" PL="Klucz prywatny"/>
   <l:Entry x:Key="Generate" PL="Wygeneruj"/>
   <l:Entry x:Key="Load" PL="Wczytaj"/>
+  <l:Entry x:Key="Log" PL="Log"/>
 
   <!-- klucze używane w plikach .cs - nie muszą być prawidłowymi nazwami zmiennych -->
   <l:Entry x:Key="Invalid capacity format."
@@ -267,6 +268,7 @@
   <l:Entry x:Key="Client disconnected." PL="Klient się rozłączył."/>
   <l:Entry x:Key="Client crashed." PL="Klient zcrashował."/>
   <l:Entry x:Key="Disconnected client." PL="Rozłączono klienta."/>
+  <l:Entry x:Key="Client connected." PL="Klient się połączył."/>
 
   <!-- do klienta i serwera -->
   <!-- klucze używane w plikach .xaml - muszą być prawidłowymi nazwami zmiennych -->

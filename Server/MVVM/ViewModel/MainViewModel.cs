@@ -1,3 +1,4 @@
+using Server.MVVM.ViewModel.Observables;
 using Shared.MVVM.Core;
 using Shared.MVVM.View.Windows;
 using Shared.MVVM.ViewModel;
@@ -52,9 +53,11 @@ namespace Server.MVVM.ViewModel
                 });
 
                 var setVM = new SettingsViewModel(window, server);
-                var conCliVM = new ConnectedClientsViewModel(window, server);
+                var log = new Log();
+                var conCliVM = new ConnectedClientsViewModel(window, server, log);
+                var logVM = new LogViewModel(window, log);
                 var accVM = new AccountsViewModel(window, server);
-                var tabs = new BaseViewModel[] { setVM, conCliVM, accVM };
+                var tabs = new BaseViewModel[] { setVM, conCliVM, logVM, accVM };
                 SelectTab = new RelayCommand(e =>
                 {
                     int index = int.Parse((string)e);
