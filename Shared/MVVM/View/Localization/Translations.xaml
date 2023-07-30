@@ -316,6 +316,7 @@
   <l:Entry x:Key="using receivers's public key."
     PL="kluczem publicznym odbiorcy."/>
 
+  <l:Entry x:Key="Cannot send whole packet." PL="Nie można wysłać całego pakietu."/>
   <l:Entry x:Key="Operating system error." PL="Błąd systemu operacyjnego."/>
   <l:Entry x:Key="Socket already disposed."
     PL="Gniazdo już zostało zamknięte."/>

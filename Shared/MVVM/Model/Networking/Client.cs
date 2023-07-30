@@ -256,7 +256,10 @@ namespace Shared.MVVM.Model.Networking
                     bo jeżeli nie jest, to client.Send wyrzuci wyjątek;
                     jeżeli odbiorca ma pełny bufor odbiorczy, to po czasie SendTimeout
                     Send wyrzuci SocketException; to znak dla nadawcy, że odbiorca jest przeciążony */
-                    client.Send(buffer, PREFIX_SIZE + packet.Data.Length, SocketFlags.None);
+                    int totalSize = PREFIX_SIZE + packet.Data.Length;
+                    int byteCount = client.Send(buffer, totalSize, SocketFlags.None);
+                    if (byteCount != totalSize)
+                        return new Failure("|Cannot send whole packet.|");
                 }
                 catch (SocketException e)
                 {
