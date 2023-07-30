@@ -1,4 +1,4 @@
-﻿using Shared.MVVM.Core;
+using Shared.MVVM.Core;
 using Shared.MVVM.View.Windows;
 using Shared.MVVM.ViewModel.Results;
 using System.Collections.ObjectModel;
@@ -20,11 +20,11 @@ namespace Server.MVVM.ViewModel
             set { _clients = value; OnPropertyChanged(); }
         }
 
-        private Observables.Client _selectedUser;
-        public Observables.Client SelectedUser
+        private Observables.Client _selectedClient;
+        public Observables.Client SelectedClient
         {
-            get => _selectedUser;
-            set { _selectedUser = value; OnPropertyChanged(); }
+            get => _selectedClient;
+            set { _selectedClient = value; OnPropertyChanged(); }
         }
         #endregion
 

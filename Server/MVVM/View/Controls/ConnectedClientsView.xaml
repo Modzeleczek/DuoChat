@@ -15,7 +15,7 @@
       BorderThickness="0,0,0,4"
       ItemContainerStyle="{StaticResource ClientListItem}"
       ItemsSource="{Binding Clients}"
-      SelectedItem="{Binding SelectedUser, Mode=TwoWay}"
+      SelectedItem="{Binding SelectedClient, Mode=TwoWay}"
       SelectionChanged="ListView_SelectionChanged"/>
   </Grid>
 </ctrl:ListViewControl>
