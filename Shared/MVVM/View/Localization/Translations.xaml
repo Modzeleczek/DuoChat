@@ -269,6 +269,7 @@
   <l:Entry x:Key="Client crashed." PL="Klient zcrashował."/>
   <l:Entry x:Key="Disconnected client." PL="Rozłączono klienta."/>
   <l:Entry x:Key="Client connected." PL="Klient się połączył."/>
+  <l:Entry x:Key="Server stopped." PL="Serwer zatrzymany."/>
 
   <!-- do klienta i serwera -->
   <!-- klucze używane w plikach .xaml - muszą być prawidłowymi nazwami zmiennych -->

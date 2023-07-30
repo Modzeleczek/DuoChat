@@ -77,6 +77,18 @@ namespace Server.MVVM.ViewModel
                     log.Append("|Client connected.|");
                 });
             };
+
+            server.Stopped += (result) =>
+            {
+                /* Wykonywane w wątku UI, więc Clients.Clear bez UIInvoke.
+                Jednak handler ChangedState wykonywany w log.Append i tak
+                wykonuje UIInvoke */
+                lock (_uiLock)
+                {
+                    Clients.Clear();
+                    log.Append("|Server stopped.|");
+                }
+            };
         }
     }
 }
