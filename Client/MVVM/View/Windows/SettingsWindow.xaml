@@ -23,160 +23,160 @@
   WindowStartupLocation="CenterOwner"
   WindowStyle="None"
   mc:Ignorable="d">
-    <Border
-      Background="{DynamicResource ThirdBackgroundColor}"
-      BorderBrush="{DynamicResource FirstBorderColor}"
-      BorderThickness="1"
-      CornerRadius="10">
+  <Border
+    Background="{DynamicResource ThirdBackgroundColor}"
+    BorderBrush="{DynamicResource FirstBorderColor}"
+    BorderThickness="1"
+    CornerRadius="10">
 
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="40" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <Border
-              Grid.Row="0"
-              h:EnableDragHelper.EnableDrag="True"
-              Background="{DynamicResource FirstBackgroundColor}"
-              CornerRadius="10,10,0,0">
-                <Grid VerticalAlignment="Center">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <Label
-                      Margin="15,0,0,0"
-                      Content="{Binding ElementName=SettingsWindowName, Path=Title}"
-                      FontSize="14"
-                      FontWeight="SemiBold"
-                      Foreground="{DynamicResource FirstForegroundColor}" />
-                    <StackPanel
-                      Grid.Column="1"
-                      HorizontalAlignment="Right"
-                      Orientation="Horizontal">
+    <Grid>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="40" />
+        <RowDefinition Height="*" />
+        <RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
+      <Border
+        Grid.Row="0"
+        h:EnableDragHelper.EnableDrag="True"
+        Background="{DynamicResource FirstBackgroundColor}"
+        CornerRadius="10,10,0,0">
+        <Grid VerticalAlignment="Center">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+          </Grid.ColumnDefinitions>
+          <Label
+            Margin="15,0,0,0"
+            Content="{Binding ElementName=SettingsWindowName, Path=Title}"
+            FontSize="14"
+            FontWeight="SemiBold"
+            Foreground="{DynamicResource FirstForegroundColor}" />
+          <StackPanel
+            Grid.Column="1"
+            HorizontalAlignment="Right"
+            Orientation="Horizontal">
 
-                        <Button
-                          Margin="4,1,16,0"
-                          Command="{Binding Path=Close}"
-                          Content="✕"
-                          Style="{DynamicResource TitleBarButtonStyle}" />
-                    </StackPanel>
-                </Grid>
-            </Border>
-
-            <Grid Grid.Row="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-
-                <Border
-                  Grid.Row="0"
-                  Margin="0,-1,0,0"
-                  BorderBrush="{DynamicResource FirstBorderColor}"
-                  BorderThickness="0,2,0,1">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <Label
-                          Grid.Column="0"
-                          Margin="5,5,5,5"
-                          VerticalAlignment="Center"
-                          Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Nickname}"
-                          FontFamily="/MVVM/View/Fonts/RedHatDisplay"
-                          FontSize="18"
-                          FontWeight="SemiBold"
-                          Style="{DynamicResource StylishedLabel}" />
-                        <Border
-                          Grid.Column="1"
-                          MinWidth="100"
-                          MaxWidth="300"
-                          Margin="5,5,10,5"
-                          HorizontalAlignment="Right"
-                          BorderBrush="{DynamicResource FirstBorderColor}"
-                          BorderThickness="1"
-                          CornerRadius="10">
-                            <TextBox
-                              MinWidth="200"
-                              MaxWidth="300"
-                              Margin="3,0,3,0"
-                              HorizontalAlignment="Right"
-                              VerticalAlignment="Center"
-                              Background="Transparent"
-                              BorderThickness="0"
-                              CaretBrush="{DynamicResource ThirdForegroundColor}"
-                              FontSize="16"
-                              Foreground="{DynamicResource ThirdForegroundColor}"
-                              Style="{DynamicResource FormTextBox}" />
-                            <Border.Resources>
-                                <Style TargetType="{x:Type Border}">
-                                    <Style.Triggers>
-                                        <Trigger Property="IsFocused" Value="True">
-                                            <Setter Property="Background" Value="{DynamicResource FirstBackgroundColor}" />
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Border.Resources>
-                        </Border>
-                    </Grid>
-                </Border>
-                <Border
-                  Grid.Row="1"
-                  Margin="0,-1,0,0"
-                  BorderBrush="{DynamicResource FirstBorderColor}"
-                  BorderThickness="0,1,0,1">
-                    <ToggleButton
-                      x:Name="Themes"
-                      Margin="10,5,5,5"
-                      Command="{Binding ToggleTheme}"
-                      Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Toggle_theme}"
-                      Foreground="{DynamicResource SecondForegroundColor}"
-                      IsChecked="False"
-                      Style="{DynamicResource StylishedToggleButton}" />
-                </Border>
-                <Border
-                  Grid.Row="2"
-                  Margin="0,-1,0,0"
-                  BorderBrush="{DynamicResource FirstForegroundColor}"
-                  BorderThickness="0,1,0,1">
-                    <Button
-                      Margin="10,6,5,6"
-                      HorizontalAlignment="Left"
-                      VerticalAlignment="Center"
-                      Command="{Binding LocalLogout}"
-                      Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Log_local_user_out}"
-                      FontFamily="/MVVM/View/Fonts/RedHatDisplay"
-                      FontSize="18"
-                      Foreground="{DynamicResource SecondForegroundColor}"
-                      Style="{DynamicResource MenuButtonStyle}" />
-                </Border>
-
-                <Border
-                  Grid.Row="3"
-                  Margin="0,-1,0,0"
-                  BorderBrush="{DynamicResource FirstBorderColor}"
-                  BorderThickness="0,1,0,1">
-                    <Button
-                      Margin="10,6,5,6"
-                      HorizontalAlignment="Left"
-                      VerticalAlignment="Center"
-                      Command="{Binding ToggleLanguage}"
-                      Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Toggle_language}"
-                      FontFamily="/MVVM/View/Fonts/RedHatDisplay"
-                      FontSize="18"
-                      Foreground="{DynamicResource SecondForegroundColor}"
-                      Style="{DynamicResource MenuButtonStyle}" />
-                </Border>
-
-            </Grid>
+            <Button
+              Margin="4,1,16,0"
+              Command="{Binding Path=Close}"
+              Content="✕"
+              Style="{DynamicResource TitleBarButtonStyle}" />
+          </StackPanel>
         </Grid>
-    </Border>
+      </Border>
+
+      <Grid Grid.Row="1">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Border
+          Grid.Row="0"
+          Margin="0,-1,0,0"
+          BorderBrush="{DynamicResource FirstBorderColor}"
+          BorderThickness="0,2,0,1">
+          <Grid>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Label
+              Grid.Column="0"
+              Margin="5,5,5,5"
+              VerticalAlignment="Center"
+              Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Nickname}"
+              FontFamily="/MVVM/View/Fonts/RedHatDisplay"
+              FontSize="18"
+              FontWeight="SemiBold"
+              Style="{DynamicResource StylishedLabel}" />
+            <Border
+              Grid.Column="1"
+              MinWidth="100"
+              MaxWidth="300"
+              Margin="5,5,10,5"
+              HorizontalAlignment="Right"
+              BorderBrush="{DynamicResource FirstBorderColor}"
+              BorderThickness="1"
+              CornerRadius="10">
+              <TextBox
+                MinWidth="200"
+                MaxWidth="300"
+                Margin="3,0,3,0"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                Background="Transparent"
+                BorderThickness="0"
+                CaretBrush="{DynamicResource ThirdForegroundColor}"
+                FontSize="16"
+                Foreground="{DynamicResource ThirdForegroundColor}"
+                Style="{DynamicResource FormTextBox}" />
+              <Border.Resources>
+                <Style TargetType="{x:Type Border}">
+                  <Style.Triggers>
+                    <Trigger Property="IsFocused" Value="True">
+                      <Setter Property="Background" Value="{DynamicResource FirstBackgroundColor}" />
+                    </Trigger>
+                  </Style.Triggers>
+                </Style>
+              </Border.Resources>
+            </Border>
+          </Grid>
+        </Border>
+        <Border
+          Grid.Row="1"
+          Margin="0,-1,0,0"
+          BorderBrush="{DynamicResource FirstBorderColor}"
+          BorderThickness="0,1,0,1">
+          <ToggleButton
+            x:Name="Themes"
+            Margin="10,5,5,5"
+            Command="{Binding ToggleTheme}"
+            Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Toggle_theme}"
+            Foreground="{DynamicResource SecondForegroundColor}"
+            IsChecked="False"
+            Style="{DynamicResource StylishedToggleButton}" />
+        </Border>
+        <Border
+          Grid.Row="2"
+          Margin="0,-1,0,0"
+          BorderBrush="{DynamicResource FirstForegroundColor}"
+          BorderThickness="0,1,0,1">
+          <Button
+            Margin="10,6,5,6"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+            Command="{Binding LocalLogout}"
+            Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Log_local_user_out}"
+            FontFamily="/MVVM/View/Fonts/RedHatDisplay"
+            FontSize="18"
+            Foreground="{DynamicResource SecondForegroundColor}"
+            Style="{DynamicResource MenuButtonStyle}" />
+        </Border>
+
+        <Border
+          Grid.Row="3"
+          Margin="0,-1,0,0"
+          BorderBrush="{DynamicResource FirstBorderColor}"
+          BorderThickness="0,1,0,1">
+          <Button
+            Margin="10,6,5,6"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+            Command="{Binding ToggleLanguage}"
+            Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Toggle_language}"
+            FontFamily="/MVVM/View/Fonts/RedHatDisplay"
+            FontSize="18"
+            Foreground="{DynamicResource SecondForegroundColor}"
+            Style="{DynamicResource MenuButtonStyle}" />
+        </Border>
+
+      </Grid>
+    </Grid>
+  </Border>
 </w:DialogWindow>
