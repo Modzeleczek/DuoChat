@@ -77,58 +77,6 @@
         </Grid.ColumnDefinitions>
 
         <Border
-          Grid.Row="0"
-          Margin="0,-1,0,0"
-          BorderBrush="{DynamicResource FirstBorderColor}"
-          BorderThickness="0,2,0,1">
-          <Grid>
-            <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="Auto" />
-              <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <Label
-              Grid.Column="0"
-              Margin="5,5,5,5"
-              VerticalAlignment="Center"
-              Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Nickname}"
-              FontFamily="/MVVM/View/Fonts/RedHatDisplay"
-              FontSize="18"
-              FontWeight="SemiBold"
-              Style="{DynamicResource StylishedLabel}" />
-            <Border
-              Grid.Column="1"
-              MinWidth="100"
-              MaxWidth="300"
-              Margin="5,5,10,5"
-              HorizontalAlignment="Right"
-              BorderBrush="{DynamicResource FirstBorderColor}"
-              BorderThickness="1"
-              CornerRadius="10">
-              <TextBox
-                MinWidth="200"
-                MaxWidth="300"
-                Margin="3,0,3,0"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Center"
-                Background="Transparent"
-                BorderThickness="0"
-                CaretBrush="{DynamicResource ThirdForegroundColor}"
-                FontSize="16"
-                Foreground="{DynamicResource ThirdForegroundColor}"
-                Style="{DynamicResource FormTextBox}" />
-              <Border.Resources>
-                <Style TargetType="{x:Type Border}">
-                  <Style.Triggers>
-                    <Trigger Property="IsFocused" Value="True">
-                      <Setter Property="Background" Value="{DynamicResource FirstBackgroundColor}" />
-                    </Trigger>
-                  </Style.Triggers>
-                </Style>
-              </Border.Resources>
-            </Border>
-          </Grid>
-        </Border>
-        <Border
           Grid.Row="1"
           Margin="0,-1,0,0"
           BorderBrush="{DynamicResource FirstBorderColor}"
