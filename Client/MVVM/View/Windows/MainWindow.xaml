@@ -208,6 +208,7 @@
             FontWeight="SemiBold"
             Foreground="{DynamicResource SecondForegroundColor}" />
           <ListView
+            x:Name="AccountsListView"
             Grid.Row="1"
             Background="Transparent"
             BorderBrush="{DynamicResource ThirdBackgroundColor}"
@@ -288,29 +289,41 @@
             BorderBrush="{DynamicResource FirstBorderColor}"
             CornerRadius="0,0,0,10">
             <DockPanel>
-              <Border
-                Width="45"
-                Height="45"
-                Margin="10,0,0,0"
-                Background="Gray"
-                CornerRadius="25"
-                DockPanel.Dock="Left" />
-              <TextBlock
-                Width="95"
-                Margin="5,0,0,0"
-                VerticalAlignment="Center"
-                DockPanel.Dock="Left"
-                FontSize="12"
-                FontWeight="SemiBold"
-                Foreground="{DynamicResource SecondForegroundColor}"
-                TextTrimming="CharacterEllipsis">
-                <TextBlock.Text>
-                  <PriorityBinding>
-                    <Binding Path="SelectedAccount.Nickname" />
-                    <Binding Path="D.Nickname" Source="{x:Static l:Translator.Instance}" />
-                  </PriorityBinding>
-                </TextBlock.Text>
-              </TextBlock>
+              <StackPanel Orientation="Horizontal">
+                <StackPanel.Style>
+                  <Style TargetType="StackPanel">
+                    <Setter Property="Visibility" Value="Visible" />
+                    <Style.Triggers>
+                      <DataTrigger Binding="{Binding Path=SelectedIndex, ElementName=AccountsListView}" Value="-1">
+                        <Setter Property="Visibility" Value="Hidden" />
+                      </DataTrigger>
+                    </Style.Triggers>
+                  </Style>
+                </StackPanel.Style>
+                <Border
+                  Width="45"
+                  Height="45"
+                  Margin="10,0,0,0"
+                  Background="Gray"
+                  CornerRadius="25"
+                  DockPanel.Dock="Left" />
+                <TextBlock
+                  Width="95"
+                  Margin="5,0,0,0"
+                  VerticalAlignment="Center"
+                  DockPanel.Dock="Left"
+                  FontSize="12"
+                  FontWeight="SemiBold"
+                  Foreground="{DynamicResource SecondForegroundColor}"
+                  TextTrimming="CharacterEllipsis">
+                  <TextBlock.Text>
+                    <PriorityBinding>
+                      <Binding Path="SelectedAccount.Nickname" />
+                      <Binding Path="D.Nickname" Source="{x:Static l:Translator.Instance}" />
+                    </PriorityBinding>
+                  </TextBlock.Text>
+                </TextBlock>
+              </StackPanel>
               <Button
                 Width="32"
                 Height="32"
