@@ -22,442 +22,442 @@
   ResizeMode="CanResize"
   WindowStyle="None"
   mc:Ignorable="d">
-    <i:Interaction.Triggers>
-        <i:EventTrigger EventName="Loaded">
-            <i:InvokeCommandAction Command="{Binding WindowLoaded}" CommandParameter="{Binding ElementName=MainWindowName}" />
-        </i:EventTrigger>
-    </i:Interaction.Triggers>
-    <Grid>
-        <Grid Name="ResizableGrid">
+  <i:Interaction.Triggers>
+    <i:EventTrigger EventName="Loaded">
+      <i:InvokeCommandAction Command="{Binding WindowLoaded}" CommandParameter="{Binding ElementName=MainWindowName}" />
+    </i:EventTrigger>
+  </i:Interaction.Triggers>
+  <Grid>
+    <Grid Name="ResizableGrid">
 
-            <Rectangle
-              x:Name="leftSizeGrip"
-              Width="7"
-              Margin="0,20,0,20"
-              HorizontalAlignment="Left"
-              Cursor="SizeWE"
-              Style="{DynamicResource RectBorderStyle}" />
-            <Rectangle
-              x:Name="rightSizeGrip"
-              Width="7"
-              Margin="0,20,0,20"
-              HorizontalAlignment="Right"
-              Cursor="SizeWE"
-              Style="{DynamicResource RectBorderStyle}" />
-            <Rectangle
-              x:Name="topSizeGrip"
-              Height="7"
-              Margin="20,0,20,0"
-              VerticalAlignment="Top"
-              Cursor="SizeNS"
-              Style="{DynamicResource RectBorderStyle}" />
-            <Rectangle
-              x:Name="bottomSizeGrip"
-              Height="7"
-              Margin="20,0,20,0"
-              VerticalAlignment="Bottom"
-              Cursor="SizeNS"
-              Style="{DynamicResource RectBorderStyle}" />
-            <Rectangle
-              Name="topLeftSizeGrip"
-              Width="50"
-              Height="50"
-              HorizontalAlignment="Left"
-              VerticalAlignment="Top"
-              Cursor="SizeNWSE"
-              RadiusX="10"
-              RadiusY="10"
-              Style="{DynamicResource RectBorderStyle}" />
-            <Rectangle
-              Name="bottomRightSizeGrip"
-              Width="50"
-              Height="50"
-              HorizontalAlignment="Right"
-              VerticalAlignment="Bottom"
-              Cursor="SizeNWSE"
-              RadiusX="10"
-              RadiusY="10"
-              Style="{DynamicResource RectBorderStyle}" />
-            <Rectangle
-              Name="topRightSizeGrip"
-              Width="50"
-              Height="50"
-              HorizontalAlignment="Right"
-              VerticalAlignment="Top"
-              Cursor="SizeNESW"
-              RadiusX="10"
-              RadiusY="10"
-              Style="{DynamicResource RectBorderStyle}" />
-            <Rectangle
-              Name="bottomLeftSizeGrip"
-              Width="50"
-              Height="50"
-              HorizontalAlignment="Left"
-              VerticalAlignment="Bottom"
-              Cursor="SizeNESW"
-              RadiusX="10"
-              RadiusY="10"
-              Style="{DynamicResource RectBorderStyle}" />
-        </Grid>
+      <Rectangle
+        x:Name="leftSizeGrip"
+        Width="7"
+        Margin="0,20,0,20"
+        HorizontalAlignment="Left"
+        Cursor="SizeWE"
+        Style="{DynamicResource RectBorderStyle}" />
+      <Rectangle
+        x:Name="rightSizeGrip"
+        Width="7"
+        Margin="0,20,0,20"
+        HorizontalAlignment="Right"
+        Cursor="SizeWE"
+        Style="{DynamicResource RectBorderStyle}" />
+      <Rectangle
+        x:Name="topSizeGrip"
+        Height="7"
+        Margin="20,0,20,0"
+        VerticalAlignment="Top"
+        Cursor="SizeNS"
+        Style="{DynamicResource RectBorderStyle}" />
+      <Rectangle
+        x:Name="bottomSizeGrip"
+        Height="7"
+        Margin="20,0,20,0"
+        VerticalAlignment="Bottom"
+        Cursor="SizeNS"
+        Style="{DynamicResource RectBorderStyle}" />
+      <Rectangle
+        Name="topLeftSizeGrip"
+        Width="50"
+        Height="50"
+        HorizontalAlignment="Left"
+        VerticalAlignment="Top"
+        Cursor="SizeNWSE"
+        RadiusX="10"
+        RadiusY="10"
+        Style="{DynamicResource RectBorderStyle}" />
+      <Rectangle
+        Name="bottomRightSizeGrip"
+        Width="50"
+        Height="50"
+        HorizontalAlignment="Right"
+        VerticalAlignment="Bottom"
+        Cursor="SizeNWSE"
+        RadiusX="10"
+        RadiusY="10"
+        Style="{DynamicResource RectBorderStyle}" />
+      <Rectangle
+        Name="topRightSizeGrip"
+        Width="50"
+        Height="50"
+        HorizontalAlignment="Right"
+        VerticalAlignment="Top"
+        Cursor="SizeNESW"
+        RadiusX="10"
+        RadiusY="10"
+        Style="{DynamicResource RectBorderStyle}" />
+      <Rectangle
+        Name="bottomLeftSizeGrip"
+        Width="50"
+        Height="50"
+        HorizontalAlignment="Left"
+        VerticalAlignment="Bottom"
+        Cursor="SizeNESW"
+        RadiusX="10"
+        RadiusY="10"
+        Style="{DynamicResource RectBorderStyle}" />
+    </Grid>
+    <Border
+      Margin="2"
+      Background="{DynamicResource ThirdBackgroundColor}"
+      CornerRadius="10">
+      <Grid>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="40" />
+          <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition x:Name="ServersColumn" Width="0" />
+          <ColumnDefinition x:Name="AccountsColumn" Width="0" />
+          <ColumnDefinition Width="88" />
+          <ColumnDefinition Width="112" />
+          <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
         <Border
-          Margin="2"
-          Background="{DynamicResource ThirdBackgroundColor}"
-          CornerRadius="10">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="40" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition x:Name="ServersColumn" Width="0" />
-                    <ColumnDefinition x:Name="AccountsColumn" Width="0" />
-                    <ColumnDefinition Width="88" />
-                    <ColumnDefinition Width="112" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <Border
-                  Grid.Row="0"
-                  Grid.ColumnSpan="5"
-                  h:EnableDragHelper.EnableDrag="True"
-                  Background="{DynamicResource FirstBackgroundColor}"
-                  CornerRadius="10,10,0,0">
-                    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
-                        <Label
-                          Margin="15,0,0,0"
-                          Content="{Binding ElementName=MainWindowName, Path=Title}"
-                          FontSize="14"
-                          FontWeight="SemiBold"
-                          Foreground="{DynamicResource FirstForegroundColor}" />
-                        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-                            <Button
-                              Margin="4,1,0,2"
-                              Click="Button_Minimize_Click"
-                              Content="🗕"
-                              Style="{DynamicResource TitleBarButtonStyle}" />
-                            <Button
-                              Margin="4,1,2,2"
-                              Click="Button_Maximize_Click"
-                              Content="🗖"
-                              Style="{DynamicResource TitleBarButtonStyle}" />
-                            <Button
-                              Margin="4,1,16,0"
-                              Command="{Binding Path=Close}"
-                              Content="✕"
-                              Style="{DynamicResource TitleBarButtonStyle}" />
-                        </StackPanel>
-                    </Grid>
+          Grid.Row="0"
+          Grid.ColumnSpan="5"
+          h:EnableDragHelper.EnableDrag="True"
+          Background="{DynamicResource FirstBackgroundColor}"
+          CornerRadius="10,10,0,0">
+          <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
+            <Label
+              Margin="15,0,0,0"
+              Content="{Binding ElementName=MainWindowName, Path=Title}"
+              FontSize="14"
+              FontWeight="SemiBold"
+              Foreground="{DynamicResource FirstForegroundColor}" />
+            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+              <Button
+                Margin="4,1,0,2"
+                Click="Button_Minimize_Click"
+                Content="🗕"
+                Style="{DynamicResource TitleBarButtonStyle}" />
+              <Button
+                Margin="4,1,2,2"
+                Click="Button_Maximize_Click"
+                Content="🗖"
+                Style="{DynamicResource TitleBarButtonStyle}" />
+              <Button
+                Margin="4,1,16,0"
+                Command="{Binding Path=Close}"
+                Content="✕"
+                Style="{DynamicResource TitleBarButtonStyle}" />
+            </StackPanel>
+          </Grid>
+        </Border>
+
+        <Grid
+          Grid.Row="1"
+          Grid.Column="0"
+          Grid.ColumnSpan="3"
+          Margin="0,0,88,0"
+          Background="{DynamicResource SecondBackgroundColor}">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="50" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="60" />
+          </Grid.RowDefinitions>
+          <Label
+            Grid.Row="0"
+            Margin="8,5,0,0"
+            Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Servers}"
+            FontFamily="/MVVM/View/Fonts/RedHatDisplay"
+            FontSize="20"
+            FontWeight="SemiBold"
+            Foreground="{DynamicResource SecondForegroundColor}" />
+          <ListView
+            x:Name="ServersListView"
+            Grid.Row="1"
+            Background="Transparent"
+            BorderBrush="{DynamicResource ThirdBackgroundColor}"
+            BorderThickness="0,0,0,4"
+            ItemContainerStyle="{DynamicResource ServerCardStyle}"
+            ItemsSource="{Binding Servers}"
+            SelectedItem="{Binding SelectedServer, Mode=TwoWay}"
+            SelectionChanged="ListView_SelectionChanged" />
+          <Button
+            Grid.Row="2"
+            Grid.Column="1"
+            Margin="50,10,50,10"
+            Command="{Binding AddServer}"
+            Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Add_server}"
+            FontFamily="/MVVM/View/Fonts/RedHatDisplay"
+            FontSize="14"
+            Style="{DynamicResource CornerRadiusButtonStyle}" />
+        </Grid>
+
+        <Grid
+          Grid.Row="1"
+          Grid.Column="1"
+          Grid.ColumnSpan="2"
+          Margin="0,0,88,0"
+          Background="{DynamicResource SecondBackgroundColor}">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="50" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="60" />
+          </Grid.RowDefinitions>
+          <Label
+            Grid.Row="0"
+            Margin="8,5,0,0"
+            Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Accounts}"
+            FontFamily="/MVVM/View/Fonts/RedHatDisplay"
+            FontSize="20"
+            FontWeight="SemiBold"
+            Foreground="{DynamicResource SecondForegroundColor}" />
+          <ListView
+            Grid.Row="1"
+            Background="Transparent"
+            BorderBrush="{DynamicResource ThirdBackgroundColor}"
+            BorderThickness="0,0,0,4"
+            ItemContainerStyle="{DynamicResource AccountCardStyle}"
+            ItemsSource="{Binding Accounts}"
+            SelectedItem="{Binding SelectedAccount, Mode=TwoWay}"
+            SelectionChanged="ListView_SelectionChanged" />
+          <Button
+            Grid.Row="2"
+            Grid.Column="1"
+            Margin="50,10,50,10"
+            Command="{Binding AddAccount}"
+            Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Add_account}"
+            FontFamily="/MVVM/View/Fonts/RedHatDisplay"
+            FontSize="14">
+            <Button.Style>
+              <Style BasedOn="{StaticResource CornerRadiusButtonStyle}" TargetType="Button">
+                <Setter Property="Visibility" Value="Visible" />
+                <Style.Triggers>
+                  <!-- <DataTrigger Binding="{Binding SelectedServer}" Value="{x:Null}"> -->
+                  <DataTrigger Binding="{Binding Path=SelectedIndex, ElementName=ServersListView}" Value="-1">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                  </DataTrigger>
+                </Style.Triggers>
+              </Style>
+            </Button.Style>
+          </Button>
+        </Grid>
+
+        <Grid
+          Grid.Row="1"
+          Grid.Column="2"
+          Grid.ColumnSpan="2"
+          Background="Transparent">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="60" />
+          </Grid.RowDefinitions>
+          <Border Grid.Row="0" Background="{DynamicResource SecondBackgroundColor}">
+            <StackPanel Orientation="Horizontal">
+              <Button
+                x:Name="ToggleServersAccountsButton"
+                Width="40"
+                Height="40"
+                VerticalContentAlignment="Center"
+                Click="Button_ToggleServersAccounts_Click"
+                Content="&gt;"
+                FontSize="35"
+                Foreground="{DynamicResource SecondForegroundColor}"
+                Style="{StaticResource MenuButtonStyle}" />
+              <Label
+                Margin="8,5,0,0"
+                VerticalAlignment="Center"
+                Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Conversations}"
+                FontFamily="/MVVM/View/Fonts/RedHatDisplay"
+                FontSize="20"
+                FontWeight="SemiBold"
+                Foreground="{DynamicResource SecondForegroundColor}" />
+            </StackPanel>
+          </Border>
+          <Border Grid.Row="1" Background="{DynamicResource SecondBackgroundColor}">
+            <ListView
+              x:Name="ConversationsListView"
+              Grid.Row="1"
+              Background="Transparent"
+              BorderBrush="{DynamicResource ThirdBackgroundColor}"
+              BorderThickness="0,0,0,4"
+              ItemContainerStyle="{StaticResource ConversationCardStyle}"
+              ItemsSource="{Binding Conversations}"
+              SelectedItem="{Binding SelectedConversation}"
+              SelectionChanged="ListView_SelectionChanged" />
+          </Border>
+          <Border
+            Grid.Row="2"
+            Background="{DynamicResource SecondBackgroundColor}"
+            BorderBrush="{DynamicResource FirstBorderColor}"
+            CornerRadius="0,0,0,10">
+            <DockPanel>
+              <Border
+                Width="45"
+                Height="45"
+                Margin="10,0,0,0"
+                Background="Gray"
+                CornerRadius="25"
+                DockPanel.Dock="Left" />
+              <TextBlock
+                Width="95"
+                Margin="5,0,0,0"
+                VerticalAlignment="Center"
+                DockPanel.Dock="Left"
+                FontSize="12"
+                FontWeight="SemiBold"
+                Foreground="{DynamicResource SecondForegroundColor}"
+                TextTrimming="CharacterEllipsis">
+                <TextBlock.Text>
+                  <PriorityBinding>
+                    <Binding Path="SelectedAccount.Nickname" />
+                    <Binding Path="D.Nickname" Source="{x:Static l:Translator.Instance}" />
+                  </PriorityBinding>
+                </TextBlock.Text>
+              </TextBlock>
+              <Button
+                Width="32"
+                Height="32"
+                Margin="0,0,7,0"
+                HorizontalAlignment="Right"
+                Command="{Binding OpenSettings}"
+                DockPanel.Dock="Right"
+                FontSize="15"
+                Foreground="{DynamicResource FirstForegroundColor}"
+                Style="{DynamicResource MenuButtonStyle}">
+                <Border CornerRadius="20">
+                  <Image Margin="4" Source="{DynamicResource SettingsButtonImage}" />
+                  <Border.Resources />
                 </Border>
 
-                <Grid
-                  Grid.Row="1"
-                  Grid.Column="0"
-                  Grid.ColumnSpan="3"
-                  Margin="0,0,88,0"
-                  Background="{DynamicResource SecondBackgroundColor}">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="50" />
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="60" />
-                    </Grid.RowDefinitions>
-                    <Label
-                      Grid.Row="0"
-                      Margin="8,5,0,0"
-                      Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Servers}"
-                      FontFamily="/MVVM/View/Fonts/RedHatDisplay"
-                      FontSize="20"
-                      FontWeight="SemiBold"
-                      Foreground="{DynamicResource SecondForegroundColor}" />
-                    <ListView
-                      x:Name="ServersListView"
-                      Grid.Row="1"
-                      Background="Transparent"
-                      BorderBrush="{DynamicResource ThirdBackgroundColor}"
-                      BorderThickness="0,0,0,4"
-                      ItemContainerStyle="{DynamicResource ServerCardStyle}"
-                      ItemsSource="{Binding Servers}"
-                      SelectedItem="{Binding SelectedServer, Mode=TwoWay}"
-                      SelectionChanged="ListView_SelectionChanged" />
-                    <Button
-                      Grid.Row="2"
-                      Grid.Column="1"
-                      Margin="50,10,50,10"
-                      Command="{Binding AddServer}"
-                      Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Add_server}"
-                      FontFamily="/MVVM/View/Fonts/RedHatDisplay"
-                      FontSize="14"
-                      Style="{DynamicResource CornerRadiusButtonStyle}" />
-                </Grid>
+              </Button>
+            </DockPanel>
+          </Border>
+        </Grid>
 
-                <Grid
-                  Grid.Row="1"
-                  Grid.Column="1"
-                  Grid.ColumnSpan="2"
-                  Margin="0,0,88,0"
-                  Background="{DynamicResource SecondBackgroundColor}">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="50" />
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="60" />
-                    </Grid.RowDefinitions>
-                    <Label
-                      Grid.Row="0"
-                      Margin="8,5,0,0"
-                      Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Accounts}"
-                      FontFamily="/MVVM/View/Fonts/RedHatDisplay"
-                      FontSize="20"
-                      FontWeight="SemiBold"
-                      Foreground="{DynamicResource SecondForegroundColor}" />
-                    <ListView
-                      Grid.Row="1"
-                      Background="Transparent"
-                      BorderBrush="{DynamicResource ThirdBackgroundColor}"
-                      BorderThickness="0,0,0,4"
-                      ItemContainerStyle="{DynamicResource AccountCardStyle}"
-                      ItemsSource="{Binding Accounts}"
-                      SelectedItem="{Binding SelectedAccount, Mode=TwoWay}"
-                      SelectionChanged="ListView_SelectionChanged" />
-                    <Button
-                      Grid.Row="2"
-                      Grid.Column="1"
-                      Margin="50,10,50,10"
-                      Command="{Binding AddAccount}"
-                      Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Add_account}"
-                      FontFamily="/MVVM/View/Fonts/RedHatDisplay"
-                      FontSize="14">
-                        <Button.Style>
-                            <Style BasedOn="{StaticResource CornerRadiusButtonStyle}" TargetType="Button">
-                                <Setter Property="Visibility" Value="Visible" />
-                                <Style.Triggers>
-                                    <!-- <DataTrigger Binding="{Binding SelectedServer}" Value="{x:Null}"> -->
-                                    <DataTrigger Binding="{Binding Path=SelectedIndex, ElementName=ServersListView}" Value="-1">
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                    </Button>
-                </Grid>
+        <Grid
+          Grid.Row="1"
+          Grid.Column="4"
+          VerticalAlignment="Center">
+          <Grid.Style>
+            <Style TargetType="Grid">
+              <Setter Property="Visibility" Value="Hidden" />
+              <Style.Triggers>
+                <DataTrigger Binding="{Binding Path=SelectedIndex, ElementName=ConversationsListView}" Value="-1">
+                  <Setter Property="Visibility" Value="Visible" />
+                </DataTrigger>
+              </Style.Triggers>
+            </Style>
+          </Grid.Style>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+          </Grid.RowDefinitions>
+          <Image
+            Grid.Row="0"
+            Height="100"
+            Source="/MVVM/View/Icons/logo.png" />
+          <TextBlock
+            Grid.Row="1"
+            HorizontalAlignment="Center"
+            Style="{StaticResource StylishedTextBlock}"
+            Text="{Binding Source={x:Static l:Translator.Instance}, Path=D.Welcome_to_DuoChat}" />
+        </Grid>
 
-                <Grid
-                  Grid.Row="1"
-                  Grid.Column="2"
-                  Grid.ColumnSpan="2"
-                  Background="Transparent">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="40" />
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="60" />
-                    </Grid.RowDefinitions>
-                    <Border Grid.Row="0" Background="{DynamicResource SecondBackgroundColor}">
-                        <StackPanel Orientation="Horizontal">
-                            <Button
-                              x:Name="ToggleServersAccountsButton"
-                              Width="40"
-                              Height="40"
-                              VerticalContentAlignment="Center"
-                              Click="Button_ToggleServersAccounts_Click"
-                              Content="&gt;"
-                              FontSize="35"
-                              Foreground="{DynamicResource SecondForegroundColor}"
-                              Style="{StaticResource MenuButtonStyle}" />
-                            <Label
-                              Margin="8,5,0,0"
-                              VerticalAlignment="Center"
-                              Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Conversations}"
-                              FontFamily="/MVVM/View/Fonts/RedHatDisplay"
-                              FontSize="20"
-                              FontWeight="SemiBold"
-                              Foreground="{DynamicResource SecondForegroundColor}" />
-                        </StackPanel>
-                    </Border>
-                    <Border Grid.Row="1" Background="{DynamicResource SecondBackgroundColor}">
-                        <ListView
-                          x:Name="ConversationsListView"
-                          Grid.Row="1"
-                          Background="Transparent"
-                          BorderBrush="{DynamicResource ThirdBackgroundColor}"
-                          BorderThickness="0,0,0,4"
-                          ItemContainerStyle="{StaticResource ConversationCardStyle}"
-                          ItemsSource="{Binding Conversations}"
-                          SelectedItem="{Binding SelectedConversation}"
-                          SelectionChanged="ListView_SelectionChanged" />
-                    </Border>
-                    <Border
-                      Grid.Row="2"
-                      Background="{DynamicResource SecondBackgroundColor}"
-                      BorderBrush="{DynamicResource FirstBorderColor}"
-                      CornerRadius="0,0,0,10">
-                        <DockPanel>
-                            <Border
-                              Width="45"
-                              Height="45"
-                              Margin="10,0,0,0"
-                              Background="Gray"
-                              CornerRadius="25"
-                              DockPanel.Dock="Left" />
-                            <TextBlock
-                              Width="95"
-                              Margin="5,0,0,0"
-                              VerticalAlignment="Center"
-                              DockPanel.Dock="Left"
-                              FontSize="12"
-                              FontWeight="SemiBold"
-                              Foreground="{DynamicResource SecondForegroundColor}"
-                              TextTrimming="CharacterEllipsis">
-                                <TextBlock.Text>
-                                    <PriorityBinding>
-                                        <Binding Path="SelectedAccount.Nickname" />
-                                        <Binding Path="D.Nickname" Source="{x:Static l:Translator.Instance}" />
-                                    </PriorityBinding>
-                                </TextBlock.Text>
-                            </TextBlock>
-                            <Button
-                              Width="32"
-                              Height="32"
-                              Margin="0,0,7,0"
-                              HorizontalAlignment="Right"
-                              Command="{Binding OpenSettings}"
-                              DockPanel.Dock="Right"
-                              FontSize="15"
-                              Foreground="{DynamicResource FirstForegroundColor}"
-                              Style="{DynamicResource MenuButtonStyle}">
-                                <Border CornerRadius="20">
-                                    <Image Margin="4" Source="{DynamicResource SettingsButtonImage}" />
-                                    <Border.Resources />
-                                </Border>
+        <Grid Grid.Row="1" Grid.Column="4">
+          <Grid.Style>
+            <Style TargetType="Grid">
+              <Setter Property="Visibility" Value="Visible" />
+              <Style.Triggers>
+                <DataTrigger Binding="{Binding Path=SelectedIndex, ElementName=ConversationsListView}" Value="-1">
+                  <Setter Property="Visibility" Value="Hidden" />
+                </DataTrigger>
+              </Style.Triggers>
+            </Style>
+          </Grid.Style>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="50" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="70" />
+          </Grid.RowDefinitions>
+          <Border Grid.Row="0" Background="{DynamicResource SecondBackgroundColor}">
+            <Grid Margin="8" HorizontalAlignment="Stretch">
+              <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+                <Label
+                  Margin="5,0,5,0"
+                  VerticalAlignment="Center"
+                  FontFamily="/MVVM/View/Fonts/RedHatDisplay"
+                  FontSize="18"
+                  FontWeight="SemiBold"
+                  Foreground="{DynamicResource SecondForegroundColor}">
+                  <Label.Content>
+                    <PriorityBinding>
+                      <Binding Path="SelectedConversation.Name" />
+                      <Binding Path="D.Conversation_name" Source="{x:Static l:Translator.Instance}" />
+                    </PriorityBinding>
+                  </Label.Content>
+                </Label>
+                <Image
+                  Width="25"
+                  Height="25"
+                  Margin="10,0,5,0"
+                  RenderOptions.BitmapScalingMode="Fant"
+                  Source="/MVVM/View/Icons/add.png" />
+              </StackPanel>
 
-                            </Button>
-                        </DockPanel>
-                    </Border>
-                </Grid>
-
-                <Grid
-                  Grid.Row="1"
-                  Grid.Column="4"
-                  VerticalAlignment="Center">
-                    <Grid.Style>
-                        <Style TargetType="Grid">
-                            <Setter Property="Visibility" Value="Hidden" />
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Path=SelectedIndex, ElementName=ConversationsListView}" Value="-1">
-                                    <Setter Property="Visibility" Value="Visible" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Grid.Style>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="auto" />
-                    </Grid.RowDefinitions>
-                    <Image
-                      Grid.Row="0"
-                      Height="100"
-                      Source="/MVVM/View/Icons/logo.png" />
-                    <TextBlock
-                      Grid.Row="1"
-                      HorizontalAlignment="Center"
-                      Style="{StaticResource StylishedTextBlock}"
-                      Text="{Binding Source={x:Static l:Translator.Instance}, Path=D.Welcome_to_DuoChat}" />
-                </Grid>
-
-                <Grid Grid.Row="1" Grid.Column="4">
-                    <Grid.Style>
-                        <Style TargetType="Grid">
-                            <Setter Property="Visibility" Value="Visible" />
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Path=SelectedIndex, ElementName=ConversationsListView}" Value="-1">
-                                    <Setter Property="Visibility" Value="Hidden" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Grid.Style>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="50" />
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="70" />
-                    </Grid.RowDefinitions>
-                    <Border Grid.Row="0" Background="{DynamicResource SecondBackgroundColor}">
-                        <Grid Margin="8" HorizontalAlignment="Stretch">
-                            <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
-                                <Label
-                                  Margin="5,0,5,0"
-                                  VerticalAlignment="Center"
-                                  FontFamily="/MVVM/View/Fonts/RedHatDisplay"
-                                  FontSize="18"
-                                  FontWeight="SemiBold"
-                                  Foreground="{DynamicResource SecondForegroundColor}">
-                                    <Label.Content>
-                                        <PriorityBinding>
-                                            <Binding Path="SelectedConversation.Name" />
-                                            <Binding Path="D.Conversation_name" Source="{x:Static l:Translator.Instance}" />
-                                        </PriorityBinding>
-                                    </Label.Content>
-                                </Label>
-                                <Image
-                                  Width="25"
-                                  Height="25"
-                                  Margin="10,0,5,0"
-                                  RenderOptions.BitmapScalingMode="Fant"
-                                  Source="/MVVM/View/Icons/add.png" />
-                            </StackPanel>
-
-                            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-                                <Image
-                                  Width="25"
-                                  Height="25"
-                                  Margin="5,0,5,0"
-                                  RenderOptions.BitmapScalingMode="Fant"
-                                  Source="/MVVM/View/Icons/phone.png" />
-                                <Image
-                                  Width="25"
-                                  Height="25"
-                                  Margin="5,0,5,0"
-                                  RenderOptions.BitmapScalingMode="Fant"
-                                  Source="/MVVM/View/Icons/settings.png" />
-                            </StackPanel>
-                        </Grid>
-                    </Border>
-                    <!--  możliwe, że tu dam ItemsControl zamiast ListView  -->
-                    <ListView
-                      Grid.Row="1"
-                      Margin="8,0,0,0"
-                      Background="Transparent"
-                      BorderThickness="0"
-                      ItemContainerStyle="{DynamicResource ChatItemStyle}"
-                      ItemsSource="{Binding SelectedConversation.Messages}" />
-                    <Grid Grid.Row="2">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition Width="90" />
-                        </Grid.ColumnDefinitions>
-                        <TextBox
-                          Grid.Row="1"
-                          Grid.ColumnSpan="2"
-                          Height="50"
-                          Style="{DynamicResource MessageBoxStyle}"
-                          Text="Message @Username">
-                            <!--  obsługa przycisków w textboxie  -->
-                            <TextBox.InputBindings>
-                                <KeyBinding Key="Return" Command="{Binding Send}" />
-                            </TextBox.InputBindings>
-                        </TextBox>
-
-                        <StackPanel
-                          Grid.Column="1"
-                          Margin="0,0,16,0"
-                          HorizontalAlignment="Right"
-                          Orientation="Horizontal">
-
-                            <Image
-                              Width="25"
-                              Height="25"
-                              Margin="5,0,10,0"
-                              RenderOptions.BitmapScalingMode="Fant"
-                              Source="/MVVM/View/Icons/send.png" />
-                        </StackPanel>
-                    </Grid>
-                </Grid>
+              <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                <Image
+                  Width="25"
+                  Height="25"
+                  Margin="5,0,5,0"
+                  RenderOptions.BitmapScalingMode="Fant"
+                  Source="/MVVM/View/Icons/phone.png" />
+                <Image
+                  Width="25"
+                  Height="25"
+                  Margin="5,0,5,0"
+                  RenderOptions.BitmapScalingMode="Fant"
+                  Source="/MVVM/View/Icons/settings.png" />
+              </StackPanel>
             </Grid>
-        </Border>
-    </Grid>
+          </Border>
+          <!--  możliwe, że tu dam ItemsControl zamiast ListView  -->
+          <ListView
+            Grid.Row="1"
+            Margin="8,0,0,0"
+            Background="Transparent"
+            BorderThickness="0"
+            ItemContainerStyle="{DynamicResource ChatItemStyle}"
+            ItemsSource="{Binding SelectedConversation.Messages}" />
+          <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition />
+              <ColumnDefinition Width="90" />
+            </Grid.ColumnDefinitions>
+            <TextBox
+              Grid.Row="1"
+              Grid.ColumnSpan="2"
+              Height="50"
+              Style="{DynamicResource MessageBoxStyle}"
+              Text="Message @Username">
+              <!--  obsługa przycisków w textboxie  -->
+              <TextBox.InputBindings>
+                <KeyBinding Key="Return" Command="{Binding Send}" />
+              </TextBox.InputBindings>
+            </TextBox>
+
+            <StackPanel
+              Grid.Column="1"
+              Margin="0,0,16,0"
+              HorizontalAlignment="Right"
+              Orientation="Horizontal">
+
+              <Image
+                Width="25"
+                Height="25"
+                Margin="5,0,10,0"
+                RenderOptions.BitmapScalingMode="Fant"
+                Source="/MVVM/View/Icons/send.png" />
+            </StackPanel>
+          </Grid>
+        </Grid>
+      </Grid>
+    </Border>
+  </Grid>
 </w:DialogWindow>
