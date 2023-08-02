@@ -17,7 +17,6 @@
   <l:Entry x:Key="Add_server" EN="Add server" PL="Dodaj serwer"/>
   <l:Entry x:Key="Accounts" PL="Konta"/>
   <l:Entry x:Key="Conversations" PL="Konwersacje"/>
-  <l:Entry x:Key="Nickname" PL="Pseudonim"/>
   <l:Entry x:Key="Welcome_to_DuoChat" EN="Welcome to DuoChat!" PL="Witaj w DuoChat!"/>
   <l:Entry x:Key="Conversation_name" EN="Conversation name" PL="Nazwa konwersacji"/>
   <l:Entry x:Key="Progress" PL="Postęp"/>
