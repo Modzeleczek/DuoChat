@@ -109,11 +109,10 @@
           <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-          <ColumnDefinition x:Name="ServersColumn" Width="0" />
-          <ColumnDefinition x:Name="AccountsColumn" Width="0" />
-          <ColumnDefinition Width="88" />
-          <ColumnDefinition Width="112" />
-          <ColumnDefinition Width="*" />
+          <ColumnDefinition x:Name="ServersColumn" />
+          <ColumnDefinition x:Name="AccountsColumn" />
+          <ColumnDefinition x:Name="ConversationsColumn" />
+          <ColumnDefinition x:Name="ChatColumn" />
         </Grid.ColumnDefinitions>
         <Border
           Grid.Row="0"
@@ -151,8 +150,6 @@
         <Grid
           Grid.Row="1"
           Grid.Column="0"
-          Grid.ColumnSpan="3"
-          Margin="0,0,88,0"
           Background="{DynamicResource SecondBackgroundColor}">
           <Grid.RowDefinitions>
             <RowDefinition Height="50" />
@@ -191,8 +188,6 @@
         <Grid
           Grid.Row="1"
           Grid.Column="1"
-          Grid.ColumnSpan="2"
-          Margin="0,0,88,0"
           Background="{DynamicResource SecondBackgroundColor}">
           <Grid.RowDefinitions>
             <RowDefinition Height="50" />
@@ -242,7 +237,6 @@
         <Grid
           Grid.Row="1"
           Grid.Column="2"
-          Grid.ColumnSpan="2"
           Background="Transparent">
           <Grid.RowDefinitions>
             <RowDefinition Height="40" />
@@ -338,9 +332,10 @@
           </Border>
         </Grid>
 
+        <!-- Grid widoczny naprzemian z gridem zdefiniowanym pod nim. -->
         <Grid
           Grid.Row="1"
-          Grid.Column="4"
+          Grid.Column="3"
           VerticalAlignment="Center">
           <Grid.Style>
             <Style TargetType="Grid">
@@ -367,7 +362,7 @@
             Text="{Binding Source={x:Static l:Translator.Instance}, Path=D.Welcome_to_DuoChat}" />
         </Grid>
 
-        <Grid Grid.Row="1" Grid.Column="4">
+        <Grid Grid.Row="1" Grid.Column="3">
           <Grid.Style>
             <Style TargetType="Grid">
               <Setter Property="Visibility" Value="Visible" />

@@ -13,23 +13,46 @@ namespace Client.MVVM.View.Windows
         public MainWindow(Window owner, MainViewModel dataContext)
             : base(owner, dataContext) { }
 
-        protected override void Initialize() => InitializeComponent();
+        protected override void Initialize()
+        {
+            InitializeComponent();
+            InitializeColumns();
+        }
 
         private void Button_ToggleServersAccounts_Click(object sender, RoutedEventArgs e)
         {
             if (serversAccountsVisible)
-            {
-                ServersColumn.Width = new GridLength(0, GridUnitType.Pixel);
-                AccountsColumn.Width = new GridLength(0, GridUnitType.Pixel);
-                ToggleServersAccountsButton.Content = ">";
-            }
+                HideColumns();
             else
-            {
-                ServersColumn.Width = new GridLength(200, GridUnitType.Pixel);
-                AccountsColumn.Width = new GridLength(200, GridUnitType.Pixel);
-                ToggleServersAccountsButton.Content = "<";
-            }
+                ShowColumns();
             serversAccountsVisible = !serversAccountsVisible;
+        }
+
+        private void InitializeColumns()
+        {
+            SetWidth(ref ConversationsColumn, 0.16);
+            HideColumns();
+        }
+
+        private void HideColumns()
+        {
+            SetWidth(ref ServersColumn, 0);
+            SetWidth(ref AccountsColumn, 0);
+            SetWidth(ref ChatColumn, 0.84);
+            ToggleServersAccountsButton.Content = ">";
+        }
+
+        private void ShowColumns()
+        {
+            SetWidth(ref ServersColumn, 0.16);
+            SetWidth(ref AccountsColumn, 0.16);
+            SetWidth(ref ChatColumn, 0.52);
+            ToggleServersAccountsButton.Content = "<";
+        }
+
+        private void SetWidth(ref ColumnDefinition column, double value)
+        {
+            column.Width = new GridLength(value, GridUnitType.Star);
         }
 
         private void Button_Minimize_Click(object sender, RoutedEventArgs e)
