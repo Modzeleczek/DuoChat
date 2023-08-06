@@ -413,7 +413,7 @@
                   Height="25"
                   Margin="5,0,5,0"
                   RenderOptions.BitmapScalingMode="Fant"
-                  Source="/MVVM/View/Icons/settings.png" />
+                  Source="{DynamicResource SettingsButtonImage}" />
               </StackPanel>
             </Grid>
           </Border>
