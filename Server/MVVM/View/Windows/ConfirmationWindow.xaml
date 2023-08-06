@@ -18,7 +18,8 @@
   Icon="/MVVM/View/Icons/logo.png"
   WindowStyle="None"
   mc:Ignorable="d"
-  ResizeMode="NoResize">
+  ResizeMode="NoResize"
+  WindowStartupLocation="CenterOwner">
   <Border
     Background="#4A4E69"
     BorderBrush="#9A8C98"

@@ -18,7 +18,8 @@
   WindowStyle="None"
   mc:Ignorable="d"
   Icon="/MVVM/View/Icons/logo.png"
-  ResizeMode="NoResize">
+  ResizeMode="NoResize"
+  WindowStartupLocation="CenterOwner">
   <i:Interaction.Triggers>
     <i:EventTrigger EventName="Loaded">
       <i:InvokeCommandAction Command="{Binding WindowLoaded}" CommandParameter="{Binding ElementName=ProgressBarWindowName}" />

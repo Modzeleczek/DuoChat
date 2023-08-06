@@ -17,6 +17,7 @@
   Background="Transparent"
   Icon="/MVVM/View/Icons/logo.png"
   ResizeMode="NoResize"
+  WindowStartupLocation="CenterOwner"
   WindowStyle="None"
   mc:Ignorable="d">
     <i:Interaction.Triggers>
