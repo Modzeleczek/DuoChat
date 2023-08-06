@@ -1,4 +1,4 @@
-﻿<w:DialogWindow
+<w:DialogWindow
   x:Class="Server.MVVM.View.Windows.ConfirmationWindow"
   x:ClassModifier="public"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -57,7 +57,7 @@
         Grid.Row="1"
         Grid.Column="0"
         Grid.ColumnSpan="2"
-        Margin="10,5,10,5"
+        Margin="5,5,5,5"
         HorizontalAlignment="Center"
         VerticalAlignment="Center"
         FontFamily="/MVVM/View/Fonts/RedHatDisplay"
@@ -70,7 +70,7 @@
       <Button
         Grid.Row="2"
         Grid.Column="0"
-        Margin="50,10,50,10"
+        Margin="0,0,0,5"
         Command="{Binding Path=Close}"
         Content="{Binding Path=CancelButtonText}"
         FontFamily="/MVVM/View/Fonts/RedHatDisplay"
@@ -80,7 +80,7 @@
       <Button
         Grid.Row="2"
         Grid.Column="1"
-        Margin="50,10,50,10"
+        Margin="0,0,0,5"
         Command="{Binding Path=Confirm}"
         Content="{Binding Path=ConfirmButtonText}"
         FontFamily="/MVVM/View/Fonts/RedHatDisplay"

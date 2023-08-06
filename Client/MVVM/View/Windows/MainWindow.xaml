@@ -177,7 +177,6 @@
           <Button
             Grid.Row="2"
             Grid.Column="1"
-            Margin="50,10,50,10"
             Command="{Binding AddServer}"
             Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Add_server}"
             FontFamily="/MVVM/View/Fonts/RedHatDisplay"
@@ -215,7 +214,6 @@
           <Button
             Grid.Row="2"
             Grid.Column="1"
-            Margin="50,10,50,10"
             Command="{Binding AddAccount}"
             Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Add_account}"
             FontFamily="/MVVM/View/Fonts/RedHatDisplay"

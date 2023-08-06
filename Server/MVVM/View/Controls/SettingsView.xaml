@@ -38,8 +38,7 @@
         Orientation="Horizontal"
         Style="{StaticResource HoverPanelStyle}">
         <Button
-          Margin="7,7,20,7"
-          HorizontalAlignment="Right"
+          Margin="5,0,0,0"
           Command="{Binding Path=GenerateGuid}"
           Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Generate}"
           Style="{StaticResource CornerRadiusButtonStyle}" />
@@ -61,8 +60,7 @@
         Orientation="Horizontal"
         Style="{StaticResource HoverPanelStyle}">
         <Button
-          Margin="7,7,20,7"
-          HorizontalAlignment="Right"
+          Margin="5,0,0,0"
           Command="{Binding Path=GeneratePrivateKey}"
           Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Generate}"
           IsEnabled="{Binding ServerStopped, Mode=OneWay}"
