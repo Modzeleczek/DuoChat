@@ -1,4 +1,4 @@
-﻿<w:DialogWindow
+<w:DialogWindow
   x:Class="Client.MVVM.View.Windows.AlertWindow"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -15,6 +15,7 @@
   Background="Transparent"
   Icon="/MVVM/View/Icons/logo.png"
   SizeToContent="Height"
+  ResizeMode="NoResize"
   WindowStyle="None"
   mc:Ignorable="d">
     <Border

@@ -16,6 +16,7 @@
   Background="Transparent"
   FontFamily="/MVVM/View/Fonts/RedHatDisplay"
   Icon="/MVVM/View/Icons/logo.png"
+  ResizeMode="NoResize"
   WindowStyle="None"
   mc:Ignorable="d">
     <i:Interaction.Triggers>
