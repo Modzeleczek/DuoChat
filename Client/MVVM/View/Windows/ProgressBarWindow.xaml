@@ -76,11 +76,7 @@
         h:EnableDragHelper.EnableDrag="True"
         Background="{DynamicResource FirstBackgroundColor}"
         CornerRadius="19,19,0,0">
-        <Grid VerticalAlignment="Center">
-          <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="Auto" />
-              <ColumnDefinition Width="*" />
-          </Grid.ColumnDefinitions>
+        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
           <Label
             Margin="15,0,0,0"
             Content="{Binding ElementName=ProgressBarWindowName, Path=Title}"

@@ -1,4 +1,4 @@
-<w:DialogWindow
+﻿<w:DialogWindow
   x:Class="Server.MVVM.View.Windows.ProgressBarWindow"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -76,11 +76,7 @@
         h:EnableDragHelper.EnableDrag="True"
         Background="#22223B"
         CornerRadius="19,19,0,0">
-        <Grid VerticalAlignment="Center">
-          <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="*" />
-          </Grid.ColumnDefinitions>
+        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
           <Label
             Margin="15,0,0,0"
             Content="{Binding ElementName=ProgressBarWindowName, Path=Title}"
