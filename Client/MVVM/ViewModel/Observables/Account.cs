@@ -1,7 +1,7 @@
 ﻿using Shared.MVVM.Core;
 using Shared.MVVM.Model.Cryptography;
 
-namespace Client.MVVM.Model
+namespace Client.MVVM.ViewModel.Observables
 {
     public class Account : ObservableObject
     {

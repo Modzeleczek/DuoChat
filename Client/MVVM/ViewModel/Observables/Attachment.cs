@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Client.MVVM.Model
+namespace Client.MVVM.ViewModel.Observables
 {
     public class Attachment
     {

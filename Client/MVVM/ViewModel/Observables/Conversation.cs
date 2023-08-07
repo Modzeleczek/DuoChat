@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace Client.MVVM.Model
+namespace Client.MVVM.ViewModel.Observables
 {
     public class Conversation : ObservableObject
     {

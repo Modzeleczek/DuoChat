@@ -1,4 +1,5 @@
-﻿using Shared.MVVM.Core;
+﻿using Client.MVVM.ViewModel.Observables;
+using Shared.MVVM.Core;
 using Shared.MVVM.Model;
 using System;
 using System.Collections.Generic;

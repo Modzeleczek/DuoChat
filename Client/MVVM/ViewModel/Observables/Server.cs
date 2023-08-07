@@ -4,7 +4,7 @@ using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking;
 using System;
 
-namespace Client.MVVM.Model
+namespace Client.MVVM.ViewModel.Observables
 {
     public class Server : ObservableObject
     {

@@ -1,4 +1,5 @@
-﻿using Shared.MVVM.Model.Networking;
+﻿using Client.MVVM.ViewModel.Observables;
+using Shared.MVVM.Model.Networking;
 using System;
 
 namespace Client.MVVM.Model.JsonSerializables

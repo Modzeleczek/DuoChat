@@ -1,9 +1,10 @@
-﻿using System;
+﻿using Shared.MVVM.Core;
+using System;
 using System.Collections.Generic;
 
-namespace Client.MVVM.Model
+namespace Client.MVVM.ViewModel.Observables
 {
-    public class Message
+    public class Message : ObservableObject
     {
         public Participant Sender { get; set; }
         public string PlainContent { get; set; }

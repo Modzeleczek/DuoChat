@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using Client.MVVM.View.Windows;
 using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.ViewModel.Results;
+using Client.MVVM.ViewModel.Observables;
 
 namespace Client.MVVM.ViewModel.ServerActions
 {

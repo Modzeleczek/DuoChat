@@ -1,4 +1,5 @@
 ﻿using Client.MVVM.Model.JsonSerializables;
+using Client.MVVM.ViewModel.Observables;
 using Shared.MVVM.Core;
 using System;
 using System.Collections.Generic;

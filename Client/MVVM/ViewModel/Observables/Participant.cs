@@ -2,7 +2,7 @@
 using System.Windows.Media.Imaging;
 using System.Windows.Media;
 
-namespace Client.MVVM.Model
+namespace Client.MVVM.ViewModel.Observables
 {
     public class Participant : User
     {

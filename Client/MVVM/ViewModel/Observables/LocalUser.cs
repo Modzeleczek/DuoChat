@@ -1,4 +1,5 @@
-﻿using Client.MVVM.Model.BsonStorages;
+﻿using Client.MVVM.Model;
+using Client.MVVM.Model.BsonStorages;
 using Client.MVVM.Model.JsonSerializables;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model.Networking;
@@ -7,7 +8,7 @@ using System.IO;
 using System.Security;
 using System.Security.Cryptography;
 
-namespace Client.MVVM.Model
+namespace Client.MVVM.ViewModel.Observables
 {
     public class LocalUser : ObservableObject
     {

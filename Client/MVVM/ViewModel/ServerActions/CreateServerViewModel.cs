@@ -1,11 +1,11 @@
-﻿using Client.MVVM.Model;
-using Shared.MVVM.Core;
+﻿using Shared.MVVM.Core;
 using System.Windows.Controls;
 using System;
 using Shared.MVVM.Model.Networking;
 using System.Collections.Generic;
 using Client.MVVM.View.Windows;
 using Shared.MVVM.ViewModel.Results;
+using Client.MVVM.ViewModel.Observables;
 
 namespace Client.MVVM.ViewModel.ServerActions
 {

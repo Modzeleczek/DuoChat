@@ -4,7 +4,7 @@ using System;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace Client.MVVM.Model
+namespace Client.MVVM.ViewModel.Observables
 {
     public class User : ObservableObject
     {

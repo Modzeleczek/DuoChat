@@ -1,3 +1,4 @@
+using Client.MVVM.ViewModel.Observables;
 using Shared.MVVM.Core;
 using System;
 using System.Net;

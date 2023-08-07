@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Client.MVVM.ViewModel.Observables;
+using System;
 
 namespace Client.MVVM.Model.JsonSerializables
 {

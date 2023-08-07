@@ -1,5 +1,5 @@
-﻿using Client.MVVM.Model;
-using Client.MVVM.Model.BsonStorages;
+﻿using Client.MVVM.Model.BsonStorages;
+using Client.MVVM.ViewModel.Observables;
 using Shared.MVVM.Core;
 using Shared.MVVM.ViewModel.Results;
 using System.Windows;
