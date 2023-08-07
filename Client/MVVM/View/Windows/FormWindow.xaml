@@ -20,78 +20,80 @@
   WindowStartupLocation="CenterOwner"
   WindowStyle="None"
   mc:Ignorable="d">
-    <i:Interaction.Triggers>
-        <i:EventTrigger EventName="Loaded">
-            <i:InvokeCommandAction Command="{Binding WindowLoaded}" CommandParameter="{Binding ElementName=FormWindowName}" />
-        </i:EventTrigger>
-    </i:Interaction.Triggers>
-    <Border
-      Background="{DynamicResource ThirdBackgroundColor}"
-      BorderBrush="{DynamicResource FirstForegroundColor}"
-      BorderThickness="3"
-      CornerRadius="10">
+  <i:Interaction.Triggers>
+    <i:EventTrigger EventName="Loaded">
+      <i:InvokeCommandAction Command="{Binding WindowLoaded}" CommandParameter="{Binding ElementName=FormWindowName}" />
+    </i:EventTrigger>
+  </i:Interaction.Triggers>
 
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="40" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="auto" />
-            </Grid.RowDefinitions>
-            <Border
-              Grid.Row="0"
-              Grid.ColumnSpan="2"
-              h:EnableDragHelper.EnableDrag="True"
-              Background="{DynamicResource FirstBackgroundColor}"
-              CornerRadius="9,9,0,0">
-                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
-                    <Label
-                      Margin="15,0,0,0"
-                      Content="{Binding ElementName=FormWindowName, Path=Title}"
-                      FontSize="14"
-                      FontWeight="SemiBold"
-                      Foreground="{DynamicResource FirstForegroundColor}" />
-                </Grid>
-            </Border>
-            <ScrollViewer 
-              Grid.Row="1"
-              Grid.Column="0"
-              Grid.ColumnSpan="2">
-              <StackPanel x:Name="FieldsStackPanel">
-                  <StackPanel.Resources>
-                      <Style BasedOn="{StaticResource StylishedLabel}" TargetType="Label" />
+  <Border
+    Background="{DynamicResource ThirdBackgroundColor}"
+    BorderBrush="{DynamicResource FirstForegroundColor}"
+    BorderThickness="3"
+    CornerRadius="10">
+    <Grid>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="40" />
+        <RowDefinition Height="*" />
+        <RowDefinition Height="auto" />
+      </Grid.RowDefinitions>
 
-                      <Style BasedOn="{StaticResource FormTextBox}" TargetType="TextBox" />
-
-                      <Style BasedOn="{StaticResource FormPasswordBox}" TargetType="PasswordBox" />
-
-                  </StackPanel.Resources>
-              </StackPanel>
-            </ScrollViewer>
-            <Button
-              x:Name="CancelButton"
-              Grid.Row="2"
-              Grid.Column="0"
-              Margin="0,0,0,5"
-              Command="{Binding Path=Close}"
-              Content="{Binding Path=CancelButtonText}"
-              FontFamily="/MVVM/View/Fonts/RedHatDisplay"
-              FontSize="18"
-              Style="{DynamicResource CornerRadiusButtonStyle}" />
-
-            <Button
-              x:Name="ConfirmButton"
-              Grid.Row="2"
-              Grid.Column="1"
-              Margin="0,0,0,5"
-              Command="{Binding Path=Confirm}"
-              Content="{Binding Path=ConfirmButtonText}"
-              FontFamily="/MVVM/View/Fonts/RedHatDisplay"
-              FontSize="18"
-              Style="{DynamicResource CornerRadiusButtonStyle}" />
+      <Border
+        Grid.Row="0"
+        Grid.ColumnSpan="2"
+        h:EnableDragHelper.EnableDrag="True"
+        Background="{DynamicResource FirstBackgroundColor}"
+        CornerRadius="9,9,0,0">
+        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
+          <Label
+            Margin="15,0,0,0"
+            Content="{Binding ElementName=FormWindowName, Path=Title}"
+            FontSize="14"
+            FontWeight="SemiBold"
+            Foreground="{DynamicResource FirstForegroundColor}" />
         </Grid>
-    </Border>
+      </Border>
+
+      <ScrollViewer
+        Grid.Row="1"
+        Grid.Column="0"
+        Grid.ColumnSpan="2">
+        <StackPanel x:Name="FieldsStackPanel">
+          <StackPanel.Resources>
+            <Style BasedOn="{StaticResource StylishedLabel}" TargetType="Label" />
+
+            <Style BasedOn="{StaticResource FormTextBox}" TargetType="TextBox" />
+
+            <Style BasedOn="{StaticResource FormPasswordBox}" TargetType="PasswordBox" />
+
+          </StackPanel.Resources>
+        </StackPanel>
+      </ScrollViewer>
+      <Button
+        x:Name="CancelButton"
+        Grid.Row="2"
+        Grid.Column="0"
+        Margin="0,0,0,5"
+        Command="{Binding Path=Close}"
+        Content="{Binding Path=CancelButtonText}"
+        FontFamily="/MVVM/View/Fonts/RedHatDisplay"
+        FontSize="18"
+        Style="{DynamicResource CornerRadiusButtonStyle}" />
+
+      <Button
+        x:Name="ConfirmButton"
+        Grid.Row="2"
+        Grid.Column="1"
+        Margin="0,0,0,5"
+        Command="{Binding Path=Confirm}"
+        Content="{Binding Path=ConfirmButtonText}"
+        FontFamily="/MVVM/View/Fonts/RedHatDisplay"
+        FontSize="18"
+        Style="{DynamicResource CornerRadiusButtonStyle}" />
+    </Grid>
+  </Border>
 </w:DialogWindow>

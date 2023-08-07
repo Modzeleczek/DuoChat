@@ -14,58 +14,58 @@
   AllowsTransparency="True"
   Background="Transparent"
   Icon="/MVVM/View/Icons/logo.png"
-  SizeToContent="Height"
   ResizeMode="NoResize"
+  SizeToContent="Height"
   WindowStartupLocation="CenterOwner"
   WindowStyle="None"
   mc:Ignorable="d">
-    <Border
-      Background="{DynamicResource ThirdBackgroundColor}"
-      BorderBrush="{DynamicResource FirstBorderColor}"
-      BorderThickness="2"
-      CornerRadius="10">
+  <Border
+    Background="{DynamicResource ThirdBackgroundColor}"
+    BorderBrush="{DynamicResource FirstBorderColor}"
+    BorderThickness="2"
+    CornerRadius="10">
+    <Grid>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="40" />
+        <RowDefinition Height="*" />
+        <RowDefinition Height="auto" />
+      </Grid.RowDefinitions>
 
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="40" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="auto" />
-            </Grid.RowDefinitions>
-            <Border
-              Grid.Row="0"
-              h:EnableDragHelper.EnableDrag="True"
-              Background="{DynamicResource FirstBackgroundColor}"
-              CornerRadius="9,9,0,0">
-                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
-                    <Label
-                      Margin="15,0,0,0"
-                      Content="{Binding ElementName=AlertWindowName, Path=Title}"
-                      FontSize="14"
-                      FontWeight="SemiBold"
-                      Foreground="{DynamicResource FirstForegroundColor}" />
-                </Grid>
-            </Border>
-
-            <TextBlock
-              Grid.Row="1"
-              Margin="5,5,5,5"
-              HorizontalAlignment="Center"
-              VerticalAlignment="Center"
-              FontFamily="/MVVM/View/Fonts/RedHatDisplay"
-              FontSize="18"
-              FontWeight="SemiBold"
-              Foreground="{DynamicResource FirstForegroundColor}"
-              Text="{Binding Path=Description}"
-              TextWrapping="Wrap" />
-
-            <Button
-              Grid.Row="2"
-              Margin="0,0,0,5"
-              Command="{Binding Path=Close}"
-              Content="{Binding Path=ButtonText}"
-              FontFamily="/MVVM/View/Fonts/RedHatDisplay"
-              FontSize="18"
-              Style="{DynamicResource CornerRadiusButtonStyle}" />
+      <Border
+        Grid.Row="0"
+        h:EnableDragHelper.EnableDrag="True"
+        Background="{DynamicResource FirstBackgroundColor}"
+        CornerRadius="9,9,0,0">
+        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
+          <Label
+            Margin="15,0,0,0"
+            Content="{Binding ElementName=AlertWindowName, Path=Title}"
+            FontSize="14"
+            FontWeight="SemiBold"
+            Foreground="{DynamicResource FirstForegroundColor}" />
         </Grid>
-    </Border>
+      </Border>
+
+      <TextBlock
+        Grid.Row="1"
+        Margin="5,5,5,5"
+        HorizontalAlignment="Center"
+        VerticalAlignment="Center"
+        FontFamily="/MVVM/View/Fonts/RedHatDisplay"
+        FontSize="18"
+        FontWeight="SemiBold"
+        Foreground="{DynamicResource FirstForegroundColor}"
+        Text="{Binding Path=Description}"
+        TextWrapping="Wrap" />
+
+      <Button
+        Grid.Row="2"
+        Margin="0,0,0,5"
+        Command="{Binding Path=Close}"
+        Content="{Binding Path=ButtonText}"
+        FontFamily="/MVVM/View/Fonts/RedHatDisplay"
+        FontSize="18"
+        Style="{DynamicResource CornerRadiusButtonStyle}" />
+    </Grid>
+  </Border>
 </w:DialogWindow>

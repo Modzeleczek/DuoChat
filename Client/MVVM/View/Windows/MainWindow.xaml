@@ -27,9 +27,9 @@
       <i:InvokeCommandAction Command="{Binding WindowLoaded}" CommandParameter="{Binding ElementName=MainWindowName}" />
     </i:EventTrigger>
   </i:Interaction.Triggers>
+
   <Grid>
     <Grid Name="ResizableGrid">
-
       <Rectangle
         x:Name="leftSizeGrip"
         Width="7"
@@ -99,6 +99,7 @@
         RadiusY="10"
         Style="{DynamicResource RectBorderStyle}" />
     </Grid>
+
     <Border
       Margin="2"
       Background="{DynamicResource ThirdBackgroundColor}"
@@ -114,6 +115,7 @@
           <ColumnDefinition x:Name="ConversationsColumn" />
           <ColumnDefinition x:Name="ChatColumn" />
         </Grid.ColumnDefinitions>
+
         <Border
           Grid.Row="0"
           Grid.ColumnSpan="5"
@@ -307,8 +309,8 @@
                   FontSize="12"
                   FontWeight="SemiBold"
                   Foreground="{DynamicResource SecondForegroundColor}"
-                  TextTrimming="CharacterEllipsis"
-                  Text="{Binding Path=SelectedAccount.Login}"/>
+                  Text="{Binding Path=SelectedAccount.Login}"
+                  TextTrimming="CharacterEllipsis" />
               </StackPanel>
               <Button
                 Width="32"
@@ -417,7 +419,7 @@
               </StackPanel>
             </Grid>
           </Border>
-          <!--  możliwe, że tu dam ItemsControl zamiast ListView  -->
+          <!-- możliwe, że tu dam ItemsControl zamiast ListView -->
           <ListView
             Grid.Row="1"
             Margin="8,0,0,0"
@@ -436,7 +438,7 @@
               Height="50"
               Style="{DynamicResource MessageBoxStyle}"
               Text="Message @Username">
-              <!--  obsługa przycisków w textboxie  -->
+              <!-- obsługa przycisków w textboxie -->
               <TextBox.InputBindings>
                 <KeyBinding Key="Return" Command="{Binding Send}" />
               </TextBox.InputBindings>
