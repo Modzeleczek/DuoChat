@@ -40,21 +40,14 @@
         h:EnableDragHelper.EnableDrag="True"
         Background="{DynamicResource FirstBackgroundColor}"
         CornerRadius="10,10,0,0">
-        <Grid VerticalAlignment="Center">
-          <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="*" />
-          </Grid.ColumnDefinitions>
+        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
           <Label
             Margin="15,0,0,0"
             Content="{Binding ElementName=SettingsWindowName, Path=Title}"
             FontSize="14"
             FontWeight="SemiBold"
             Foreground="{DynamicResource FirstForegroundColor}" />
-          <StackPanel
-            Grid.Column="1"
-            HorizontalAlignment="Right"
-            Orientation="Horizontal">
+          <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
             <Button
               Margin="4,1,16,0"
               Command="{Binding Path=Close}"
