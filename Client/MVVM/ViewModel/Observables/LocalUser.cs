@@ -99,20 +99,20 @@ namespace Client.MVVM.ViewModel.Observables
         }
 
         public List<Account> GetAllAccounts(IPv4Address ipAddress, Port port) =>
-            GetServerDatabase(ipAddress, port).GetAllAccounts();
+            GetServerDatabase(ipAddress, port).Accounts.GetAllAccounts();
 
         public void AddAccount(IPv4Address ipAddress, Port port, Account account) =>
             /* w funkcji wywołującej aktualną funkcję (AddAccount)
             dodajemy "Error occured while adding account to server's database" */
-            GetServerDatabase(ipAddress, port).AddAccount(account);
+            GetServerDatabase(ipAddress, port).Accounts.AddAccount(account);
 
         public bool AccountExists(IPv4Address ipAddress, Port port, string login) =>
-            GetServerDatabase(ipAddress, port).AccountExists(login);
+            GetServerDatabase(ipAddress, port).Accounts.AccountExists(login);
 
         public void UpdateAccount(IPv4Address ipAddress, Port port, string login, Account account) =>
-            GetServerDatabase(ipAddress, port).UpdateAccount(login, account);
+            GetServerDatabase(ipAddress, port).Accounts.UpdateAccount(login, account);
 
         public void DeleteAccount(IPv4Address ipAddress, Port port, string login) =>
-            GetServerDatabase(ipAddress, port).DeleteAccount(login);
+            GetServerDatabase(ipAddress, port).Accounts.DeleteAccount(login);
     }
 }

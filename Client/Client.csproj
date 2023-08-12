@@ -197,6 +197,7 @@
     <Compile Include="MVVM\Model\BsonStorages\LocalUsersStorage.cs" />
     <Compile Include="MVVM\Model\BsonStorages\ServersStorage.cs" />
     <Compile Include="MVVM\Model\Client.cs" />
+    <Compile Include="MVVM\Model\SQLiteStorage\Repositories\AccountRepository.cs" />
     <Compile Include="MVVM\Model\SQLiteStorage\ServerDatabase.cs" />
     <Compile Include="MVVM\ViewModel\Observables\Account.cs" />
     <Compile Include="MVVM\Model\JsonSerializables\LocalUserSerializable.cs" />
