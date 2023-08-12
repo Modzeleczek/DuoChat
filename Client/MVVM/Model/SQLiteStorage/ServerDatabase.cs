@@ -1,6 +1,6 @@
 ﻿using Client.MVVM.Model.SQLiteStorage.Repositories;
 using Shared.MVVM.Core;
-using Shared.MVVM.Model;
+using Shared.MVVM.Model.SQLiteStorage;
 using System;
 using System.Data.SQLite;
 using System.IO;

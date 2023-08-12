@@ -5,7 +5,7 @@ using System.Data.SQLite;
 using System.IO;
 using System.Reflection;
 
-namespace Shared.MVVM.Model
+namespace Shared.MVVM.Model.SQLiteStorage
 {
     public abstract class SQLiteDatabase
     {
