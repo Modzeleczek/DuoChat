@@ -1,6 +1,7 @@
 ﻿using Client.MVVM.Model;
 using Client.MVVM.Model.BsonStorages;
 using Client.MVVM.Model.JsonSerializables;
+using Client.MVVM.Model.SQLiteStorage;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model.Networking;
 using System.Collections.Generic;

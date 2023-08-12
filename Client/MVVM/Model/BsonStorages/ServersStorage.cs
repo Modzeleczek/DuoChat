@@ -1,4 +1,5 @@
 ﻿using Client.MVVM.Model.JsonSerializables;
+using Client.MVVM.Model.SQLiteStorage;
 using Client.MVVM.ViewModel.Observables;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model.Networking;

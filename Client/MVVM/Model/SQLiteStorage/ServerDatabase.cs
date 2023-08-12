@@ -7,7 +7,7 @@ using System.Data;
 using System.Data.SQLite;
 using System.IO;
 
-namespace Client.MVVM.Model
+namespace Client.MVVM.Model.SQLiteStorage
 {
     public class ServerDatabase : SQLiteDatabase
     {
