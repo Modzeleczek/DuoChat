@@ -17,15 +17,7 @@ namespace Client.MVVM.Model.SQLiteStorage.Repositories
 
         public void AddAccount(Account account)
         {
-            try
-            {
-                if (AccountExists(account.Login))
-                    throw AccountExistsError(account.Login);
-            }
-            catch (Error e)
-            {
-                e.Prepend(CheckingAccountExistsError());
-            }
+            EnsureAccountExists(account.Login, false);
 
             try
             {
@@ -45,6 +37,31 @@ namespace Client.MVVM.Model.SQLiteStorage.Repositories
             }
             catch (Exception e) { throw QueryError(e); }
         }
+
+        private void EnsureAccountExists(string login, bool shouldExist)
+        {
+            try
+            {
+                if (shouldExist) // Powinien istnieć, a nie istnieje
+                {
+                    if (!AccountExists(login))
+                        throw AccountDoesNotExistError(login);
+                }
+                else // Nie powinien istnieć, a istnieje
+                {
+                    if (AccountExists(login))
+                        throw new Error($"|Account with login| {login} |already exists.|");
+                }
+            }
+            catch (Error e)
+            {
+                e.Prepend("|Error occured while| |checking if| |account| |already exists.|");
+                throw;
+            }
+        }
+
+        private Error AccountDoesNotExistError(string login) =>
+            new Error($"|Account with login| {login} |does not exist.|");
 
         public List<Account> GetAllAccounts()
         {
@@ -108,31 +125,13 @@ namespace Client.MVVM.Model.SQLiteStorage.Repositories
 
         public void UpdateAccount(string login, Account account)
         {
-            try
-            {
-                // stare konto nie istnieje
-                if (!AccountExists(login))
-                    throw AccountDoesNotExistError(login);
-            }
-            catch (Error e)
-            {
-                e.Prepend(CheckingAccountExistsError());
-                throw;
-            }
+            // Czy stare konto istnieje?
+            EnsureAccountExists(login, true);
 
             if (account.Login != login) // jeżeli zmieniamy login
             {
-                try
-                {
-                    // nowe konto już istnieje
-                    if (AccountExists(account.Login))
-                        throw AccountExistsError(account.Login);
-                }
-                catch (Error e)
-                {
-                    e.Prepend(CheckingAccountExistsError());
-                    throw;
-                }
+                // Czy nowe konto jeszcze nie istnieje?
+                EnsureAccountExists(account.Login, false);
             }
 
             try
@@ -157,27 +156,9 @@ namespace Client.MVVM.Model.SQLiteStorage.Repositories
             catch (Exception e) { throw QueryError(e); }
         }
 
-        private Error AccountDoesNotExistError(string login) =>
-            new Error($"|Account with login| {login} |does not exist.|");
-
-        private string CheckingAccountExistsError() =>
-            "|Error occured while| |checking if| |account| |already exists.|";
-
-        private Error AccountExistsError(string login) =>
-            new Error($"|Account with login| {login} |already exists.|");
-
         public void DeleteAccount(string login)
         {
-            try
-            {
-                if (!AccountExists(login))
-                    throw AccountDoesNotExistError(login);
-            }
-            catch (Error e)
-            {
-                e.Prepend(CheckingAccountExistsError());
-                throw;
-            }
+            EnsureAccountExists(login, true);
 
             try
             {
