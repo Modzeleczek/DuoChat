@@ -23,7 +23,7 @@ namespace Client.MVVM.Model.SQLiteStorage.Repositories
             }
             catch (Error e)
             {
-                e.Prepend(CheckingAccountExistError());
+                e.Prepend(CheckingAccountExistsError());
             }
 
             try
@@ -113,7 +113,7 @@ namespace Client.MVVM.Model.SQLiteStorage.Repositories
             }
             catch (Error e)
             {
-                e.Prepend(CheckingAccountExistError());
+                e.Prepend(CheckingAccountExistsError());
                 throw;
             }
 
@@ -127,7 +127,7 @@ namespace Client.MVVM.Model.SQLiteStorage.Repositories
                 }
                 catch (Error e)
                 {
-                    e.Prepend(CheckingAccountExistError());
+                    e.Prepend(CheckingAccountExistsError());
                     throw;
                 }
             }
@@ -157,7 +157,7 @@ namespace Client.MVVM.Model.SQLiteStorage.Repositories
         private Error AccountDoesNotExistError(string login) =>
             new Error($"|Account with login| {login} |does not exist.|");
 
-        private string CheckingAccountExistError() =>
+        private string CheckingAccountExistsError() =>
             "|Error occured while| |checking if| |account| |already exists.|";
 
         private Error AccountExistsError(string login) =>
@@ -172,7 +172,7 @@ namespace Client.MVVM.Model.SQLiteStorage.Repositories
             }
             catch (Error e)
             {
-                e.Prepend(CheckingAccountExistError());
+                e.Prepend(CheckingAccountExistsError());
                 throw;
             }
 
