@@ -1,4 +1,4 @@
-using Client.MVVM.ViewModel.Observables;
+﻿using Client.MVVM.ViewModel.Observables;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.SQLiteStorage.Repositories;
@@ -118,10 +118,28 @@ namespace Client.MVVM.Model.SQLiteStorage.Repositories
             catch (Exception e) { throw QueryError(e); }
         }
 
-        /* public Account GetAccount(string login)
+        public Account GetAccount(string login)
         {
-            ValidateDatabase();
-        } */
+            EnsureAccountExists(login, true);
+
+            try
+            {
+                var query = "SELECT login, private_key FROM Account WHERE login = @login;";
+                using (var con = CreateConnection())
+                using (var cmd = new SQLiteCommand(query, con))
+                {
+                    cmd.Parameters.AddWithValue("@login", login);
+                    con.Open();
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        if (!reader.Read())
+                            throw AccountDoesNotExistError(login);
+                        return ReadOneAccount(reader);
+                    }
+                }
+            }
+            catch (Exception e) { throw QueryError(e); }
+        }
 
         public void UpdateAccount(string login, Account account)
         {
