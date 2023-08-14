@@ -30,8 +30,7 @@ namespace Client.MVVM.Model.SQLiteStorage.Repositories
                     cmd.Parameters.Add("@private_key", DbType.Binary, bytes.Length).Value = bytes;
                     con.Open();
                     if (cmd.ExecuteNonQuery() != 1)
-                        throw new Error(
-                            "|Number of rows affected by the query is other than 1.|");
+                        throw NotExactly1RowError();
                 }
             }
             catch (Exception e) { throw QueryError(e); }
@@ -165,8 +164,7 @@ namespace Client.MVVM.Model.SQLiteStorage.Repositories
                     /* po sprawdzeniu na górze, że jest dokładnie 1 wiersz z loginem
                     "login" (nie account.Login), nie powinno się wykonać */
                     if (cmd.ExecuteNonQuery() != 1)
-                        throw new Error(
-                            "|Number of rows affected by the query is other than 1.|");
+                        throw NotExactly1RowError();
                 }
             }
             catch (Exception e) { throw QueryError(e); }
@@ -187,8 +185,7 @@ namespace Client.MVVM.Model.SQLiteStorage.Repositories
                     /* AccountExists wyrzuciłoby wyjątek, jeżeli istniałoby
                     kilka kont o tym samym loginie, który jest kluczem głównym */
                     if (cmd.ExecuteNonQuery() != 1)
-                        throw new Error(
-                            "|Number of rows affected by the query is other than 1.|");
+                        throw NotExactly1RowError();
                 }
             }
             catch (Exception e) { throw QueryError(e); }
