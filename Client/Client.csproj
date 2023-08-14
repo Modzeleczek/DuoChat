@@ -294,7 +294,7 @@
     <Resource Include="MVVM\View\Icons\settings_light.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="MVVM\Model\client.sql" />
+    <EmbeddedResource Include="MVVM\Model\SQLiteStorage\client.sql" />
   </ItemGroup>
   <Import Project="..\Shared\Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

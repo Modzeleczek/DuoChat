@@ -1,4 +1,4 @@
-﻿using Client.MVVM.Model.SQLiteStorage.Repositories;
+using Client.MVVM.Model.SQLiteStorage.Repositories;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model.SQLiteStorage;
 using System;
@@ -20,7 +20,7 @@ namespace Client.MVVM.Model.SQLiteStorage
 
         protected override string DDLEmbeddedResource()
         {
-            return "Client.MVVM.Model.client.sql";
+            return "Client.MVVM.Model.SQLiteStorage.client.sql";
         }
 
         private void ValidateDatabase()
