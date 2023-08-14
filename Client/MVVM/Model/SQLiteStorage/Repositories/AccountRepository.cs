@@ -28,13 +28,13 @@ namespace Client.MVVM.Model.SQLiteStorage.Repositories
 
             try
             {
-                var query = "INSERT INTO Account (login, private_key) VALUES (@p0, @p1);";
+                var query = "INSERT INTO Account (login, private_key) VALUES (@login, @private_key);";
                 using (var con = CreateConnection())
                 using (var cmd = new SQLiteCommand(query, con))
                 {
-                    cmd.Parameters.AddWithValue("@p0", account.Login);
+                    cmd.Parameters.AddWithValue("@login", account.Login);
                     var bytes = account.PrivateKey.ToBytes();
-                    cmd.Parameters.Add("@p1", DbType.Binary, bytes.Length).Value = bytes;
+                    cmd.Parameters.Add("@private_key", DbType.Binary, bytes.Length).Value = bytes;
                     con.Open();
                     var count = cmd.ExecuteNonQuery();
                     if (count != 1)
@@ -79,11 +79,11 @@ namespace Client.MVVM.Model.SQLiteStorage.Repositories
         {
             try
             {
-                var query = "SELECT COUNT(login) FROM Account WHERE login = @p0;";
+                var query = "SELECT COUNT(login) FROM Account WHERE login = @login;";
                 using (var con = CreateConnection())
                 using (var cmd = new SQLiteCommand(query, con))
                 {
-                    cmd.Parameters.AddWithValue("@p0", login);
+                    cmd.Parameters.AddWithValue("@login", login);
                     con.Open();
                     var count = (long)cmd.ExecuteScalar(); // nie da się zrzutować na int
                     if (count > 1)
@@ -134,14 +134,14 @@ namespace Client.MVVM.Model.SQLiteStorage.Repositories
 
             try
             {
-                var query = "UPDATE Account SET login = @p0, private_key = @p1 WHERE login = @p2;";
+                var query = "UPDATE Account SET login = @new_login, private_key = @private_key WHERE login = @login;";
                 using (var con = CreateConnection())
                 using (var cmd = new SQLiteCommand(query, con))
                 {
-                    cmd.Parameters.AddWithValue("@p0", account.Login);
+                    cmd.Parameters.AddWithValue("@new_login", account.Login);
                     var bytes = account.PrivateKey.ToBytes();
-                    cmd.Parameters.Add("@p1", DbType.Binary, bytes.Length).Value = bytes;
-                    cmd.Parameters.AddWithValue("@p2", login);
+                    cmd.Parameters.Add("@private_key", DbType.Binary, bytes.Length).Value = bytes;
+                    cmd.Parameters.AddWithValue("@login", login);
                     con.Open();
                     var count = cmd.ExecuteNonQuery();
                     /* po sprawdzeniu na górze, że jest dokładnie 1 wiersz z loginem
@@ -178,11 +178,11 @@ namespace Client.MVVM.Model.SQLiteStorage.Repositories
 
             try
             {
-                var query = "DELETE FROM Account WHERE login = @p0;";
+                var query = "DELETE FROM Account WHERE login = @login;";
                 using (var con = CreateConnection())
                 using (var cmd = new SQLiteCommand(query, con))
                 {
-                    cmd.Parameters.AddWithValue("@p0", login);
+                    cmd.Parameters.AddWithValue("@login", login);
                     con.Open();
                     var count = cmd.ExecuteNonQuery();
                     /* AccountExists wyrzuciłoby wyjątek, jeżeli istniałoby
