@@ -1,5 +1,6 @@
-﻿using Client.MVVM.ViewModel.Observables;
+using Client.MVVM.ViewModel.Observables;
 using Shared.MVVM.Core;
+using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.SQLiteStorage.Repositories;
 using System;
 using System.Collections.Generic;
@@ -59,20 +60,22 @@ namespace Client.MVVM.Model.SQLiteStorage.Repositories
                         var list = new List<Account>();
                         while (reader.Read())
                         {
-                            var login = (string)reader["login"];
-                            var privateKey = (byte[])reader["private_key"];
-                            list.Add(new Account
-                            {
-                                Login = login,
-                                PrivateKey = Shared.MVVM.Model.Cryptography.PrivateKey
-                                    .FromBytes(privateKey)
-                            });
+                            list.Add(ReadOneAccount(reader));
                         }
                         return list;
                     }
                 }
             }
             catch (Exception e) { throw QueryError(e); }
+        }
+
+        private Account ReadOneAccount(SQLiteDataReader reader)
+        {
+            return new Account
+            {
+                Login = (string)reader["login"], // reader.GetString(0)
+                PrivateKey = PrivateKey.FromBytes((byte[])reader["private_key"])
+            };
         }
 
         public bool AccountExists(string login)
