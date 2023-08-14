@@ -1,4 +1,4 @@
-﻿using Client.MVVM.ViewModel.Observables;
+using Client.MVVM.ViewModel.Observables;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.SQLiteStorage.Repositories;
@@ -29,8 +29,7 @@ namespace Client.MVVM.Model.SQLiteStorage.Repositories
                     var bytes = account.PrivateKey.ToBytes();
                     cmd.Parameters.Add("@private_key", DbType.Binary, bytes.Length).Value = bytes;
                     con.Open();
-                    var count = cmd.ExecuteNonQuery();
-                    if (count != 1)
+                    if (cmd.ExecuteNonQuery() != 1)
                         throw new Error(
                             "|Number of rows affected by the query is other than 1.|");
                 }
@@ -163,10 +162,9 @@ namespace Client.MVVM.Model.SQLiteStorage.Repositories
                     cmd.Parameters.Add("@private_key", DbType.Binary, bytes.Length).Value = bytes;
                     cmd.Parameters.AddWithValue("@login", login);
                     con.Open();
-                    var count = cmd.ExecuteNonQuery();
                     /* po sprawdzeniu na górze, że jest dokładnie 1 wiersz z loginem
                     "login" (nie account.Login), nie powinno się wykonać */
-                    if (count != 1)
+                    if (cmd.ExecuteNonQuery() != 1)
                         throw new Error(
                             "|Number of rows affected by the query is other than 1.|");
                 }
@@ -186,10 +184,9 @@ namespace Client.MVVM.Model.SQLiteStorage.Repositories
                 {
                     cmd.Parameters.AddWithValue("@login", login);
                     con.Open();
-                    var count = cmd.ExecuteNonQuery();
                     /* AccountExists wyrzuciłoby wyjątek, jeżeli istniałoby
                     kilka kont o tym samym loginie, który jest kluczem głównym */
-                    if (count != 1)
+                    if (cmd.ExecuteNonQuery() != 1)
                         throw new Error(
                             "|Number of rows affected by the query is other than 1.|");
                 }
