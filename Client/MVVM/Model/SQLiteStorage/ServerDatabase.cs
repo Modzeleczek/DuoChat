@@ -20,7 +20,7 @@ namespace Client.MVVM.Model.SQLiteStorage
 
         protected override string DDLEmbeddedResource()
         {
-            return "Client.MVVM.Model.SQLiteStorage.client.sql";
+            return "Client.MVVM.Model.SQLiteStorage.database.sql";
         }
 
         private void ValidateDatabase()
