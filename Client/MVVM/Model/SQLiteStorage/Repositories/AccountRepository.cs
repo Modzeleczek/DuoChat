@@ -105,8 +105,7 @@ namespace Client.MVVM.Model.SQLiteStorage.Repositories
                     con.Open();
                     var count = (long)cmd.ExecuteScalar(); // nie da się zrzutować na int
                     if (count > 1)
-                        throw new Error("|More than one account with login| " +
-                            $"'{login}' |exist.|");
+                        throw new Error($"|More than one account with login| '{login}' |exists|.");
                     // powinno być możliwe tylko 0 lub 1, bo "login" to klucz główny tabeli Account
                     if (count == 1)
                         return true;

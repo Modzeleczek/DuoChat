@@ -187,7 +187,7 @@
   <l:Entry x:Key="executing query." PL="wykonywania zapytania."/>
   <l:Entry x:Key="More than one account with login"
     PL="Więcej niż jedno konto z loginem"/>
-  <l:Entry x:Key="exist." PL="istnieje."/>
+  <l:Entry x:Key="exists" PL="istnieje"/>
   <l:Entry x:Key="to server's database." PL="do bazy danych serwera."/>
   <l:Entry x:Key="connecting to server's database file."
     PL="łączenia z plikiem bazy danych serwera."/>
