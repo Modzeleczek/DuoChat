@@ -82,7 +82,7 @@
   <l:Entry x:Key="file" PL="pliku"/>
 
   <l:Entry x:Key="Server's file with name" PL="Plik serwera o nazwie"/>
-  <l:Entry x:Key="server's file." PL="pliku serwera."/>
+  <l:Entry x:Key="server's SQLite file" PL="pliku SQLite serwera"/>
   <l:Entry x:Key="server." PL="serwera."/>
 
   <l:Entry x:Key="File read timed out."
@@ -173,8 +173,7 @@
     PL="katalogu nowo dodanego użytkownika."/>
   <l:Entry x:Key="user's server database."
     PL="bazy danych serwerów użytkownika."/>
-  <l:Entry x:Key="resetting server database."
-    PL="resetowania bazy danych serwera."/>
+  <l:Entry x:Key="resetting" PL="resetowania"/>
   <l:Entry x:Key="the newly-added server's database."
     PL="bazy danych nowo dodanego serwera."/>
   <l:Entry x:Key="account" PL="konto"/>
@@ -208,6 +207,7 @@
   <l:Entry x:Key="connecting to the server." PL="łączenia z serwerem."/>
   <l:Entry x:Key="Edit account" PL="Edytuj konto"/>
   <l:Entry x:Key="account;D" EN="account" PL="konta"/>
+  <l:Entry x:Key="to user's database." PL="do bazy danych użytkownika."/>
   <l:Entry x:Key="from user's database." PL="z bazy danych użytkownika."/>
   <l:Entry x:Key="server;D" EN="server" PL="serwera"/>
   <l:Entry x:Key="in server's database." PL="w bazie danych serwera."/>
@@ -222,6 +222,7 @@
   <l:Entry x:Key="Disconnected by server." PL="Rozłączono przez serwer."/>
   <l:Entry x:Key="Server crashed." PL="Serwer zcrashował."/>
   <l:Entry x:Key="Disconnected." PL="Rozłączono."/>
+  <l:Entry x:Key="Server's SQLite file already exists" PL="Plik SQLite serwera już istnieje"/>
 
   <!-- tylko do serwera -->
   <!-- klucze używane w plikach .xaml - muszą być prawidłowymi nazwami zmiennych -->
@@ -280,8 +281,8 @@
   <l:Entry x:Key="No translation:" EN="" PL="Brak tłumaczenia:"/>
   <l:Entry x:Key="No" PL="Nie"/>
   <l:Entry x:Key="Yes" PL="Tak"/>
-  <l:Entry x:Key="executing DDL query creating database."
-    PL="wykonywania zapytania DDL tworzącego bazę danych."/>
+  <l:Entry x:Key="executing DDL query creating database schema"
+    PL="wykonywania zapytania DDL tworzącego schemat bazy danych"/>
 
   <l:Entry x:Key="Invalid IP address format."
     PL="Nieprawidłowy format adresu IP."/>

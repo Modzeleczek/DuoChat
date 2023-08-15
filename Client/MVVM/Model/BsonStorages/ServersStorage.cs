@@ -174,14 +174,9 @@ namespace Client.MVVM.Model.BsonStorages
                 throw;
             }
 
-            /* jeżeli użyjemy tu zwykłego File.Create, to SQLite nie chce się łączyć
-            z tak utworzonym plikiem */
-            try { SQLiteConnection.CreateFile(filePath); }
-            catch (Exception e)
+            try { new ServerDatabase(filePath).CreateSQLiteFile(); }
+            catch (Error createFileError)
             {
-                var createFileError = new Error(e, "|Error occured while| " +
-                    "|creating| |server's file.|");
-
                 servers.RemoveAt(servers.Count - 1); // usuwamy ostatnio dodanego
                 try { Save(structure); }
                 catch (Error saveError)
@@ -190,29 +185,6 @@ namespace Client.MVVM.Model.BsonStorages
                         "|deleting| |the newly-added| |server.| " + saveError.Message);
                 }
                 throw createFileError;
-            }
-
-            try { new ServerDatabase(filePath).ResetDatabase(); }
-            catch (Error resetError)
-            {
-                resetError.Prepend("|Error occured while| " +
-                    "|resetting server database.|");
-
-                servers.RemoveAt(servers.Count - 1); // usuwamy ostatnio dodanego
-                try { Save(structure); }
-                catch (Error saveError)
-                {
-                    resetError.Append("|Error occured while| " +
-                        "|deleting| |the newly-added| |server.| " + saveError.Message);
-                }
-
-                try { File.Delete(filePath); }
-                catch (Exception)
-                {
-                    resetError.Append("|Error occured while| " +
-                        "|deleting| |the newly-added server's database.|");
-                }
-                throw resetError;
             }
         }
 

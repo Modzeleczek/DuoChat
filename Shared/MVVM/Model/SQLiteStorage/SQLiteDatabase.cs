@@ -26,14 +26,13 @@ namespace Shared.MVVM.Model.SQLiteStorage
             return new SQLiteConnection(connectionString, true);
         }
 
-        public void ResetDatabase()
+        protected void ResetDatabase()
         {
             string ddl = ReadEmbeddedResource(DDLEmbeddedResource());
             if (ddl == null)
                 throw new KeyNotFoundException(
                     "Embedded resource with database DDL code does not exist.");
-            if (!File.Exists(_path))
-                throw FileDoesNotExistError();
+            
             try
             {
                 using (var con = CreateConnection())
@@ -47,7 +46,7 @@ namespace Shared.MVVM.Model.SQLiteStorage
             catch (Exception e)
             {
                 throw new Error(e, "|Error occured while| " +
-                    "|executing DDL query creating database.|");
+                    "|executing DDL query creating database schema|.");
             }
         }
 
