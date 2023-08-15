@@ -5,13 +5,14 @@ using Client.MVVM.ViewModel.Observables;
 using Shared.MVVM.Core;
 using Shared.MVVM.ViewModel.Results;
 using System.Collections.Generic;
+using System.Security;
 using System.Windows.Controls;
 
-namespace Client.MVVM.ViewModel
+namespace Client.MVVM.ViewModel.LocalUsers.LocalUserActions
 {
-    public class CreateLocalUserViewModel : FormViewModel
+    public class ChangeLocalUserPasswordViewModel : FormViewModel
     {
-        public CreateLocalUserViewModel()
+        public ChangeLocalUserPasswordViewModel(LocalUser user, SecureString oldPassword)
         {
             var pc = new PasswordCryptography();
             var lus = new LocalUsersStorage();
@@ -20,8 +21,7 @@ namespace Client.MVVM.ViewModel
             {
                 var win = (FormWindow)e;
                 window = win;
-                win.AddTextField("|Username|");
-                win.AddPasswordField("|Password|");
+                win.AddPasswordField("|New password|");
                 win.AddPasswordField("|Confirm password|");
                 RequestClose += () => win.Close();
             });
@@ -30,16 +30,8 @@ namespace Client.MVVM.ViewModel
             {
                 var fields = (List<Control>)controls;
 
-                var userName = ((TextBox)fields[0]).Text;
-                var userNameVal = LocalUsersStorage.ValidateUserName(userName);
-                if (!(userNameVal is null))
-                {
-                    Alert(userNameVal);
-                    return;
-                }
-
-                var password = ((PasswordBox)fields[1]).SecurePassword;
-                var confirmedPassword = ((PasswordBox)fields[2]).SecurePassword;
+                var password = ((PasswordBox)fields[0]).SecurePassword;
+                var confirmedPassword = ((PasswordBox)fields[1]).SecurePassword;
                 if (!pc.SecureStringsEqual(password, confirmedPassword))
                 {
                     Alert("|Passwords do not match.|");
@@ -53,40 +45,45 @@ namespace Client.MVVM.ViewModel
                     return;
                 }
 
-                try
-                {
-                    if (lus.Exists(userName))
-                    {
-                        Alert($"|User with name| {userName} |already exists.|");
-                        return;
-                    }
-                }
+                try { lus.EnsureValidDatabaseState(); }
                 catch (Error e)
                 {
-                    e.Prepend("|Error occured while| |checking if| |user| " +
-                        "|already exists.|");
+                    e.Prepend("|Error occured while| " +
+                        "|ensuring valid user database state.|");
                     Alert(e.Message);
                     throw;
                 }
 
-                // użytkownik jeszcze nie istnieje
-                var newUser = new LocalUser(userName, password);
-                try { lus.Add(newUser); }
-                catch (Error e)
+                // jeżeli katalog z plikami bazy danych istnieje, to odszyfrowujemy go starym hasłem
+                var decryptRes = ProgressBarViewModel.ShowDialog(window,
+                    "|Decrypting user's database.|", true,
+                    (reporter) =>
+                    pc.DecryptDirectory(reporter,
+                        user.DirectoryPath,
+                        pc.ComputeDigest(oldPassword, user.DbSalt),
+                        user.DbInitializationVector));
+                if (decryptRes is Cancellation)
+                    return;
+                else if (decryptRes is Failure failure)
                 {
-                    e.Prepend("|Error occured while| |adding| |user to database.|");
+                    var e = failure.Reason;
+                    // nie udało się odszyfrować katalogu użytkownika, więc crashujemy program
+                    e.Prepend("|Error occured while| |decrypting user's database.|");
                     Alert(e.Message);
-                    throw;
+                    throw e;
                 }
 
-                // zaszyfrowujemy katalog użytkownika jego hasłem
+                // wyznaczamy nową sól i skrót hasła oraz IV i sól bazy danych
+                user.ResetPassword(password);
+
+                // zaszyfrowujemy katalog użytkownika nowym hasłem
                 var encryptRes = ProgressBarViewModel.ShowDialog(window,
                     "|Encrypting user's database.|", false,
                     (reporter) =>
                     pc.EncryptDirectory(reporter,
-                        newUser.DirectoryPath,
-                        pc.ComputeDigest(password, newUser.DbSalt),
-                        newUser.DbInitializationVector));
+                        user.DirectoryPath,
+                        pc.ComputeDigest(password, user.DbSalt),
+                        user.DbInitializationVector));
                 if (encryptRes is Cancellation)
                 {
                     var e = new Error("|You should not have canceled database encryption. " +
@@ -103,18 +100,24 @@ namespace Client.MVVM.ViewModel
                     throw e;
                 }
 
+                try { lus.Update(user.Name, user); }
+                catch (Error e)
+                {
+                    e.Prepend("|Error occured while| |updating| |user in database.|");
+                    Alert(e.Message);
+                    throw;
+                }
                 password.Dispose();
                 confirmedPassword.Dispose();
-                OnRequestClose(new Success(newUser));
+                OnRequestClose(new Success());
             });
 
             var defaultCloseHandler = Close;
             Close = new RelayCommand(e =>
             {
                 var fields = (List<Control>)e;
+                ((PasswordBox)fields[0]).SecurePassword.Dispose();
                 ((PasswordBox)fields[1]).SecurePassword.Dispose();
-                ((PasswordBox)fields[2]).SecurePassword.Dispose();
-                // odpowiednik base.Close w nadpisanej metodzie wirtualnej
                 defaultCloseHandler?.Execute(e);
             });
         }

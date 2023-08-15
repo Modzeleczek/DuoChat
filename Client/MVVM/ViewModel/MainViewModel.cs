@@ -2,6 +2,7 @@ using Client.MVVM.Model;
 using Client.MVVM.Model.BsonStorages;
 using Client.MVVM.View.Windows;
 using Client.MVVM.ViewModel.AccountActions;
+using Client.MVVM.ViewModel.LocalUsers;
 using Client.MVVM.ViewModel.Observables;
 using Client.MVVM.ViewModel.ServerActions;
 using Shared.MVVM.Core;

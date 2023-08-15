@@ -1,5 +1,6 @@
 ﻿using Client.MVVM.Model.BsonStorages;
 using Client.MVVM.View.Windows;
+using Client.MVVM.ViewModel.LocalUsers.LocalUserActions;
 using Client.MVVM.ViewModel.Observables;
 using Shared.MVVM.Core;
 using Shared.MVVM.View.Windows;
@@ -8,7 +9,7 @@ using System.Collections.ObjectModel;
 using System.Security;
 using System.Windows;
 
-namespace Client.MVVM.ViewModel
+namespace Client.MVVM.ViewModel.LocalUsers
 {
     public class LocalUsersViewModel : WindowViewModel
     {

@@ -8,7 +8,7 @@ using System.Security;
 using Shared.MVVM.ViewModel.Results;
 using Client.MVVM.ViewModel.Observables;
 
-namespace Client.MVVM.ViewModel
+namespace Client.MVVM.ViewModel.LocalUsers
 {
     public class LocalLoginViewModel : FormViewModel
     {

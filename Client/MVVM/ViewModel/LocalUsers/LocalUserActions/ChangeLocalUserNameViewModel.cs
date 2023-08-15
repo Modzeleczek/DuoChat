@@ -6,7 +6,7 @@ using Shared.MVVM.ViewModel.Results;
 using System.Collections.Generic;
 using System.Windows.Controls;
 
-namespace Client.MVVM.ViewModel
+namespace Client.MVVM.ViewModel.LocalUsers.LocalUserActions
 {
     public class ChangeLocalUserNameViewModel : FormViewModel
     {

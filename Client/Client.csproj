@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -213,13 +213,13 @@
     <Compile Include="MVVM\ViewModel\AccountActions\CreateAccountViewModel.cs" />
     <Compile Include="MVVM\ViewModel\AccountActions\EditAccountViewModel.cs" />
     <Compile Include="MVVM\ViewModel\AlertViewModel.cs" />
-    <Compile Include="MVVM\ViewModel\ChangeLocalUserNameViewModel.cs" />
-    <Compile Include="MVVM\ViewModel\ChangeLocalUserPasswordViewModel.cs" />
+    <Compile Include="MVVM\ViewModel\LocalUsers\LocalUserActions\ChangeLocalUserNameViewModel.cs" />
+    <Compile Include="MVVM\ViewModel\LocalUsers\LocalUserActions\ChangeLocalUserPasswordViewModel.cs" />
     <Compile Include="MVVM\ViewModel\ConfirmationViewModel.cs" />
-    <Compile Include="MVVM\ViewModel\CreateLocalUserViewModel.cs" />
+    <Compile Include="MVVM\ViewModel\LocalUsers\LocalUserActions\CreateLocalUserViewModel.cs" />
     <Compile Include="MVVM\ViewModel\FormViewModel.cs" />
-    <Compile Include="MVVM\ViewModel\LocalLoginViewModel.cs" />
-    <Compile Include="MVVM\ViewModel\LocalUsersViewModel.cs" />
+    <Compile Include="MVVM\ViewModel\LocalUsers\LocalLoginViewModel.cs" />
+    <Compile Include="MVVM\ViewModel\LocalUsers\LocalUsersViewModel.cs" />
     <Compile Include="MVVM\ViewModel\MainViewModel.cs" />
     <Compile Include="MVVM\ViewModel\Observables\User.cs" />
     <Compile Include="MVVM\ViewModel\ProgressBarViewModel.cs" />
