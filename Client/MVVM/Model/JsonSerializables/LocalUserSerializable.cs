@@ -1,4 +1,4 @@
-﻿using Client.MVVM.ViewModel.Observables;
+using Client.MVVM.ViewModel.Observables;
 using System;
 
 namespace Client.MVVM.Model.JsonSerializables
@@ -21,7 +21,7 @@ namespace Client.MVVM.Model.JsonSerializables
                 // IV musi mieć długość równą długości bloku (dla Rijndaela zgodnego ze
                 // specyfikacją AESa blok musi być 128-bitowy)
                 if (value.Length != 128 / 8)
-                    throw new ArgumentException("Database initialization vector is not 128 bits long.");
+                    throw new ArgumentException("Database initialization vector is not 128 bits long.", nameof(value));
                 _dbInitializationVector = value;
             }
         }
@@ -34,7 +34,7 @@ namespace Client.MVVM.Model.JsonSerializables
             {
                 // używamy 128-bitowych kluczy w AES
                 if (value.Length != 128 / 8)
-                    throw new ArgumentException("Database salt is not 128 bits long.");
+                    throw new ArgumentException("Database salt is not 128 bits long.", nameof(value));
                 _dbSalt = value;
             }
         }
