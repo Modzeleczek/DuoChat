@@ -64,9 +64,11 @@
                     <c:IPv4AddressToStringConverter x:Key="IpAddressConv" />
                     <c:PortToStringConverter x:Key="PortConv" />
                   </TextBlock.Resources>
-                    <Run Text="{Binding IpAddress, Converter={StaticResource IpAddressConv}}" />
+                    <Run Text="{Binding IpAddress, Mode=OneWay,
+                      Converter={StaticResource IpAddressConv}}" />
                     <Run Text=":" />
-                    <Run Text="{Binding Port, Converter={StaticResource PortConv}}" />
+                    <Run Text="{Binding Port, Mode=OneWay,
+                      Converter={StaticResource PortConv}}" />
                 </TextBlock>
               </StackPanel>
               <StackPanel

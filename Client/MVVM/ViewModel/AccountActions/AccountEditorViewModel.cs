@@ -1,6 +1,5 @@
 ﻿using Client.MVVM.Model;
 using Client.MVVM.View.Windows;
-using Client.MVVM.ViewModel.Observables;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.ViewModel.Results;
@@ -15,8 +14,14 @@ namespace Client.MVVM.ViewModel.AccountActions
         public RelayCommand GeneratePrivateKey { get; private set; }
         #endregion
 
-        protected AccountEditorViewModel()
+        #region Fields
+        protected Storage _storage;
+        #endregion
+
+        protected AccountEditorViewModel(Storage storage)
         {
+            _storage = storage;
+
             WindowLoaded = new RelayCommand(e =>
             {
                 var win = (FormWindow)e;
@@ -38,17 +43,6 @@ namespace Client.MVVM.ViewModel.AccountActions
             });
         }
 
-        protected bool ServerExists(LocalUser user, Server server)
-        {
-            try { return user.ServerExists(server.IpAddress, server.Port); }
-            catch (Error e)
-            {
-                e.Prepend("|Error occured while| |checking if| |server| |already exists.|");
-                Alert(e.Message);
-                throw;
-            }
-        }
-
         protected bool ValidateLogin(string login)
         {
             if (string.IsNullOrWhiteSpace(login))
@@ -66,20 +60,17 @@ namespace Client.MVVM.ViewModel.AccountActions
             return true;
         }
 
-        protected bool AccountExists(LocalUser user, Server server, string login)
+        protected bool AccountExists(LocalUserPrimaryKey localUserKey,
+            ServerPrimaryKey serverKey, string login)
         {
-            try { return user.AccountExists(server.IpAddress, server.Port, login); }
+            try { return _storage.AccountExists(localUserKey, serverKey, login); }
             catch (Error e)
             {
-                e.Prepend("|Error occured while| |checking if| |account| " +
-                    "|already exists.|");
+                e.Prepend("|Could not| |check if| |account| |already exists.|");
                 Alert(e.Message);
                 throw;
             }
         }
-
-        protected string AccountExistsError(string login) =>
-            $"|Account with login| {login} |already exists.|";
 
         protected bool ParsePrivateKey(string text, out PrivateKey privateKey)
         {

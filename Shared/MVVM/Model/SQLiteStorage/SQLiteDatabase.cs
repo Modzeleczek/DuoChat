@@ -16,9 +16,6 @@ namespace Shared.MVVM.Model.SQLiteStorage
             _path = path;
         }
 
-        protected Error FileDoesNotExistError() =>
-            new Error($"|Database file| {_path} |does not exist.|");
-
         protected SQLiteConnection CreateConnection()
         {
             var connectionString = $"Data Source={_path}; Version=3; New=True; Compress=True; " +
@@ -26,7 +23,7 @@ namespace Shared.MVVM.Model.SQLiteStorage
             return new SQLiteConnection(connectionString, true);
         }
 
-        protected void ResetDatabase()
+        protected void RecreateSchema()
         {
             string ddl = ReadEmbeddedResource(DDLEmbeddedResource());
             if (ddl == null)

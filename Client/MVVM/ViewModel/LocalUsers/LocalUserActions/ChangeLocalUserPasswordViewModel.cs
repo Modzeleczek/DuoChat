@@ -1,7 +1,5 @@
 ﻿using Client.MVVM.Model;
-using Client.MVVM.Model.BsonStorages;
 using Client.MVVM.View.Windows;
-using Client.MVVM.ViewModel.Observables;
 using Shared.MVVM.Core;
 using Shared.MVVM.ViewModel.Results;
 using System.Collections.Generic;
@@ -12,10 +10,10 @@ namespace Client.MVVM.ViewModel.LocalUsers.LocalUserActions
 {
     public class ChangeLocalUserPasswordViewModel : FormViewModel
     {
-        public ChangeLocalUserPasswordViewModel(LocalUser user, SecureString oldPassword)
+        public ChangeLocalUserPasswordViewModel(Storage storage,
+            LocalUserPrimaryKey localUserKey, SecureString oldPassword)
         {
             var pc = new PasswordCryptography();
-            var lus = new LocalUsersStorage();
 
             WindowLoaded = new RelayCommand(e =>
             {
@@ -29,6 +27,13 @@ namespace Client.MVVM.ViewModel.LocalUsers.LocalUserActions
             Confirm = new RelayCommand(controls =>
             {
                 var fields = (List<Control>)controls;
+
+                /* Wyrzuci wyjątek, który zamknie aplikację, jeżeli
+                użytkownik nie istnieje, bo np. został ręcznie (niezależnie
+                od naszej aplikacji) usunięty z bazy (ze struktury katalogów)
+                między chwilą otwarcia okna zmiany nazwy a chwilą kliknięcia
+                przycisku potwierdzenia. */
+                var localUser = storage.GetLocalUser(localUserKey);
 
                 var password = ((PasswordBox)fields[0]).SecurePassword;
                 var confirmedPassword = ((PasswordBox)fields[1]).SecurePassword;
@@ -45,23 +50,10 @@ namespace Client.MVVM.ViewModel.LocalUsers.LocalUserActions
                     return;
                 }
 
-                try { lus.EnsureValidDatabaseState(); }
-                catch (Error e)
-                {
-                    e.Prepend("|Error occured while| " +
-                        "|ensuring valid user database state.|");
-                    Alert(e.Message);
-                    throw;
-                }
-
-                // jeżeli katalog z plikami bazy danych istnieje, to odszyfrowujemy go starym hasłem
+                // Odszyfrowujemy katalog użytkownika starym hasłem.
                 var decryptRes = ProgressBarViewModel.ShowDialog(window,
                     "|Decrypting user's database.|", true,
-                    (reporter) =>
-                    pc.DecryptDirectory(reporter,
-                        user.DirectoryPath,
-                        pc.ComputeDigest(oldPassword, user.DbSalt),
-                        user.DbInitializationVector));
+                    (reporter) => storage.DecryptLocalUser(ref reporter, localUserKey, oldPassword));
                 if (decryptRes is Cancellation)
                     return;
                 else if (decryptRes is Failure failure)
@@ -74,39 +66,37 @@ namespace Client.MVVM.ViewModel.LocalUsers.LocalUserActions
                 }
 
                 // wyznaczamy nową sól i skrót hasła oraz IV i sól bazy danych
-                user.ResetPassword(password);
+                localUser.ResetPassword(password);
+                try { storage.UpdateLocalUser(localUserKey, localUser); }
+                /* TODO: UpdateLocalUser i inne metody ze Storage powinny rzucać
+                jakiś UndoError, jeżeli po wystąpieniu Errora nie uda się cofnąć
+                zmian do poprawnego stanu bazy, czyli np. w UpdateLocalUser jest to
+                sytuacja, w której drugie wywołanie _localUsersStorage.Update wyrzuci
+                undoError. UndoError powinien natychmiast przerwać wykonywanie programu,
+                a zwykłe Errory powinny być takimi, które można naprawić (czyli przywrócić
+                bazę do poprawnego stanu). */
+                catch (Error updateError)
+                {
+                    updateError.Prepend("|Could not| |update| |user in database.|");
 
-                // zaszyfrowujemy katalog użytkownika nowym hasłem
-                var encryptRes = ProgressBarViewModel.ShowDialog(window,
-                    "|Encrypting user's database.|", false,
-                    (reporter) =>
-                    pc.EncryptDirectory(reporter,
-                        user.DirectoryPath,
-                        pc.ComputeDigest(password, user.DbSalt),
-                        user.DbInitializationVector));
-                if (encryptRes is Cancellation)
-                {
-                    var e = new Error("|You should not have canceled database encryption. " +
-                        "It may have been corrupted.|");
-                    Alert(e.Message);
-                    throw e;
-                }
-                else if (encryptRes is Failure failure)
-                {
-                    var e = failure.Reason;
-                    e.Prepend("|Error occured while| " +
-                        "|encrypting user's database.| |Database may have been corrupted.|");
-                    Alert(e.Message);
-                    throw e;
-                }
-
-                try { lus.Update(user.Name, user); }
-                catch (Error e)
-                {
-                    e.Prepend("|Error occured while| |updating| |user in database.|");
-                    Alert(e.Message);
+                    try { EncryptLocalUser(storage, localUserKey, password); }
+                    catch (Error encryptError)
+                    {
+                        encryptError.Prepend("|Could not| |encrypt| |local user's database|.");
+                        updateError.Append(encryptError.Message);
+                    }
+                    Alert(updateError.Message);
                     throw;
                 }
+
+                try { EncryptLocalUser(storage, localUserKey, password); }
+                catch (Error encryptError)
+                {
+                    encryptError.Prepend("|Could not| |encrypt| |local user's database|.");
+                    Alert(encryptError.Message);
+                    throw;
+                }
+
                 password.Dispose();
                 confirmedPassword.Dispose();
                 OnRequestClose(new Success());
@@ -120,6 +110,39 @@ namespace Client.MVVM.ViewModel.LocalUsers.LocalUserActions
                 ((PasswordBox)fields[1]).SecurePassword.Dispose();
                 defaultCloseHandler?.Execute(e);
             });
+        }
+
+        private void TryEncryptLocalUser(Storage storage, ref Error updateError,
+            LocalUserPrimaryKey localUserKey, SecureString password)
+        {
+            try { EncryptLocalUser(storage, localUserKey, password); }
+            catch (Error encryptError)
+            {
+                encryptError.Prepend("|Could not| |encrypt| |local user's database|.");
+                updateError.Append(encryptError.Message);
+            }
+        }
+
+        private void EncryptLocalUser(Storage storage,
+            LocalUserPrimaryKey localUserKey, SecureString password)
+        {
+            // zaszyfrowujemy katalog użytkownika nowym hasłem
+            var encryptRes = ProgressBarViewModel.ShowDialog(window,
+                "|Encrypting user's database.|", false,
+                (reporter) => storage.EncryptLocalUser(ref reporter, localUserKey, password));
+
+            if (encryptRes is Cancellation)
+            {
+                var e = new Error("|You should not have canceled database encryption. " +
+                    "It may have been corrupted.|");
+                throw e;
+            }
+            else if (encryptRes is Failure failure)
+            {
+                var e = failure.Reason;
+                e.Prepend("|Database may have been corrupted.|");
+                throw e;
+            }
         }
     }
 }

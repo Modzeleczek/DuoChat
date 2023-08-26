@@ -16,8 +16,6 @@ namespace Client.MVVM.ViewModel.Observables
         public PrivateKey PrivateKey { get; set; }
         #endregion
 
-        public bool KeyEquals(string login) => Login == login;
-
         public void CopyTo(Account account)
         {
             account.Login = login;

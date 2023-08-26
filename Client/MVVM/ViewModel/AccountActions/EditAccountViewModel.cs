@@ -1,5 +1,6 @@
 ﻿using Client.MVVM.Model;
 using Client.MVVM.Model.BsonStorages;
+using Client.MVVM.Model.SQLiteStorage.Repositories;
 using Client.MVVM.View.Windows;
 using Client.MVVM.ViewModel.Observables;
 using Shared.MVVM.Core;
@@ -12,15 +13,17 @@ namespace Client.MVVM.ViewModel.AccountActions
 {
     public class EditAccountViewModel : AccountEditorViewModel
     {
-        public EditAccountViewModel(LocalUser loggedUser, Server server, Account account)
+        public EditAccountViewModel(Storage storage,
+            LocalUserPrimaryKey loggedUserKey, ServerPrimaryKey serverKey, string accountLogin)
+            : base(storage)
         {
-            var lus = new LocalUsersStorage();
-
             var currentWindowLoadedHandler = WindowLoaded;
             WindowLoaded = new RelayCommand(e =>
             {
                 currentWindowLoadedHandler.Execute(e);
                 var win = (FormWindow)window;
+
+                var account = _storage.GetAccount(loggedUserKey, serverKey, accountLogin);
                 win.AddTextField("|Login|", account.Login);
                 win.AddHoverableTextField("|Private key|",
                     new string[] { nameof(GeneratePrivateKey) },
@@ -32,26 +35,22 @@ namespace Client.MVVM.ViewModel.AccountActions
             {
                 var fields = (List<Control>)controls;
 
-                if (!ServerExists(loggedUser, server))
-                    // błąd lub serwer nie istnieje
-                    return;
+                // Wyrzuci Error, jeżeli konto nie istnieje.
+                var account = _storage.GetAccount(loggedUserKey, serverKey, accountLogin);
 
                 var login = ((TextBox)fields[0]).Text;
                 if (!ValidateLogin(login))
                     return;
 
-                if (!AccountExists(loggedUser, server, account.Login))
-                {
-                    Alert($"|Account with login| {login} |does not exist.|");
-                    return;
-                }
+                /* _storage.GetAccount wyrzuci Error, jeżeli konto
+                nie istnieje, więc tu już nie sprawdzamy. */
 
                 // jeżeli zmieniamy klucz główny, czyli (login)
                 if (account.Login != login)
                 {
-                    if (AccountExists(loggedUser, server, login))
+                    if (AccountExists(loggedUserKey, serverKey, login))
                     {
-                        Alert(AccountExistsError(login));
+                        Alert(AccountRepository.AlreadyExistsMsg(login));
                         return;
                     }
                 }
@@ -64,17 +63,19 @@ namespace Client.MVVM.ViewModel.AccountActions
                     Login = login,
                     PrivateKey = privateKey
                 };
-                try { loggedUser.UpdateAccount(server.IpAddress, server.Port,
-                    account.Login, updatedAccount); }
+                try
+                {
+                    _storage.UpdateAccount(loggedUserKey, serverKey, account.Login,
+                        updatedAccount);
+                }
                 catch (Error e)
                 {
-                    e.Prepend("|Error occured while| |updating| |account;D| " +
+                    e.Prepend("|Could not| |update| |account;D| " +
                         "|in server's database.|");
                     Alert(e.Message);
                     throw;
                 }
-                updatedAccount.CopyTo(account);
-                OnRequestClose(new Success());
+                OnRequestClose(new Success(updatedAccount));
             });
         }
     }

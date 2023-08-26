@@ -1,4 +1,6 @@
-﻿using Client.MVVM.Model.JsonSerializables;
+﻿using Client.MVVM.Model;
+using Client.MVVM.Model.JsonConverters;
+using Newtonsoft.Json;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking;
@@ -9,44 +11,42 @@ namespace Client.MVVM.ViewModel.Observables
     public class Server : ObservableObject
     {
         #region Properties
-        private string name;
+        private string name = null;
         public string Name
         {
             get => name;
             set { name = value; OnPropertyChanged(); }
         }
 
-        private IPv4Address ipAddress;
+        private IPv4Address ipAddress = null;
+        [JsonProperty, JsonConverter(typeof(IPv4AddressJsonConverter))]
         public IPv4Address IpAddress
         {
             get => ipAddress;
-            set { ipAddress = value; OnPropertyChanged(); }
+            private set { ipAddress = value; OnPropertyChanged(); }
         }
 
-        private Port port;
+        private Port port = null;
+        [JsonProperty, JsonConverter(typeof(PortJsonConverter))]
         public Port Port
         {
             get => port;
-            set { port = value; OnPropertyChanged(); }
+            private set { port = value; OnPropertyChanged(); }
         }
 
-        public Guid Guid { get; set; }
+        public Guid Guid { get; set; } = Guid.Empty;
 
-        public PublicKey PublicKey { get; set; }
+        public PublicKey PublicKey { get; set; } = null;
         #endregion
 
-        public bool KeyEquals(IPv4Address ipAddress, Port port) =>
-            IpAddress.Equals(ipAddress) && Port.Equals(port);
+        // Do BSON-deserializacji
+        public Server() { }
 
-        public ServerSerializable ToSerializable() =>
-            new ServerSerializable
-            {
-                Name = Name,
-                IpAddress = IpAddress.BinaryRepresentation,
-                Port = Port.Value,
-                Guid = Guid,
-                PublicKey = PublicKey?.ToBytes(),
-            };
+        public Server(ServerPrimaryKey key)
+        {
+            IpAddress = key.IpAddress;
+            Port = key.Port;
+        }
 
         public void CopyTo(Server server)
         {
@@ -55,6 +55,17 @@ namespace Client.MVVM.ViewModel.Observables
             server.Port = Port;
             server.Guid = Guid;
             server.PublicKey = PublicKey;
+        }
+
+        public ServerPrimaryKey GetPrimaryKey()
+        {
+            return new ServerPrimaryKey(IpAddress, Port);
+        }
+
+        public void SetPrimaryKey(ServerPrimaryKey key)
+        {
+            IpAddress = key.IpAddress;
+            Port = key.Port;
         }
     }
 }

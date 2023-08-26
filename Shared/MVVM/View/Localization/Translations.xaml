@@ -40,7 +40,7 @@
   <l:Entry x:Key="Create local user" PL="Stwórz lokalnego użytkownika"/>
   <l:Entry x:Key="Confirm password" PL="Potwierdź hasło"/>
   <l:Entry x:Key="Passwords do not match." PL="Hasła nie są zgodne."/>
-  <l:Entry x:Key="User with name" PL="Użytkownik o nazwie"/>
+  <l:Entry x:Key="Local user with name" PL="Lokalny użytkownik o nazwie"/>
   <l:Entry x:Key="already exists." PL="już istnieje."/>
   <l:Entry x:Key="Specify a password." PL="Określ hasło."/>
   <l:Entry x:Key="Password should be at least 8 characters long."
@@ -61,29 +61,35 @@
   <l:Entry x:Key="No user is logged."
     PL="Żaden użytkownik nie jest zalogowany."/>
 
-  <l:Entry x:Key="Error occured while opening file"
-    PL="Wystąpił błąd podczas otwierania pliku"/>
-  <l:Entry x:Key="for reading." PL="do odczytu."/>
-  <l:Entry x:Key="for writing." PL="do zapisu."/>
+  <l:Entry x:Key="deserializing" PL="deserializacji"/>
+  <l:Entry x:Key="from" PL="z"/>
+  <l:Entry x:Key="serializing" PL="serializacji"/>
+  <l:Entry x:Key="to" PL="do"/>
 
   <l:Entry x:Key="File" PL="Plik"/>
-  <l:Entry x:Key="User's directory with name"
-    PL="Katalog użytkownika o nazwie"/>
+  <l:Entry x:Key="does not contain" PL="nie zawiera"/>
+  <l:Entry x:Key="valid BSON structure" PL="poprawnej struktury BSON"/>
   <l:Entry x:Key="Error occured while" PL="Wystąpił błąd podczas"/>
   <l:Entry x:Key="creating" PL="tworzenia"/>
+  <l:Entry x:Key="create" PL="stworzyć"/>
   <l:Entry x:Key="renaming" PL="zmiany nazwy"/>
   <l:Entry x:Key="deleting" PL="usuwania"/>
-  <l:Entry x:Key="user's directory." PL="katalogu użytkownika."/>
   <l:Entry x:Key="user." PL="użytkownika."/>
   <l:Entry x:Key="the newly-added" PL="nowo dodanego"/>
-  <l:Entry x:Key="restoring the updated" PL="przywracania zaktualizowanego"/>
-  <l:Entry x:Key="restoring the deleted" PL="przywracania usuniętego"/>
+  <l:Entry x:Key="restore" PL="przywrócić"/>
+  <l:Entry x:Key="the updated" PL="zaktualizowanego"/>
+  <l:Entry x:Key="the deleted" PL="usuniętego"/>
   <l:Entry x:Key="directory" PL="katalogu"/>
+  <l:Entry x:Key="directory entry" PL="wpisu katalogu"/>
   <l:Entry x:Key="file" PL="pliku"/>
+  <l:Entry x:Key="subdirectory" PL="podkatalogu"/>
 
-  <l:Entry x:Key="Server's file with name" PL="Plik serwera o nazwie"/>
+  <l:Entry x:Key="Directory entry" PL="Wpis katalogu"/>
   <l:Entry x:Key="server's SQLite file" PL="pliku SQLite serwera"/>
   <l:Entry x:Key="server." PL="serwera."/>
+  <l:Entry x:Key="server's SQLite schema" PL="schematu SQLite serwera"/>
+  <l:Entry x:Key="delete" PL="usunąć"/>
+  <l:Entry x:Key="server BSON entry" PL="wpisu BSON serwera"/>
 
   <l:Entry x:Key="File read timed out."
     PL="Przekroczono czas oczekiwania na odczyt pliku."/>
@@ -103,6 +109,8 @@
     PL="odszyfrowywania bazy danych użytkownika."/>
   <l:Entry x:Key="encrypting user's database."
     PL="szyfrowania bazy danych użytkownika."/>
+  <l:Entry x:Key="encrypt" PL="zaszyfrować"/>
+  <l:Entry x:Key="local user's database" PL="bazy danych lokalnego użytkownika"/>
   <l:Entry x:Key="Server with IP address" PL="Serwer z adresem IP"/>
   <l:Entry x:Key="and port" PL="i portem"/>
   <l:Entry x:Key="Server list may have been corrupted."
@@ -140,11 +148,13 @@
     PL="odczytywania listy serwerów użytkownika."/>
   <l:Entry x:Key="reading user's account list."
     PL="odczytywania listy kont użytkownika."/>
-  <l:Entry x:Key="checking if" PL="sprawdzania, czy"/>
+  <l:Entry x:Key="check if" PL="sprawdzić, czy"/>
   <l:Entry x:Key="server" PL="serwer"/>
   <l:Entry x:Key="updating" PL="aktualizowania"/>
+  <l:Entry x:Key="update" PL="zaktualizować"/>
   <l:Entry x:Key="user in database." PL="użytkownika w bazie danych."/>
   <l:Entry x:Key="adding" PL="dodawania"/>
+  <l:Entry x:Key="add" PL="dodać"/>
   <l:Entry x:Key="user to database." PL="użytkownika do bazy danych."/>
   <l:Entry x:Key="user" PL="użytkownik"/>
   <l:Entry x:Key="reading user list." PL="odczytywania listy użytkowników."/>
@@ -155,8 +165,12 @@
   <l:Entry x:Key="users" PL="użytkowników"/>
   <l:Entry x:Key="not having" PL="nieposiadających"/>
   <l:Entry x:Key="a directory" PL="katalogu"/>
-  <l:Entry x:Key="listing files and subdirectories in directory"
-    PL="tworzenia listy plików i podkatalogów w katalogu"/>
+  <l:Entry x:Key="listing files in directory"
+    PL="tworzenia listy plików w katalogu"/>
+  <l:Entry x:Key="listing subdirectories in directory"
+    PL="tworzenia listy podkatalogów w katalogu"/>
+  <l:Entry x:Key="listing entries in directory"
+    PL="tworzenia listy wpisów w katalogu"/>
   <l:Entry x:Key="ensuring valid user database state."
     PL="zapewniania poprawnego stanu bazy danych użytkowników."/>
   <l:Entry x:Key="SQLite integrity check returned more than single 'ok' row."
@@ -171,9 +185,8 @@
     PL="zapewniania poprawnego stanu bazy danych serwerów."/>
   <l:Entry x:Key="the newly-added user's directory."
     PL="katalogu nowo dodanego użytkownika."/>
-  <l:Entry x:Key="user's server database."
-    PL="bazy danych serwerów użytkownika."/>
-  <l:Entry x:Key="resetting" PL="resetowania"/>
+  <l:Entry x:Key="local user's server BSON file"
+    PL="pliku BSON serwerów lokalnego użytkownika"/>
   <l:Entry x:Key="the newly-added server's database."
     PL="bazy danych nowo dodanego serwera."/>
   <l:Entry x:Key="account" PL="konto"/>
@@ -193,10 +206,10 @@
   <l:Entry x:Key="Number of rows affected by the query is other than 1."
     PL="Liczba wierszy, na które wpływ miało zapytanie, jest inna niż 1."/>
   <l:Entry x:Key="Account with login" PL="Konto o loginie"/>
-  <l:Entry x:Key="saving" PL="zapisywania"/>
-  <l:Entry x:Key="user's server database file."
-    PL="pliku bazy danych serwerów użytkownika."/>
-  <l:Entry x:Key="user database file." PL="pliku bazy danych użytkowników."/>
+  <l:Entry x:Key="Could not" PL="Nie można"/>
+  <l:Entry x:Key="save" PL="zapisać"/>
+  <l:Entry x:Key="load" PL="wczytać"/>
+  <l:Entry x:Key="local users' BSON file" PL="pliku BSON lokalnych użytkowników"/>
   <l:Entry x:Key="getting" PL="uzyskiwania"/>
   <l:Entry x:Key="access to server's database."
     PL="dostępu do bazy danych serwera."/>
@@ -222,7 +235,12 @@
   <l:Entry x:Key="Disconnected by server." PL="Rozłączono przez serwer."/>
   <l:Entry x:Key="Server crashed." PL="Serwer zcrashował."/>
   <l:Entry x:Key="Disconnected." PL="Rozłączono."/>
-  <l:Entry x:Key="Server's SQLite file already exists" PL="Plik SQLite serwera już istnieje"/>
+
+  <l:Entry x:Key="Text representation" PL="Reprezentacja tekstowa"/>
+  <l:Entry x:Key="does not consist of two parts separated with"
+    PL="nie składa się z dwóch części rozdzielonych"/>
+  <l:Entry x:Key="IP address part" PL="Część z adresem IP"/>
+  <l:Entry x:Key="Port part" PL="Część z portem"/>
 
   <!-- tylko do serwera -->
   <!-- klucze używane w plikach .xaml - muszą być prawidłowymi nazwami zmiennych -->

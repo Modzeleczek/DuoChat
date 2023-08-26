@@ -6,13 +6,13 @@ using System.Windows.Controls;
 using System.Collections.Generic;
 using System.Security;
 using Shared.MVVM.ViewModel.Results;
-using Client.MVVM.ViewModel.Observables;
 
 namespace Client.MVVM.ViewModel.LocalUsers
 {
     public class LocalLoginViewModel : FormViewModel
     {
-        public LocalLoginViewModel(LocalUser user, bool returnEnteredPassword)
+        public LocalLoginViewModel(Storage storage,
+            LocalUserPrimaryKey localUserKey, bool returnEnteredPassword)
         {
             var pc = new PasswordCryptography();
 
@@ -28,8 +28,10 @@ namespace Client.MVVM.ViewModel.LocalUsers
             {
                 var fields = (List<Control>)e;
 
+                var localUser = storage.GetLocalUser(localUserKey);
+
                 var password = ((PasswordBox)fields[0]).SecurePassword;
-                if (!pc.DigestsEqual(password, user.PasswordSalt, user.PasswordDigest))
+                if (!pc.DigestsEqual(password, localUser.PasswordSalt, localUser.PasswordDigest))
                 {
                     Alert("|Wrong password.|");
                     return;
@@ -51,10 +53,10 @@ namespace Client.MVVM.ViewModel.LocalUsers
             });
         }
 
-        public static Result ShowDialog(Window owner,
-            LocalUser user, bool returnEnteredPassword, string title = null)
+        public static Result ShowDialog(Window owner, Storage storage,
+            LocalUserPrimaryKey localUserKey, bool returnEnteredPassword, string title = null)
         {
-            var vm = new LocalLoginViewModel(user, returnEnteredPassword);
+            var vm = new LocalLoginViewModel(storage, localUserKey, returnEnteredPassword);
             vm.Title = title ?? "|Enter your password|";
             vm.ConfirmButtonText = "|OK|";
             new FormWindow(owner, vm).ShowDialog();

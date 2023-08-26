@@ -5,30 +5,31 @@ namespace Shared.MVVM.Model.Networking
 {
     public class IPv4Address
     {
-        public int BinaryRepresentation { get; private set; }
+        public uint BinaryRepresentation { get; private set; }
 
-        public IPv4Address(int binaryRepresentation)
+        public IPv4Address(uint binaryRepresentation)
         {
             BinaryRepresentation = binaryRepresentation;
         }
 
         public override bool Equals(object obj)
         {
-            if (!(obj is IPv4Address)) return false;
-            var ip = (IPv4Address)obj;
-            return BinaryRepresentation == ip.BinaryRepresentation;
+            if (!(obj is IPv4Address other)) return false;
+            return BinaryRepresentation == other.BinaryRepresentation;
         }
 
-        public override int GetHashCode() => base.GetHashCode();
+        public override int GetHashCode() => (int)BinaryRepresentation;
 
         public static IPv4Address Parse(string text)
         {
             if (text == null)
                 throw new Error("|String is null.|");
+
             var split = text.Split('.');
             if (split.Length != 4)
                 throw new Error("|String does not consist of four octets separated with periods.|");
-            int binRepr = 0;
+
+            uint binRepr = 0;
             for (int i = 3; i >= 0; --i)
             {
                 binRepr <<= 8;
@@ -48,7 +49,7 @@ namespace Shared.MVVM.Model.Networking
 
         public override string ToString()
         {
-            int binRepr = BinaryRepresentation;
+            uint binRepr = BinaryRepresentation;
             var octets = new byte[4];
             for (int i = 0; i <= 3; ++i)
             {

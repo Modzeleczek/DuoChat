@@ -43,23 +43,28 @@ namespace Client.MVVM.Model.SQLiteStorage.Repositories
                 if (shouldExist) // Powinien istnieć, a nie istnieje
                 {
                     if (!AccountExists(login))
-                        throw AccountDoesNotExistError(login);
+                        throw new Error(NotExistsMsg(login));
                 }
                 else // Nie powinien istnieć, a istnieje
                 {
                     if (AccountExists(login))
-                        throw new Error($"|Account with login| {login} |already exists.|");
+                        throw new Error(AlreadyExistsMsg(login));
                 }
             }
             catch (Error e)
             {
-                e.Prepend("|Error occured while| |checking if| |account| |already exists.|");
+                e.Prepend("|Could not| |check if| |account| |already exists.|");
                 throw;
             }
         }
 
-        private Error AccountDoesNotExistError(string login) =>
-            new Error($"|Account with login| {login} |does not exist.|");
+        #region Errors
+        public static string AlreadyExistsMsg(string login) =>
+            $"|Account with login| {login} |already exists.|";
+
+        public static string NotExistsMsg(string login) =>
+            $"|Account with login| {login} |does not exist.|";
+        #endregion
 
         public List<Account> GetAllAccounts()
         {
@@ -130,7 +135,7 @@ namespace Client.MVVM.Model.SQLiteStorage.Repositories
                     using (var reader = cmd.ExecuteReader())
                     {
                         if (!reader.Read())
-                            throw AccountDoesNotExistError(login);
+                            throw new Error(NotExistsMsg(login));
                         return ReadOneAccount(reader);
                     }
                 }

@@ -1,58 +1,73 @@
 ﻿using Client.MVVM.Model;
-using Client.MVVM.Model.BsonStorages;
-using Client.MVVM.Model.JsonSerializables;
-using Client.MVVM.Model.SQLiteStorage;
+using Newtonsoft.Json;
 using Shared.MVVM.Core;
-using Shared.MVVM.Model.Networking;
-using System.Collections.Generic;
-using System.IO;
+using System;
 using System.Security;
 using System.Security.Cryptography;
 
 namespace Client.MVVM.ViewModel.Observables
 {
+    /* Nie potrzeba customowego JsonConvertera, bo klasa LocalUser
+    nie ma pól o customowych klasach (tylko wbudowane typy). */
     public class LocalUser : ObservableObject
     {
         #region Properties
-        private string _name; // unikalny identyfikator
-        // nazwa jest obserwowalna przez UI, dlatego setter z OnPropertyChanged
+        // Unikalny identyfikator (klucz główny)
+        private string _name = null;
+        // JsonProperty, żeby właściwość została BSON-zserializowana, mimo że ma prywatny setter.
+        [JsonProperty]
         public string Name
         {
+            // Getter musi być publiczny, aby można było bindować nazwę do odczytu w XAMLu.
             get => _name;
-            set { _name = value; OnPropertyChanged(); }
+            // Nazwa jest obserwowalna przez UI, dlatego setter z OnPropertyChanged.
+            private set { _name = value; OnPropertyChanged(); }
         }
 
-        public byte[] PasswordSalt { get; set; } // sól do skrótu hasła nie jest obserwowalna
+        // Sól do skrótu hasła nie jest obserwowalna.
+        public byte[] PasswordSalt { get; set; } = null;
 
-        public byte[] PasswordDigest { get; set; } // skrót hasła nie jest obserwowalny
+        // Skrót hasła nie jest obserwowalny.
+        public byte[] PasswordDigest { get; set; } = null;
 
-        // wektor inicjujący i sól hasła do odszyfrowania bazy danych
-        public byte[] DbInitializationVector { get; set; }
+        // Wektor inicjujący i sól hasła do odszyfrowania bazy danych.
+        private byte[] _dbInitializationVector = null;
+        public byte[] DbInitializationVector
+        {
+            get => _dbInitializationVector;
+            set
+            {
+                /* IV musi mieć długość równą długości bloku (dla Rijndaela zgodnego ze
+                specyfikacją AESa blok musi być 128-bitowy). */
+                if (value.Length != 128 / 8)
+                    throw new ArgumentException("Database initialization vector is not 128 bits long.",
+                        nameof(value));
+                _dbInitializationVector = value;
+            }
+        }
 
-        public byte[] DbSalt { get; set; }
-
-        public string DirectoryPath => Path.Combine(LocalUsersStorage.USERS_DIRECTORY_NAME, Name);
-
-        private ServersStorage serversStorage => new ServersStorage(this);
+        private byte[] _dbSalt = null;
+        public byte[] DbSalt
+        {
+            get => _dbSalt;
+            set
+            {
+                // Używamy 128-bitowych kluczy w AES.
+                if (value.Length != 128 / 8)
+                    throw new ArgumentException("Database salt is not 128 bits long.", nameof(value));
+                _dbSalt = value;
+            }
+        }
         #endregion
 
+        // Do BSON-deserializacji obiektu klasy LocalUser
         public LocalUser() { }
 
-        public LocalUser(string name, SecureString password)
+        public LocalUser(LocalUserPrimaryKey key, SecureString password)
         {
-            Name = name;
+            Name = key.Name;
             ResetPassword(password);
         }
-
-        public LocalUserSerializable ToSerializable() =>
-            new LocalUserSerializable
-            {
-                Name = Name,
-                PasswordSalt = PasswordSalt,
-                PasswordDigest = PasswordDigest,
-                DbInitializationVector = DbInitializationVector,
-                DbSalt = DbSalt
-            };
 
         private byte[] GenerateRandom(int byteCount)
         {
@@ -72,47 +87,23 @@ namespace Client.MVVM.ViewModel.Observables
             DbSalt = GenerateRandom(128 / 8); // 128 b sól
         }
 
-        public void AddServer(Server server) =>
-            serversStorage.Add(server);
-
-        public List<Server> GetAllServers() =>
-            serversStorage.GetAll();
-
-        public bool ServerExists(IPv4Address ipAddress, Port port) =>
-            serversStorage.Exists(ipAddress, port);
-
-        public void UpdateServer(IPv4Address ipAddress, Port port, Server server) =>
-            serversStorage.Update(ipAddress, port, server);
-
-        public void DeleteServer(IPv4Address ipAddress, Port port) =>
-            serversStorage.Delete(ipAddress, port);
-
-        private ServerDatabase GetServerDatabase(IPv4Address ipAddress, Port port)
+        public LocalUserPrimaryKey GetPrimaryKey()
         {
-            try { return serversStorage.GetServerDatabase(ipAddress, port); }
-            catch (Error e)
-            {
-                e.Prepend("|Error occured while| |getting| " +
-                    "|access to server's database.|");
-                throw;
-            }
+            return new LocalUserPrimaryKey(Name);
         }
 
-        public List<Account> GetAllAccounts(IPv4Address ipAddress, Port port) =>
-            GetServerDatabase(ipAddress, port).Accounts.GetAllAccounts();
+        public void SetPrimaryKey(LocalUserPrimaryKey key)
+        {
+            Name = key.Name;
+        }
 
-        public void AddAccount(IPv4Address ipAddress, Port port, Account account) =>
-            /* w funkcji wywołującej aktualną funkcję (AddAccount)
-            dodajemy "Error occured while adding account to server's database" */
-            GetServerDatabase(ipAddress, port).Accounts.AddAccount(account);
-
-        public bool AccountExists(IPv4Address ipAddress, Port port, string login) =>
-            GetServerDatabase(ipAddress, port).Accounts.AccountExists(login);
-
-        public void UpdateAccount(IPv4Address ipAddress, Port port, string login, Account account) =>
-            GetServerDatabase(ipAddress, port).Accounts.UpdateAccount(login, account);
-
-        public void DeleteAccount(IPv4Address ipAddress, Port port, string login) =>
-            GetServerDatabase(ipAddress, port).Accounts.DeleteAccount(login);
+        public void CopyTo(LocalUser user)
+        {
+            user.Name = Name;
+            user.PasswordSalt = PasswordSalt;
+            user.PasswordDigest = PasswordDigest;
+            user.DbInitializationVector = DbInitializationVector;
+            user.DbSalt = DbSalt;
+        }
     }
 }

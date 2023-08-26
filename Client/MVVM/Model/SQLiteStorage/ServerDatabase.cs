@@ -16,6 +16,8 @@ namespace Client.MVVM.Model.SQLiteStorage
         public ServerDatabase(string path) : base(path)
         {
             Accounts = new AccountRepository(CreateConnection);
+
+            CreateOrValidateFile();
         }
 
         protected override string DDLEmbeddedResource()
@@ -25,8 +27,6 @@ namespace Client.MVVM.Model.SQLiteStorage
 
         private void ValidateDatabase()
         {
-            if (!File.Exists(_path))
-                throw FileDoesNotExistError();
             try
             {
                 var query = "PRAGMA integrity_check;";
@@ -60,40 +60,42 @@ namespace Client.MVVM.Model.SQLiteStorage
             }
         }
 
-        public void CreateSQLiteFile()
+        private void CreateOrValidateFile()
         {
             if (File.Exists(_path))
-                throw new Error("|Server's SQLite file already exists|.");
-
-            try
             {
-                SQLiteConnection.CreateFile(_path);
+                ValidateDatabase();
+                return;
             }
+
+            // Plik bazy danych jeszcze nie istnieje i musi zostać utworzony.
+            try { SQLiteConnection.CreateFile(_path); }
             catch (Exception e)
             {
                 throw new Error(e, "|Error occured while| " +
-                    "|creating| |server's SQLite file|.");
+                    $"|creating| |server's SQLite file| '{_path}'.");
             }
 
-            try
+            try { RecreateSchema(); }
+            catch (Error createSchemaError)
             {
-                ResetDatabase();
-            }
-            catch (Error resetError)
-            {
-                resetError.Prepend("|Error occured while| " +
-                    "|resetting| |server's SQLite file.|");
+                createSchemaError.Prepend("|Could not| " +
+                    "|create| |server's SQLite schema|.");
 
-                try
+                try { File.Delete(_path); }
+                catch (Exception deleteException)
                 {
-                    File.Delete(_path);
+                    /* TODO: w sytuacji "undo" Errorów, czyli np. jak
+                    tu, że tworzymy plik i nie uda się go zainicjalizować
+                    danymi, można w obiekcie createSchemaError, czyli
+                    "pierwotnego" błędu, trzymać referencje do kolejnych
+                    "łańcuchowych" błędów. */
+                    var deleteError = new Error(deleteException,
+                        "|Error occured while| |deleting| " +
+                        $"|server's SQLite file| '{_path}'.");
+                    createSchemaError.Append(deleteError.Message);
                 }
-                catch (Exception)
-                {
-                    resetError.Append("|Error occured while| " +
-                        "|deleting| |server's SQLite file.|");
-                }
-                throw resetError;
+                throw;
             }
         }
     }

@@ -15,12 +15,11 @@ namespace Shared.MVVM.Model.Networking
 
         public override bool Equals(object obj)
         {
-            if (!(obj is Port)) return false;
-            var port = (Port)obj;
-            return Value == port.Value;
+            if (!(obj is Port other)) return false;
+            return Value == other.Value;
         }
 
-        public override int GetHashCode() => base.GetHashCode();
+        public override int GetHashCode() => Value;
 
         public static Port Parse(string text)
         {

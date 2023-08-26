@@ -1,5 +1,4 @@
-﻿using Client.MVVM.Model.BsonStorages;
-using Client.MVVM.ViewModel.Observables;
+﻿using Client.MVVM.Model;
 using Shared.MVVM.Core;
 using Shared.MVVM.ViewModel.Results;
 using System.Windows;
@@ -16,7 +15,7 @@ namespace Client.MVVM.ViewModel
 
         public enum Operations { LocalLogout }
 
-        public SettingsViewModel(LocalUser user)
+        public SettingsViewModel(Storage storage)
         {
             // nie trzeba robić obsługi WindowLoaded ani ustawiać pola window, jeżeli nie chcemy otwierać potomnych okien w tym viewmodelu
             LocalLogout = new RelayCommand(_ =>
@@ -24,18 +23,17 @@ namespace Client.MVVM.ViewModel
                 OnRequestClose(new Success(Operations.LocalLogout));
             });
 
-            var lus = new LocalUsersStorage();
             ToggleLanguage = new RelayCommand(_ =>
             {
                 d.ToggleLanguage();
-                lus.SetActiveLanguage((int)d.ActiveLanguage);
+                storage.SetActiveLanguage((int)d.ActiveLanguage);
             });
 
             ToggleTheme = new RelayCommand(_ =>
             {
                 var app = (App)Application.Current;
                 app.ToggleTheme();
-                lus.SetActiveTheme((int)app.ActiveTheme);
+                storage.SetActiveTheme((int)app.ActiveTheme);
             });
         }
     }

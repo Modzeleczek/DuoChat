@@ -1,6 +1,6 @@
-﻿using Client.MVVM.Model.BsonStorages;
+﻿using Client.MVVM.Model;
+using Client.MVVM.Model.BsonStorages;
 using Client.MVVM.View.Windows;
-using Client.MVVM.ViewModel.Observables;
 using Shared.MVVM.Core;
 using Shared.MVVM.ViewModel.Results;
 using System.Collections.Generic;
@@ -10,15 +10,13 @@ namespace Client.MVVM.ViewModel.LocalUsers.LocalUserActions
 {
     public class ChangeLocalUserNameViewModel : FormViewModel
     {
-        public ChangeLocalUserNameViewModel(LocalUser user)
+        public ChangeLocalUserNameViewModel(Storage storage, LocalUserPrimaryKey localUserKey)
         {
-            var lus = new LocalUsersStorage();
-
             WindowLoaded = new RelayCommand(e =>
             {
                 var win = (FormWindow)e;
                 window = win;
-                win.AddTextField("|Username|", user.Name);
+                win.AddTextField("|Username|", localUserKey.Name);
                 RequestClose += () => win.Close();
             });
 
@@ -26,41 +24,43 @@ namespace Client.MVVM.ViewModel.LocalUsers.LocalUserActions
             {
                 var fields = (List<Control>)controls;
 
-                var newUsername = ((TextBox)fields[0]).Text;
-                var userNameVal = LocalUsersStorage.ValidateUserName(newUsername);
-                if (!(userNameVal is null))
+                var localUser = storage.GetLocalUser(localUserKey);
+
+                LocalUserPrimaryKey newLocalUserKey;
+                // Walidacja nazwy użytkownika
+                try { newLocalUserKey = new LocalUserPrimaryKey(((TextBox)fields[0]).Text); }
+                catch (Error e)
                 {
-                    Alert(userNameVal);
+                    Alert(e.Message);
                     return;
                 }
 
                 try
                 {
-                    if (lus.Exists(newUsername))
+                    if (storage.LocalUserExists(newLocalUserKey))
                     {
-                        Alert($"|User with name| {newUsername} |already exists.|");
+                        Alert(LocalUsersStorage.AlreadyExistsMsg(newLocalUserKey));
                         return;
                     }
                 }
                 catch (Error e)
                 {
-                    e.Prepend("|Error occured while| |checking if| |user|" +
-                        "|already exists.|");
+                    e.Prepend("|Could not| |check if| |user| |already exists.|");
                     Alert(e.Message);
                     throw;
                 }
 
                 // użytkownik jeszcze nie istnieje
-                var oldUserName = user.Name;
-                user.Name = newUsername;
-                try { lus.Update(oldUserName, user); }
+                localUser.SetPrimaryKey(newLocalUserKey);
+                try { storage.UpdateLocalUser(localUserKey, localUser); }
                 catch (Error e)
                 {
-                    e.Prepend("|Error occured while| |updating| |user in database.|");
+                    e.Prepend("|Could not| |update| |user in database.|");
                     Alert(e.Message);
                     throw;
                 }
-                OnRequestClose(new Success());
+                // Przekazujemy zaktualizowanego lokalnego użytkownika.
+                OnRequestClose(new Success(localUser));
             });
         }
     }

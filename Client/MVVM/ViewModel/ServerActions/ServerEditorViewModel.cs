@@ -1,6 +1,5 @@
 ﻿using Client.MVVM.Model;
 using Client.MVVM.View.Windows;
-using Client.MVVM.ViewModel.Observables;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model.Networking;
 
@@ -8,8 +7,14 @@ namespace Client.MVVM.ViewModel.ServerActions
 {
     public class ServerEditorViewModel : FormViewModel
     {
-        protected ServerEditorViewModel()
+        #region Fields
+        protected Storage _storage;
+        #endregion
+
+        protected ServerEditorViewModel(Storage storage)
         {
+            _storage = storage;
+
             WindowLoaded = new RelayCommand(e =>
             {
                 var win = (FormWindow)e;
@@ -49,20 +54,5 @@ namespace Client.MVVM.ViewModel.ServerActions
                 return false;
             }
         }
-
-        protected bool ServerExists(LocalUser user, IPv4Address ipAddress, Port port)
-        {
-            try { return user.ServerExists(ipAddress, port); }
-            catch (Error e)
-            {
-                e.Prepend("|Error occured while| |checking if| |server| " +
-                    "|already exists.|");
-                Alert(e.Message);
-                throw;
-            }
-        }
-
-        protected string ServerAlreadyExistsError(IPv4Address ipAddress, Port port) =>
-            $"|Server with IP address| {ipAddress} |and port| {port} |already exists.|";
     }
 }

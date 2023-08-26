@@ -97,7 +97,7 @@ namespace Client.MVVM.ViewModel
                 {
                     try
                     {
-                        var accounts = loggedUser.GetAllAccounts(value.IpAddress, value.Port);
+                        var accounts = _storage.GetAllAccounts(_loggedUserKey, value.GetPrimaryKey());
                         for (int i = 0; i < accounts.Count; ++i)
                             Accounts.Add(accounts[i]);
                     }
@@ -140,9 +140,10 @@ namespace Client.MVVM.ViewModel
                 {
                     try
                     {
-                        var ser = SelectedServer;
                         // Synchroniczne łączenie.
-                        _client.Connect(ser.IpAddress.ToIPAddress(), ser.Port.Value);
+                        var serverKey = SelectedServer.GetPrimaryKey();
+                        _client.Connect(serverKey.IpAddress.ToIPAddress(),
+                            serverKey.Port.Value);
                         var cnvCnt = rng.Next(0, 5);
                         for (int i = 0; i < cnvCnt; ++i)
                             Conversations.Add(Conversation.Random(rng));
@@ -180,19 +181,27 @@ namespace Client.MVVM.ViewModel
         #endregion
 
         #region Fields
-        private LocalUser loggedUser = null;
+        private LocalUserPrimaryKey _loggedUserKey;
         private Model.Client _client = new Model.Client();
         private Random rng = new Random();
+        private Storage _storage;
         #endregion
 
         public MainViewModel()
         {
-            var lus = new LocalUsersStorage();
             WindowLoaded = new RelayCommand(windowLoadedE =>
             {
                 window = (DialogWindow)windowLoadedE;
                 // zapobiega ALT + F4 w głównym oknie
                 window.Closable = false;
+
+                // Do potomnych okien przekazujemy na zasadzie dependency injection.
+                try { _storage = new Storage(); }
+                catch (Error e)
+                {
+                    Alert(e.Message);
+                    throw;
+                }
 
                 Servers = new ObservableCollection<Server>();
                 Accounts = new ObservableCollection<Account>();
@@ -200,7 +209,7 @@ namespace Client.MVVM.ViewModel
 
                 try
                 {
-                    d.ActiveLanguage = (Translator.Language)lus.GetActiveLanguage();
+                    d.ActiveLanguage = (Translator.Language)_storage.GetActiveLanguage();
                 }
                 catch (Error e)
                 {
@@ -211,7 +220,7 @@ namespace Client.MVVM.ViewModel
 
                 try
                 {
-                    ((App)Application.Current).ActiveTheme = (App.Theme)lus.GetActiveTheme();
+                    ((App)Application.Current).ActiveTheme = (App.Theme)_storage.GetActiveTheme();
                 }
                 catch (Error e)
                 {
@@ -219,13 +228,13 @@ namespace Client.MVVM.ViewModel
                     throw;
                 }
 
-                var loggedUserName = lus.GetLogged();
-                if (!(loggedUserName is null)) // jakiś użytkownik jest już zalogowany
+                var loggedLocalUserKey = _storage.GetLoggedLocalUserKey();
+                if (!(loggedLocalUserKey is null)) // jakiś użytkownik jest już zalogowany
                 {
-                    var user = lus.Get(loggedUserName);
-                    if (!(user is null)) // zalogowany użytkownik istnieje w BSONie
+                    if (_storage.LocalUserExists(loggedLocalUserKey.Value))
                     {
-                        loggedUser = user;
+                        // zalogowany użytkownik istnieje w BSONie
+                        _loggedUserKey = loggedLocalUserKey.Value;
                         ResetLists();
                         return;
                     }
@@ -238,7 +247,7 @@ namespace Client.MVVM.ViewModel
 
             AddServer = new RelayCommand(_ =>
             {
-                var vm = new CreateServerViewModel(loggedUser)
+                var vm = new CreateServerViewModel(_storage, _loggedUserKey)
                 {
                     Title = "|Add_server|",
                     ConfirmButtonText = "|Add|"
@@ -251,27 +260,37 @@ namespace Client.MVVM.ViewModel
             EditServer = new RelayCommand(obj =>
             {
                 var server = (Server)obj;
-                if (SelectedServer == server)
+                var serverKey = server.GetPrimaryKey();
+                // Odznaczamy aktualnie wybrany serwer.
+                if (!(SelectedServer is null)
+                    && SelectedServer.GetPrimaryKey().Equals(serverKey))
                     SelectedServer = null;
-                var vm = new EditServerViewModel(loggedUser, server)
+                var vm = new EditServerViewModel(_storage, _loggedUserKey, serverKey)
                 {
                     Title = "|Edit server|",
                     ConfirmButtonText = "|Save|"
                 };
                 new FormWindow(window, vm).ShowDialog();
+                if (vm.Result is Success success)
+                {
+                    var updatedServer = (Server)success.Data;
+                    updatedServer.CopyTo(server);
+                }
             });
             DeleteServer = new RelayCommand(obj =>
             {
                 var server = (Server)obj;
+                var serverKey = server.GetPrimaryKey();
                 var confirmRes = ConfirmationViewModel.ShowDialog(window,
                     "|Do you want to delete| |server|" +
-                    $" {server.IpAddress}:{server.Port}?",
+                    $" {serverKey.ToString("{0}:{1}")}?",
                     "|Delete server|", "|No|", "|Yes|");
                 if (!(confirmRes is Success)) return;
                 if (SelectedServer == server)
-                    // setter rozłącza, jeżeli jesteśmy połączeni, bo ustawia SelectedAccount na null
+                    /* Setter rozłącza, jeżeli jesteśmy połączeni,
+                    bo ustawia SelectedAccount na null. */
                     SelectedServer = null;
-                try { loggedUser.DeleteServer(server.IpAddress, server.Port); }
+                try { _storage.DeleteServer(_loggedUserKey, serverKey); }
                 catch (Error e)
                 {
                     e.Prepend("|Error occured while| |deleting| " +
@@ -284,7 +303,8 @@ namespace Client.MVVM.ViewModel
 
             AddAccount = new RelayCommand(_ =>
             {
-                var vm = new CreateAccountViewModel(loggedUser, SelectedServer)
+                var vm = new CreateAccountViewModel(_storage, _loggedUserKey,
+                    SelectedServer.GetPrimaryKey())
                 {
                     Title = "|Add_account|",
                     ConfirmButtonText = "|Add|"
@@ -299,12 +319,19 @@ namespace Client.MVVM.ViewModel
                 var account = (Account)obj;
                 if (SelectedAccount == account)
                     SelectedAccount = null;
-                var vm = new EditAccountViewModel(loggedUser, SelectedServer, account)
+                var vm = new EditAccountViewModel(_storage, _loggedUserKey,
+                    SelectedServer.GetPrimaryKey(), account.Login)
                 {
                     Title = "|Edit account|",
                     ConfirmButtonText = "|Save|"
                 };
                 new FormWindow(window, vm).ShowDialog();
+                var result = vm.Result;
+                if (result is Success success)
+                {
+                    var updatedAccount = (Account)success.Data;
+                    updatedAccount.CopyTo(account);
+                }
             });
             DeleteAccount = new RelayCommand(obj =>
             {
@@ -317,8 +344,10 @@ namespace Client.MVVM.ViewModel
                     // setter rozłącza, jeżeli jesteśmy połączeni
                     SelectedAccount = null;
                 var server = SelectedServer;
-                try { loggedUser.DeleteAccount(server.IpAddress, server.Port,
-                    account.Login); }
+                try
+                {
+                    _storage.DeleteAccount(_loggedUserKey, server.GetPrimaryKey(), account.Login);
+                }
                 catch (Error e)
                 {
                     e.Prepend("|Error occured while| |deleting| " +
@@ -337,6 +366,8 @@ namespace Client.MVVM.ViewModel
                 rnd.PlainContent = WrittenMessage;
                 SelectedConversation.Messages.Add(rnd);
                 WrittenMessage = "";
+                /* TODO: pisanie do wybranej konwersacji
+                na wybranym koncie na wybranym serwerze */
             });
 
             Close = new RelayCommand(_ =>
@@ -348,7 +379,7 @@ namespace Client.MVVM.ViewModel
 
             OpenSettings = new RelayCommand(_ =>
             {
-                var vm = new SettingsViewModel(loggedUser);
+                var vm = new SettingsViewModel(_storage);
                 var win = new SettingsWindow(window, vm);
                 vm.RequestClose += () => win.Close();
                 win.ShowDialog();
@@ -357,7 +388,7 @@ namespace Client.MVVM.ViewModel
                     SettingsViewModel.Operations.LocalLogout) // wylogowanie
                 {
                     ClearLists();
-                    var loginRes = LocalLoginViewModel.ShowDialog(window, loggedUser, true);
+                    var loginRes = LocalLoginViewModel.ShowDialog(window, _storage, _loggedUserKey, true);
                     if (!(loginRes is Success loginSuc))
                     {
                         ResetLists();
@@ -365,16 +396,13 @@ namespace Client.MVVM.ViewModel
                     }
                     var currentPassword = (SecureString)loginSuc.Data;
 
-                    lus.SetLogged(false);
+                    _storage.SetLoggedLocalUser(false);
 
                     var pc = new PasswordCryptography();
                     var encryptRes = ProgressBarViewModel.ShowDialog(window,
                         "|Encrypting user's database.|", true,
-                        (reporter) =>
-                        pc.EncryptDirectory(reporter,
-                            loggedUser.DirectoryPath,
-                            pc.ComputeDigest(currentPassword, loggedUser.DbSalt),
-                            loggedUser.DbInitializationVector));
+                        (reporter) => _storage.EncryptLocalUser(ref reporter, _loggedUserKey,
+                        currentPassword));
                     currentPassword.Dispose();
                     if (encryptRes is Cancellation)
                         return;
@@ -387,7 +415,7 @@ namespace Client.MVVM.ViewModel
                         Alert(e.Message);
                         throw e;
                     }
-                    loggedUser = null;
+                    _loggedUserKey = default;
                     ShowLocalUsersDialog();
                 }
             });
@@ -397,10 +425,9 @@ namespace Client.MVVM.ViewModel
 
         private void ShowLocalUsersDialog()
         {
-            var lus = new LocalUsersStorage();
             while (true)
             {
-                var loginRes = LocalUsersViewModel.ShowDialog(window);
+                var loginRes = LocalUsersViewModel.ShowDialog(window, _storage);
                 /* jeżeli użytkownik zamknął okno bez zalogowania się
                 (nie ma innych możliwych wyników niż Success i Cancellation) */
                 if (!(loginRes is Success loginSuc))
@@ -412,15 +439,12 @@ namespace Client.MVVM.ViewModel
                 var dat = (dynamic)loginSuc.Data;
                 var curPas = (SecureString)dat.Password;
                 var user = (LocalUser)dat.LoggedUser;
+                var userKey = user.GetPrimaryKey();
 
                 var pc = new PasswordCryptography();
                 var decryptRes = ProgressBarViewModel.ShowDialog(window,
                     "|Decrypting user's database.|", true,
-                    (reporter) =>
-                    pc.DecryptDirectory(reporter,
-                        user.DirectoryPath,
-                        pc.ComputeDigest(curPas, user.DbSalt),
-                        user.DbInitializationVector));
+                    (reporter) => _storage.DecryptLocalUser(ref reporter, userKey, curPas));
                 curPas.Dispose();
                 if (decryptRes is Cancellation)
                     Alert("|User's database decryption canceled. Logging out.|");
@@ -428,8 +452,8 @@ namespace Client.MVVM.ViewModel
                 ProgressBarViewModel.Worker_RunWorkerCompleted */
                 else if (decryptRes is Success)
                 {
-                    lus.SetLogged(true, user.Name);
-                    loggedUser = user;
+                    _storage.SetLoggedLocalUser(true, userKey);
+                    _loggedUserKey = userKey;
                     ResetLists();
                     return;
                 }
@@ -453,7 +477,7 @@ namespace Client.MVVM.ViewModel
             Conversations.Clear();
             try
             {
-                var servers = loggedUser.GetAllServers();
+                var servers = _storage.GetAllServers(_loggedUserKey);
                 for (int i = 0; i < servers.Count; ++i)
                     Servers.Add(servers[i]);
             }

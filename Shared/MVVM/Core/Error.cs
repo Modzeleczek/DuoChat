@@ -12,9 +12,15 @@ namespace Shared.MVVM.Core
         {
             get
             {
-                if (!(InnerException is null) && !InnerException.Message.Equals(""))
-                    Strings.AddLast(InnerException.Message);
-                return string.Join(" ", Strings);
+                // Rekurencyjnie wypisujemy łańcuch InnerExceptionów.
+                Exception temp = InnerException;
+                while (!(temp is null))
+                {
+                    if (!string.IsNullOrWhiteSpace(temp.Message))
+                        Strings.AddLast(temp.Message);
+                    temp = temp.InnerException;
+                }
+                return string.Join("\n", Strings);
             }
         }
         #endregion

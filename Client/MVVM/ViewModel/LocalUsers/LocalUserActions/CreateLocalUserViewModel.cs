@@ -11,10 +11,9 @@ namespace Client.MVVM.ViewModel.LocalUsers.LocalUserActions
 {
     public class CreateLocalUserViewModel : FormViewModel
     {
-        public CreateLocalUserViewModel()
+        public CreateLocalUserViewModel(Storage storage)
         {
             var pc = new PasswordCryptography();
-            var lus = new LocalUsersStorage();
 
             WindowLoaded = new RelayCommand(e =>
             {
@@ -30,11 +29,12 @@ namespace Client.MVVM.ViewModel.LocalUsers.LocalUserActions
             {
                 var fields = (List<Control>)controls;
 
-                var userName = ((TextBox)fields[0]).Text;
-                var userNameVal = LocalUsersStorage.ValidateUserName(userName);
-                if (!(userNameVal is null))
+                LocalUserPrimaryKey localUserKey;
+                // Walidacja nazwy użytkownika
+                try { localUserKey = new LocalUserPrimaryKey(((TextBox)fields[0]).Text); }
+                catch (Error e)
                 {
-                    Alert(userNameVal);
+                    Alert(e.Message);
                     return;
                 }
 
@@ -55,26 +55,25 @@ namespace Client.MVVM.ViewModel.LocalUsers.LocalUserActions
 
                 try
                 {
-                    if (lus.Exists(userName))
+                    if (storage.LocalUserExists(localUserKey))
                     {
-                        Alert($"|User with name| {userName} |already exists.|");
+                        Alert(LocalUsersStorage.AlreadyExistsMsg(localUserKey));
                         return;
                     }
                 }
                 catch (Error e)
                 {
-                    e.Prepend("|Error occured while| |checking if| |user| " +
-                        "|already exists.|");
+                    e.Prepend("|Could not| |check if| |user| |already exists.|");
                     Alert(e.Message);
                     throw;
                 }
 
                 // użytkownik jeszcze nie istnieje
-                var newUser = new LocalUser(userName, password);
-                try { lus.Add(newUser); }
+                var newUser = new LocalUser(localUserKey, password);
+                try { storage.AddLocalUser(newUser); }
                 catch (Error e)
                 {
-                    e.Prepend("|Error occured while| |adding| |user to database.|");
+                    e.Prepend("|Could not| |add| |user to database.|");
                     Alert(e.Message);
                     throw;
                 }
@@ -82,11 +81,8 @@ namespace Client.MVVM.ViewModel.LocalUsers.LocalUserActions
                 // zaszyfrowujemy katalog użytkownika jego hasłem
                 var encryptRes = ProgressBarViewModel.ShowDialog(window,
                     "|Encrypting user's database.|", false,
-                    (reporter) =>
-                    pc.EncryptDirectory(reporter,
-                        newUser.DirectoryPath,
-                        pc.ComputeDigest(password, newUser.DbSalt),
-                        newUser.DbInitializationVector));
+                    (reporter) => storage.EncryptLocalUser(ref reporter,
+                    newUser.GetPrimaryKey(), password));
                 if (encryptRes is Cancellation)
                 {
                     var e = new Error("|You should not have canceled database encryption. " +

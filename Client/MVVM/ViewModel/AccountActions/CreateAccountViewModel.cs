@@ -1,5 +1,6 @@
 ﻿using Client.MVVM.Model;
 using Client.MVVM.Model.BsonStorages;
+using Client.MVVM.Model.SQLiteStorage.Repositories;
 using Client.MVVM.View.Windows;
 using Client.MVVM.ViewModel.Observables;
 using Shared.MVVM.Core;
@@ -12,10 +13,10 @@ namespace Client.MVVM.ViewModel.AccountActions
 {
     public class CreateAccountViewModel : AccountEditorViewModel
     {
-        public CreateAccountViewModel(LocalUser loggedUser, Server server)
+        public CreateAccountViewModel(Storage storage,
+            LocalUserPrimaryKey loggedUserKey, ServerPrimaryKey serverKey)
+            : base(storage)
         {
-            var lus = new LocalUsersStorage();
-
             var currentWindowLoadedHandler = WindowLoaded;
             WindowLoaded = new RelayCommand(e =>
             {
@@ -31,21 +32,16 @@ namespace Client.MVVM.ViewModel.AccountActions
             {
                 var fields = (List<Control>)controls;
 
-                if (!ServerExists(loggedUser, server))
-                {
-                    var e = new Error($"|Server with IP address| {server.IpAddress} " +
-                        $"|and port| {server.Port} |does not exist.|");
-                    Alert(e.Message);
-                    throw e;
-                }
+                // Wyrzuci Error, jeżeli serwer nie istnieje.
+                _storage.GetServer(loggedUserKey, serverKey);
 
                 var login = ((TextBox)fields[0]).Text;
                 if (!ValidateLogin(login))
                     return;
 
-                if (AccountExists(loggedUser, server, login))
+                if (AccountExists(loggedUserKey, serverKey, login))
                 {
-                    Alert(AccountExistsError(login));
+                    Alert(AccountRepository.AlreadyExistsMsg(login));
                     return;
                 }
                 
@@ -57,10 +53,10 @@ namespace Client.MVVM.ViewModel.AccountActions
                     Login = login,
                     PrivateKey = privateKey
                 };
-                try { loggedUser.AddAccount(server.IpAddress, server.Port, newAccount); }
+                try { _storage.AddAccount(loggedUserKey, serverKey, newAccount); }
                 catch (Error e)
                 {
-                    e.Prepend("|Error occured while| |adding| " +
+                    e.Prepend("|Could not| |add| " +
                         "|account;D| |to server's database.|");
                     Alert(e.Message);
                     throw;

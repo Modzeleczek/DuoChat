@@ -6,12 +6,15 @@ using System.Collections.Generic;
 using Client.MVVM.View.Windows;
 using Shared.MVVM.ViewModel.Results;
 using Client.MVVM.ViewModel.Observables;
+using Client.MVVM.Model;
+using Client.MVVM.Model.BsonStorages;
 
 namespace Client.MVVM.ViewModel.ServerActions
 {
     public class CreateServerViewModel : ServerEditorViewModel
     {
-        public CreateServerViewModel(LocalUser loggedUser)
+        public CreateServerViewModel(Storage storage, LocalUserPrimaryKey loggedUserKey)
+            : base(storage)
         {
             var currentWindowLoadedHandler = WindowLoaded;
             WindowLoaded = new RelayCommand(e =>
@@ -27,7 +30,28 @@ namespace Client.MVVM.ViewModel.ServerActions
             {
                 var fields = (List<Control>)controls;
 
-                // nie walidujemy, bo jest to przechowywane w polu w BSONie, a nie w SQLu
+                storage.GetLocalUser(loggedUserKey);
+
+                /* TODO: coś takiego we wszystkich ...EditorViewModelach
+                var logged = storage.GetLoggedLocalUser();
+                if (logged is null || !logged.Equals(loggedUserKey))
+                    throw new Error("User not logged.");
+
+                Jeszcze lepszy pomysł, żeby nie powtarzać kodu w różnych
+                EditorViewModelach:
+                takie sprawdzanie powinno być w Storage,
+                np. w ResolvePath i wyrzucanie Errora, jeżeli nie da się
+                dojść po ścieżce. Np. w GetAccount(localUserKey, serverKey,
+                accountLogin) można iść po łańcuchu localUser -> serverKey
+                -> accountLogin i jeżeli nie istnieje któreś ogniwo, to
+                informować wywołującego GetAccount (np. poprzez Error), że
+                konto z loginem accountLogin nie istnieje albo poinformować,
+                że nie istnieje brakujące ogniwo i dalsze.
+                Klasa Storage powinna pilnować, żeby był zalogowany i
+                odszyfrowany tylko 1 lokalny użytkownik jednocześnie. */
+
+                /* Nie walidujemy, bo nazwa serwera jest przechowywana w polu
+                w BSONie, a nie w SQLu, czyli nie jest podatna na SQL injection. */
                 var name = ((TextBox)fields[0]).Text;
 
                 if (!ParseIpAddress(((TextBox)fields[1]).Text, out IPv4Address ipAddress))
@@ -36,25 +60,23 @@ namespace Client.MVVM.ViewModel.ServerActions
                 if (!ParsePort(((TextBox)fields[2]).Text, out Port port))
                     return;
 
-                if (ServerExists(loggedUser, ipAddress, port))
+                var serverKey = new ServerPrimaryKey(ipAddress, port);
+                if (storage.ServerExists(loggedUserKey, serverKey))
                 {
-                    Alert(ServerAlreadyExistsError(ipAddress, port));
+                    Alert(ServersStorage.AlreadyExistsMsg(serverKey));
                     return;
                 }
 
-                var newServer = new Server
+                var newServer = new Server(serverKey)
                 {
                     Name = name,
-                    IpAddress = ipAddress,
-                    Port = port,
                     Guid = Guid.Empty,
                     PublicKey = null,
                 };
-                try { loggedUser.AddServer(newServer); }
+                try { storage.AddServer(loggedUserKey, newServer); }
                 catch (Error e)
                 {
-                    e.Prepend("|Error occured while| |adding| |server;D| " +
-                        "|to user's database.|");
+                    e.Prepend("|Could not| |add| |server;D| |to user's database.|");
                     Alert(e.Message);
                     throw;
                 }
