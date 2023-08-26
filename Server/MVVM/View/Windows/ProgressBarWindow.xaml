@@ -90,7 +90,10 @@
         Grid.Row="1"
         HorizontalAlignment="Center"
         VerticalAlignment="Center"
-        Foreground="#D6D6D6"
+        FontFamily="/MVVM/View/Fonts/RedHatDisplay"
+        FontSize="18"
+        FontWeight="SemiBold"
+        Foreground="#C9ADA7"
         Text="{Binding Description}" />
       <Grid
         Grid.Row="2"

@@ -90,8 +90,8 @@
         Grid.Row="1"
         HorizontalAlignment="Center"
         VerticalAlignment="Center"
-        Foreground="{DynamicResource ThirdForegroundColor}"
-        Text="{Binding Description}" />
+        Text="{Binding Description}"
+        Style="{DynamicResource StylishedTextBlock}" />
       <Grid
         Grid.Row="2"
         Margin="20,4,20,20"
