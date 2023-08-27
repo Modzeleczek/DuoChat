@@ -11,6 +11,8 @@ namespace Shared.MVVM.ViewModel
         protected DialogWindow window;
         protected readonly Translator d = Translator.Instance;
 
+        protected void Alert(string description) => AlertViewModel.ShowDialog(window, description);
+
         protected void UIInvoke(Action action) => Application.Current.Dispatcher.Invoke(action);
     }
 }

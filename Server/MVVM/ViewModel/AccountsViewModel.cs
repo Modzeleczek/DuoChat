@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Server.MVVM.ViewModel
 {
-    public class AccountsViewModel : ViewModel
+    public class AccountsViewModel : UserControlViewModel
     {
         public AccountsViewModel(DialogWindow owner, Model.Server server)
             : base(owner)

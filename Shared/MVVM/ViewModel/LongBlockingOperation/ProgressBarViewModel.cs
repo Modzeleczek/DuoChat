@@ -1,10 +1,12 @@
 ﻿using Shared.MVVM.Core;
 using Shared.MVVM.View.Windows;
+using Shared.MVVM.ViewModel.Results;
 using System.ComponentModel;
+using System.Windows;
 
 namespace Shared.MVVM.ViewModel.LongBlockingOperation
 {
-    public abstract class ProgressBarViewModel : WindowViewModel
+    public class ProgressBarViewModel : WindowViewModel
     {
         #region Properties
         private double progress;
@@ -42,7 +44,7 @@ namespace Shared.MVVM.ViewModel.LongBlockingOperation
         private BackgroundWorker worker;
         #endregion
 
-        protected ProgressBarViewModel(Work work, string description, bool cancelable,
+        private ProgressBarViewModel(Work work, string description, bool cancelable,
             bool progressBarVisible)
         {
             /* potrzebne, jeżeli chcemy pojawiać alerty nad oknem postępu
@@ -88,7 +90,40 @@ namespace Shared.MVVM.ViewModel.LongBlockingOperation
         }
 
         // wywoływane po wyjściu z handlera DoWork poprzez return lub wyjątek
-        protected abstract void Worker_RunWorkerCompleted(object sender,
-            RunWorkerCompletedEventArgs e);
+        private void Worker_RunWorkerCompleted(object sender,
+            RunWorkerCompletedEventArgs e)
+        {
+            /* if (e.Error != null) // wystąpił błąd
+            else if (e.Cancelled) // użytkownik anulował
+            else // zakończono powodzeniem
+
+            u nas we wszystkich 3 przypadkach (błąd, anulowanie, powodzenie)
+            informacja dla wywołującego viewmodelu jest w e.Result */
+
+            var result = (Result)e.Result;
+            if (result is Failure failure) // wystąpił błąd
+                Alert(failure.Reason.Message);
+            // if (e.Result is Cancellation) // użytkownik anulował
+            // if (e.Result is Success) zakończono powodzeniem
+            OnRequestClose(result);
+        }
+
+        public static Result ShowDialog(Window owner, string operationDescriptionText,
+            bool cancelable, Work work, bool progressBarVisible = true)
+        {
+            var vm = new ProgressBarViewModel(work, operationDescriptionText, cancelable,
+                progressBarVisible);
+            var win = new ProgressBarWindow(owner, vm);
+            // zapobiegamy ALT + F4 w oknie z progress barem
+            win.Closable = false;
+            vm.RequestClose += () =>
+            {
+                win.Closable = true;
+                win.Close();
+            };
+            vm.BeginWorking();
+            win.ShowDialog();
+            return vm.Result;
+        }
     }
 }

@@ -3,6 +3,8 @@ using Shared.MVVM.Core;
 using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking;
 using Shared.MVVM.View.Windows;
+using Shared.MVVM.ViewModel;
+using Shared.MVVM.ViewModel.LongBlockingOperation;
 using Shared.MVVM.ViewModel.Results;
 using System;
 using System.IO;
@@ -10,7 +12,7 @@ using System.Text;
 
 namespace Server.MVVM.ViewModel
 {
-    public class SettingsViewModel : ViewModel
+    public class SettingsViewModel : UserControlViewModel
     {
         private class SettingsJson
         {

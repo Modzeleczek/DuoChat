@@ -1,8 +1,7 @@
-﻿using Server.MVVM.ViewModel;
-using Shared.MVVM.View.Windows;
+﻿using Shared.MVVM.ViewModel.LongBlockingOperation;
 using System.Windows;
 
-namespace Server.MVVM.View.Windows
+namespace Shared.MVVM.View.Windows
 {
     public partial class ProgressBarWindow : DialogWindow
     {

@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Collections.Generic;
 using System.Security;
 using Shared.MVVM.ViewModel.Results;
+using Shared.MVVM.ViewModel;
 
 namespace Client.MVVM.ViewModel.LocalUsers
 {

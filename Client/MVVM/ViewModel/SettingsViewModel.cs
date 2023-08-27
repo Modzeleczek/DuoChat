@@ -1,5 +1,6 @@
 ﻿using Client.MVVM.Model;
 using Shared.MVVM.Core;
+using Shared.MVVM.ViewModel;
 using Shared.MVVM.ViewModel.Results;
 using System.Windows;
 

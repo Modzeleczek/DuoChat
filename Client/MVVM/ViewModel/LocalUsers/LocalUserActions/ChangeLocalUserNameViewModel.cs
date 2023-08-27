@@ -2,6 +2,7 @@
 using Client.MVVM.Model.BsonStorages;
 using Client.MVVM.View.Windows;
 using Shared.MVVM.Core;
+using Shared.MVVM.ViewModel;
 using Shared.MVVM.ViewModel.Results;
 using System.Collections.Generic;
 using System.Windows.Controls;

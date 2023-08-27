@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 
 namespace Server.MVVM.ViewModel
 {
-    public class ConnectedClientsViewModel : ViewModel
+    public class ConnectedClientsViewModel : UserControlViewModel
     {
         #region Commands
         public RelayCommand DisconnectClient { get; }

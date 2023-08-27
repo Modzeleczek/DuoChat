@@ -43,7 +43,16 @@
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\View\Localization\Entry.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\View\Localization\Parser.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\View\Localization\Translator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\View\Windows\AlertWindow.xaml.cs">
+      <DependentUpon>AlertWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\View\Windows\ConfirmationWindow.xaml.cs">
+      <DependentUpon>ConfirmationWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\View\Windows\DialogWindow.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\View\Windows\ProgressBarWindow.xaml.cs">
+      <DependentUpon>ProgressBarWindow.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Page Include="$(MSBuildThisFileDirectory)MVVM\View\Localization\Translations.xaml">
@@ -67,6 +76,18 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)MVVM\View\Resources\Dynamic\Themes\Light.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)MVVM\View\Windows\AlertWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)MVVM\View\Windows\ConfirmationWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)MVVM\View\Windows\ProgressBarWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

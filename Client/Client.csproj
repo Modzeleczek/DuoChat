@@ -159,14 +159,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MVVM\View\Windows\AlertWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="MVVM\View\Windows\ConfirmationWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="MVVM\View\Windows\FormWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -178,10 +170,6 @@
     <Page Include="MVVM\View\Windows\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="MVVM\View\Windows\ProgressBarWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MVVM\View\Windows\SettingsWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -216,32 +204,21 @@
     <Compile Include="MVVM\ViewModel\AccountActions\AccountEditorViewModel.cs" />
     <Compile Include="MVVM\ViewModel\AccountActions\CreateAccountViewModel.cs" />
     <Compile Include="MVVM\ViewModel\AccountActions\EditAccountViewModel.cs" />
-    <Compile Include="MVVM\ViewModel\AlertViewModel.cs" />
     <Compile Include="MVVM\ViewModel\LocalUsers\LocalUserActions\ChangeLocalUserNameViewModel.cs" />
     <Compile Include="MVVM\ViewModel\LocalUsers\LocalUserActions\ChangeLocalUserPasswordViewModel.cs" />
-    <Compile Include="MVVM\ViewModel\ConfirmationViewModel.cs" />
     <Compile Include="MVVM\ViewModel\LocalUsers\LocalUserActions\CreateLocalUserViewModel.cs" />
-    <Compile Include="MVVM\ViewModel\FormViewModel.cs" />
     <Compile Include="MVVM\ViewModel\LocalUsers\LocalLoginViewModel.cs" />
     <Compile Include="MVVM\ViewModel\LocalUsers\LocalUsersViewModel.cs" />
     <Compile Include="MVVM\ViewModel\MainViewModel.cs" />
     <Compile Include="MVVM\ViewModel\Observables\User.cs" />
-    <Compile Include="MVVM\ViewModel\ProgressBarViewModel.cs" />
     <Compile Include="MVVM\ViewModel\ServerActions\CreateServerViewModel.cs" />
     <Compile Include="MVVM\ViewModel\ServerActions\EditServerViewModel.cs" />
     <Compile Include="MVVM\ViewModel\ServerActions\ServerEditorViewModel.cs" />
     <Compile Include="MVVM\ViewModel\SettingsViewModel.cs" />
-    <Compile Include="MVVM\ViewModel\WindowViewModel.cs" />
     <Compile Include="MVVM\View\Converters\IPv4AddressToStringConverter.cs" />
     <Compile Include="MVVM\View\Converters\PortToStringConverter.cs" />
     <Compile Include="MVVM\View\DynamicResources\Styles\ResizableWindow.xaml.cs">
       <DependentUpon>ResizableWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="MVVM\View\Windows\AlertWindow.xaml.cs">
-      <DependentUpon>AlertWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="MVVM\View\Windows\ConfirmationWindow.xaml.cs">
-      <DependentUpon>ConfirmationWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="MVVM\View\Windows\FormWindow.xaml.cs">
       <DependentUpon>FormWindow.xaml</DependentUpon>
@@ -251,9 +228,6 @@
     </Compile>
     <Compile Include="MVVM\View\Windows\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="MVVM\View\Windows\ProgressBarWindow.xaml.cs">
-      <DependentUpon>ProgressBarWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="MVVM\View\Windows\SettingsWindow.xaml.cs">
       <DependentUpon>SettingsWindow.xaml</DependentUpon>

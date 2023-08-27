@@ -8,6 +8,8 @@ using Client.MVVM.ViewModel.ServerActions;
 using Shared.MVVM.Core;
 using Shared.MVVM.View.Localization;
 using Shared.MVVM.View.Windows;
+using Shared.MVVM.ViewModel;
+using Shared.MVVM.ViewModel.LongBlockingOperation;
 using Shared.MVVM.ViewModel.Results;
 using System;
 using System.Collections.ObjectModel;

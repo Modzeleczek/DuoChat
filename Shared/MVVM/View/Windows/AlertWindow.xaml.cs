@@ -1,8 +1,7 @@
-﻿using Client.MVVM.ViewModel;
-using Shared.MVVM.View.Windows;
+﻿using Shared.MVVM.ViewModel;
 using System.Windows;
 
-namespace Client.MVVM.View.Windows
+namespace Shared.MVVM.View.Windows
 {
     public partial class AlertWindow : DialogWindow
     {

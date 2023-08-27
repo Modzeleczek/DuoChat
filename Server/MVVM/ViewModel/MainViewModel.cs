@@ -2,8 +2,6 @@ using Server.MVVM.ViewModel.Observables;
 using Shared.MVVM.Core;
 using Shared.MVVM.View.Windows;
 using Shared.MVVM.ViewModel;
-using Shared.MVVM.ViewModel.Results;
-using BaseViewModel = Shared.MVVM.ViewModel.ViewModel;
 
 namespace Server.MVVM.ViewModel
 {
@@ -22,8 +20,8 @@ namespace Server.MVVM.ViewModel
         #endregion
 
         #region Properties
-        private BaseViewModel selectedTab;
-        public BaseViewModel SelectedTab
+        private UserControlViewModel selectedTab;
+        public UserControlViewModel SelectedTab
         {
             get => selectedTab;
             private set { selectedTab = value; OnPropertyChanged(); }
@@ -57,7 +55,7 @@ namespace Server.MVVM.ViewModel
                 var conCliVM = new ConnectedClientsViewModel(window, server, log);
                 var logVM = new LogViewModel(window, log);
                 var accVM = new AccountsViewModel(window, server);
-                var tabs = new BaseViewModel[] { setVM, conCliVM, logVM, accVM };
+                var tabs = new UserControlViewModel[] { setVM, conCliVM, logVM, accVM };
                 SelectTab = new RelayCommand(e =>
                 {
                     int index = int.Parse((string)e);

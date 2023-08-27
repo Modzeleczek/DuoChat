@@ -3,7 +3,7 @@ using Shared.MVVM.View.Windows;
 
 namespace Server.MVVM.ViewModel
 {
-    public class LogViewModel : ViewModel
+    public class LogViewModel : UserControlViewModel
     {
         private string _log;
         public string Log

@@ -1,18 +1,19 @@
-﻿<w:DialogWindow
-  x:Class="Server.MVVM.View.Windows.AlertWindow"
+<w:DialogWindow
+  x:Class="Shared.MVVM.View.Windows.ConfirmationWindow"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:h="clr-namespace:Shared.MVVM.View.Helpers"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:w="clr-namespace:Shared.MVVM.View.Windows"
-  x:Name="AlertWindowName"
+  x:Name="ConfirmationWindowName"
   Title="{Binding Title}"
   Width="290"
   MinHeight="190"
   x:ClassModifier="public"
   AllowsTransparency="True"
   Background="Transparent"
+  FontFamily="/MVVM/View/Fonts/RedHatDisplay"
   Icon="/MVVM/View/Icons/logo.png"
   ResizeMode="NoResize"
   SizeToContent="Height"
@@ -20,11 +21,15 @@
   WindowStyle="None"
   mc:Ignorable="d">
   <Border
-    Background="{DynamicResource ThirdBackgroundColor}"
+    Background="{DynamicResource SecondBackgroundColor}"
     BorderBrush="{DynamicResource FirstBorderColor}"
     BorderThickness="2"
     CornerRadius="10">
     <Grid>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
       <Grid.RowDefinitions>
         <RowDefinition Height="40" />
         <RowDefinition Height="*" />
@@ -33,13 +38,14 @@
 
       <Border
         Grid.Row="0"
+        Grid.ColumnSpan="2"
         h:EnableDragHelper.EnableDrag="True"
         Background="{DynamicResource FirstBackgroundColor}"
         CornerRadius="9,9,0,0">
         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
           <Label
             Margin="15,0,0,0"
-            Content="{Binding ElementName=AlertWindowName, Path=Title}"
+            Content="{Binding ElementName=ConfirmationWindowName, Path=Title}"
             FontSize="14"
             FontWeight="SemiBold"
             Foreground="{DynamicResource FirstForegroundColor}" />
@@ -48,18 +54,31 @@
 
       <TextBlock
         Grid.Row="1"
+        Grid.Column="0"
+        Grid.ColumnSpan="2"
         Margin="5,5,5,5"
         HorizontalAlignment="Center"
         VerticalAlignment="Center"
+        Style="{DynamicResource StylishedTextBlock}"
         Text="{Binding Path=Description}"
-        TextWrapping="Wrap"
-        Style="{DynamicResource StylishedTextBlock}" />
+        TextWrapping="Wrap" />
 
       <Button
         Grid.Row="2"
+        Grid.Column="0"
         Margin="0,0,0,5"
         Command="{Binding Path=Close}"
-        Content="{Binding Path=ButtonText}"
+        Content="{Binding Path=CancelButtonText}"
+        FontFamily="/MVVM/View/Fonts/RedHatDisplay"
+        FontSize="18"
+        Style="{DynamicResource CornerRadiusButtonStyle}" />
+
+      <Button
+        Grid.Row="2"
+        Grid.Column="1"
+        Margin="0,0,0,5"
+        Command="{Binding Path=Confirm}"
+        Content="{Binding Path=ConfirmButtonText}"
         FontFamily="/MVVM/View/Fonts/RedHatDisplay"
         FontSize="18"
         Style="{DynamicResource CornerRadiusButtonStyle}" />
