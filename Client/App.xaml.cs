@@ -1,44 +1,20 @@
 ﻿using Client.MVVM.View.Windows;
 using Client.MVVM.ViewModel;
-using Shared.MVVM.Core;
-using System;
+using Shared;
 using System.Windows;
 
 namespace Client
 {
-    public partial class App : Application
+    public partial class App : ThemedApplication
     {
         protected override void OnStartup(StartupEventArgs e)
         {
             new MainWindow(null, new MainViewModel()).Show();
         }
 
-        private ResourceDictionary ThemeDictionary => Resources.MergedDictionaries[0];
-
-        public enum Theme { Dark, Light }
-        // domyślnie ustawiamy ciemny motyw
-        private Theme _activeTheme = Theme.Dark;
-        public Theme ActiveTheme
-        {
-            get => _activeTheme;
-            set
-            {
-                var uri = $"/MVVM/View/DynamicResources/Themes/{value}.xaml";
-                ThemeDictionary.MergedDictionaries.Clear();
-                ThemeDictionary.MergedDictionaries.Add(
-                    new ResourceDictionary() { Source = new Uri(uri, UriKind.Relative) });
-                _activeTheme = value;
-            }
-        }
-
         public App()
         {
             InitializeComponent();
-        }
-
-        public void ToggleTheme()
-        {
-            ActiveTheme = ActiveTheme.Next();
         }
     }
 }

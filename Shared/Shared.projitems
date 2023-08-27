@@ -53,6 +53,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\View\Windows\ProgressBarWindow.xaml.cs">
       <DependentUpon>ProgressBarWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)ThemedApplication.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="$(MSBuildThisFileDirectory)MVVM\View\Localization\Translations.xaml">
