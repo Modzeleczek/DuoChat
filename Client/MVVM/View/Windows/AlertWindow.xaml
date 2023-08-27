@@ -51,12 +51,9 @@
         Margin="5,5,5,5"
         HorizontalAlignment="Center"
         VerticalAlignment="Center"
-        FontFamily="/MVVM/View/Fonts/RedHatDisplay"
-        FontSize="18"
-        FontWeight="SemiBold"
-        Foreground="{DynamicResource FirstForegroundColor}"
         Text="{Binding Path=Description}"
-        TextWrapping="Wrap" />
+        TextWrapping="Wrap"
+        Style="{DynamicResource StylishedTextBlock}" />
 
       <Button
         Grid.Row="2"
