@@ -2,15 +2,6 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-  <Style x:Key="StylishedTextBlock" TargetType="TextBlock">
-    <Setter Property="Margin" Value="10" />
-    <Setter Property="FontFamily" Value="/MVVM/View/Fonts/RedHatDisplay" />
-    <Setter Property="FontWeight" Value="SemiBold" />
-    <Setter Property="FontSize" Value="18" />
-    <Setter Property="Foreground" Value="{DynamicResource SecondForegroundColor}" />
-    <Setter Property="Background" Value="Transparent" />
-  </Style>
-
   <Style x:Key="StylishedLabel" TargetType="Label">
     <Setter Property="Margin" Value="15,5,15,5" />
     <Setter Property="FontFamily" Value="/MVVM/View/Fonts/RedHatDisplay" />
