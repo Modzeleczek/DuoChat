@@ -65,7 +65,7 @@ namespace Client.MVVM.ViewModel.Observables
 
         public LocalUser(LocalUserPrimaryKey key, SecureString password)
         {
-            Name = key.Name;
+            SetPrimaryKey(key);
             ResetPassword(password);
         }
 

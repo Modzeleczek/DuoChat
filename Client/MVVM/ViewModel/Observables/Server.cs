@@ -44,8 +44,7 @@ namespace Client.MVVM.ViewModel.Observables
 
         public Server(ServerPrimaryKey key)
         {
-            IpAddress = key.IpAddress;
-            Port = key.Port;
+            SetPrimaryKey(key);
         }
 
         public void CopyTo(Server server)
