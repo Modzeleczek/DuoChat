@@ -309,8 +309,7 @@ namespace Shared.MVVM.Model.Networking
             try { pb.Encrypt(new Cryptography.Aes(aesKey, aesIv)); }
             catch (Error e)
             {
-                e.Prepend("|Error occured while| " +
-                    "|AES encrypting packet data.|");
+                e.Prepend("|Could not| |AES encrypt| |packet data|.");
                 throw;
             }
 
@@ -318,8 +317,7 @@ namespace Shared.MVVM.Model.Networking
             try { keyIv = new Rsa(key).Encrypt(Merge(aesKey, aesIv)); }
             catch (Error e)
             {
-                e.Prepend("|Error occured while| " +
-                    "|RSA encrypting AES key and IV|.");
+                e.Prepend("|Could not| |RSA encrypt| |AES key and IV|.");
                 throw;
             }
             pb.Prepend(keyIv);
@@ -358,8 +356,7 @@ namespace Shared.MVVM.Model.Networking
             try { pb.Encrypt(new Cryptography.Aes(aesKey, aesIv)); }
             catch (Error e)
             {
-                e.Prepend("|Error occured while| " +
-                    "|AES encrypting packet data.|");
+                e.Prepend("|Could not| |AES encrypt| |packet data|.");
                 throw;
             }
 
@@ -368,8 +365,8 @@ namespace Shared.MVVM.Model.Networking
             try { senderRsa = rsa.Encrypt(Merge(aesKey, aesIv)); }
             catch (Error e)
             {
-                e.Prepend("|Error occured while| " +
-                    "|RSA encrypting AES key and IV| |using sender's private key.|");
+                e.Prepend("|Could not| |RSA encrypt| |AES key and IV| " +
+                    "|using sender's private key|.");
                 throw;
             }
 
@@ -378,8 +375,8 @@ namespace Shared.MVVM.Model.Networking
             try { receiverRsa = rsa.Encrypt(senderRsa); }
             catch (Error e)
             {
-                e.Prepend("|Error occured while| " +
-                    "|RSA encrypting AES key and IV| |using receivers's public key.|");
+                e.Prepend("|Could not| |RSA encrypt| |AES key and IV| " +
+                    "|using receivers's public key|.");
                 throw;
             }
 

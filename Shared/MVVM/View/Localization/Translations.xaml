@@ -326,13 +326,12 @@
 
   <l:Entry x:Key="encrypting merged packet parts."
     PL="szyfrowania połączonych części pakietu."/>
-  <l:Entry x:Key="AES encrypting packet data."
-    PL="szyfrowania AESem danych pakietu."/>
-  <l:Entry x:Key="RSA encrypting AES key and IV"
-    PL="szyfrowania RSA klucza i wektora inicjującego AESa"/>
-  <l:Entry x:Key="using sender's private key." PL="kluczem prywatnym nadawcy."/>
-  <l:Entry x:Key="using receivers's public key."
-    PL="kluczem publicznym odbiorcy."/>
+  <l:Entry x:Key="AES encrypt" PL="zaszyfrować AESem"/>
+  <l:Entry x:Key="packet data" PL="danych pakietu"/>
+  <l:Entry x:Key="RSA encrypt" PL="zaszyfrować RSA"/>
+  <l:Entry x:Key="AES key and IV" PL="klucza i wektora inicjująego AESa"/>
+  <l:Entry x:Key="using sender's private key" PL="kluczem prywatnym nadawcy"/>
+  <l:Entry x:Key="using receivers's public key" PL="kluczem publicznym odbiorcy"/>
 
   <l:Entry x:Key="Cannot send whole packet." PL="Nie można wysłać całego pakietu."/>
   <l:Entry x:Key="Operating system error." PL="Błąd systemu operacyjnego."/>
