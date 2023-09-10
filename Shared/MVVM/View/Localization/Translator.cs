@@ -73,6 +73,16 @@ namespace Shared.MVVM.View.Localization
             ActiveLanguage = ActiveLanguage.Next();
         }
 
+        public void SwitchToEnglish()
+        {
+            ActiveLanguage = Language.English;
+        }
+
+        public void SwitchToPolish() 
+        {
+            ActiveLanguage = Language.Polish;
+        }
+
         private void FillDictionary()
         {
             var resDict = new ResourceDictionary();

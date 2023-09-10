@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -281,6 +281,10 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MVVM\Model\SQLiteStorage\database.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="MVVM\View\Icons\flag_of_poland.png" />
+    <Resource Include="MVVM\View\Icons\flag_of_the_United_Kingdom.png" />
   </ItemGroup>
   <Import Project="..\Shared\Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
