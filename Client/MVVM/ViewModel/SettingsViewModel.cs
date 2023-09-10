@@ -11,6 +11,8 @@ namespace Client.MVVM.ViewModel
         #region Commands
         public RelayCommand LocalLogout { get; }
         public RelayCommand ToggleLanguage { get; }
+        public RelayCommand SwitchToEnglish { get; }
+        public RelayCommand SwitchToPolish { get; }
         public RelayCommand ToggleTheme { get; }
         #endregion
 
@@ -24,11 +26,23 @@ namespace Client.MVVM.ViewModel
                 OnRequestClose(new Success(Operations.LocalLogout));
             });
 
-            ToggleLanguage = new RelayCommand(_ =>
+            SwitchToEnglish = new RelayCommand(_ =>
             {
-                d.ToggleLanguage();
+                d.SwitchToEnglish();
                 storage.SetActiveLanguage((int)d.ActiveLanguage);
             });
+
+            SwitchToPolish = new RelayCommand(_ =>
+            {
+                d.SwitchToPolish();
+                storage.SetActiveLanguage((int)d.ActiveLanguage);
+            });
+
+            //ToggleLanguage = new RelayCommand(_ =>
+            //{
+            //    d.ToggleLanguage();
+            //    storage.SetActiveLanguage((int)d.ActiveLanguage);
+            //});
 
             ToggleTheme = new RelayCommand(_ =>
             {
