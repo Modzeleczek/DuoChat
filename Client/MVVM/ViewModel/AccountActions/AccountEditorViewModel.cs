@@ -6,6 +6,7 @@ using Shared.MVVM.ViewModel;
 using Shared.MVVM.ViewModel.LongBlockingOperation;
 using Shared.MVVM.ViewModel.Results;
 using System.Collections.Generic;
+using System.Text;
 using System.Windows.Controls;
 
 namespace Client.MVVM.ViewModel.AccountActions
@@ -52,6 +53,13 @@ namespace Client.MVVM.ViewModel.AccountActions
                 Alert("|Login cannot be empty.|");
                 return false;
             }
+
+            if (Encoding.UTF8.GetBytes(login).Length > 255)
+            {
+                Alert("|Login encoded in UTF-8 must be at most 255 bytes long|.");
+                return false;
+            }
+
             // aby zapobiec SQLInjection, dopuszczamy tylko duże i małe litery oraz cyfry
             foreach (var c in login)
                 if (!((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')))

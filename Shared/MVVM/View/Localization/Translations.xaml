@@ -194,6 +194,8 @@
   <l:Entry x:Key="Login" PL="Login"/>
   <l:Entry x:Key="Private key" PL="Klucz prywatny"/>
   <l:Entry x:Key="Login cannot be empty." PL="Login nie może być pusty."/>
+  <l:Entry x:Key="Login encoded in UTF-8 must be at most 255 bytes long"
+    PL="Login zakodowany w UTF-8 może mieć co najwyżej 255 bajtów"/>
   <l:Entry x:Key="Invalid private key format."
     PL="Nieprawidłowy format klucza prywatnego."/>
   <l:Entry x:Key="executing query." PL="wykonywania zapytania."/>
