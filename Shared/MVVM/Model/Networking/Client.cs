@@ -228,14 +228,14 @@ namespace Shared.MVVM.Model.Networking
                     var data = packet.Data;
                     /* do wysyłania używamy ciągle tego samego bufora,
                     żeby nie zajmować dodatkowej pamięci */
-                    if (4 + data.Length > client.SendBufferSize)
+                    if (PREFIX_SIZE + data.Length > client.SendBufferSize)
                         return new Failure(
                             "|Tried to send a packet larger than send buffer size.|");
                     /* jeżeli nadawca (host) ma kolejność bajtów little-endian (jak wiele Inteli),
                     to przerabiamy ją na big-endian, która jest konwencjonalna do wysyłania
                     przez internet; jeżeli host ma big-endian, to pozostaje bez zmian */
                     prefixValue = IPAddress.HostToNetworkOrder(data.Length);
-                    Buffer.BlockCopy(packet.Data, 0, buffer, PREFIX_SIZE, data.Length);
+                    Buffer.BlockCopy(data, 0, buffer, PREFIX_SIZE, data.Length);
                 }
                 else
                     /* wątek obudził się, bo od sekundy nic nie ma w kolejce do wysłania;
