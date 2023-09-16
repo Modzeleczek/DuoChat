@@ -1,11 +1,11 @@
-﻿using Shared.MVVM.Core;
+using Shared.MVVM.Core;
 using System.Net;
 
 namespace Shared.MVVM.Model.Networking
 {
     public class IPv4Address
     {
-        public uint BinaryRepresentation { get; private set; }
+        public uint BinaryRepresentation { get; }
 
         public IPv4Address(uint binaryRepresentation)
         {

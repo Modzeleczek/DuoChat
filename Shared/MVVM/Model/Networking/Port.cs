@@ -6,7 +6,8 @@ namespace Shared.MVVM.Model.Networking
 {
     public class Port
     {
-        public ushort Value { get; private set; }
+        // Tylko do odczytu
+        public ushort Value { get; }
 
         public Port(ushort value)
         {
