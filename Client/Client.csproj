@@ -284,6 +284,12 @@
   </Target>
   <Import Project="..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.116.0\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets" Condition="Exists('..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.116.0\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets')" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /y /d "$(SolutionDir)build\Release\$(PlatformName)\Prime\Prime.dll" "$(SolutionDir)build\$(ConfigurationName)\$(PlatformName)\$(ProjectName)\"</PostBuildEvent>
+    <PostBuildEvent>xcopy /y /d "$(SolutionDir)build\Release\$(PlatformName)\Prime\Prime.dll" "$(SolutionDir)build\$(ConfigurationName)\$(PlatformName)\$(ProjectName)\"
+xcopy /y /d "$(SolutionDir)packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.116.0\build\net46\$(PlatformName)\SQLite.Interop.dll" "$(SolutionDir)build\$(ConfigurationName)\$(PlatformName)\$(ProjectName)\"</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <CopySQLiteInteropFiles>false</CopySQLiteInteropFiles>
+    <CleanSQLiteInteropFiles>false</CleanSQLiteInteropFiles>
+    <CollectSQLiteInteropFiles>false</CollectSQLiteInteropFiles>
   </PropertyGroup>
 </Project>
