@@ -67,8 +67,6 @@ namespace Server.MVVM.ViewModel
             });
         }
 
-        private void Alert(string description) => AlertViewModel.ShowDialog(window, description);
-
         private void CloseApplication()
         {
             window.Closable = true;
