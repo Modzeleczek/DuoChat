@@ -1,19 +1,20 @@
-﻿using Shared.MVVM.Core;
-using Shared.MVVM.ViewModel.LongBlockingOperation;
-using Shared.MVVM.ViewModel.Results;
+﻿using Shared.MVVM.Model.Cryptography;
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Security.Cryptography;
-using System.Text;
 
 namespace Client.MVVM.Model
 {
-    public class PasswordCryptography
+    public static class PasswordCryptography
     {
-        public string ValidatePassword(SecureString password)
+        #region Fields
+        private const int PASSWORD_SALT_LENGTH = 256 / 8,
+            PASSWORD_DIGEST_LENGTH = 256 / 8;
+        #endregion
+
+        // TODO: przenieść do wspólnego viewmodelu LocalUserActions
+        public static string ValidatePassword(SecureString password)
         {
             if (password == null)
                 return "|Specify a password.|";
@@ -55,7 +56,7 @@ namespace Client.MVVM.Model
             }
         }
 
-        public bool SecureStringsEqual(SecureString ss1, SecureString ss2)
+        public static bool SecureStringsEqual(SecureString ss1, SecureString ss2)
         {
             IntPtr bstr1 = IntPtr.Zero;
             IntPtr bstr2 = IntPtr.Zero;
@@ -93,9 +94,12 @@ namespace Client.MVVM.Model
             }
         }
 
-        public bool DigestsEqual(SecureString password, byte[] salt, byte[] digest)
+        public static bool DigestsEqual(SecureString password, byte[] salt, byte[] digest)
         {
-            var pasDig = ComputeDigest(password, salt);
+            var pasDig = ComputeDigest(password, salt, digest.Length);
+            if (pasDig.Length != digest.Length)
+                return false;
+
             for (int i = 0; i < pasDig.Length; ++i)
                 if (pasDig[i] != digest[i])
                     return false;
@@ -103,7 +107,7 @@ namespace Client.MVVM.Model
         }
 
         // https://stackoverflow.com/a/43858011/14357934
-        public byte[] ComputeDigest(SecureString password, byte[] salt)
+        public static byte[] ComputeDigest(SecureString password, byte[] salt, int digestLength)
         {
             IntPtr ptr = IntPtr.Zero;
             try
@@ -120,8 +124,8 @@ namespace Client.MVVM.Model
                     // implementacja PBKDF2
                     using (var rfc2898 = new Rfc2898DeriveBytes(passwordByteArray,
                         salt, 10000, HashAlgorithmName.SHA256))
-                        // z hasła i soli uzyskujemy 128-bitowy klucz
-                        return rfc2898.GetBytes(128 / 8);
+                        // Z hasła i soli uzyskujemy klucz AES.
+                        return rfc2898.GetBytes(digestLength);
                 }
                 finally
                 {
@@ -133,234 +137,6 @@ namespace Client.MVVM.Model
             {
                 if (ptr != IntPtr.Zero) Marshal.ZeroFreeBSTR(ptr);
             }
-        }
-
-        // TODO: wydzielić wszystko poniżej do nowej klasy (np. FileEncryptor)
-        public void EncryptFile(ProgressReporter reporter,
-            string path, byte[] key, byte[] initializationVector)
-        {
-            var result = EncryptSingleFile(reporter, path, key, initializationVector);
-            FileTransformationCleanup(reporter, result, path);
-        }
-
-        public void DecryptFile(ProgressReporter reporter,
-            string path, byte[] key, byte[] initializationVector)
-        {
-            var result = EncryptSingleFile(reporter, path, key, initializationVector);
-            FileTransformationCleanup(reporter, result, path);
-        }
-
-        private Result EncryptSingleFile(ProgressReporter reporter,
-            string path, byte[] key, byte[] initializationVector)
-        {
-            using (var aes = CreateAes())
-            using (var enc = aes.CreateEncryptor(key, initializationVector))
-            using (var inFS = File.OpenRead(path))
-            using (var outFS = File.OpenWrite(path + ".temp"))
-            using (var cs = new CryptoStream(outFS, enc, CryptoStreamMode.Write))
-            {
-                reporter.FineMax = inFS.Length;
-                return TransformFile(reporter, inFS, cs);
-            }
-        }
-
-        private Result DecryptSingleFile(ProgressReporter reporter,
-            string path, byte[] key, byte[] initializationVector)
-        {
-            using (var aes = CreateAes())
-            using (var dec = aes.CreateDecryptor(key, initializationVector))
-            using (var inFS = File.OpenRead(path))
-            using (var outFS = File.OpenWrite(path + ".temp"))
-            using (var cs = new CryptoStream(inFS, dec, CryptoStreamMode.Read))
-            {
-                reporter.FineMax = inFS.Length;
-                return TransformFile(reporter, cs, outFS);
-            }
-        }
-
-        private Aes CreateAes()
-        {
-            var aes = Aes.Create();
-            aes.Padding = PaddingMode.PKCS7;
-            aes.Mode = CipherMode.CBC;
-            return aes;
-        }
-
-        // https://stackoverflow.com/a/32437759/14357934
-        private Result TransformFile(ProgressReporter reporter, Stream readFrom, Stream writeTo)
-        {
-            const int bufferSize = 4096;
-            reporter.FineProgress = 0;
-            byte[] buffer = new byte[bufferSize];
-            while (true)
-            {
-                // Pozycja w buforze.
-                int position = 0;
-                // Zapisujemy całkowitą liczbę bajtów pozostałych do odczytania.
-                int remainingBytes = bufferSize; // rozmiar bufora
-                int bytesRead = 0;
-                int timeoutCounter = 0;
-                // Dopóki liczby bajtów pozostałych do odczytania i bajtów odczytanych w aktualnej iteracji są niezerowe.
-                // Jeżeli w 1000 iteracji nie uda się zapełnić całego bufora, to przerywamy.
-                while (true)
-                {
-                    if (timeoutCounter == 1000)
-                        return new Failure("|File read timed out.|");
-                    if (remainingBytes == 0) break;
-                    try
-                    { bytesRead = readFrom.Read(buffer, position, remainingBytes); }
-                    catch (Exception e)
-                    { return new Failure(e, "|Error occured while reading file.|"); }
-                    if (bytesRead == 0) break;
-                    // O liczbę bajtów odczytanych w aktualnej iteracji zmniejszamy liczbę pozostałych bajtów i
-                    remainingBytes -= bytesRead;
-                    // przesuwamy pozycję w buforze.
-                    position += bytesRead;
-                    ++timeoutCounter;
-                }
-                position = 0;
-                remainingBytes = bufferSize - remainingBytes; // zapisujemy całkowitą liczbę odczytanych bajtów, która zawsze jest mniejsza lub równa rozmiarowi bufora
-                try
-                { writeTo.Write(buffer, position, remainingBytes); }
-                catch (Exception e)
-                { return new Failure(e, "|Error occured while writing file.|"); }
-                reporter.FineProgress += remainingBytes;
-                // int progress = (int)(((double)bytesProcessed / inStreamSize) * 100.0);
-                if (reporter.CancellationPending)
-                    return new Cancellation();
-                // Jeżeli bez problemów doszliśmy do końca pliku (EOF)
-                // Przerywamy pętlę while (true).
-                if (bytesRead == 0)
-                    return new Success();
-            }
-        }
-
-        private void FileTransformationCleanup(ProgressReporter reporter,
-            Result result, string path)
-        {
-            if (!(result is Failure) && reporter.CancellationPending)
-                result = new Cancellation();
-
-            var tempPath = path + ".temp";
-            // if (result is Failure || result is Cancellation)
-            if (!(result is Success))
-            {
-                try { File.Delete(tempPath); }
-                catch (Exception e) { result = new Failure(e, FileDeleteError(tempPath)); }
-            }
-            else
-            {
-                // usuwamy stary plik
-                try { File.Delete(path); }
-                catch (Exception e)
-                {
-                    result = new Failure(e, FileDeleteError(path));
-                    goto FINISH;
-                }
-
-                // zmieniamy tymczasową nazwę nowego na nazwę starego
-                try { File.Move(tempPath, path); }
-                catch (Exception e) { result = new Failure(e, FileMoveError(tempPath, path)); }
-            }
-        FINISH:
-            reporter.Result = result;
-        }
-
-        private string FileDeleteError(string path) =>
-            $"|Error occured while| |deleting| |file| {path}.";
-
-        private string FileMoveError(string source, string destination) =>
-            $"|Error occured while| |moving| |file| {source} to {destination}.";
-
-        public void EncryptDirectory(ProgressReporter reporter,
-            string path, byte[] key, byte[] initializationVector) =>
-            TransformDirectory(reporter, path, key, initializationVector, EncryptSingleFile);
-
-        public void DecryptDirectory(ProgressReporter reporter,
-            string path, byte[] key, byte[] initializationVector) =>
-            TransformDirectory(reporter, path, key, initializationVector, DecryptSingleFile);
-
-        private delegate Result FileTransformation(ProgressReporter reporter,
-            string path, byte[] key, byte[] initializationVector);
-
-        private void TransformDirectory(ProgressReporter reporter,
-            string path, byte[] key, byte[] initializationVector,
-            FileTransformation transformation)
-        {
-            var files = Directory.GetFiles(path);
-            reporter.CoarseMax = files.Length - 1;
-            reporter.CoarseProgress = 0;
-            Result result = new Success();
-            for (int i = 0; i < files.Length; ++i)
-            {
-                if (reporter.CancellationPending)
-                {
-                    result = new Cancellation();
-                    goto DIRECTORY_CLEANUP;
-                }
-                result = transformation(reporter, files[i], key, initializationVector);
-                if (!(result is Success))
-                    goto DIRECTORY_CLEANUP;
-                reporter.CoarseProgress += 1;
-            }
-        DIRECTORY_CLEANUP:
-            DirectoryTransformationCleanup(reporter, result, files);
-        }
-
-        private void DirectoryTransformationCleanup(ProgressReporter reporter,
-            Result result, string[] files)
-        {
-            if (!(result is Failure) && reporter.CancellationPending)
-                result = new Cancellation();
-
-            LinkedList<Error> errors = new LinkedList<Error>();
-            if (!(result is Success))
-            {
-                // jeżeli użytkownik anulował lub wystąpił błąd, usuwamy nowe pliki
-                foreach (var f in files)
-                {
-                    var temp = f + ".temp";
-                    if (File.Exists(temp))
-                    {
-                        try { File.Delete(temp); }
-                        catch (Exception e) { errors.AddLast(new Error(e, FileDeleteError(temp))); }
-                    }
-                }
-            }
-            else
-            {
-                foreach (var f in files)
-                {
-                    var temp = f + ".temp";
-                    // usuwamy stary plik
-                    try { File.Delete(f); }
-                    catch (Exception e)
-                    {
-                        errors.AddLast(new Error(e, FileDeleteError(f)));
-                        continue;
-                    }
-
-                    // zmieniamy tymczasową nazwę nowego na nazwę starego
-                    try { File.Move(temp, f); }
-                    catch (Exception e) { errors.AddLast(new Error(e, FileMoveError(temp, f))); }
-                }
-            }
-
-            if (errors.Count > 0)
-                result = new Failure(MergeErrorMessages(errors));
-
-            reporter.Result = result;
-        }
-
-        private string MergeErrorMessages(LinkedList<Error> errors)
-        {
-            var sb = new StringBuilder();
-            foreach (var e in errors)
-            {
-                sb.Append(e.Message);
-                sb.Append('\n');
-            }
-            return sb.ToString();
         }
     }
 }

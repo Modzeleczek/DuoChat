@@ -400,7 +400,6 @@ namespace Client.MVVM.ViewModel
 
                     _storage.SetLoggedLocalUser(false);
 
-                    var pc = new PasswordCryptography();
                     var encryptRes = ProgressBarViewModel.ShowDialog(window,
                         "|Encrypting user's database.|", true,
                         (reporter) => _storage.EncryptLocalUser(ref reporter, _loggedUserKey,
@@ -443,7 +442,6 @@ namespace Client.MVVM.ViewModel
                 var user = (LocalUser)dat.LoggedUser;
                 var userKey = user.GetPrimaryKey();
 
-                var pc = new PasswordCryptography();
                 var decryptRes = ProgressBarViewModel.ShowDialog(window,
                     "|Decrypting user's database.|", true,
                     (reporter) => _storage.DecryptLocalUser(ref reporter, userKey, curPas));

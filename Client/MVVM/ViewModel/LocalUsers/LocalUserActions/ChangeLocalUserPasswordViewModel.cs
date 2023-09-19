@@ -15,8 +15,6 @@ namespace Client.MVVM.ViewModel.LocalUsers.LocalUserActions
         public ChangeLocalUserPasswordViewModel(Storage storage,
             LocalUserPrimaryKey localUserKey, SecureString oldPassword)
         {
-            var pc = new PasswordCryptography();
-
             WindowLoaded = new RelayCommand(e =>
             {
                 var win = (FormWindow)e;
@@ -39,13 +37,13 @@ namespace Client.MVVM.ViewModel.LocalUsers.LocalUserActions
 
                 var password = ((PasswordBox)fields[0]).SecurePassword;
                 var confirmedPassword = ((PasswordBox)fields[1]).SecurePassword;
-                if (!pc.SecureStringsEqual(password, confirmedPassword))
+                if (!PasswordCryptography.SecureStringsEqual(password, confirmedPassword))
                 {
                     Alert("|Passwords do not match.|");
                     return;
                 }
 
-                var passwordVal = pc.ValidatePassword(password);
+                var passwordVal = PasswordCryptography.ValidatePassword(password);
                 if (!(passwordVal is null))
                 {
                     Alert(passwordVal);

@@ -3,6 +3,7 @@ using Client.MVVM.Model.FileSystemStorages;
 using Client.MVVM.Model.SQLiteStorage;
 using Client.MVVM.ViewModel.Observables;
 using Shared.MVVM.Core;
+using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.ViewModel.LongBlockingOperation;
 using System;
 using System.Collections.Generic;
@@ -421,10 +422,10 @@ namespace Client.MVVM.Model
             var localUser = GetLocalUser(localUserKey);
             var userDirectoryPath = ResolvePath(false, localUserKey);
 
-            var pc = new PasswordCryptography();
-            pc.EncryptDirectory(reporter,
+            FileEncryptor.EncryptDirectory(reporter,
                 userDirectoryPath,
-                pc.ComputeDigest(password, localUser.DbSalt),
+                PasswordCryptography.ComputeDigest(
+                    password, localUser.DbSalt, Aes.KEY_LENGTH),
                 localUser.DbInitializationVector);
         }
 
@@ -434,10 +435,10 @@ namespace Client.MVVM.Model
             var localUser = GetLocalUser(localUserKey);
             var userDirectoryPath = ResolvePath(false, localUserKey);
 
-            var pc = new PasswordCryptography();
-            pc.DecryptDirectory(reporter,
+            FileEncryptor.DecryptDirectory(reporter,
                 userDirectoryPath,
-                pc.ComputeDigest(password, localUser.DbSalt),
+                PasswordCryptography.ComputeDigest(
+                    password, localUser.DbSalt, Aes.KEY_LENGTH),
                 localUser.DbInitializationVector);
 
             // Nie wywołujemy, bo usuwa poza procedurą CRUDa.

@@ -1,9 +1,9 @@
 ﻿using Client.MVVM.Model;
 using Newtonsoft.Json;
 using Shared.MVVM.Core;
+using Shared.MVVM.Model.Cryptography;
 using System;
 using System.Security;
-using System.Security.Cryptography;
 
 namespace Client.MVVM.ViewModel.Observables
 {
@@ -37,11 +37,10 @@ namespace Client.MVVM.ViewModel.Observables
             get => _dbInitializationVector;
             set
             {
-                /* IV musi mieć długość równą długości bloku (dla Rijndaela zgodnego ze
-                specyfikacją AESa blok musi być 128-bitowy). */
-                if (value.Length != 128 / 8)
-                    throw new ArgumentException("Database initialization vector is not 128 bits long.",
-                        nameof(value));
+                // IV musi mieć długość równą długości bloku
+                if (value.Length != Aes.BLOCK_LENGTH)
+                    throw new ArgumentException("Database initialization vector " +
+                        $"is not {Aes.KEY_LENGTH} bytes long.", nameof(value));
                 _dbInitializationVector = value;
             }
         }
@@ -52,9 +51,9 @@ namespace Client.MVVM.ViewModel.Observables
             get => _dbSalt;
             set
             {
-                // Używamy 128-bitowych kluczy w AES.
-                if (value.Length != 128 / 8)
-                    throw new ArgumentException("Database salt is not 128 bits long.", nameof(value));
+                if (value.Length != Aes.KEY_LENGTH)
+                    throw new ArgumentException("Database salt is not " +
+                        $"{Aes.BLOCK_LENGTH} bytes long.", nameof(value));
                 _dbSalt = value;
             }
         }
@@ -69,22 +68,14 @@ namespace Client.MVVM.ViewModel.Observables
             ResetPassword(password);
         }
 
-        private byte[] GenerateRandom(int byteCount)
-        {
-            var bytes = new byte[byteCount];
-            using (var rng = RandomNumberGenerator.Create())
-                rng.GetBytes(bytes);
-            return bytes;
-        }
-
         public void ResetPassword(SecureString newPassword)
         {
-            var pc = new PasswordCryptography();
-            var passwordSalt = GenerateRandom(128 / 8); // 128 b sól
+            var passwordSalt = RandomGenerator.Generate(128 / 8); // 128 b sól
             PasswordSalt = passwordSalt;
-            PasswordDigest = pc.ComputeDigest(newPassword, passwordSalt); // 128 b - rozmiar klucza AESa
-            DbInitializationVector = GenerateRandom(128 / 8); // 128 b - rozmiar bloku AESa
-            DbSalt = GenerateRandom(128 / 8); // 128 b sól
+            // 128 b - rozmiar klucza AESa
+            PasswordDigest = PasswordCryptography.ComputeDigest(newPassword, passwordSalt, 128 / 8);
+            DbInitializationVector = RandomGenerator.Generate(128 / 8); // 128 b - rozmiar bloku AESa
+            DbSalt = RandomGenerator.Generate(128 / 8); // 128 b sól
         }
 
         public LocalUserPrimaryKey GetPrimaryKey()

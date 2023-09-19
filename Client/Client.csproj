@@ -181,6 +181,7 @@
     <Compile Include="MVVM\Model\BsonStorages\LocalUsersStorage.cs" />
     <Compile Include="MVVM\Model\BsonStorages\ServersStorage.cs" />
     <Compile Include="MVVM\Model\Client.cs" />
+    <Compile Include="MVVM\Model\FileEncryptor.cs" />
     <Compile Include="MVVM\Model\FileSystemStorages\DirectoryFileSystemStorage.cs" />
     <Compile Include="MVVM\Model\FileSystemStorages\FileFileSystemStorage.cs" />
     <Compile Include="MVVM\Model\FileSystemStorages\FileSystemStorage.cs" />

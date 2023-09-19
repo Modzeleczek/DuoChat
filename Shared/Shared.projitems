@@ -17,6 +17,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Cryptography\Aes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Cryptography\PrivateKey.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Cryptography\PublicKey.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Cryptography\RandomGenerator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Cryptography\Rsa.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Cryptography\RsaKey.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Client.cs" />

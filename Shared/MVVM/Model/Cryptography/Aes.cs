@@ -1,4 +1,4 @@
-﻿using Shared.MVVM.Core;
+using Shared.MVVM.Core;
 using System;
 using System.IO;
 using System.Security.Cryptography;
@@ -8,6 +8,11 @@ namespace Shared.MVVM.Model.Cryptography
 {
     public class Aes
     {
+        /* Dla algorytmu Rijndael zgodnego ze specyfikacją AESa
+        blok (na które przy szyfrowaniu jest dzielony tekst jawny)
+        musi być 128-bitowy. */
+        public const int KEY_LENGTH = 256 / 8, BLOCK_LENGTH = 128 / 8;
+
         private byte[] key, iv;
 
         public Aes(byte[] key, byte[] iv)

@@ -15,8 +15,6 @@ namespace Client.MVVM.ViewModel.LocalUsers
         public LocalLoginViewModel(Storage storage,
             LocalUserPrimaryKey localUserKey, bool returnEnteredPassword)
         {
-            var pc = new PasswordCryptography();
-
             WindowLoaded = new RelayCommand(e =>
             {
                 var win = (FormWindow)e;
@@ -32,7 +30,8 @@ namespace Client.MVVM.ViewModel.LocalUsers
                 var localUser = storage.GetLocalUser(localUserKey);
 
                 var password = ((PasswordBox)fields[0]).SecurePassword;
-                if (!pc.DigestsEqual(password, localUser.PasswordSalt, localUser.PasswordDigest))
+                if (!PasswordCryptography.DigestsEqual(
+                    password, localUser.PasswordSalt, localUser.PasswordDigest))
                 {
                     Alert("|Wrong password.|");
                     return;
