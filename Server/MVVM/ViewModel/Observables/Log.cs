@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text;
 
 namespace Server.MVVM.ViewModel.Observables
@@ -10,7 +10,8 @@ namespace Server.MVVM.ViewModel.Observables
         #endregion
 
         #region Fields
-        private object _syncRoot = new object(); // przenieść do nadklasy SharedState
+        // TODO: przenieść do nadklasy SharedState
+        private object _syncRoot = new object();
         #endregion
 
         #region Events
@@ -21,8 +22,7 @@ namespace Server.MVVM.ViewModel.Observables
         {
             lock (_syncRoot)
             {
-                _stringBuilder.Append(text);
-                _stringBuilder.Append('\n');
+                _stringBuilder.Append($"{DateTime.UtcNow}: {text}\n");
                 ChangedState(_stringBuilder);
             }
         }
