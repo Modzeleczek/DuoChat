@@ -186,6 +186,7 @@
     <Compile Include="MVVM\Model\FileSystemStorages\FileSystemStorage.cs" />
     <Compile Include="MVVM\Model\FileSystemStorages\LocalUsersFileSystemStorage.cs" />
     <Compile Include="MVVM\Model\FileSystemStorages\ServersFileSystemStorage.cs" />
+    <Compile Include="MVVM\Model\JsonConverters\PublicKeyJsonConverter.cs" />
     <Compile Include="MVVM\Model\LocalUserPrimaryKey.cs" />
     <Compile Include="MVVM\Model\ServerPrimaryKey.cs" />
     <Compile Include="MVVM\Model\SQLiteStorage\Repositories\AccountRepository.cs" />

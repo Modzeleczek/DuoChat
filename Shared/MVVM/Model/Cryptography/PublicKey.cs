@@ -69,5 +69,17 @@ namespace Shared.MVVM.Model.Cryptography
             par.Modulus = _modulus;
             rsa.ImportParameters(par);
         }
+
+        public static PublicKey FromBytesNoLength(byte[] bytes)
+        {
+            return new PublicKey(bytes);
+        }
+
+        public byte[] ToBytesNoLength()
+        {
+            /* BSON i SQLite zapisują długość tablicy bajtów, więc nie
+            musimy sami go zapisywać jak w metodzie ToBytes. */
+            return _modulus;
+        }
     }
 }

@@ -36,6 +36,7 @@ namespace Client.MVVM.ViewModel.Observables
 
         public Guid Guid { get; set; } = Guid.Empty;
 
+        [JsonProperty, JsonConverter(typeof(PublicKeyJsonConverter))]
         public PublicKey PublicKey { get; set; } = null;
         #endregion
 
