@@ -310,8 +310,12 @@ namespace Shared.MVVM.Model.Cryptography
             /* if (bi.Sign == -1)
                 throw new Exception($"Generated prime number cannot be negative."); */
             byte[] bytes = bi.ToByteArray();
-            bytes[bytes.Length - 1] &= 0b0111_1111; // tylko zerujemy bit znaku, ale nie wyznaczamy wartości bezwzględnej, jeżeli bi ujemne, bo zakładamy, że jest dodatnie
-            // jeżeli najbardziej znaczący bajt przechowuje tylko bit znaku i między nim a właściwą liczbą same nieznaczące zera
+            /* Tylko zerujemy bit znaku, ale nie wyznaczamy wartości bezwzględnej,
+            jeżeli bi ujemne, bo zakładamy, że jest dodatnie. */
+            bytes[bytes.Length - 1] &= 0b0111_1111;
+            /* Jeżeli najbardziej znaczący bajt przechowuje tylko bit znaku i między
+            nim a właściwą liczbą same nieznaczące zera, to usuwamy najbardziej
+            znaczący bajt, aby zaoszczędzić pamięć. */
             if (bytes[bytes.Length - 1] == 0b0000_0000)
                 Array.Resize(ref bytes, bytes.Length - 1);
             Reverse(bytes);
@@ -336,7 +340,9 @@ namespace Shared.MVVM.Model.Cryptography
             byte[] clone = null;
             if ((number[0] & 0b1000_0000) != 0)
             {
-                // dodajemy nowy bajt przechowujący najbardziej znaczący bit znaku równy 0 i 7 bitów równych 0
+                /* Dodajemy nowy bajt przechowujący najbardziej znaczący bit znaku
+                równy 0 i 7 bitów równych 0, aby BigInteger nie potraktował bajtów
+                jako liczbę ujemną. */
                 clone = new byte[number.Length + 1];
                 number.CopyTo(clone, 1);
                 number[0] = 0b0000_0000;
