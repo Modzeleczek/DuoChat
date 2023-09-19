@@ -42,6 +42,11 @@ namespace Shared.MVVM.ViewModel.LongBlockingOperation
             CoarseProgress = 0;
         }
 
+        // Do mockowania ProgressReportera.
+        public ProgressReporter(DoWorkEventArgs args)
+            : this(new BackgroundWorker { WorkerReportsProgress = true }, args) 
+        { }
+
         private void UpdateWorkerProgress() =>
             worker.ReportProgress((int)
                 // cp / cmax + fp / fmax * 1 / cmax = (cp + fp / fmax) / cmax

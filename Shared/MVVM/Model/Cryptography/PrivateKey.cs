@@ -1,6 +1,7 @@
 using Shared.MVVM.ViewModel.LongBlockingOperation;
 using Shared.MVVM.ViewModel.Results;
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Numerics;
 using System.Runtime.InteropServices;
@@ -21,6 +22,21 @@ namespace Shared.MVVM.Model.Cryptography
         {
             _p = p;
             _q = q;
+        }
+
+        public static PrivateKey Random(int numberOfBits = 256 * 8,
+            int enabledBitIndex = 64 * 8)
+        {
+            // Generujemy z mockowym ProgressReporterem.
+            var doWorkEventArgs = new DoWorkEventArgs(null);
+            var progressReporter = new ProgressReporter(doWorkEventArgs);
+            Random(progressReporter, numberOfBits, enabledBitIndex);
+            /* Jeżeli RandomInner wyrzuci wyjątek ArgumentException, to wyleci on
+            do miejsca wywołania Random(int, int). Nie trzeba opakowywać go
+            w obiekt typu Failure. */
+            var result = doWorkEventArgs.Result;
+            // Cancellation jest niemożliwe, bo nie ma interakcji ze strony użytkownika.
+            return (PrivateKey)((Success)result).Data;
         }
 
         public static void Random(ProgressReporter reporter,
