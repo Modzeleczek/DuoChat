@@ -50,12 +50,12 @@ namespace Shared.MVVM.Model.Cryptography
                 else // najmniej znaczący bit jest 1
                     q |= (one << (64 * 8));
 
-                p = FirstProbablePrimeGreaterThan(p);
+                p = FirstProbablePrimeGreaterOrEqual(p);
                 reporter.FineProgress = 1;
                 if (reporter.CancellationPending)
                     return new Cancellation();
 
-                q = FirstProbablePrimeGreaterThan(q);
+                q = FirstProbablePrimeGreaterOrEqual(q);
                 reporter.FineProgress = 2;
                 if (reporter.CancellationPending)
                     return new Cancellation();
@@ -200,7 +200,7 @@ namespace Shared.MVVM.Model.Cryptography
             }
         }
 
-        private static BigInteger FirstProbablePrimeGreaterThan(BigInteger min)
+        private static BigInteger FirstProbablePrimeGreaterOrEqual(BigInteger min)
         {
             /* test pierwszości Millera-Rabina stwierdza, że liczba jest złożona lub prawdopodobnie (ale nie na pewno) pierwsza; trzeci parametr mpz_probable_prime_p równy np. 100 oznacza, że chcemy, aby prawdopodobieństwo, że liczba złożona jest nazwana pierwszą, wynosiło 2^(-100) */
             byte[] bytes;
@@ -211,7 +211,7 @@ namespace Shared.MVVM.Model.Cryptography
                 uint length;
                 // blokujemy pozycję tablicy minBytes w pamięci na czas wywołania funkcji, aby w tym czasie GC nie przesunął tablicy w inne miejsce, przez co wskaźnik minPtr przestałby poprawnie wskazywać na tablicę
                 fixed (byte* minPtr = minBytes)
-                    if (first_probable_prime_greater_than(minPtr, (uint)minBytes.Length, -1,
+                    if (first_probable_prime_greater_or_equal(minPtr, (uint)minBytes.Length, -1,
                         &primePtr, &length) < 0)
                         throw new ExternalException("Cannot generate random probable prime number.");
                 // jeżeli najbardziej znaczący bit ostatniego bajtu liczby jest 1, to dodanie ostatniego bajtu równego 0, którego najbardziej znaczący bit jest 0, powoduje, że BigInteger jest nieujemny
@@ -302,7 +302,7 @@ namespace Shared.MVVM.Model.Cryptography
 
         [DllImport(DLL_PATH, CallingConvention = CONVENTION)]
         unsafe private static extern
-            int first_probable_prime_greater_than
+            int first_probable_prime_greater_or_equal
             (byte* min_bytes, uint min_length, sbyte endian,
             byte** prime_bytes, uint* prime_length);
 

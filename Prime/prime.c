@@ -216,7 +216,7 @@ EXPORT int probable_prime_between(UINT8* min_bytes, UINT32 min_length,
     return 0;
 }
 
-EXPORT int first_probable_prime_greater_than(UINT8* min_bytes, UINT32 min_length, INT8 endian,
+EXPORT int first_probable_prime_greater_or_equal(UINT8* min_bytes, UINT32 min_length, INT8 endian,
     UINT8** prime_bytes, UINT32* prime_length)
 {
     mpz_t temp_mpz;
