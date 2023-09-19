@@ -23,20 +23,28 @@ namespace Shared.MVVM.Model.Cryptography
             _q = q;
         }
 
-        public static void Random(ProgressReporter reporter)
+        public static void Random(ProgressReporter reporter,
+            int numberOfBits = 256 * 8, int enabledBitIndex = 64 * 8)
         {
-            reporter.Result = RandomInner(reporter);
+            reporter.Result = RandomInner(reporter, numberOfBits, enabledBitIndex);
         }
 
-        private static Result RandomInner(ProgressReporter reporter)
+        private static Result RandomInner(ProgressReporter reporter,
+            int numberOfBits = 256 * 8, int enabledBitIndex = 64 * 8)
         {
+            /* enabledBitIndex gwarantuje, że wartość wygenerowanego
+            klucza prywatnego będzie większa lub równa 2^enabledBitIndex. */
+            if (enabledBitIndex > numberOfBits - 1)
+                throw new ArgumentException("enabledBitIndex must be less than numberOfBits",
+                    nameof(enabledBitIndex));
+
             reporter.FineMax = 2;
             reporter.FineProgress = 0;
             using (var rng = RandomNumberGenerator.Create())
             {
                 // generujemy 2 losowe liczby z zakresu <0, 2^(8*128)-1>
-                BigInteger p = GenerateRandom(128 * 8, false, rng);
-                BigInteger q = GenerateRandom(128 * 8, false, rng);
+                BigInteger p = GenerateRandom(numberOfBits / 2, false, rng);
+                BigInteger q = GenerateRandom(numberOfBits / 2, false, rng);
                 /* Zapewniamy, że losowo wybrana liczba spośród losowych liczb p i q,
                 jest większa lub równa 2^(8*64) = 2^512. Wówczas iloczyn p*q (q >= 2)
                 zawsze jest większy lub równy 2^512. Włączamy najmniej znaczący bit
@@ -46,9 +54,9 @@ namespace Shared.MVVM.Model.Cryptography
                 rng.GetBytes(randomByte);
                 // najmniej znaczący bit jest 0
                 if ((randomByte[0] & 0b0000_0001) == 0)
-                    p |= (one << (64 * 8));
+                    p |= (one << enabledBitIndex);
                 else // najmniej znaczący bit jest 1
-                    q |= (one << (64 * 8));
+                    q |= (one << enabledBitIndex);
 
                 p = FirstProbablePrimeGreaterOrEqual(p);
                 reporter.FineProgress = 1;
@@ -60,6 +68,8 @@ namespace Shared.MVVM.Model.Cryptography
                 if (reporter.CancellationPending)
                     return new Cancellation();
 
+                /* TODO: sprawdzać, czy wygenerowane p i q są mniejsze
+                lub równe 2^(8*numberOfBits) - 1. */
                 return new Success(new PrivateKey(
                     ToUnsignedBigEndian(p), ToUnsignedBigEndian(q)));
             }
