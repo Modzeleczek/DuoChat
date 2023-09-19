@@ -35,8 +35,8 @@ namespace Shared.MVVM.Model.Cryptography
             using (var rng = RandomNumberGenerator.Create())
             {
                 // generujemy 2 losowe liczby z zakresu <0, 2^(8*128)-1>
-                BigInteger p = GenerateRandom(128, false, rng);
-                BigInteger q = GenerateRandom(128, false, rng);
+                BigInteger p = GenerateRandom(128 * 8, false, rng);
+                BigInteger q = GenerateRandom(128 * 8, false, rng);
                 /* Zapewniamy, że losowo wybrana liczba spośród losowych liczb p i q,
                 jest większa lub równa 2^(8*64) = 2^512. Wówczas iloczyn p*q (q >= 2)
                 zawsze jest większy lub równy 2^512. Włączamy najmniej znaczący bit
@@ -224,16 +224,55 @@ namespace Shared.MVVM.Model.Cryptography
             return new BigInteger(bytes);
         }
 
-        private static BigInteger GenerateRandom(int octetCount, bool sign, RandomNumberGenerator rng)
+        private static BigInteger GenerateRandom(int bitCount, bool sign,
+            RandomNumberGenerator rng)
         {
-            byte[] octets = new byte[octetCount];
-            rng.GetBytes(octets);
-            // losowe są bity o indeksach od 0 do byteCount*8-2, bo ostatni ustawiamy w zależności od pożądanego znaku liczby
-            if (sign == false) // nieujemna
-                octets[octets.Length - 1] &= 0b0111_1111;
-            else // ujemna
-                octets[octets.Length - 1] |= 0b1000_0000;
-            return new BigInteger(octets);
+            // Jeżeli sign == true, to generujemy liczbę ujemną.
+            if (bitCount <= 0)
+                throw new ArgumentException("bitCount must be greater than 0",
+                    nameof(bitCount));
+
+            /* bitCount to liczba bitów liczby łącznie z bitem znaku.
+            Losowo generujemy tylko bitCount-1 bitów (bez bitu znaku). */
+            int byteCount = bitCount / 8; // >> 3
+            int remainder = bitCount % 8; // & 7
+            if (remainder > 0)
+                byteCount += 1;
+            // Alternatywa
+            // int byteCount = bitCount / 8 + ((bitCount % 8) + 7) / 8;
+
+            byte[] bytes = new byte[byteCount];
+            rng.GetBytes(bytes);
+
+            int lastIndex = bytes.Length - 1;
+            /* Wyłączamy z ostatniego bajtu niepotrzebnie wygenerowane bity,
+            np. dla bitCount = 6, potrzebujemy tylko 6 bitów, a wygenerowaliśmy
+            cały bajt, więc wyłączamy jego 2 najstarsze bity i 1 bit znaku.
+            bitCount    bytes[lastIndex] &  1111_1111 >>
+            0           -                   -           liczba nie istnieje
+            1           z000_0000           8           tylko bit znaku
+            2           z000_0001           7
+            3           z000_0011           6
+            4           z000_0111           5
+            5           z000_1111           4
+            6           z001_1111           3
+            7           z011_1111           2
+            8           z111_1111           1
+            9           z000_0000 1111_1111 8
+            ... */
+            bytes[lastIndex] &= (byte)(0b1111_1111 >> (8 - ((bitCount - 1) % 8)));
+
+            /* Wyłączamy najbardziej znaczący bit najbardziej
+            znaczącego bajtu (bit znaku). */
+            bytes[lastIndex] &= 0b0111_1111;
+
+            /* Mamy liczbę bez znaku (unsigned) o wartości
+            z przedziału <0, 2^bitCount - 1>. */
+            var ret = new BigInteger(bytes);
+            if (!sign) // Nieujemna - zwracamy bez zmian.
+                return ret;
+            else // Ujemna - wykonujemy negację i zwiększenie o 1.
+                return -ret;
         }
 
         private static byte[] ToUnsignedBigEndian(BigInteger bi)
