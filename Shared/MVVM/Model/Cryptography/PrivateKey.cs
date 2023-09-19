@@ -12,12 +12,14 @@ namespace Shared.MVVM.Model.Cryptography
 {
     public class PrivateKey : RsaKey
     {
+        #region Fields
         private const string DLL_PATH = "Prime.dll";
         private const CallingConvention CONVENTION = CallingConvention.Cdecl;
 
         // unsigned bit-endian - P[0] to najbardziej znaczący bajt liczby
         private byte[] _p;
         private byte[] _q;
+        #endregion
 
         private PrivateKey(byte[] p, byte[] q)
         {
