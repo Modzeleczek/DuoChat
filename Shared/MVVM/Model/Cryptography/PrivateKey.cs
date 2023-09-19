@@ -1,3 +1,4 @@
+using Shared.MVVM.Core;
 using Shared.MVVM.ViewModel.LongBlockingOperation;
 using Shared.MVVM.ViewModel.Results;
 using System;
@@ -94,19 +95,12 @@ namespace Shared.MVVM.Model.Cryptography
         public static bool TryParse(string text, out PrivateKey ret)
         {
             ret = null;
-            if (text == null) return false;
-            var split = text.Split(';');
-            if (split.Length != 2) return false;
             try
             {
-                byte[] p = Convert.FromBase64String(split[0]);
-                if (!IsProbablePrime(p)) return false;
-                byte[] q = Convert.FromBase64String(split[1]);
-                if (!IsProbablePrime(q)) return false;
-                ret = new PrivateKey(p, q);
+                ret = Parse(text);
                 return true;
             }
-            catch (FormatException)
+            catch (Error)
             {
                 return false;
             }
@@ -165,6 +159,8 @@ namespace Shared.MVVM.Model.Cryptography
             if (reporter.CancellationPending)
                 return new Cancellation();
 
+            /* TODO: sprawdzać, czy sparsowane p i q są mniejsze
+            lub równe 2^(8*128) - 1. */
             return new Success(new PrivateKey(p, q));
         }
 
@@ -182,9 +178,14 @@ namespace Shared.MVVM.Model.Cryptography
 
         public static PrivateKey Parse(string text)
         {
-            if (!TryParse(text, out PrivateKey value))
-                throw new FormatException("Invalid PrivateKey format.");
-            return value;
+            var doWorkEventArgs = new DoWorkEventArgs(null);
+            var progressReporter = new ProgressReporter(doWorkEventArgs);
+            Parse(progressReporter, text);
+            var result = doWorkEventArgs.Result;
+            // Cancellation jest niemożliwe, bo nie ma interakcji ze strony użytkownika.
+            if (result is Failure failure)
+                throw failure.Reason;
+            return (PrivateKey)((Success)result).Data;
         }
 
         public override string ToString()
