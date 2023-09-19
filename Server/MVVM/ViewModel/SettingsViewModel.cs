@@ -14,10 +14,12 @@ namespace Server.MVVM.ViewModel
 {
     public class SettingsViewModel : UserControlViewModel
     {
+        #region Classes
         private class SettingsJson
         {
             public string Guid, PrivateKey, IpAddress, Port, Capacity;
         }
+        #endregion
 
         #region Commands
         public RelayCommand ToggleServer { get; }
@@ -74,7 +76,9 @@ namespace Server.MVVM.ViewModel
         }
         #endregion
 
+        #region Fields
         private const string PATH = "settings.json";
+        #endregion
 
         public SettingsViewModel(DialogWindow owner, Model.Server server)
             : base(owner)
