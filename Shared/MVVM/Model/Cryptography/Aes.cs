@@ -15,6 +15,12 @@ namespace Shared.MVVM.Model.Cryptography
 
         private byte[] key, iv;
 
+        public static (byte[], byte[]) GenerateKeyIv()
+        {
+            return (RandomGenerator.Generate(KEY_LENGTH),
+                RandomGenerator.Generate(BLOCK_LENGTH));
+        }
+
         public Aes(byte[] key, byte[] iv)
         {
             this.key = key;

@@ -75,8 +75,12 @@ namespace Client.MVVM.ViewModel.Observables
             (PasswordSalt, PasswordDigest) =
                 PasswordCryptography.GenerateSaltDigest(newPassword);
 
-            DbInitializationVector = RandomGenerator.Generate(128 / 8); // 128 b - rozmiar bloku AESa
-            DbSalt = RandomGenerator.Generate(128 / 8); // 128 b sól
+            /* Do szyfrowania AES katalogu lokalnego użytkownika:
+            - sól inna niż użyta do obliczenia skrótu hasła; ta sól ma
+            rozmiar taki sam jak klucz AES, którym szyfrujemy katalog
+            lokalnego użytkownika
+            - wektor inicjujący (IV) */
+            (DbSalt, DbInitializationVector) = Aes.GenerateKeyIv();
         }
 
         public LocalUserPrimaryKey GetPrimaryKey()
