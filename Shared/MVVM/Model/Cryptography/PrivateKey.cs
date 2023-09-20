@@ -344,13 +344,13 @@ namespace Shared.MVVM.Model.Cryptography
                 równy 0 i 7 bitów równych 0, aby BigInteger nie potraktował bajtów
                 jako liczbę ujemną. */
                 clone = new byte[number.Length + 1];
-                number.CopyTo(clone, 1);
+                Buffer.BlockCopy(number, 0, clone, 1, number.Length);
                 clone[0] = 0b0000_0000;
             }
             else
             {
                 clone = new byte[number.Length];
-                number.CopyTo(clone, 0);
+                Buffer.BlockCopy(number, 0, clone, 0, number.Length);
             }
             // odwracamy kolejność bajtów
             Reverse(clone);
