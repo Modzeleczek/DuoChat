@@ -138,6 +138,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="MVVM\Model\Client.cs" />
+    <Compile Include="MVVM\Model\Persistence\Database.cs" />
+    <Compile Include="MVVM\Model\Persistence\DTO\UserDTO.cs" />
+    <Compile Include="MVVM\Model\Persistence\Repositories\UserRepository.cs" />
+    <Compile Include="MVVM\Model\Persistence\Storage.cs" />
     <Compile Include="MVVM\Model\Server.cs" />
     <Compile Include="MVVM\ViewModel\AccountsViewModel.cs" />
     <Compile Include="MVVM\ViewModel\ConnectedClientsViewModel.cs" />
@@ -206,6 +210,9 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="MVVM\Model\Persistence\database.sql" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="..\Shared\Shared.projitems" Label="Shared" />
