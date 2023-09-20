@@ -2,6 +2,7 @@ using System.IO;
 using System;
 using System.Security.Cryptography;
 using Shared.MVVM.Core;
+using System.Net;
 
 namespace Shared.MVVM.Model.Cryptography
 {
@@ -38,16 +39,26 @@ namespace Shared.MVVM.Model.Cryptography
 
         public static PublicKey FromBytes(byte[] bytes)
         {
-            using (var ms = new MemoryStream(bytes))
+            return FromBytes(bytes, 0, bytes.Length);
+        }
+
+        public static PublicKey FromBytes(byte[] bytes, int startIndex, int count)
+        {
+            using (var ms = new MemoryStream(bytes, startIndex, count))
             {
                 var lengthBuffer = new byte[LENGTH_BYTE_COUNT];
+                if (ms.Read(lengthBuffer, 0, LENGTH_BYTE_COUNT) != LENGTH_BYTE_COUNT)
+                    throw new Error("|Error occured while| |reading| " +
+                        "|public key length| |from byte sequence|.");
 
-                ms.Read(lengthBuffer, 0, LENGTH_BYTE_COUNT);
-                ushort modulusLength = BitConverter.ToUInt16(lengthBuffer, 0);
-                var modulus = new byte[modulusLength];
-                ms.Read(modulus, 0, modulusLength);
+                short signedLength = BitConverter.ToInt16(lengthBuffer, 0);
+                ushort length = (ushort)IPAddress.NetworkToHostOrder(signedLength);
+                var modulusBuffer = new byte[length];
+                if (ms.Read(modulusBuffer, 0, length) != length)
+                    throw new Error("|Error occured while| |reading| " +
+                        "|public key value| |from byte sequence|.");
 
-                return new PublicKey(modulus);
+                return new PublicKey(modulusBuffer);
             }
         }
 
@@ -55,7 +66,8 @@ namespace Shared.MVVM.Model.Cryptography
         {
             using (var ms = new MemoryStream())
             {
-                ms.Write(BitConverter.GetBytes((ushort)_modulus.Length), 0, LENGTH_BYTE_COUNT);
+                short signedLength = IPAddress.HostToNetworkOrder((short)_modulus.Length);
+                ms.Write(BitConverter.GetBytes(signedLength), 0, LENGTH_BYTE_COUNT);
                 ms.Write(_modulus, 0, _modulus.Length);
 
                 return ms.ToArray();

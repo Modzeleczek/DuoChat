@@ -291,6 +291,11 @@
   <l:Entry x:Key="Client connected." PL="Klient się połączył."/>
   <l:Entry x:Key="Server stopped." PL="Serwer zatrzymany."/>
 
+  <l:Entry x:Key="reading" PL="odczytywania"/>
+  <l:Entry x:Key="public key length" PL="długości klucza publicznego"/>
+  <l:Entry x:Key="public key value" PL="wartości klucza publicznego"/>
+  <l:Entry x:Key="from byte sequence" PL="z ciągu bajtów"/>
+
   <!-- do klienta i serwera -->
   <!-- klucze używane w plikach .xaml - muszą być prawidłowymi nazwami zmiennych -->
   <l:Entry x:Key="Settings" PL="Ustawienia"/>
