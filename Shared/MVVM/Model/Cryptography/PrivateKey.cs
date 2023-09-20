@@ -345,7 +345,7 @@ namespace Shared.MVVM.Model.Cryptography
                 jako liczbę ujemną. */
                 clone = new byte[number.Length + 1];
                 number.CopyTo(clone, 1);
-                number[0] = 0b0000_0000;
+                clone[0] = 0b0000_0000;
             }
             else
             {
