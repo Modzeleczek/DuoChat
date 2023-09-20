@@ -70,10 +70,8 @@
   <l:Entry x:Key="does not contain" PL="nie zawiera"/>
   <l:Entry x:Key="valid BSON structure" PL="poprawnej struktury BSON"/>
   <l:Entry x:Key="Error occured while" PL="Wystąpił błąd podczas"/>
-  <l:Entry x:Key="creating" PL="tworzenia"/>
   <l:Entry x:Key="create" PL="stworzyć"/>
   <l:Entry x:Key="renaming" PL="zmiany nazwy"/>
-  <l:Entry x:Key="deleting" PL="usuwania"/>
   <l:Entry x:Key="user." PL="użytkownika."/>
   <l:Entry x:Key="the newly-added" PL="nowo dodanego"/>
   <l:Entry x:Key="restore" PL="przywrócić"/>
@@ -85,7 +83,6 @@
   <l:Entry x:Key="subdirectory" PL="podkatalogu"/>
 
   <l:Entry x:Key="Directory entry" PL="Wpis katalogu"/>
-  <l:Entry x:Key="server's SQLite file" PL="pliku SQLite serwera"/>
   <l:Entry x:Key="server." PL="serwera."/>
   <l:Entry x:Key="server's SQLite schema" PL="schematu SQLite serwera"/>
   <l:Entry x:Key="delete" PL="usunąć"/>
@@ -173,12 +170,6 @@
     PL="tworzenia listy wpisów w katalogu"/>
   <l:Entry x:Key="ensuring valid user database state."
     PL="zapewniania poprawnego stanu bazy danych użytkowników."/>
-  <l:Entry x:Key="SQLite integrity check returned more than single 'ok' row."
-    PL="Sprawdzenie integralności SQLite zwróciło więcej niż pojedynczy wiersz 'ok'."/>
-  <l:Entry x:Key="SQLite integrity check returned no rows."
-    PL="Sprawdzenie integralności SQLite nie zwróciło żadnego wiersza."/>
-  <l:Entry x:Key="executing SQLite integrity check."
-    PL="wykonywania sprawdzenia integralności SQLite."/>
   <l:Entry x:Key="servers" PL="serwerów"/>
   <l:Entry x:Key="files" PL="plików"/>
   <l:Entry x:Key="ensuring valid server database state."
@@ -365,4 +356,13 @@
     PL="Niespodziewane zakończenie połączenia."/>
   <l:Entry x:Key="Interlocutor crashed." PL="Rozmówca zcrashował."/>
 
+  <l:Entry x:Key="creating" PL="tworzenia"/>
+  <l:Entry x:Key="deleting" PL="usuwania"/>
+  <l:Entry x:Key="server's SQLite file" PL="pliku SQLite serwera"/>
+  <l:Entry x:Key="SQLite integrity check returned more than single 'ok' row."
+    PL="Sprawdzenie integralności SQLite zwróciło więcej niż pojedynczy wiersz 'ok'."/>
+  <l:Entry x:Key="SQLite integrity check returned no rows."
+    PL="Sprawdzenie integralności SQLite nie zwróciło żadnego wiersza."/>
+  <l:Entry x:Key="executing SQLite integrity check."
+    PL="wykonywania sprawdzenia integralności SQLite."/>
 </ResourceDictionary>
