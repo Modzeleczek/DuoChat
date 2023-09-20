@@ -138,5 +138,12 @@ namespace Client.MVVM.Model
                 if (ptr != IntPtr.Zero) Marshal.ZeroFreeBSTR(ptr);
             }
         }
+
+        public static (byte[], byte[]) GenerateSaltDigest(SecureString password)
+        {
+            var salt = RandomGenerator.Generate(PASSWORD_SALT_LENGTH);
+            var digest = ComputeDigest(password, salt, PASSWORD_DIGEST_LENGTH);
+            return (salt, digest);
+        }
     }
 }

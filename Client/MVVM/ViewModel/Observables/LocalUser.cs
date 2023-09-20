@@ -70,10 +70,11 @@ namespace Client.MVVM.ViewModel.Observables
 
         public void ResetPassword(SecureString newPassword)
         {
-            var passwordSalt = RandomGenerator.Generate(128 / 8); // 128 b sól
-            PasswordSalt = passwordSalt;
-            // 128 b - rozmiar klucza AESa
-            PasswordDigest = PasswordCryptography.ComputeDigest(newPassword, passwordSalt, 128 / 8);
+            /* Za pomocą PBKDF2 z hasła i soli generujemy skrót hasła, który
+            przechowujemy w BSONie. */
+            (PasswordSalt, PasswordDigest) =
+                PasswordCryptography.GenerateSaltDigest(newPassword);
+
             DbInitializationVector = RandomGenerator.Generate(128 / 8); // 128 b - rozmiar bloku AESa
             DbSalt = RandomGenerator.Generate(128 / 8); // 128 b sól
         }
