@@ -5,8 +5,8 @@ namespace Client.MVVM.Model
 {
     public struct ServerPrimaryKey
     {
-        public IPv4Address IpAddress { get; set; }
-        public Port Port { get; set; }
+        public IPv4Address IpAddress { get; }
+        public Port Port { get; }
 
         public ServerPrimaryKey(IPv4Address ipAddress, Port port)
         {
