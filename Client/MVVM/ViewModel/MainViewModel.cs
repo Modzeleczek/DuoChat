@@ -143,9 +143,7 @@ namespace Client.MVVM.ViewModel
                     try
                     {
                         // Synchroniczne łączenie.
-                        var serverKey = SelectedServer.GetPrimaryKey();
-                        _client.Connect(serverKey.IpAddress.ToIPAddress(),
-                            serverKey.Port.Value);
+                        _client.Connect(SelectedServer.GetPrimaryKey());
                         var cnvCnt = rng.Next(0, 5);
                         for (int i = 0; i < cnvCnt; ++i)
                             Conversations.Add(Conversation.Random(rng));

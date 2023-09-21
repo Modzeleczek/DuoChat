@@ -17,7 +17,7 @@ namespace Client.MVVM.Model
 
         public Client() { }
 
-        public void Connect(IPAddress ipAddress, int port)
+        public void Connect(ServerPrimaryKey serverKey)
         {
             Error error = null;
             // https://stackoverflow.com/a/43237063
@@ -31,7 +31,8 @@ namespace Client.MVVM.Model
                 using (var cts = new CancellationTokenSource(timeOut))
                 {
                     // rozpoczynamy taska "łączącego", który łączy TcpClienta z serwerem
-                    var task = _socket.ConnectAsync(ipAddress, port);
+                    var task = _socket.ConnectAsync(
+                        serverKey.IpAddress.ToIPAddress(), serverKey.Port.Value);
                     /* ustawiamy funkcję, która zostanie wykonana w momencie anulowania taska
                     obiektu CancellationTokenSource (czyli po czasie timeOut) */
                     using (cts.Token.Register(() => cancellationCompletionSource.TrySetResult(true)))
