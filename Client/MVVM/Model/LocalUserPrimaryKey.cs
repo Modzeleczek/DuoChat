@@ -4,7 +4,7 @@ namespace Client.MVVM.Model
 {
     public struct LocalUserPrimaryKey
     {
-        public string Name { get; set; }
+        public string Name { get; }
 
         public LocalUserPrimaryKey(string name)
         {
