@@ -73,5 +73,10 @@ namespace Shared.MVVM.View.Windows
             closeStoryboardCompleted = true;
             Close(); // wywołanie Close powoduje wykonanie handlera Window_Closing eventu Closing
         }
+
+        public void SetEnabled(bool enabled)
+        {
+            IsEnabled = enabled;
+        }
     }
 }

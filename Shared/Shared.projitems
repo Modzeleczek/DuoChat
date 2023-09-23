@@ -9,7 +9,6 @@
     <Import_RootNamespace>Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)MVVM\Core\Callback.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Core\Error.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Core\ExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Core\ObservableObject.cs" />
@@ -19,12 +18,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Cryptography\PublicKey.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Cryptography\RandomGenerator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Cryptography\Rsa.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Cryptography\RsaKey.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Client.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\InterlocutorFailure.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\IPv4Address.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\PacketBuffer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\PacketBuilder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\PacketReader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Port.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\SQLiteStorage\Repositories\Repository.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\SQLiteStorage\SQLiteDatabase.cs" />

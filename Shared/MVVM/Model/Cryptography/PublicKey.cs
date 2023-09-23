@@ -1,22 +1,52 @@
-using System.IO;
+﻿using System.IO;
 using System;
 using System.Security.Cryptography;
 using Shared.MVVM.Core;
+using System.Data.SQLite;
 using System.Net;
+using Shared.MVVM.Model.Networking;
 
 namespace Shared.MVVM.Model.Cryptography
 {
-    public class PublicKey : RsaKey
+    public class PublicKey
     {
-        private const int LENGTH_BYTE_COUNT = sizeof(ushort);
+        #region Properties
+        public int Length => _modulus.Length;
+        #endregion
+
+        #region Fields
+        public const int LENGTH_BYTE_COUNT = sizeof(ushort);
         // często używana jako e liczba pierwsza Fermata 2^(2^4) + 1 65537; w big-endian
-        public static readonly byte[] PUBLIC_EXPONENT = { 0b0000_0001, 0b0000_0000, 0b0000_0001 };
+        public static readonly byte[] PUBLIC_EXPONENT =
+            { 0b0000_0001, 0b0000_0000, 0b0000_0001 };
 
         private byte[] _modulus;
+        #endregion
 
         public PublicKey(byte[] modulus)
         {
             _modulus = modulus;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is PublicKey other))
+                return false;
+
+            if (other._modulus is null)
+                return _modulus is null;
+
+            if (_modulus is null)
+                return false;
+
+            if (other._modulus.Length != _modulus.Length)
+                return false;
+
+            for (int i = 0; i < _modulus.Length; i++)
+                if (other._modulus[i] != _modulus[i])
+                    return false;
+
+            return true;
         }
 
         public static PublicKey Parse(string text)
@@ -74,7 +104,7 @@ namespace Shared.MVVM.Model.Cryptography
             }
         }
 
-        public override void ImportTo(RSA rsa)
+        public void ImportTo(RSA rsa)
         {
             var par = new RSAParameters();
             par.Exponent = PUBLIC_EXPONENT;
@@ -92,6 +122,37 @@ namespace Shared.MVVM.Model.Cryptography
             /* BSON i SQLite zapisują długość tablicy bajtów, więc nie
             musimy sami go zapisywać jak w metodzie ToBytes. */
             return _modulus;
+        }
+
+        public static PublicKey FromPacketReader(PacketReader reader)
+        {
+            /* Klucza publicznego nie da się zwalidować inaczej niż próbując
+            nim odszyfrować wiadomość zaszyfrowaną RSA-OAEP. */
+            var length = reader.ReadUInt16();
+
+            if (length > 256)
+                throw new Error("|Public key can be at most 256 bytes long|.");
+
+            var bytes = reader.ReadBytes(length);
+            return new PublicKey(bytes);
+        }
+
+        public static PublicKey FromSQLiteDataReader(SQLiteDataReader reader, int columnIndex)
+        {
+            var lengthBuffer = new byte[LENGTH_BYTE_COUNT];
+            if (reader.GetBytes(columnIndex, 0, lengthBuffer, 0, LENGTH_BYTE_COUNT)
+                != LENGTH_BYTE_COUNT)
+                throw new Error("|Error occured while| |reading| " +
+                    "|public key length| |from SQLiteDataReader|.");
+
+            short signedLength = BitConverter.ToInt16(lengthBuffer, 0);
+            ushort length = (ushort)IPAddress.NetworkToHostOrder(signedLength);
+            var modulusBuffer = new byte[length];
+            if (reader.GetBytes(columnIndex, 0, modulusBuffer, 0, length) != length)
+                throw new Error("|Error occured while| |reading| " +
+                    "|public key value| |from SQLiteDataReader|.");
+
+            return new PublicKey(modulusBuffer);
         }
     }
 }

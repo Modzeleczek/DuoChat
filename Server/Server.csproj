@@ -138,6 +138,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="MVVM\Model\Client.cs" />
+    <Compile Include="MVVM\Model\ClientPrimaryKey.cs" />
     <Compile Include="MVVM\Model\Persistence\Database.cs" />
     <Compile Include="MVVM\Model\Persistence\DTO\UserDTO.cs" />
     <Compile Include="MVVM\Model\Persistence\Repositories\UserRepository.cs" />
@@ -147,8 +148,7 @@
     <Compile Include="MVVM\ViewModel\ConnectedClientsViewModel.cs" />
     <Compile Include="MVVM\ViewModel\LogViewModel.cs" />
     <Compile Include="MVVM\ViewModel\MainViewModel.cs" />
-    <Compile Include="MVVM\ViewModel\Observables\Anonymous.cs" />
-    <Compile Include="MVVM\ViewModel\Observables\Client.cs" />
+    <Compile Include="MVVM\ViewModel\Observables\ClientObservable.cs" />
     <Compile Include="MVVM\ViewModel\Observables\Log.cs" />
     <Compile Include="MVVM\ViewModel\SettingsViewModel.cs" />
     <Compile Include="MVVM\ViewModel\UserControlViewModel.cs" />

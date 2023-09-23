@@ -140,10 +140,10 @@
     PL="nie jest poprawnym ciągiem w formacie Base64."/>
   <l:Entry x:Key="is not prime." PL="nie jest liczbą pierwszą."/>
 
-  <l:Entry x:Key="reading user's server list."
-    PL="odczytywania listy serwerów użytkownika."/>
-  <l:Entry x:Key="reading user's account list."
-    PL="odczytywania listy kont użytkownika."/>
+  <l:Entry x:Key="read user's server list"
+    PL="odczytać listy serwerów użytkownika"/>
+  <l:Entry x:Key="read user's account list"
+    PL="odczytać listy kont użytkownika"/>
   <l:Entry x:Key="server" PL="serwer"/>
   <l:Entry x:Key="updating" PL="aktualizowania"/>
   <l:Entry x:Key="update" PL="zaktualizować"/>
@@ -218,12 +218,11 @@
   <l:Entry x:Key="Number" PL="Liczba"/>
   <l:Entry x:Key="Invalid public key format."
     PL="Nieprawidłowy format klucza publicznego."/>
-  <l:Entry x:Key="Client is not connected."
-    PL="Klient nie jest połączony."/>
 
-  <l:Entry x:Key="Disconnected by server." PL="Rozłączono przez serwer."/>
-  <l:Entry x:Key="Server crashed." PL="Serwer zcrashował."/>
-  <l:Entry x:Key="Disconnected." PL="Rozłączono."/>
+  <l:Entry x:Key="Disconnected by server" PL="Rozłączono przez serwer"/>
+  <l:Entry x:Key="Disconnected" PL="Rozłączono"/>
+  <l:Entry x:Key="Disconnected due to a client error"
+    PL="Rozłączono z powodu błędu klienta"/>
 
   <l:Entry x:Key="Text representation" PL="Reprezentacja tekstowa"/>
   <l:Entry x:Key="does not consist of two parts separated with"
@@ -231,9 +230,30 @@
   <l:Entry x:Key="IP address part" PL="Część z adresem IP"/>
   <l:Entry x:Key="Port part" PL="Część z portem"/>
 
+  <l:Entry x:Key="was added to the conversation" PL="został dodany do konwersacji"/>
+  <l:Entry x:Key="was removed from the conversation" PL="został usunięty z konwersacji"/>
+
+  <l:Entry x:Key="Server is full" PL="Serwer jest pełny"/>
+  <l:Entry x:Key="from server" PL="od serwera"/>
+  <l:Entry x:Key="Server changed its" PL="Serwer zmienił swój"/>
+  <l:Entry x:Key="and" PL="i"/>
+  <l:Entry x:Key="public key" PL="klucz publiczny"/>
+  <l:Entry x:Key="Do you still want to connect to the server"
+    PL="Czy wciąż chcesz połączyć się z serwerem"/>
+  <l:Entry x:Key="Connect" PL="Połącz"/>
+
+  <!-- błędy pakietów -->
+  <l:Entry x:Key="UTF-8 encoded login can be at most 255 bytes long"
+    PL="Login zakodowany w UTF-8 może mieć co najwyżej 255 bajtów"/>
+  <l:Entry x:Key="Public key can be at most 256 bytes long"
+    PL="Klucz publiczny może mieć co najwyżej 256 bajtów"/>
+  <l:Entry x:Key="verify server's signature"
+    PL="zweryfikować sygnatury serwera"/>
+  <l:Entry x:Key="Server sent an unrecognized token"
+    PL="Serwer przesłał nierozpoznany token"/>
+
   <!-- tylko do serwera -->
   <!-- klucze używane w plikach .xaml - muszą być prawidłowymi nazwami zmiennych -->
-  <l:Entry x:Key="Server" PL="Serwer"/>
   <l:Entry x:Key="Connected_clients" EN="Connected clients" PL="Połączone klienty"/>
   <l:Entry x:Key="Capacity" PL="Pojemność"/>
   <l:Entry x:Key="Start" PL="Uruchom"/>
@@ -243,6 +263,8 @@
   <l:Entry x:Key="Generate" PL="Wygeneruj"/>
   <l:Entry x:Key="Load" PL="Wczytaj"/>
   <l:Entry x:Key="Log" PL="Log"/>
+  <l:Entry x:Key="Disconnect" PL="Rozłącz"/>
+  <l:Entry x:Key="Block_IP" EN="Block IP" PL="Zablokuj IP"/>
 
   <!-- klucze używane w plikach .cs - nie muszą być prawidłowymi nazwami zmiennych -->
   <l:Entry x:Key="Invalid capacity format."
@@ -271,12 +293,21 @@
   <l:Entry x:Key="Private key validation" PL="Walidacja klucza prywatnego"/>
   <l:Entry x:Key="Database file" PL="Plik bazy danych"/>
   <l:Entry x:Key="Server is not running." PL="Serwer nie jest uruchomiony."/>
+  <l:Entry x:Key="starting the server" PL="uruchamiania serwera"/>
+  <l:Entry x:Key="from client" PL="od klienta"/>
 
-  <l:Entry x:Key="Client disconnected." PL="Klient się rozłączył."/>
-  <l:Entry x:Key="Client crashed." PL="Klient zcrashował."/>
-  <l:Entry x:Key="Disconnected client." PL="Rozłączono klienta."/>
-  <l:Entry x:Key="Client connected." PL="Klient się połączył."/>
-  <l:Entry x:Key="Server stopped." PL="Serwer zatrzymany."/>
+  <l:Entry x:Key="disconnected" PL="rozłączył się"/>
+  <l:Entry x:Key="was disconnected" PL="został rozłączony"/>
+  <l:Entry x:Key="was authenticated" PL="został uwierzytelniony"/>
+  <l:Entry x:Key="connected" PL="połączył się"/>
+  <l:Entry x:Key="Server stopped" PL="Serwer zatrzymany"/>
+  <l:Entry x:Key="Client" PL="Klient"/>
+  <l:Entry x:Key="not authenticated" PL="nie uwierzytelniony"/>
+  <l:Entry x:Key="because" PL=", bo"/>
+  <l:Entry x:Key="it does not own the public key sent by it"
+    PL="nie należy do niego przesłany przez niego klucz publiczny"/>
+  <l:Entry x:Key="it sent a public key different from the one saved in the database"
+    PL="przesłał klucz publiczny różny od zapisanego w bazie danych"/>
 
   <l:Entry x:Key="reading" PL="odczytywania"/>
   <l:Entry x:Key="public key length" PL="długości klucza publicznego"/>
@@ -285,6 +316,9 @@
   <l:Entry x:Key="User with login" PL="Użytkownik z loginem"/>
   <l:Entry x:Key="More than one user with login"
     PL="Więcej niż jeden użytkownik z loginem"/>
+
+  <l:Entry x:Key="Observable client has already been authenticated"
+    PL="Obserwowalny klient został już uwierzytelniony"/>
 
   <!-- do klienta i serwera -->
   <!-- klucze używane w plikach .xaml - muszą być prawidłowymi nazwami zmiennych -->
@@ -318,19 +352,22 @@
   <l:Entry x:Key="AES transforming." PL="przekształcania AESem."/>
   <l:Entry x:Key="writing to AES transformation stream."
     PL="pisania do strumienia przekształcającego AESem."/>
+  <l:Entry x:Key="RSA signing" PL="podpisywania RSA"/>
+  <l:Entry x:Key="verifying RSA signature" PL="weryfikowania sygnatury RSA"/>
   <l:Entry x:Key="RSA encrypting." PL="szyfrowania RSA."/>
   <l:Entry x:Key="RSA decrypting." PL="odszyfrowywania RSA."/>
 
-  <l:Entry x:Key="encrypting merged packet parts."
-    PL="szyfrowania połączonych części pakietu."/>
+  <l:Entry x:Key="merged packet parts" PL="połączonych części pakietu"/>
   <l:Entry x:Key="AES encrypt" PL="zaszyfrować AESem"/>
   <l:Entry x:Key="packet data" PL="danych pakietu"/>
   <l:Entry x:Key="RSA encrypt" PL="zaszyfrować RSA"/>
+  <l:Entry x:Key="RSA sign" PL="podpisać RSA"/>
   <l:Entry x:Key="AES key and IV" PL="klucza i wektora inicjująego AESa"/>
-  <l:Entry x:Key="using sender's private key" PL="kluczem prywatnym nadawcy"/>
-  <l:Entry x:Key="using receivers's public key" PL="kluczem publicznym odbiorcy"/>
 
   <l:Entry x:Key="Cannot send whole packet." PL="Nie można wysłać całego pakietu."/>
+  <l:Entry x:Key="sending" PL="wysyłania"/>
+  <l:Entry x:Key="receiving" PL="odbierania"/>
+  <l:Entry x:Key="packet" PL="pakietu"/>
   <l:Entry x:Key="Operating system error." PL="Błąd systemu operacyjnego."/>
   <l:Entry x:Key="Socket already disposed."
     PL="Gniazdo już zostało zamknięte."/>
@@ -350,6 +387,7 @@
   <l:Entry x:Key="TCP socket's send buffer" PL="Bufor nadawczy gniazda TCP"/>
   <l:Entry x:Key="Tried to send a packet larger than send buffer size."
     PL="Próbowano wysłać pakiet większy niż rozmiar bufora nadawczego."/>
+  <l:Entry x:Key="executing Client.Process" PL="wykonywania Client.Process"/>
   <l:Entry x:Key="Connection broken." PL="Połączenie zerwane."/>
   <l:Entry x:Key="Unexpected connection ending."
     PL="Niespodziewane zakończenie połączenia."/>
@@ -368,4 +406,13 @@
     PL="Sprawdzenie integralności SQLite nie zwróciło żadnego wiersza."/>
   <l:Entry x:Key="executing SQLite integrity check."
     PL="wykonywania sprawdzenia integralności SQLite."/>
+
+  <l:Entry x:Key="Received an unexpected packet"
+    PL="Odebrano nieoczekiwany pakiet"/>
+  <l:Entry x:Key="Server" PL="Serwer"/>
+  <l:Entry x:Key="crashed" PL="niespodziewanie się zamknął"/>
+
+  <!-- błędy pakietów -->
+  <l:Entry x:Key="Received an incomplete packet"
+    PL="Odebrano niekompletny pakiet"/>
 </ResourceDictionary>

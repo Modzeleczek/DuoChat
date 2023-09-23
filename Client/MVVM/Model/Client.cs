@@ -1,7 +1,6 @@
-using Client.MVVM.ViewModel.Observables;
 using Shared.MVVM.Core;
+using Shared.MVVM.ViewModel.Results;
 using System;
-using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,11 +10,30 @@ namespace Client.MVVM.Model
 {
     public class Client : BaseClient
     {
-        #region Fields
-        private Server _server = null;
+        #region Classes
+        public enum ClientState
+        {
+            ReadyToConnect = 0, Connected, ServerIntroduced,
+            ClientIntroduced, ClientAuthenticated, EndedConnection
+        }
         #endregion
 
-        public Client() { }
+        #region Fields
+        // Obiekt obsługujący podłączonego klienta jest maszyną stanów.
+        public ClientState State { get; set; } = ClientState.ReadyToConnect;
+        public byte[] TokenCache { get; set; } = null;
+        #endregion
+
+        #region Events
+        public event Action<Result> EndedConnection;
+        public event Action<byte[]> ReceivedPacket;
+        #endregion
+
+        // Wywołujemy tylko raz, na początku programu.
+        public Client()
+        {
+            _runner = Task.CompletedTask;
+        }
 
         public void Connect(ServerPrimaryKey serverKey)
         {
@@ -83,14 +101,16 @@ namespace Client.MVVM.Model
             throw error;
         }
 
-        // Synchroniczne rozłączenie.
-        public void Disconnect()
+        protected override void OnEndedConnection(Result result)
         {
-            if (!IsConnected)
-                throw new Error("|Client is not connected.|");
-            /* czekamy na zakończenie wątku (taska) obsługującego
-            połączenie z serwerem */
-            DisconnectAsync().Wait();
+            // Wątek Client.Process
+            EndedConnection(result);
+        }
+
+        protected override void OnReceivedPacket(byte[] packet)
+        {
+            // Wątek Client.ProcessHandle
+            ReceivedPacket(packet);
         }
     }
 }

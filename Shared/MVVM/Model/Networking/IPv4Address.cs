@@ -1,4 +1,5 @@
-using Shared.MVVM.Core;
+﻿using Shared.MVVM.Core;
+using System;
 using System.Net;
 
 namespace Shared.MVVM.Model.Networking
@@ -10,6 +11,14 @@ namespace Shared.MVVM.Model.Networking
         public IPv4Address(uint binaryRepresentation)
         {
             BinaryRepresentation = binaryRepresentation;
+        }
+
+        public IPv4Address(IPAddress ipAddress)
+        {
+            var bytes = ipAddress.GetAddressBytes();
+            if (bytes.Length != 4)
+                throw new ArgumentException("ipAddress must be IPv4", nameof(ipAddress));
+            BinaryRepresentation = BitConverter.ToUInt32(bytes, 0);
         }
 
         public override bool Equals(object obj)
@@ -36,9 +45,9 @@ namespace Shared.MVVM.Model.Networking
                 if (!byte.TryParse(split[i], out byte parsedByte))
                     throw new Error($"{i + 1}. " +
                         "|octet from the left is not valid number in range| <0,255>.");
-                /* trzymamy bajty adresu w kolejności big-endian, czyli prawy
-                (ostatni z oddzielonych kropkami) oktet jest zapisany w najbardziej
-                znaczącym bajcie _binaryRepresentation */
+                /* Traktujemy oktety adresu jako zapisane w kolejności big-endian,
+                czyli prawy (ostatni z oddzielonych kropkami) oktet jest zapisany
+                w najbardziej znaczącym bajcie _binaryRepresentation. */
                 binRepr |= parsedByte;
             }
             /* nie używać, bo może parsować adresy IPv6

@@ -1,4 +1,4 @@
-using Shared.MVVM.Core;
+﻿using Shared.MVVM.Core;
 using Shared.MVVM.View.Localization;
 using Shared.MVVM.View.Windows;
 using System;
@@ -14,6 +14,10 @@ namespace Shared.MVVM.ViewModel
         protected void Alert(string description) =>
             AlertViewModel.ShowDialog(window, description);
 
-        protected void UIInvoke(Action action) => Application.Current.Dispatcher.Invoke(action);
+        protected void UIInvoke(Action action) =>
+            Application.Current.Dispatcher.Invoke(action);
+
+        protected TResult UIInvoke<TResult>(Func<TResult> function) =>
+            Application.Current.Dispatcher.Invoke<TResult>(function);
     }
 }

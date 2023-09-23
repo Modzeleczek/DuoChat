@@ -1,5 +1,7 @@
+using Shared.MVVM.Core;
 using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking;
+using Shared.MVVM.ViewModel.Results;
 using System;
 using System.Net;
 using System.Net.Sockets;
@@ -10,33 +12,75 @@ namespace Server.MVVM.Model
 {
     public class Client : BaseClient
     {
+        #region Classes
+        public enum ClientState
+        {
+            Connected = 0, ServerIntroduced, ClientAuthenticated
+        }
+        #endregion
+
         #region Properties
-        public IPEndPoint RemoteEndPoint { get => (IPEndPoint)_socket.Client.RemoteEndPoint; }
+        // Właściwości do dyspozycji klasy Server i viewmodeli.
+        public ClientState State { get; set; }
+        public byte[] TokenCache { get; set; } = null;
+
+        public string Login { get; private set; } = null;
+        public PublicKey PublicKey { get; private set; } = null;
+        #endregion
+
+        #region Fields
+        private readonly IPEndPoint _remoteEndPoint;
+        #endregion
+
+        #region Events
+        // Przekazujemy obserwatorom poprzedni i następny stan klienta.
+        public event Action<Result> EndedConnection;
+        public event Action<byte[]> ReceivedRequest;
         #endregion
 
         public Client(TcpClient socket)
         {
             _socket = socket;
+            /* Zapisujemy referencję, bo po rozłączeniu klienta (_socket.Close)
+            w GetPrimaryKey _socket.Client jest nullem. */
+            _remoteEndPoint = (IPEndPoint)_socket.Client.RemoteEndPoint;
             ResetFlags();
+        }
+
+        public void StartProcessing()
+        {
+            State = ClientState.Connected;
             _runner = Task.Factory.StartNew(Process, TaskCreationOptions.LongRunning);
         }
 
-        public void Introduce(Guid guid, PublicKey publicKey)
+        public ClientPrimaryKey GetPrimaryKey()
         {
-            // 0 Przedstawienie się serwera (00)
-            var keyBytes = publicKey.ToBytes();
-            // var bb = new PacketBuilder() + guid.ToByteArray() + (keyBytes.Length, 2) + keyBytes;
-            var pb = new PacketBuilder();
-            pb.Append(guid.ToByteArray());
-            pb.Append(keyBytes.Length, 2);
-            pb.Append(keyBytes);
-            EnqueueToSend(0, pb);
+            // Klucz główny podłączonego klienta jest tylko do odczytu.
+            var re = _remoteEndPoint;
+            return new ClientPrimaryKey(
+                new IPv4Address(re.Address), new Port((ushort)re.Port));
         }
 
-        public void NoSlots()
+        protected override void OnEndedConnection(Result result)
         {
-            // 1 Brak wolnych połączeń (slotów) (00)
-            EnqueueToSend(1, new PacketBuilder(), () => StopProcessing());
+            // Wątek Client.Process
+            EndedConnection(result);
+        }
+
+        protected override void OnReceivedPacket(byte[] packet)
+        {
+            // Wątek Client.Handle
+            ReceivedRequest(packet);
+        }
+
+        public void Authenticate(string login, PublicKey publicKey)
+        {
+            if (State >= ClientState.ClientAuthenticated)
+                // Nieprawdopodobne
+                throw new Error("Client already authenticated.");
+
+            Login = login;
+            PublicKey = publicKey;
         }
     }
 }

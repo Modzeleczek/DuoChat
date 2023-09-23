@@ -10,7 +10,7 @@ using System.Security.Cryptography;
 
 namespace Shared.MVVM.Model.Cryptography
 {
-    public class PrivateKey : RsaKey
+    public class PrivateKey
     {
         #region Fields
         private const string DLL_PATH = "Prime.dll";
@@ -357,7 +357,7 @@ namespace Shared.MVVM.Model.Cryptography
             return new BigInteger(clone);
         }
 
-        public override void ImportTo(RSA rsa)
+        public void ImportTo(RSA rsa)
         {
             BigInteger mod = ToBigInteger(_p) * ToBigInteger(_q);
             var par = new RSAParameters();

@@ -1,8 +1,13 @@
+using Server.MVVM.Model;
 using Server.MVVM.ViewModel.Observables;
 using Shared.MVVM.Core;
+using Shared.MVVM.Model.Cryptography;
+using Shared.MVVM.Model.Networking;
 using Shared.MVVM.View.Windows;
 using Shared.MVVM.ViewModel.Results;
+using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace Server.MVVM.ViewModel
 {
@@ -10,85 +15,114 @@ namespace Server.MVVM.ViewModel
     {
         #region Commands
         public RelayCommand DisconnectClient { get; }
+        public RelayCommand BlockIP { get; }
         #endregion
 
         #region Properties
-        private ObservableCollection<Observables.Client> _clients =
-            new ObservableCollection<Observables.Client>();
-        public ObservableCollection<Observables.Client> Clients
+        private ObservableCollection<ClientObservable> _clients =
+            new ObservableCollection<ClientObservable>();
+        public ObservableCollection<ClientObservable> Clients
         {
             get => _clients;
             set { _clients = value; OnPropertyChanged(); }
         }
-
-        private Observables.Client _selectedClient;
-        public Observables.Client SelectedClient
-        {
-            get => _selectedClient;
-            set { _selectedClient = value; OnPropertyChanged(); }
-        }
         #endregion
 
         #region Fields
-        private readonly object _uiLock = new object();
+        private Model.Server _server;
         #endregion
 
-        public ConnectedClientsViewModel(DialogWindow owner, Model.Server server, Log log)
+        public ConnectedClientsViewModel(DialogWindow owner, Model.Server server)
             : base(owner)
         {
+            _server = server;
+
             DisconnectClient = new RelayCommand(obj =>
             {
-                var client = (Observables.Client)obj;
-                client.Model.DisconnectAsync().Wait();
-                Clients.Remove(client);
+                // Wykonywane przez wątek UI
+                var client = (ClientObservable)obj;
+                var key = client.GetPrimaryKey();
+                server.DisconnectClientAsync(key);
+                // Klient zostanie usunięty z listy w ClientEndedConnection.
             });
 
-            server.ClientConnected += (modelClient) =>
+            BlockIP = new RelayCommand(obj =>
             {
-                var model = (Model.Client)((Success)modelClient).Data;
-                var anonymous = new Observables.Anonymous(model);
+                // Wątek UI
+                var client = (ClientObservable)obj;
+                var key = client.GetPrimaryKey();
+                /* TODO: tabela w bazie danych i w Server.Process przy
+                akceptowaniu klienta sprawdzanie, czy nie jest zbanowany. */
+            });
 
-                model.LostConnection += (lostConRes) =>
-                {
-                    string message;
-                    if (lostConRes is Success)
-                        message = "|Client disconnected.|";
-                    else if (lostConRes is Failure failure)
-                        message = failure.Reason.Prepend("|Client crashed.|").Message;
-                    else // result is Cancellation
-                        message = "|Disconnected client.|";
-                    /* Synchronizujemy wszystkie operacje wykonywane na
-                    kolekcji ObservableCollection. */
-                    lock (_uiLock) UIInvoke(() =>
-                    {
-                        Clients.Remove(anonymous);
-                        /* Log jest thread safe, bo w Append używamy lock,
-                        ale bierzemy go w "lock (_clientsLock)", żeby mieć
-                        pewność, że wiadomość w logu o aktualnym dostępie do
-                        ObservableCollection (Remove) nie zostanie wyprzedzona
-                        przez wiadomość z jakiegokolwiek innego dostępu. */
-                        log.Append(message);
-                    });
-                };
+            server.ClientConnected += ClientConnected;
+            server.ClientAuthenticated += ClientAuthenticated;
+            server.ClientEndedConnection += ClientEndedConnection;
+        }
 
-                lock (_uiLock) UIInvoke(() =>
-                {
-                    Clients.Add(anonymous);
-                    log.Append("|Client connected.|");
-                });
-            };
+        private void ClientConnected(Model.Client client)
+        {
+            /* Synchronizujemy wszystkie operacje wykonywane na stanie serwera.
+            Wątek Server.Process; write lock */
+            var clientObservable = new ClientObservable(client.GetPrimaryKey());
 
-            server.Stopped += (result) =>
+            UIInvoke(() =>
             {
-                /* Wykonywane w wątku UI, więc Clients.Clear bez UIInvoke.
-                Jednak handler ChangedState wykonywany w log.Append i tak
-                wykonuje UIInvoke */
-                lock (_uiLock)
-                {
-                    Clients.Clear();
-                    log.Append("|Server stopped.|");
-                }
-            };
+                Clients.Add(clientObservable);
+                _server.Log($"{clientObservable.DisplayedName} |connected|.");
+            });
+        }
+
+        private void ClientAuthenticated(Model.Client client)
+        {
+            // Wątek Client.ProcessHandle; write lock
+            var primaryKey = client.GetPrimaryKey();
+            var observableClient = Clients.FirstOrDefault(e => primaryKey.Equals(e.GetPrimaryKey()));
+            if (observableClient is null)
+            {
+                // Nieprawdopodobne: rozłączamy, bo klienta nie ma na liście.
+                client.DisconnectAsync();
+                return;
+            }
+
+            UIInvoke(() =>
+            {
+                observableClient.Authenticate(client.Login);
+                _server.Log($"{observableClient.DisplayedName} |was authenticated|.");
+            });
+        }
+
+        private void ClientEndedConnection(Model.Client client, Result result)
+        {
+            // Wątek Client.Process; write lock
+            var primaryKey = client.GetPrimaryKey();
+            var clientObservable = Clients.SingleOrDefault(
+                e => primaryKey.Equals(e.GetPrimaryKey()));
+            if (clientObservable is null)
+            {
+                // Nieprawdopodobne
+                client.DisconnectAsync();
+                return;
+            }
+
+            string message;
+            if (result is Success)
+                message = "|disconnected|.";
+            else if (result is Failure failure)
+                message = failure.Reason.Prepend("|crashed|.").Message;
+            else // result is Cancellation
+                message = "|was disconnected|.";
+            message = $"{clientObservable.DisplayedName} {message}";
+
+            UIInvoke(() =>
+            {
+                Clients.Remove(clientObservable);
+                /* Jesteśmy w write locku, dzięki czemu mamy pewność, że
+                wiadomość w logu o aktualnym dostępie do ObservableCollection
+                (Remove) nie zostanie wyprzedzona przez wiadomość z
+                jakiegokolwiek innego dostępu. */
+                _server.Log(message);
+            });
         }
     }
 }

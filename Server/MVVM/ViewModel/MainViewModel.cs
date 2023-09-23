@@ -35,7 +35,14 @@ namespace Server.MVVM.ViewModel
                 window = (DialogWindow)windowLoadedE;
 
                 // klasy, które mogą mieć tylko 1 instancję, ale nie używamy singletona
-                var server = new Model.Server();
+                var log = new Log();
+                Model.Server server;
+                try { server = new Model.Server(log); }
+                catch (Error e)
+                {
+                    Alert(e.Message);
+                    throw;
+                }
 
                 // zapobiega ALT + F4 w głównym oknie
                 window.Closable = false;
@@ -51,8 +58,7 @@ namespace Server.MVVM.ViewModel
                 });
 
                 var setVM = new SettingsViewModel(window, server);
-                var log = new Log();
-                var conCliVM = new ConnectedClientsViewModel(window, server, log);
+                var conCliVM = new ConnectedClientsViewModel(window, server);
                 var logVM = new LogViewModel(window, log);
                 var accVM = new AccountsViewModel(window, server);
                 var tabs = new UserControlViewModel[] { setVM, conCliVM, logVM, accVM };
@@ -61,6 +67,36 @@ namespace Server.MVVM.ViewModel
                     int index = int.Parse((string)e);
                     if (SelectedTab == tabs[index]) return;
                     SelectedTab = tabs[index];
+
+                    /* long id = -1;
+                    switch (index)
+                    {
+                        case 0:
+                            database.EnterWriteLock();
+                            var user = new UserDTO
+                            {
+                                Login = "elo",
+                                PublicKey = new PublicKey(new byte[] { 5 * 31 })
+                            };
+                            database.Users.AddUser(ref user);
+                            id = user.Id;
+                            database.ExitWriteLock();
+                            break;
+                        case 1:
+                            database.EnterReadLock();
+                            var users = database.Users.GetAllUsers();
+                            if (users.Count > 0)
+                            {
+                                var first = users.First;
+                            }
+                            database.ExitReadLock();
+                            break;
+                        case 2:
+                            database.EnterWriteLock();
+                            database.Users.DeleteUser(id);
+                            database.ExitWriteLock();
+                            break;
+                    } */
                 });
 
                 SelectTab.Execute("0");

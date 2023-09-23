@@ -1,11 +1,12 @@
 using Client.MVVM.Model;
-using Client.MVVM.Model.BsonStorages;
 using Client.MVVM.View.Windows;
 using Client.MVVM.ViewModel.AccountActions;
 using Client.MVVM.ViewModel.LocalUsers;
 using Client.MVVM.ViewModel.Observables;
 using Client.MVVM.ViewModel.ServerActions;
 using Shared.MVVM.Core;
+using Shared.MVVM.Model.Cryptography;
+using Shared.MVVM.Model.Networking;
 using Shared.MVVM.View.Localization;
 using Shared.MVVM.View.Windows;
 using Shared.MVVM.ViewModel;
@@ -13,8 +14,13 @@ using Shared.MVVM.ViewModel.LongBlockingOperation;
 using Shared.MVVM.ViewModel.Results;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Security;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
+using static Client.MVVM.Model.Client;
 
 namespace Client.MVVM.ViewModel
 {
@@ -90,29 +96,9 @@ namespace Client.MVVM.ViewModel
         public Server SelectedServer
         {
             get => selectedServer;
-            set
-            {
-                selectedServer = value;
-                SelectedAccount = null;
-                Accounts.Clear();
-                if (value != null)
-                {
-                    try
-                    {
-                        var accounts = _storage.GetAllAccounts(_loggedUserKey, value.GetPrimaryKey());
-                        for (int i = 0; i < accounts.Count; ++i)
-                            Accounts.Add(accounts[i]);
-                    }
-                    catch (Error e)
-                    {
-                        e.Prepend("|Error occured while| " +
-                            "|reading user's account list.|");
-                        Alert(e.Message);
-                        throw;
-                    }
-                }
-                OnPropertyChanged();
-            }
+            /* Asynchronicznie rozłączamy z serwerem (poprzez
+            SelectedAccount = null). */
+            set { SelectServerAsync(value); }
         }
 
         private ObservableCollection<Account> accounts;
@@ -126,36 +112,7 @@ namespace Client.MVVM.ViewModel
         public Account SelectedAccount
         {
             get => selectedAccount;
-            set
-            {
-                /* nie sprawdzamy, czy value == SelectedServer, aby można było reconnectować
-                poprzez kliknięcie na już zaznaczony serwer */
-                if (_client.IsConnected)
-                    /* Synchroniczne rozłączenie - blokuje UI do momentu powrotu
-                    z metody Disconnect. */
-                    _client.Disconnect();
-
-                selectedAccount = value;
-                SelectedConversation = null;
-                Conversations.Clear();
-                if (value != null)
-                {
-                    try
-                    {
-                        // Synchroniczne łączenie.
-                        _client.Connect(SelectedServer.GetPrimaryKey());
-                        var cnvCnt = rng.Next(0, 5);
-                        for (int i = 0; i < cnvCnt; ++i)
-                            Conversations.Add(Conversation.Random(rng));
-                    }
-                    catch (Error e)
-                    {
-                        selectedAccount = null;
-                        Alert(e.Message);
-                    }
-                }
-                OnPropertyChanged();
-            }
+            set { SelectAccountAsync(value); }
         }
 
         private ObservableCollection<Conversation> conversations;
@@ -182,8 +139,9 @@ namespace Client.MVVM.ViewModel
 
         #region Fields
         private LocalUserPrimaryKey _loggedUserKey;
-        private Model.Client _client = new Model.Client();
-        private Random rng = new Random();
+        private readonly Model.Client _client = new Model.Client();
+        private readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
+        private readonly Random rng = new Random();
         private Storage _storage;
         #endregion
 
@@ -260,12 +218,16 @@ namespace Client.MVVM.ViewModel
             EditServer = new RelayCommand(obj =>
             {
                 var server = (Server)obj;
-                var serverKey = server.GetPrimaryKey();
-                // Odznaczamy aktualnie wybrany serwer.
-                if (!(SelectedServer is null)
-                    && SelectedServer.GetPrimaryKey().Equals(serverKey))
-                    SelectedServer = null;
-                var vm = new EditServerViewModel(_storage, _loggedUserKey, serverKey)
+                /* Synchronicznie rozłączamy i odznaczamy
+                aktualnie wybrany serwer. */
+                if (SelectedServer == server)
+                    /* Nie można waitować wątkiem UI, bo czeka on na zakończenie kodu z
+                    wewnątrz await _client.DisconnectAsync().ContinueWith, a jednocześnie
+                    ten kod chce wywołać UIInvoke, co powoduje deadlock. */
+                    SelectServerAsync(null);
+
+                var vm = new EditServerViewModel(_storage,
+                    _loggedUserKey, server.GetPrimaryKey())
                 {
                     Title = "|Edit server|",
                     ConfirmButtonText = "|Save|"
@@ -280,16 +242,17 @@ namespace Client.MVVM.ViewModel
             DeleteServer = new RelayCommand(obj =>
             {
                 var server = (Server)obj;
+
                 var serverKey = server.GetPrimaryKey();
                 var confirmRes = ConfirmationViewModel.ShowDialog(window,
                     "|Do you want to delete| |server|" +
                     $" {serverKey.ToString("{0}:{1}")}?",
                     "|Delete server|", "|No|", "|Yes|");
                 if (!(confirmRes is Success)) return;
+
                 if (SelectedServer == server)
-                    /* Setter rozłącza, jeżeli jesteśmy połączeni,
-                    bo ustawia SelectedAccount na null. */
-                    SelectedServer = null;
+                    SelectServerAsync(null);
+
                 try { _storage.DeleteServer(_loggedUserKey, serverKey); }
                 catch (Error e)
                 {
@@ -310,15 +273,15 @@ namespace Client.MVVM.ViewModel
                     ConfirmButtonText = "|Add|"
                 };
                 new FormWindow(window, vm).ShowDialog();
-                var result = vm.Result;
-                if (result is Success success)
+                if (vm.Result is Success success)
                     Accounts.Add((Account)success.Data);
             });
             EditAccount = new RelayCommand(obj =>
             {
                 var account = (Account)obj;
                 if (SelectedAccount == account)
-                    SelectedAccount = null;
+                    SelectAccountAsync(null);
+
                 var vm = new EditAccountViewModel(_storage, _loggedUserKey,
                     SelectedServer.GetPrimaryKey(), account.Login)
                 {
@@ -326,8 +289,7 @@ namespace Client.MVVM.ViewModel
                     ConfirmButtonText = "|Save|"
                 };
                 new FormWindow(window, vm).ShowDialog();
-                var result = vm.Result;
-                if (result is Success success)
+                if (vm.Result is Success success)
                 {
                     var updatedAccount = (Account)success.Data;
                     updatedAccount.CopyTo(account);
@@ -340,13 +302,14 @@ namespace Client.MVVM.ViewModel
                     "|Do you want to delete| |account|" + $" {account.Login}?",
                     "|Delete account|", "|No|", "|Yes|");
                 if (!(confirmRes is Success)) return;
+
                 if (SelectedAccount == account)
-                    // setter rozłącza, jeżeli jesteśmy połączeni
-                    SelectedAccount = null;
-                var server = SelectedServer;
+                    SelectAccountAsync(null);
+                
                 try
                 {
-                    _storage.DeleteAccount(_loggedUserKey, server.GetPrimaryKey(), account.Login);
+                    _storage.DeleteAccount(_loggedUserKey,
+                        SelectedServer.GetPrimaryKey(), account.Login);
                 }
                 catch (Error e)
                 {
@@ -460,19 +423,13 @@ namespace Client.MVVM.ViewModel
 
         private void ClearLists()
         {
-            SelectedConversation = null;
-            SelectedAccount = null;
-            SelectedServer = null;
-            Conversations.Clear();
-            Accounts.Clear();
+            SelectServerAsync(null);
             Servers.Clear();
         }
 
         private void ResetLists()
         {
             Servers.Clear();
-            Accounts.Clear();
-            Conversations.Clear();
             try
             {
                 var servers = _storage.GetAllServers(_loggedUserKey);
@@ -481,48 +438,334 @@ namespace Client.MVVM.ViewModel
             }
             catch (Error e)
             {
-                e.Prepend("|Error occured while| |reading user's server list.|");
+                e.Prepend("|Could not| |read user's server list|.");
                 Alert(e.Message);
                 throw;
             }
         }
 
-        private void SetClientEventHandlers()
+        private async Task SelectServerAsync(Server server)
         {
-            _client.LostConnection += (result) =>
+            selectedServer = server;
+            await SelectAccountAsync(null);
+            Accounts.Clear();
+            if (server != null)
             {
-                /* Jeżeli my się rozłączamy, czyli
-                _disconnectRequested == true, to w
-                Client.Process po Task.WaitAll nie wykona się
-                LostConnection?.Invoke. */
-                string message;
-                if (result is Success)
-                    message = "|Disconnected by server.|";
-                else if (result is Failure failure)
-                    message = failure.Reason.Prepend("|Server crashed.|").Message;
-                else // result is Cancellation
-                    message = "|Disconnected.|";
+                try
+                {
+                    var accounts = _storage.GetAllAccounts(
+                        _loggedUserKey, server.GetPrimaryKey());
+                    foreach (var acc in accounts)
+                        Accounts.Add(acc);
+                }
+                catch (Error e)
+                {
+                    e.Prepend("|Could not| |read user's account list|.");
+                    Alert(e.Message);
+                    throw;
+                }
+            }
+            OnPropertyChanged(nameof(SelectedServer));
+        }
+
+        private async Task SelectAccountAsync(Account account)
+        {
+            /* Asynchronicznie rozłączamy z serwerem. Wyłączamy tymczasowo
+            interakcje z głównym oknem, ale nie blokujemy wątku UI,
+            dzięki czemu, wątek Client.ProcessHandle może jeszcze przed
+            rozłączeniem obsłużyć jakiś pakiet i w handlerach eventu
+            Client.ReceivedPacket wykonywać UIInvoke i edytować GUI. */
+
+            // Wyłączamy wszelkie interakcje z oknem.
+            window.SetEnabled(false);
+
+            /*  - Jeżeli już jesteśmy połączeni, to żądamy rozłączenia.
+            - Jeżeli jeszcze się nie łączyliśmy, to kod z ContinueWith zostanie
+            natychmiast wykonany, bo implementacja Client klienta w konstruktorze
+            ustawia _runner = Task.CompletedTask.
+            - Jeżeli byliśmy połączeni, ale nie jesteśmy, to też kod z ContinueWith
+            zostanie natychmiast wykonany. */
+            await _client.DisconnectAsync().ContinueWith((_) =>
+            {
+                /* Ten kod jest wykonywany przez jakiś anonimowy wątek
+                (nie jest to wątek Client.Process) po zakończeniu metody
+                Client.Process przez wątek Client.Process. Anonimowy wątek
+                jest zablokowany do czasu zakończenia UIInvoke. */
                 UIInvoke(() =>
                 {
-                    SelectedAccount = null;
-                    Alert(message);
-                });
-            };
+                    /* Wątek UI na zlecenie anonimowego wątku
+                    Nie sprawdzamy, czy value == SelectedServer, aby można było
+                    reconnectować poprzez kliknięcie na już zaznaczony serwer. */
+                    selectedAccount = account;
+                    SelectedConversation = null;
+                    Conversations.Clear();
+                    if (account != null)
+                    {
+                        try
+                        {
+                            // Synchroniczne łączenie.
+                            var serverKey = SelectedServer.GetPrimaryKey();
+                            _client.Connect(serverKey);
+                            _client.State = ClientState.Connected;
 
-            _client.ReceivedPacket += (result) =>
+                            // RANDOM: TODO: pobieranie konwersacji z serwera
+                            var cnvCnt = rng.Next(0, 5);
+                            for (int i = 0; i < cnvCnt; ++i)
+                                Conversations.Add(Conversation.Random(rng));
+                        }
+                        catch (Error e)
+                        {
+                            selectedAccount = null;
+                            Alert(e.Message);
+                        }
+                    }
+                    OnPropertyChanged(nameof(SelectedAccount));
+
+                    // Przywracamy interakcje z oknem.
+                    window.SetEnabled(true);
+                });
+            });
+        }
+
+        private void SetClientEventHandlers()
+        {
+            _client.EndedConnection += EndedConnection;
+            _client.ReceivedPacket += ReceivedOrder;
+            /* Wątek Client.Process. Bez locków, bo w momencie
+            wywołania OnDisconnected, wątki obsługujące serwer
+            (Client.ProcessSend, -Receive, -Handle) są już zakończone
+            i jedyny, który może zmienić stan aplikacji (za
+            pomocą metod Storage), to wątek UI. */
+        }
+
+        #region Errors
+        private Error UnexpectedReceptionError() =>
+            new Error("|Received an unexpected packet| |from server|.");
+
+        private Error UnexpectedSendingError() =>
+            new Error("|Tried to send an unexpected packet|.");
+
+        private Error UnrecognizedTokenError() =>
+            new Error("|Server sent an unrecognized token|.");
+        #endregion
+
+        private void ReceivedOrder(byte[] packet)
+        {
+            try
             {
-                var packet = (byte[])((Success)result).Data;
-                var operationCode = packet[0];
-                switch (operationCode)
+                var reader = new PacketReader(packet);
+                switch (reader.ReadUInt8())
                 {
-                    case 1: HandleNoSlots(); break;
+                    case 0: HandleNoSlots(); break;
+                    case 1: HandleServerIntroduction(reader); break;
+                    case 2: HandleAuthentication(reader); break;
+                    case 3: HandleNoAuthentication(reader); break;
+                    /* Client.ProcessHandle łapie wyjątek i kończy się ze
+                    statusem Failure, który w EndedConnection zostanie
+                    zinterpretowany jako błąd klienta. */
+                    default: throw UnexpectedReceptionError();
                 }
-            };
+            }
+            catch (IndexOutOfRangeException)
+            {
+                /* Nie ma sensu robić bardzo szczegółowego opisu
+                błędów spowodowanych niekompletnym (za krótkim)
+                pakietem, bo zakładamy, że użytkownicy nie będą
+                za często fabrykować pakietów. Wystarczy prosty
+                opis błędu. */
+                throw new Error("|Received an incomplete packet|.");
+            }
         }
 
         private void HandleNoSlots()
         {
-            UIInvoke(() => Alert("No slots."));
+            if (_client.State != ClientState.Connected)
+                throw UnexpectedReceptionError();
+
+            /* Wykonywane przez wątek Client.ProcessHandle - ten wątek jest
+            zablokowany przez wywołanie UIInvoke do czasu zamknięcia
+            alertu przyciskiem OK przez użytkownika. Zatem również
+            wątek Client.Process czeka na zakończenie wątku Client.Handle,
+            czyli event LostConnection nie zostanie wykonany przed
+            zamknięciem alertu. */
+            UIInvoke(() => Alert("|Server is full|."));
+            // Serwer rozłączy klienta.
+        }
+
+        private void HandleServerIntroduction(PacketReader reader)
+        {
+            // Wątek Client.ProcessHandle
+            if (_client.State != ClientState.Connected)
+                throw UnexpectedReceptionError();
+
+            Guid guid = reader.ReadGuid();
+            PublicKey publicKey = PublicKey.FromPacketReader(reader);
+            byte[] token = reader.ReadBytes(256);
+
+            /* Nie synchronizujemy, bo użytkownik może edytować tylko serwer,
+            z którym nie jest połączony. Jeżeli chce edytować zaznaczony serwer,
+            to jest z nim rozłączany przed otwarciem okna edycji serwera. */
+            if (!SelectedServer.Guid.Equals(Guid.Empty)
+                || !(SelectedServer.PublicKey is null))
+            {
+                /* Już wcześniej ustawiono GUID lub klucz publiczny,
+                więc aktualizujemy zgodnie z danymi od serwera, o ile
+                użytkownik się zgodzi. */
+                if (!AskIfServerTrusted(guid, publicKey))
+                    // W AskIfServerTrusted rozłączyliśmy się z serwerem.
+                    return;
+            }
+            
+            /* Jeszcze nie ustawiono GUIDu i klucza publicznego lub
+            były już ustawione, ale użytkownik zgodził się na
+            aktualizację. */
+            SelectedServer.Guid = guid;
+            SelectedServer.PublicKey = publicKey;
+            _storage.UpdateServer(_loggedUserKey,
+                SelectedServer.GetPrimaryKey(), SelectedServer);
+
+            _client.State = ClientState.ServerIntroduced;
+            SendClientIntroduction(token);
+        }
+
+        private bool AskIfServerTrusted(Guid guid, PublicKey publicKey)
+        {
+            bool guidChanged = false;
+            if (!guid.Equals(SelectedServer.Guid))
+                guidChanged = true;
+            bool publicKeyChanged = false;
+            if (!publicKey.Equals(SelectedServer.PublicKey))
+                publicKeyChanged = true;
+
+            // Nic się nie zmieniło.
+            if (!guidChanged && !publicKeyChanged)
+                return true;
+
+            var sb = new StringBuilder("|Server changed its| ");
+            if (guidChanged && publicKeyChanged)
+                sb.Append("GUID |and| |public key|");
+            else if (guidChanged)
+                sb.Append("GUID");
+            else // publicKeyChanged
+                sb.Append("|public key|");
+
+            return UIInvoke<bool>(() =>
+            {
+                var confirmRes = ConfirmationViewModel.ShowDialog(window,
+                    $"{sb}. |Do you still want to connect to the server|?",
+                    "|Connect|", "|No|", "|Yes|");
+                if (!(confirmRes is Success))
+                {
+                    // Rozłączamy z serwerem.
+                    SelectAccountAsync(null);
+                    return false;
+                }
+                return true;
+            });
+        }
+
+        private void SendClientIntroduction(byte[] tokenToSign)
+        {
+            // Wątek Client.ProcessHandle
+            if (_client.State != ClientState.ServerIntroduced)
+                throw UnexpectedSendingError();
+
+            // 255 Przedstawienie się klienta (10)
+            byte[] loginBytes = Encoding.UTF8.GetBytes(SelectedAccount.Login);
+            // Długość zserializowanego loginu musi mieścić się na 1 bajcie.
+            if (loginBytes.Length > 255)
+                throw new Error("|UTF-8 encoded login can be at most 255 bytes long|.");
+
+            PublicKey publicKey = SelectedAccount.PrivateKey.ToPublicKey();
+            if (publicKey.Length > 256)
+                throw new Error("|Public key can be at most 256 bytes long|.");
+            byte[] publicKeyBytes = publicKey.ToBytes();
+
+            _client.TokenCache = RandomGenerator.Generate(8);
+
+            var pb = new PacketBuilder();
+            // pb.AppendTimestamp();
+            pb.Append(loginBytes.Length, 1);
+            pb.Append(loginBytes);
+            /* Długość klucza znajduje się już w bajtach
+            zwróconych przez PublicKey.ToBytes(). */
+            pb.Append(publicKeyBytes);
+            pb.AppendSignature(SelectedAccount.PrivateKey, tokenToSign);
+            pb.Append(_client.TokenCache);
+            pb.Encrypt(SelectedServer.PublicKey);
+            pb.Prepend(255, 1);
+            _client.Send(pb.Build());
+
+            _client.State = ClientState.ClientIntroduced;
+        }
+
+        private void HandleAuthentication(PacketReader reader)
+        {
+            // Wątek Client.ProcessHandle
+            if (_client.State != ClientState.ClientIntroduced)
+                throw UnexpectedReceptionError();
+
+            reader.Decrypt(SelectedAccount.PrivateKey);
+            if (!reader.VerifySignature(selectedServer.PublicKey))
+                throw new Error("|Could not| |verify server's signature|.");
+
+            byte[] receivedToken = reader.ReadBytes(8);
+            if (!receivedToken.SequenceEqual(_client.TokenCache))
+                throw UnrecognizedTokenError();
+
+            _client.TokenCache = reader.ReadBytes(8);
+
+            _client.State = ClientState.ClientAuthenticated;
+        }
+
+        private void HandleNoAuthentication(PacketReader reader)
+        {
+            // Wątek Client.ProcessHandle
+            if (_client.State != ClientState.ClientIntroduced)
+                throw UnexpectedReceptionError();
+
+            if (!reader.VerifySignature(SelectedServer.PublicKey, _client.TokenCache))
+                throw UnrecognizedTokenError();
+
+            // Serwer rozłączy klienta.
+        }
+
+        private void EndedConnection(Result result)
+        {
+            // Wątek Client.Process
+            _client.State = ClientState.EndedConnection;
+
+            /* Jeżeli my (klient) się rozłączamy, czyli
+            _disconnectRequested == true, to w Client.Process
+            po Task.WaitAll nie wykona się SpecifyConnectionEnding
+            i result jest typu Cancellation. */
+            string message;
+            if (result is Success)
+                message = "|Disconnected by server|.";
+            else if (result is Failure fail)
+            {
+                var reason = fail.Reason;
+                string failMsg;
+                if (fail is InterlocutorFailure)
+                    failMsg = "|Server| |crashed|.";
+                else // result is Failure
+                    failMsg = "|Disconnected due to a client error|.";
+                message = reason.Prepend(failMsg).Message;
+            }
+            else // result is Cancellation
+                message = "|Disconnected|.";
+
+            UIInvoke(() =>
+            {
+                /* Task zwrócony przez _client.DisconnectAsync
+                jest już zakończony, więc natychmiast wykonywane
+                jest ContinueWith. Nie czekamy na zakończenie kodu
+                z ContinueWith, bo będzie deadlock. Zanim użytkownik
+                kliknie alert, operacje z SelectAccountAsync się
+                zakończą. */
+                SelectAccountAsync(null);
+                Alert(message);
+            });
         }
     }
 }
