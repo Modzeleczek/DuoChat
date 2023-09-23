@@ -16,6 +16,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csp
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Prime", "Prime\Prime.vcxproj", "{FD60C837-E4BB-4856-A254-B96A17D03D34}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{CC2A0206-B3B2-4B3F-A687-EA51CD424A11}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -48,6 +50,12 @@ Global
 		{FD60C837-E4BB-4856-A254-B96A17D03D34}.Release|x64.Build.0 = Release|x64
 		{FD60C837-E4BB-4856-A254-B96A17D03D34}.Release|x86.ActiveCfg = Release|Win32
 		{FD60C837-E4BB-4856-A254-B96A17D03D34}.Release|x86.Build.0 = Release|Win32
+		{CC2A0206-B3B2-4B3F-A687-EA51CD424A11}.Debug|x64.ActiveCfg = Debug|x64
+		{CC2A0206-B3B2-4B3F-A687-EA51CD424A11}.Debug|x64.Build.0 = Debug|x64
+		{CC2A0206-B3B2-4B3F-A687-EA51CD424A11}.Debug|x86.ActiveCfg = Debug|x86
+		{CC2A0206-B3B2-4B3F-A687-EA51CD424A11}.Debug|x86.Build.0 = Debug|x86
+		{CC2A0206-B3B2-4B3F-A687-EA51CD424A11}.Release|x64.ActiveCfg = Release|x64
+		{CC2A0206-B3B2-4B3F-A687-EA51CD424A11}.Release|x86.ActiveCfg = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -57,6 +65,7 @@ Global
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Shared\Shared.projitems*{57a35a3b-852a-4fd9-a244-4d14145976f1}*SharedItemsImports = 4
+		Shared\Shared.projitems*{cc2a0206-b3b2-4b3f-a687-ea51cd424a11}*SharedItemsImports = 4
 		Shared\Shared.projitems*{deb32eea-b8ab-454d-bbf5-4888927fee6f}*SharedItemsImports = 13
 		Shared\Shared.projitems*{ee024717-1cbc-4ad6-84bc-48e62afc827e}*SharedItemsImports = 4
 	EndGlobalSection
