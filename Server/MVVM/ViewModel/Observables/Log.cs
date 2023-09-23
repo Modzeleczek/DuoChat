@@ -9,22 +9,17 @@ namespace Server.MVVM.ViewModel.Observables
         private StringBuilder _stringBuilder = new StringBuilder();
         #endregion
 
-        #region Fields
-        // TODO: przenieść do nadklasy SharedState
-        private object _syncRoot = new object();
-        #endregion
-
         #region Events
         public event Action<StringBuilder> ChangedState;
         #endregion
 
         public void Append(string text)
         {
-            lock (_syncRoot)
-            {
-                _stringBuilder.Append($"{DateTime.UtcNow}: {text}\n");
-                ChangedState(_stringBuilder);
-            }
+            /* Append jest wywoływane tylko w wątku UI albo przez inne wątki
+            w dispatcherze UI (czyli w zasadzie też w wątku UI), więc nie
+            trzeba go synchronizować dedykowanym monitor lockiem. */
+            _stringBuilder.Append($"{DateTime.UtcNow}: {text}\n");
+            ChangedState(_stringBuilder);
         }
     }
 }
