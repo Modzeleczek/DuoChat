@@ -1,4 +1,4 @@
-﻿using Shared.MVVM.Core;
+using Shared.MVVM.Core;
 using Shared.MVVM.ViewModel.Results;
 using System;
 using System.Collections.Concurrent;
@@ -12,8 +12,6 @@ namespace Shared.MVVM.Model.Networking
 {
     public abstract class Client
     {
-        public const int PREFIX_SIZE = sizeof(int);
-
         #region Classes
         private class PacketToSend
         {
@@ -45,6 +43,8 @@ namespace Shared.MVVM.Model.Networking
         #endregion
 
         #region Fields
+        public const int PREFIX_SIZE = sizeof(int);
+
         protected TcpClient _socket = null;
         protected Task _runner = null;
         // boole są flagami
