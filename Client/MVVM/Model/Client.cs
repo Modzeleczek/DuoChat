@@ -10,23 +10,12 @@ namespace Client.MVVM.Model
 {
     public class Client : BaseClient
     {
-        #region Classes
-        public enum ClientState
-        {
-            ReadyToConnect = 0, Connected, ServerIntroduced,
-            ClientIntroduced, ClientAuthenticated, EndedConnection
-        }
-        #endregion
-
         #region Fields
-        // Obiekt obsługujący podłączonego klienta jest maszyną stanów.
-        public ClientState State { get; set; } = ClientState.ReadyToConnect;
         public byte[] TokenCache { get; set; } = null;
         #endregion
 
         #region Events
         public event Action<Result> EndedConnection;
-        public event Action<byte[]> ReceivedPacket;
         #endregion
 
         // Wywołujemy tylko raz, na początku programu.
@@ -35,7 +24,7 @@ namespace Client.MVVM.Model
             _runner = Task.CompletedTask;
         }
 
-        public void Connect(ServerPrimaryKey serverKey)
+        public void Connect(ServerPrimaryKey serverKey, Func<Result> processProtocol)
         {
             Error error = null;
             // https://stackoverflow.com/a/43237063
@@ -74,7 +63,8 @@ namespace Client.MVVM.Model
                 var receiver = Task.Factory.StartNew(ProcessReceive, TaskCreationOptions.LongRunning);
                 var sender = Task.Factory.StartNew(ProcessSend, TaskCreationOptions.LongRunning);
                 Task.Factory.ContinueWhenAll(new Task[] { receiver, sender }, Process); */
-                _runner = Task.Factory.StartNew(Process, TaskCreationOptions.LongRunning);
+                _runner = Task.Factory.StartNew(() => Process(processProtocol),
+                    TaskCreationOptions.LongRunning);
 
                 return;
             }
@@ -105,12 +95,6 @@ namespace Client.MVVM.Model
         {
             // Wątek Client.Process
             EndedConnection(result);
-        }
-
-        protected override void OnReceivedPacket(byte[] packet)
-        {
-            // Wątek Client.ProcessHandle
-            ReceivedPacket(packet);
         }
     }
 }

@@ -382,7 +382,7 @@ namespace Client.MVVM.ViewModel
                 }
             });
 
-            SetClientEventHandlers();
+            _client.EndedConnection += EndedConnection;
         }
 
         private void ShowLocalUsersDialog()
@@ -505,8 +505,7 @@ namespace Client.MVVM.ViewModel
                         {
                             // Synchroniczne łączenie.
                             var serverKey = SelectedServer.GetPrimaryKey();
-                            _client.Connect(serverKey);
-                            _client.State = ClientState.Connected;
+                            _client.Connect(serverKey, ProcessProtocol);
 
                             // RANDOM: TODO: pobieranie konwersacji z serwera
                             var cnvCnt = rng.Next(0, 5);
@@ -527,62 +526,93 @@ namespace Client.MVVM.ViewModel
             });
         }
 
-        private void SetClientEventHandlers()
-        {
-            _client.EndedConnection += EndedConnection;
-            _client.ReceivedPacket += ReceivedOrder;
-            /* Wątek Client.Process. Bez locków, bo w momencie
-            wywołania OnDisconnected, wątki obsługujące serwer
-            (Client.ProcessSend, -Receive, -Handle) są już zakończone
-            i jedyny, który może zmienić stan aplikacji (za
-            pomocą metod Storage), to wątek UI. */
-        }
-
         #region Errors
         private Error UnexpectedReceptionError() =>
             new Error("|Received an unexpected packet| |from server|.");
 
-        private Error UnexpectedSendingError() =>
-            new Error("|Tried to send an unexpected packet|.");
-
         private Error UnrecognizedTokenError() =>
             new Error("|Server sent an unrecognized token|.");
+
+        private Error ReceptionTimedOut() =>
+            new Error("|Receiving a packet from the server timed out|.");
         #endregion
 
-        private void ReceivedOrder(byte[] packet)
+        private Result ProcessProtocol()
         {
             try
             {
-                var reader = new PacketReader(packet);
-                switch (reader.ReadUInt8())
+                ReceiveNoSlotsOrServerIntroduction();
+                SendClientIntroduction();
+                ReceiveAuthenticationOrNoAuthentication();
+
+                while (true)
                 {
-                    case 0: HandleNoSlots(); break;
-                    case 1: HandleServerIntroduction(reader); break;
-                    case 2: HandleAuthentication(reader); break;
-                    case 3: HandleNoAuthentication(reader); break;
-                    /* Client.ProcessHandle łapie wyjątek i kończy się ze
-                    statusem Failure, który w EndedConnection zostanie
-                    zinterpretowany jako błąd klienta. */
-                    default: throw UnexpectedReceptionError();
+                    /* TODO: w pętli obsługiwać:
+                    - interakcje z wątku UI; można zrobić coś na zasadzie dispatchera wątku
+                    Client.ProcessProtocol, które powodują wysłanie requesta i czekanie na odpowiedź
+                    - broadcasty odbierane od serwera */
+                    if (_client.StopRequested)
+                        break;
                 }
+
+                return new Success();
             }
-            catch (IndexOutOfRangeException)
+            catch (IndexOutOfRangeException e)
             {
-                /* Nie ma sensu robić bardzo szczegółowego opisu
-                błędów spowodowanych niekompletnym (za krótkim)
-                pakietem, bo zakładamy, że użytkownicy nie będą
-                za często fabrykować pakietów. Wystarczy prosty
-                opis błędu. */
-                throw new Error("|Received an incomplete packet|.");
+                /* Nie ma sensu robić bardzo szczegółowego opisu błędów
+                spowodowanych odebraniem niekompletnego (za krótkiego) pakietu,
+                bo zakładamy, że użytkownicy nie będą za często fabrykować pakietów.
+                Wystarczy prosty opis błędu. */
+                return new Failure(e, "|Received an incomplete packet|.");
+            }
+            catch (Error e)
+            {
+                /* Rozłączamy, jeżeli wystąpił jakikolwiek błąd przy zarządzaniu
+                stanem klienta, np. jeżeli klient wysłał pakiet, podczas gdy była
+                kolej serwera na wysłanie czegoś do klienta - w ten sposób klient
+                złamał protokół. */
+                return new Failure(e, e.Message);
             }
         }
 
-        private void HandleNoSlots()
+        private void ReceiveNoSlotsOrServerIntroduction()
         {
-            if (_client.State != ClientState.Connected)
-                throw UnexpectedReceptionError();
+            // Wątek Client.ProcessProtocol
+            /* Wywołujemy blokującą metodę Client.Receive i czekamy na monitor locku
+            w ciągu timeoutu 1000 milisekund. */
+            if (!_client.Receive(out byte[] packet, 1000))
+                // Timeout
+                throw ReceptionTimedOut();
 
-            /* Wykonywane przez wątek Client.ProcessHandle - ten wątek jest
+            var reader = new PacketReader(packet);
+            switch (reader.ReadUInt8())
+            {
+                case 0: ReceiveNoSlots(); break;
+                case 1: ReceiveServerIntroduction(reader); break;
+                /* Client.ProcessHandle łapie wyjątek i kończy się ze
+                statusem Failure, który w EndedConnection zostanie
+                zinterpretowany jako błąd klienta. */
+                default: throw UnexpectedReceptionError();
+            }
+        }
+
+        private void ReceiveAuthenticationOrNoAuthentication()
+        {
+            if (!_client.Receive(out byte[] packet, 1000))
+                throw ReceptionTimedOut();
+
+            var reader = new PacketReader(packet);
+            switch (reader.ReadUInt8())
+            {
+                case 2: ReceiveAuthentication(reader); break;
+                case 3: ReceiveNoAuthentication(reader); break;
+                default: throw UnexpectedReceptionError();
+            }
+        }
+
+        private void ReceiveNoSlots()
+        {
+            /* Wykonywane przez wątek Client.ProcessProtocol - ten wątek jest
             zablokowany przez wywołanie UIInvoke do czasu zamknięcia
             alertu przyciskiem OK przez użytkownika. Zatem również
             wątek Client.Process czeka na zakończenie wątku Client.Handle,
@@ -592,15 +622,12 @@ namespace Client.MVVM.ViewModel
             // Serwer rozłączy klienta.
         }
 
-        private void HandleServerIntroduction(PacketReader reader)
+        private void ReceiveServerIntroduction(PacketReader reader)
         {
-            // Wątek Client.ProcessHandle
-            if (_client.State != ClientState.Connected)
-                throw UnexpectedReceptionError();
-
+            // Wątek Client.ProcessProtocol
             Guid guid = reader.ReadGuid();
             PublicKey publicKey = PublicKey.FromPacketReader(reader);
-            byte[] token = reader.ReadBytes(256);
+            _client.TokenCache = reader.ReadBytes(256);
 
             /* Nie synchronizujemy, bo użytkownik może edytować tylko serwer,
             z którym nie jest połączony. Jeżeli chce edytować zaznaczony serwer,
@@ -623,9 +650,6 @@ namespace Client.MVVM.ViewModel
             SelectedServer.PublicKey = publicKey;
             _storage.UpdateServer(_loggedUserKey,
                 SelectedServer.GetPrimaryKey(), SelectedServer);
-
-            _client.State = ClientState.ServerIntroduced;
-            SendClientIntroduction(token);
         }
 
         private bool AskIfServerTrusted(Guid guid, PublicKey publicKey)
@@ -664,12 +688,9 @@ namespace Client.MVVM.ViewModel
             });
         }
 
-        private void SendClientIntroduction(byte[] tokenToSign)
+        private void SendClientIntroduction()
         {
-            // Wątek Client.ProcessHandle
-            if (_client.State != ClientState.ServerIntroduced)
-                throw UnexpectedSendingError();
-
+            // Wątek Client.ProcessProtocol
             // 255 Przedstawienie się klienta (10)
             byte[] loginBytes = Encoding.UTF8.GetBytes(SelectedAccount.Login);
             // Długość zserializowanego loginu musi mieścić się na 1 bajcie.
@@ -681,10 +702,10 @@ namespace Client.MVVM.ViewModel
                 throw new Error("|Public key can be at most 256 bytes long|.");
             byte[] publicKeyBytes = publicKey.ToBytes();
 
+            byte[] tokenToSign = _client.TokenCache;
             _client.TokenCache = RandomGenerator.Generate(8);
 
             var pb = new PacketBuilder();
-            // pb.AppendTimestamp();
             pb.Append(loginBytes.Length, 1);
             pb.Append(loginBytes);
             /* Długość klucza znajduje się już w bajtach
@@ -694,17 +715,14 @@ namespace Client.MVVM.ViewModel
             pb.Append(_client.TokenCache);
             pb.Encrypt(SelectedServer.PublicKey);
             pb.Prepend(255, 1);
+            /* Wywołujemy blokującą metodę Client.Send czekamy na
+            monitor locku obiektu Client.PacketToSend. */
             _client.Send(pb.Build());
-
-            _client.State = ClientState.ClientIntroduced;
         }
 
-        private void HandleAuthentication(PacketReader reader)
+        private void ReceiveAuthentication(PacketReader reader)
         {
-            // Wątek Client.ProcessHandle
-            if (_client.State != ClientState.ClientIntroduced)
-                throw UnexpectedReceptionError();
-
+            // Wątek Client.ProcessProtocol
             reader.Decrypt(SelectedAccount.PrivateKey);
             if (!reader.VerifySignature(selectedServer.PublicKey))
                 throw new Error("|Could not| |verify server's signature|.");
@@ -714,16 +732,11 @@ namespace Client.MVVM.ViewModel
                 throw UnrecognizedTokenError();
 
             _client.TokenCache = reader.ReadBytes(8);
-
-            _client.State = ClientState.ClientAuthenticated;
         }
 
-        private void HandleNoAuthentication(PacketReader reader)
+        private void ReceiveNoAuthentication(PacketReader reader)
         {
-            // Wątek Client.ProcessHandle
-            if (_client.State != ClientState.ClientIntroduced)
-                throw UnexpectedReceptionError();
-
+            // Wątek Client.ProcessProtocol
             if (!reader.VerifySignature(SelectedServer.PublicKey, _client.TokenCache))
                 throw UnrecognizedTokenError();
 
@@ -733,8 +746,6 @@ namespace Client.MVVM.ViewModel
         private void EndedConnection(Result result)
         {
             // Wątek Client.Process
-            _client.State = ClientState.EndedConnection;
-
             /* Jeżeli my (klient) się rozłączamy, czyli
             _disconnectRequested == true, to w Client.Process
             po Task.WaitAll nie wykona się SpecifyConnectionEnding

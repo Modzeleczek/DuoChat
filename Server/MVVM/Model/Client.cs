@@ -12,16 +12,8 @@ namespace Server.MVVM.Model
 {
     public class Client : BaseClient
     {
-        #region Classes
-        public enum ClientState
-        {
-            Connected = 0, ServerIntroduced, ClientAuthenticated
-        }
-        #endregion
-
         #region Properties
         // Właściwości do dyspozycji klasy Server i viewmodeli.
-        public ClientState State { get; set; }
         public byte[] TokenCache { get; set; } = null;
 
         public string Login { get; private set; } = null;
@@ -35,7 +27,6 @@ namespace Server.MVVM.Model
         #region Events
         // Przekazujemy obserwatorom poprzedni i następny stan klienta.
         public event Action<Result> EndedConnection;
-        public event Action<byte[]> ReceivedRequest;
         #endregion
 
         public Client(TcpClient socket)
@@ -47,10 +38,10 @@ namespace Server.MVVM.Model
             ResetFlags();
         }
 
-        public void StartProcessing()
+        public void StartProcessing(Func<Result> processProtocol)
         {
-            State = ClientState.Connected;
-            _runner = Task.Factory.StartNew(Process, TaskCreationOptions.LongRunning);
+            _runner = Task.Factory.StartNew(() => Process(processProtocol),
+                TaskCreationOptions.LongRunning);
         }
 
         public ClientPrimaryKey GetPrimaryKey()
@@ -67,15 +58,9 @@ namespace Server.MVVM.Model
             EndedConnection(result);
         }
 
-        protected override void OnReceivedPacket(byte[] packet)
-        {
-            // Wątek Client.Handle
-            ReceivedRequest(packet);
-        }
-
         public void Authenticate(string login, PublicKey publicKey)
         {
-            if (State >= ClientState.ClientAuthenticated)
+            if (!(Login is null && PublicKey is null))
                 // Nieprawdopodobne
                 throw new Error("Client already authenticated.");
 

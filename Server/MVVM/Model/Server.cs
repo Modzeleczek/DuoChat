@@ -130,64 +130,102 @@ namespace Server.MVVM.Model
         private Error UnexpectedReceptionError() =>
             new Error("|Received an unexpected packet| |from client|.");
 
-        private Error UnexpectedSendingError() =>
-            new Error("|Tried to send an unexpected packet|.");
+        private Error ReceptionTimedOut() =>
+            new Error("|Receiving a packet from the server timed out|.");
         #endregion
 
         private void AcceptClient()
         {
             // Wątek Server.Process
-            try
+            var client = new Client(_listener.AcceptTcpClient());
+            client.EndedConnection += (result) =>
             {
-                _syncRoot.EnterWriteLock();
-                var client = new Client(_listener.AcceptTcpClient());
-                client.EndedConnection += (result) =>
+                // Wątek Client.Process
+                try
                 {
-                    // Wątek Client.Process
+                    _syncRoot.EnterWriteLock();
+                    /* Wchodzimy w write locka i kaskadowo wykonujemy event
+                    Client.EndedConnection. */
+                    // TODO: trzymać klientów w mapie, żeby przyspieszyć usuwanie
+                    _clients.Remove(client);
+                    ClientEndedConnection(client, result);
+                }
+                finally { _syncRoot.ExitWriteLock(); }
+            };
+            StartProcessingClient(client);
+        }
+        
+        private void StartProcessingClient(Client client)
+        {
+            // Wątek Server.Process
+            /* StartProcessing jest potrzebne, bo jeżeli startujemy wątek
+            Client.Process przed ustawieniem handlera EndedConnection, to
+            klient może rozłączyć się przed ustawieniem tego handlera i
+            wtedy na liście _clients pozostanie klient zombie, który nie
+            zostanie usunięty. */
+            client.StartProcessing(() =>
+            {
+                try
+                {
+                    // Wątek Client.ProcessProtocol
+                    bool shouldSendNoSlots = false;
                     try
                     {
                         _syncRoot.EnterWriteLock();
-                        /* Wchodzimy w write locka i kaskadowo wykonujemy event
-                        Client.EndedConnection. */
-                        // TODO: trzymać klientów w mapie, żeby przyspieszyć usuwanie
-                        _clients.Remove(client);
-                        ClientEndedConnection(client, result);
+                        /* Klient tu dodany zostanie usunięty z listy _clients
+                        w handlerze EndedConnection. */
+                        _clients.Add(client);
+
+                        // Nie ma wolnych slotów.
+                        if (_clients.Count >= _capacity + 1)
+                            /* Tylko ustawiamy flagę i jak najszybciej zwalniamy write locka.
+                            Aktualny wątek (Client.ProcessProtocol na razie nie oczekuje
+                            na pakiety ani nie dispatchuje żądań od wątku UI, więc nie będzie
+                            żadnego wyścigu i if (shouldSendNoSlots) wykina się bez problemów. */
+                            shouldSendNoSlots = true;
+                        else // Są wolne sloty.
+                            ClientConnected(client);
                     }
                     finally { _syncRoot.ExitWriteLock(); }
-                };
-                // Zostanie usunięty z listy _clients w handlerze EndedConnection.
-                _clients.Add(client);
 
-                client.ReceivedRequest += (request) =>
-                    // Obsługujemy żądanie.
-                    ClientReceivedRequest(client, request);
+                    if (shouldSendNoSlots)
+                    {
+                        SendNoSlots(client);
+                        // TODO: log
+                        client.DisconnectAsync();
+                        // Nie wystąpił błąd, więc zwracamy Success.
+                        return new Success();
+                    }
 
-                /* StartProcessing jest potrzebne, bo jeżeli startujemy wątek
-                Client.Process przed ustawieniem handlera EndedConnection, to
-                klient może rozłączyć się przed ustawieniem tego handlera i
-                wtedy na liście _clients pozostanie klient zombie, który nie
-                zostanie usunięty. */
-                client.StartProcessing();
-                // Nie ma wolnych slotów
-                if (_clients.Count >= _capacity)
-                {
-                    SendNoSlots(client);
-                    return;
+                    /* Można tu użyć client.StopRequested, aby przedwcześnie przerwać protokół
+                    lub client.DisconnectAsync, aby rozłączyć klienta. */
+                    SendServerIntroduction(client);
+                    ReceiveClientIntroduction(client);
+
+                    while (true)
+                    {
+                        if (client.StopRequested)
+                            break;
+                    }
+
+                    return new Success();
+                    /* Return z tej funkcji anonimowej powoduje rozłączenie klienta, bo wątek
+                    Client.ProcessProtocol przy wychodzeniu z niej wywoła Client.StopProcessing. */
                 }
-
-                SendServerIntroduction(client);
-
-                ClientConnected(client);
-            }
-            finally { _syncRoot.ExitWriteLock(); }
+                catch (IndexOutOfRangeException e)
+                {
+                    return new Failure(e, "|Received an incomplete packet|.");
+                }
+                catch (Error e)
+                {
+                    return new Failure(e, e.Message);
+                }
+            });
         }
 
         public void SendNoSlots(Client client)
         {
-            // Wątek Server.Process; write lock
-            if (client.State != ClientState.Connected)
-                throw UnexpectedSendingError();
-
+            // Wątek Client.ProcessProtocol; write lock
             // 0 Brak wolnych połączeń (slotów) (00)
             var pb = new PacketBuilder();
             // Kod operacji
@@ -196,16 +234,11 @@ namespace Server.MVVM.Model
             /* Client.ProcessSend blokuje aktualny wątek i odblokowuje go
             dopiero po wysłaniu pakietu. */
             client.Send(pb.Build());
-            // TODO: log
-            client.DisconnectAsync();
         }
 
         public void SendServerIntroduction(Client client)
         {
-            // Wątek Server.Process; write lock
-            if (client.State != ClientState.Connected)
-                throw UnexpectedSendingError();
-
+            // Wątek Server.ProcessProtocol; write lock
             byte[] token = RandomGenerator.Generate(256);
             client.TokenCache = token;
 
@@ -217,35 +250,16 @@ namespace Server.MVVM.Model
             pb.Prepend(1, 1);
             // Pakiet nieszyfrowany i nieautentykowany
             client.Send(pb.Build());
-            client.State = ClientState.ServerIntroduced;
         }
 
-        private void ClientReceivedRequest(Client client, byte[] packet)
+        private void ReceiveClientIntroduction(Client client)
         {
-            // Wątek Client.ProcessHandle
-            // Patrz Client\MVVM\ViewModel\MainViewModel.cs
-            try
-            {
-                var reader = new PacketReader(packet);
-                switch (reader.ReadUInt8())
-                {
-                    case 255: HandleClientIntroduction(client, reader); break;
-                    /* Client.ProcessHandle łapie wyjątek i kończy się ze statusem
-                    Failure, który w ConnectedClientsViewModel.ClientEndedConnection
-                    zostanie zinterpretowany jako błąd klienta. */
-                    default: throw UnexpectedReceptionError();
-                }
-            }
-            catch (IndexOutOfRangeException)
-            {
-                throw new Error("|Received an incomplete packet|.");
-            }
-        }
+            // Wątek Client.ProcessProtocol
+            if (!client.Receive(out byte[] packet, 1000))
+                throw ReceptionTimedOut();
 
-        private void HandleClientIntroduction(Client client, PacketReader reader)
-        {
-            // Wątek Client.ProcessHandle
-            if (client.State != ClientState.ServerIntroduced)
+            var reader = new PacketReader(packet);
+            if (reader.ReadUInt8() != 255)
                 throw UnexpectedReceptionError();
 
             reader.Decrypt(_privateKey);
@@ -256,6 +270,7 @@ namespace Server.MVVM.Model
             bool publicKeyBelongsToUser = reader.VerifySignature(publicKey, client.TokenCache);
             byte[] nextPacketToken = reader.ReadBytes(8);
 
+            Action outsideLock;
             try
             {
                 _syncRoot.EnterWriteLock();
@@ -265,21 +280,23 @@ namespace Server.MVVM.Model
                     // Login już istnieje.
                     var user = usersDb.GetUser(login);
                     if (!publicKey.Equals(user.PublicKey))
-                    {
                         // Klient wysłał inny klucz publiczny niż serwer ma zapisany w bazie.
-                        // TODO: log
-                        SendNoAuthentication(client, nextPacketToken);
-                        throw new Error("|Client| |not authenticated| |because| " +
-                            "|it sent a public key different from the one saved in the database|.");
-                    }
+                        outsideLock = () =>
+                        {
+                            // TODO: log
+                            SendNoAuthentication(client, nextPacketToken);
+                            throw new Error("|Client| |not authenticated| |because| " +
+                                "|it sent a public key different from the one saved in the database|.");
+                        };
 
                     if (!publicKeyBelongsToUser)
-                    {
                         // Klient nie zna klucza prywatnego.
-                        SendNoAuthentication(client, nextPacketToken);
-                        throw new Error("|Client| |not authenticated| |because| " +
-                            "|it does not own the public key sent by it|.");
-                    }
+                        outsideLock = () =>
+                        {
+                            SendNoAuthentication(client, nextPacketToken);
+                            throw new Error("|Client| |not authenticated| |because| " +
+                                "|it does not own the public key sent by it|.");
+                        };
                 }
                 else
                     // Login jeszcze nie istnieje, więc zapisujemy go w bazie.
@@ -290,17 +307,15 @@ namespace Server.MVVM.Model
                 (kredki) klienta na potrzeby dalszego kontynuowania jego sesji. */
                 client.Authenticate(login, publicKey);
                 ClientAuthenticated(client);
-                SendAuthentication(client, nextPacketToken);
+                outsideLock = () => SendAuthentication(client, nextPacketToken);
             }
             finally { _syncRoot.ExitWriteLock(); }
+            outsideLock();
         }
 
         private void SendAuthentication(Client client, byte[] nextPacketToken)
         {
-            // Wątek Client.ProcessHandle; write lock
-            if (client.State != ClientState.ServerIntroduced)
-                throw UnexpectedSendingError();
-
+            // Wątek Client.ProcessProtocol; write lock
             client.TokenCache = RandomGenerator.Generate(8);
 
             // 2 Rejestracja konta i/lub autentykacja klienta (11)
@@ -312,16 +327,11 @@ namespace Server.MVVM.Model
             pb.Encrypt(client.PublicKey);
             pb.Prepend(2, 1);
             client.Send(pb.Build());
-
-            client.State = ClientState.ClientAuthenticated;
         }
 
         private void SendNoAuthentication(Client client, byte[] nextPacketToken)
         {
-            // Wątek Client.ProcessHandle; write lock
-            if (client.State != ClientState.ServerIntroduced)
-                throw UnexpectedSendingError();
-
+            // Wątek Client.ProcessProtocol; write lock
             var pb = new PacketBuilder();
             pb.AppendSignature(_privateKey, nextPacketToken);
             // pb.Sign(_privateKey); - nie podpisujemy, bo wysyłamy sam podpis bez danych

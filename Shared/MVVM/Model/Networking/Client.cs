@@ -16,29 +16,37 @@ namespace Shared.MVVM.Model.Networking
         private class PacketToSend
         {
             public byte[] Data { get; }
-            private object _monitorLock;
+            private readonly object _monitorLock = new object();
 
-            public PacketToSend(byte[] data, object monitorLock)
+            public PacketToSend(byte[] data) => Data = data;
+
+            public void EnqueueAndWait(BlockingCollection<PacketToSend> queue)
             {
-                Data = data;
-                _monitorLock = monitorLock;
+                Monitor.Enter(_monitorLock);
+                queue.Add(this);
+
+                /* Aktualny wątek zasypia i zwalnia sekcję krytyczną (monitor locka), aby wątek
+                Client.Send mógł do niej wejść w metodzie PacketToSend.NotifyEnqueuer. */
+                Monitor.Wait(_monitorLock);
+                // Aktualny wątek budzi się i ostatecznie zwalnia sekcję krytyczną.
+                Monitor.Exit(_monitorLock);
             }
-
-            public void Enter() => Monitor.Enter(_monitorLock);
-
-            public void Wait() => Monitor.Wait(_monitorLock);
 
             public void NotifyEnqueuer()
             {
-                if (!(_monitorLock is null))
-                {
-                    Enter();
-                    Monitor.Pulse(_monitorLock);
-                    Exit();
-                }
+                Monitor.Enter(_monitorLock);
+                Monitor.Pulse(_monitorLock);
+                Monitor.Exit(_monitorLock);
             }
+        }
+        #endregion
 
-            public void Exit() => Monitor.Exit(_monitorLock);
+        #region Properties
+        private volatile bool _stopRequested = false;
+        public bool StopRequested
+        {
+            get => _stopRequested;
+            private set => _stopRequested = value;
         }
         #endregion
 
@@ -48,20 +56,19 @@ namespace Shared.MVVM.Model.Networking
         protected TcpClient _socket = null;
         protected Task _runner = null;
         // boole są flagami
-        private volatile bool _stopProcessing = false;
         private volatile bool _disconnectRequested = false;
 
         private BlockingCollection<PacketToSend> _sendQueue = new BlockingCollection<PacketToSend>();
-        protected BlockingCollection<byte[]> _receiveQueue = new BlockingCollection<byte[]>();
+        private BlockingCollection<byte[]> _receiveQueue = new BlockingCollection<byte[]>();
         #endregion
 
         protected void ResetFlags()
         {
-            _stopProcessing = false;
+            StopRequested = false;
             _disconnectRequested = false;
         }
 
-        protected void Process()
+        protected void Process(Func<Result> processProtocol)
         {
             Result result = null;
             try
@@ -74,8 +81,13 @@ namespace Shared.MVVM.Model.Networking
                 czekać na pozostałe wątki (Task.WaitAll(sender, receiver)). */
                 var sender = Task.Factory.StartNew(ProcessSend, option);
                 var receiver = Task.Factory.StartNew(ProcessReceive, option);
-                var handler = Task.Factory.StartNew(ProcessHandle, option);
-                Task.WaitAll(sender, receiver, handler);
+                var protocol = Task.Factory.StartNew(() =>
+                {
+                    var protocolResult = processProtocol();
+                    StopProcessing();
+                    return protocolResult;
+                }, option);
+                Task.WaitAll(sender, receiver, protocol);
 
                 /* Rozłączenie przez nas - ignorujemy potencjalne błędy z procesów
                 (sender, receiver, handler). Stan LostConnection służy do obsługi
@@ -83,7 +95,7 @@ namespace Shared.MVVM.Model.Networking
                 if (_disconnectRequested)
                     result = new Cancellation();
                 else
-                    result = SpecifyConnectionEnding(sender.Result, receiver.Result, handler.Result);
+                    result = SpecifyConnectionEnding(sender.Result, receiver.Result, protocol.Result);
             }
             catch (Exception e)
             {
@@ -221,7 +233,7 @@ namespace Shared.MVVM.Model.Networking
 
             while (true)
             {
-                if (_stopProcessing)
+                if (StopRequested)
                     return new Cancellation();
 
                 int packetLength = 0, prefixValue = 0;
@@ -291,15 +303,6 @@ namespace Shared.MVVM.Model.Networking
         }
 
         // uprzednio zbudowany (predefiniowany) pakiet
-        public void SendAsync(byte[] packet)
-        {
-            // blokujące dodawanie
-            _sendQueue.Add(new PacketToSend(packet, null));
-#if DEBUG
-            Debug.WriteLine($"server; SendAsync; {BitConverter.ToString(packet)}");
-#endif
-        }
-
         public void Send(byte[] packet)
         {
             /* Trochę jak ViewModel.UIInvoke (Application.Current.Dispatcher.Invoke),
@@ -307,17 +310,14 @@ namespace Shared.MVVM.Model.Networking
             Dispatcher, i w metodzie Client.Send zlecamy mu wysłanie pakietu, co
             blokuje wątek zlecający do momentu wysłania, jak UIInvoke do momentu
             wykonania przekazanego mu kodu. */
-            var pts = new PacketToSend(packet, new object());
-            pts.Enter();
-            _sendQueue.Add(pts);
-#if DEBUG
-            Debug.WriteLine($"server; Send; {BitConverter.ToString(packet)}");
-#endif
-            /* Aktualny wątek zasypia i zwalnia sekcję krytyczną (monitor locka), aby wątek
-            Client.Send mógł do niej wejść w metodzie PacketToSend.NotifyEnqueuer. */
-            pts.Wait();
-            // Aktualny wątek budzi się i ostatecznie zwalnia sekcję krytyczną.
-            pts.Exit();
+            /* TODO: timeout, aby nie było sytuacji, że wątek nadający pakiet wrzuci go
+            do kolejki i zablokuje się po tym, jak wątek Client.ProcessSend już wyszedł
+            z pętli. */
+            /* jeszcze dalsze TODO: wywalić wątek Client.ProcessSend i wysyłać wszystko
+            w wątku Client.ProcessProtocol z timeoutem - jeżeli zostanie osiągnięty,
+            to znaczy, że rozmówca ma pełny bufor odbiorczy. */
+            var pts = new PacketToSend(packet);
+            pts.EnqueueAndWait(_sendQueue);
         }
 
         private Result ProcessReceive()
@@ -340,7 +340,7 @@ namespace Shared.MVVM.Model.Networking
 
             while (true)
             {
-                if (_stopProcessing)
+                if (StopRequested)
                     return new Cancellation();
 
                 /* if (!IsSocketConnected(client))
@@ -404,55 +404,26 @@ namespace Shared.MVVM.Model.Networking
         }
 #endif
 
-        private Result ProcessHandle()
+        public bool Receive(out byte[] packet, int millisecondsTimeout)
         {
-            var result = ProcessHandleInner();
-            StopProcessing();
-            return result;
-        }
-
-        private Result ProcessHandleInner()
-        {
-            /* handler, podczas interpretowania requesta "edytującego", czyli takiego,
-            który wymaga zapisu do bazy danych, musi mieć writer-locka na bazę danych od momentu
-            rozpoczęcia zapisu bazy danych do momentu umieszczenia w kolejce do wysłania obiektu
-            powiadomienia, aby zachować ciągłość zmian w bazie danych; dzięki temu jest gwarancja,
-            że kolejne powiadomienia wysyłane do klientów reprezentują kolejne stany bazy danych
-            i nie może wystąpić sytuacja, że najpierw zostanie wysłane powiadomienie z aktualnym
-            stanem, a po nim powiadomienie z już nieaktualnym stanem i klient zinterpretuje to
-            ostatnie powiadomienie jako aktualny stan */
-            while (true)
+            // Wątek Client.ProcessProtocol
+            if (_receiveQueue.TryTake(out packet, millisecondsTimeout))
             {
-                if (_stopProcessing)
-                    return new Cancellation();
-
-                if (!_receiveQueue.TryTake(out byte[] packet, 1000))
-                    continue;
-
 #if DEBUG
-                Debug.WriteLine($"handle; packet of length {packet.Length}, opcode " +
+                Debug.WriteLine($"receive; packet of length {packet.Length}, opcode " +
                     packet[0]);
 #endif
-
-                try { OnReceivedPacket(packet); }
-                catch (Error e)
-                {
-                    /* Rozłączamy, jeżeli wystąpił jakikolwiek błąd przy zarządzaniu
-                    stanem klienta, np. jeżeli klient wysłał pakiet, podczas gdy była
-                    kolej serwera na wysłanie czegoś do klienta - w ten sposób klient
-                    złamał protokół. */
-                    return new Failure(e, e.Message);
-                }
+                return true;
             }
+            else // timeout
+                return false;
         }
-
-        protected abstract void OnReceivedPacket(byte[] packet);
 
         protected void StopProcessing()
         {
             /* TODO: zrobić CancellationToken do przerywania TryTake
             w BlockingCollectionach i go tu cancelować. */
-            _stopProcessing = true;
+            StopRequested = true;
         }
 
         public Task DisconnectAsync()

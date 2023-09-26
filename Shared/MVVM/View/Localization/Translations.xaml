@@ -241,6 +241,8 @@
   <l:Entry x:Key="Do you still want to connect to the server"
     PL="Czy wciąż chcesz połączyć się z serwerem"/>
   <l:Entry x:Key="Connect" PL="Połącz"/>
+  <l:Entry x:Key="Receiving a packet from the server timed out"
+    PL="Przekroczono czas oczekiwania na odebranie pakietu od serwera"/>
 
   <!-- błędy pakietów -->
   <l:Entry x:Key="UTF-8 encoded login can be at most 255 bytes long"
