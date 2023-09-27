@@ -175,7 +175,8 @@
             ItemContainerStyle="{DynamicResource ServerCardStyle}"
             ItemsSource="{Binding Servers}"
             SelectedItem="{Binding SelectedServer, Mode=TwoWay}"
-            SelectionChanged="ListView_SelectionChanged" />
+            SelectionChanged="ListView_SelectionChanged"
+            SelectionMode="Single" />
           <Button
             Grid.Row="2"
             Grid.Column="1"
@@ -212,7 +213,8 @@
             ItemContainerStyle="{DynamicResource AccountCardStyle}"
             ItemsSource="{Binding Accounts}"
             SelectedItem="{Binding SelectedAccount, Mode=TwoWay}"
-            SelectionChanged="ListView_SelectionChanged" />
+            SelectionChanged="ListView_SelectionChanged"
+            SelectionMode="Single" />
           <Button
             Grid.Row="2"
             Grid.Column="1"
@@ -275,7 +277,8 @@
               ItemContainerStyle="{StaticResource ConversationCardStyle}"
               ItemsSource="{Binding Conversations}"
               SelectedItem="{Binding SelectedConversation}"
-              SelectionChanged="ListView_SelectionChanged" />
+              SelectionChanged="ListView_SelectionChanged"
+              SelectionMode="Single" />
           </Border>
           <Border
             Grid.Row="2"
