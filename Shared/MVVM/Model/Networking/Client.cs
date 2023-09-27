@@ -26,10 +26,15 @@ namespace Shared.MVVM.Model.Networking
                 queue.Add(this);
 
                 /* Aktualny wątek zasypia i zwalnia sekcję krytyczną (monitor locka), aby wątek
-                Client.Send mógł do niej wejść w metodzie PacketToSend.NotifyEnqueuer. */
-                Monitor.Wait(_monitorLock);
+                Client.Send mógł do niej wejść w metodzie PacketToSend.NotifyEnqueuer. Jeżeli
+                w ciągu czasu timeout wątek Client.Send nie zajmie monitor locka i nie wykona
+                na nim Monitor.Pulse, bo już wyszedł z nieskończonej pętli, to wątek zlecający
+                wysłanie obudzi się. */
+                bool packetSent = Monitor.Wait(_monitorLock, 1000);
                 // Aktualny wątek budzi się i ostatecznie zwalnia sekcję krytyczną.
                 Monitor.Exit(_monitorLock);
+                if (!packetSent)
+                    throw new Error("|Sending a packet timed out|.");
             }
 
             public void NotifyEnqueuer()

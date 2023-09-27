@@ -413,6 +413,8 @@
     PL="Odebrano nieoczekiwany pakiet"/>
   <l:Entry x:Key="Server" PL="Serwer"/>
   <l:Entry x:Key="crashed" PL="niespodziewanie się zamknął"/>
+  <l:Entry x:Key="Sending a packet timed out"
+    PL="Przekroczono czas oczekiwania na wysłanie pakietu"/>
 
   <!-- błędy pakietów -->
   <l:Entry x:Key="Received an incomplete packet"
