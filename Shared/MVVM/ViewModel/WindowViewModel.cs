@@ -30,13 +30,27 @@ namespace Shared.MVVM.ViewModel
         public Result Result { get; protected set; } = new Cancellation();
         public event Action RequestClose = null;
 
+        private readonly object _closeLock = new object();
+        private bool _closed = false;
+
         protected void OnRequestClose(Result result)
         {
-            Result = result;
-            /* używamy typu Action jako handlerów eventu RequestClose, bo we
-            wszystkich miejscach w programie status viewmodelu pobieramy z
-            gettera Result, a nie poprzez parametr handlera eventu RequestClose */
-            if (RequestClose != null) RequestClose();
+            lock (_closeLock)
+            {
+                if (_closed) return;
+                _closed = true;
+                Result = result;
+                /* używamy typu Action jako handlerów eventu RequestClose, bo we
+                wszystkich miejscach w programie status viewmodelu pobieramy z
+                gettera Result, a nie poprzez parametr handlera eventu RequestClose */
+                if (RequestClose != null) RequestClose();
+            }
+        }
+
+        public void Cancel()
+        {
+            // Dla wywołującego viewmodelu.
+            OnRequestClose(new Cancellation());
         }
     }
 }
