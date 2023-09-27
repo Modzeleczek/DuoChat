@@ -112,7 +112,20 @@ namespace Client.MVVM.ViewModel
         public Account SelectedAccount
         {
             get => selectedAccount;
-            set { SelectAccountAsync(value); }
+            set
+            {
+                // Wyłączamy wszelkie interakcje z oknem.
+                window.SetEnabled(false);
+                // Rozłączamy aktualne konto, o ile jesteśmy połączeni.
+                _client.DisconnectAsync()
+                    .ContinueWith((task) => UIInvoke(() =>
+                    {
+                        // Łączymy z nowym kontem.
+                        Connect(value);
+                        // Przywracamy interakcje z oknem.
+                        window.SetEnabled(true);
+                    }));
+            }
         }
 
         private ObservableCollection<Conversation> conversations;
@@ -280,7 +293,7 @@ namespace Client.MVVM.ViewModel
             {
                 var account = (Account)obj;
                 if (SelectedAccount == account)
-                    SelectAccountAsync(null);
+                    DisconnectAccount();
 
                 var vm = new EditAccountViewModel(_storage, _loggedUserKey,
                     SelectedServer.GetPrimaryKey(), account.Login)
@@ -304,7 +317,7 @@ namespace Client.MVVM.ViewModel
                 if (!(confirmRes is Success)) return;
 
                 if (SelectedAccount == account)
-                    SelectAccountAsync(null);
+                    DisconnectAccount();
                 
                 try
                 {
@@ -444,86 +457,85 @@ namespace Client.MVVM.ViewModel
             }
         }
 
-        private async Task SelectServerAsync(Server server)
+        private void SelectServerAsync(Server server)
         {
-            selectedServer = server;
-            await SelectAccountAsync(null);
-            Accounts.Clear();
-            if (server != null)
+            window.SetEnabled(false);
+            _client.DisconnectAsync().ContinueWith((task) => UIInvoke(() =>
+            {
+                ClearAccount();
+                selectedServer = server;
+                Accounts.Clear();
+                if (server != null)
+                {
+                    try
+                    {
+                        var accounts = _storage.GetAllAccounts(
+                            _loggedUserKey, server.GetPrimaryKey());
+                        foreach (var acc in accounts)
+                            Accounts.Add(acc);
+                    }
+                    catch (Error e)
+                    {
+                        e.Prepend("|Could not| |read user's account list|.");
+                        Alert(e.Message);
+                        throw;
+                    }
+                }
+                OnPropertyChanged(nameof(SelectedServer));
+                window.SetEnabled(true);
+            }));
+        }
+
+        private void DisconnectAccount()
+        {
+            // Wyłączamy interakcje z oknem.
+            window.SetEnabled(false);
+            // Rozłączamy aktualne konto, o ile jesteśmy połączeni.
+            _client.DisconnectAsync().ContinueWith((task) => UIInvoke(() =>
+            {
+                // Odznaczamy konto w GUI.
+                ClearAccount();
+                // Przywracamy interakcje z oknem.
+                window.SetEnabled(true);
+            }));
+        }
+
+        private void ClearAccount()
+        {
+            selectedAccount = null;
+            SelectedConversation = null;
+            Conversations.Clear();
+            OnPropertyChanged(nameof(SelectedAccount));
+        }
+
+        private void Connect(Account account)
+        {
+            /* Wątek UI na zlecenie anonimowego wątku
+            Nie sprawdzamy, czy value == SelectedServer, aby można było
+            reconnectować poprzez kliknięcie na już zaznaczony serwer. */
+            selectedAccount = account;
+            SelectedConversation = null;
+            Conversations.Clear();
+            if (account != null)
             {
                 try
                 {
-                    var accounts = _storage.GetAllAccounts(
-                        _loggedUserKey, server.GetPrimaryKey());
-                    foreach (var acc in accounts)
-                        Accounts.Add(acc);
+                    // Synchroniczne łączenie.
+                    var serverKey = SelectedServer.GetPrimaryKey();
+                    _client.Connect(serverKey, ProcessProtocol);
+
+                    // RANDOM: TODO: pobieranie konwersacji z serwera
+                    var cnvCnt = rng.Next(0, 5);
+                    for (int i = 0; i < cnvCnt; ++i)
+                        Conversations.Add(Conversation.Random(rng));
                 }
                 catch (Error e)
                 {
-                    e.Prepend("|Could not| |read user's account list|.");
+                    selectedAccount = null;
                     Alert(e.Message);
-                    throw;
                 }
             }
-            OnPropertyChanged(nameof(SelectedServer));
-        }
-
-        private async Task SelectAccountAsync(Account account)
-        {
-            /* Asynchronicznie rozłączamy z serwerem. Wyłączamy tymczasowo
-            interakcje z głównym oknem, ale nie blokujemy wątku UI,
-            dzięki czemu, wątek Client.ProcessHandle może jeszcze przed
-            rozłączeniem obsłużyć jakiś pakiet i w handlerach eventu
-            Client.ReceivedPacket wykonywać UIInvoke i edytować GUI. */
-
-            // Wyłączamy wszelkie interakcje z oknem.
-            window.SetEnabled(false);
-
-            /*  - Jeżeli już jesteśmy połączeni, to żądamy rozłączenia.
-            - Jeżeli jeszcze się nie łączyliśmy, to kod z ContinueWith zostanie
-            natychmiast wykonany, bo implementacja Client klienta w konstruktorze
-            ustawia _runner = Task.CompletedTask.
-            - Jeżeli byliśmy połączeni, ale nie jesteśmy, to też kod z ContinueWith
-            zostanie natychmiast wykonany. */
-            await _client.DisconnectAsync().ContinueWith((_) =>
-            {
-                /* Ten kod jest wykonywany przez jakiś anonimowy wątek
-                (nie jest to wątek Client.Process) po zakończeniu metody
-                Client.Process przez wątek Client.Process. Anonimowy wątek
-                jest zablokowany do czasu zakończenia UIInvoke. */
-                UIInvoke(() =>
-                {
-                    /* Wątek UI na zlecenie anonimowego wątku
-                    Nie sprawdzamy, czy value == SelectedServer, aby można było
-                    reconnectować poprzez kliknięcie na już zaznaczony serwer. */
-                    selectedAccount = account;
-                    SelectedConversation = null;
-                    Conversations.Clear();
-                    if (account != null)
-                    {
-                        try
-                        {
-                            // Synchroniczne łączenie.
-                            var serverKey = SelectedServer.GetPrimaryKey();
-                            _client.Connect(serverKey, ProcessProtocol);
-
-                            // RANDOM: TODO: pobieranie konwersacji z serwera
-                            var cnvCnt = rng.Next(0, 5);
-                            for (int i = 0; i < cnvCnt; ++i)
-                                Conversations.Add(Conversation.Random(rng));
-                        }
-                        catch (Error e)
-                        {
-                            selectedAccount = null;
-                            Alert(e.Message);
-                        }
-                    }
-                    OnPropertyChanged(nameof(SelectedAccount));
-
-                    // Przywracamy interakcje z oknem.
-                    window.SetEnabled(true);
-                });
-            });
+            OnPropertyChanged(nameof(SelectedAccount));
         }
 
         #region Errors
@@ -681,7 +693,7 @@ namespace Client.MVVM.ViewModel
                 if (!(confirmRes is Success))
                 {
                     // Rozłączamy z serwerem.
-                    SelectAccountAsync(null);
+                    DisconnectAccount();
                     return false;
                 }
                 return true;
@@ -768,13 +780,7 @@ namespace Client.MVVM.ViewModel
 
             UIInvoke(() =>
             {
-                /* Task zwrócony przez _client.DisconnectAsync
-                jest już zakończony, więc natychmiast wykonywane
-                jest ContinueWith. Nie czekamy na zakończenie kodu
-                z ContinueWith, bo będzie deadlock. Zanim użytkownik
-                kliknie alert, operacje z SelectAccountAsync się
-                zakończą. */
-                SelectAccountAsync(null);
+                ClearAccount();
                 Alert(message);
             });
         }
