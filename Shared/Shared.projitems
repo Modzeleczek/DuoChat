@@ -37,6 +37,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\ViewModel\Results\Result.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\ViewModel\Results\Success.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\ViewModel\LongBlockingOperation\Work.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\ViewModel\UserControlViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\ViewModel\ViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\ViewModel\WindowViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\View\Helpers\EnableDragHelper.cs" />

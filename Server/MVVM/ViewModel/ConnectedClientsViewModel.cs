@@ -4,6 +4,7 @@ using Shared.MVVM.Core;
 using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking;
 using Shared.MVVM.View.Windows;
+using Shared.MVVM.ViewModel;
 using Shared.MVVM.ViewModel.Results;
 using System;
 using System.Collections.ObjectModel;

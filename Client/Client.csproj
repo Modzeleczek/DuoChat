@@ -222,7 +222,6 @@
     <Compile Include="MVVM\ViewModel\ServerActions\EditServerViewModel.cs" />
     <Compile Include="MVVM\ViewModel\ServerActions\ServerEditorViewModel.cs" />
     <Compile Include="MVVM\ViewModel\SettingsViewModel.cs" />
-    <Compile Include="MVVM\ViewModel\UserControlViewModel.cs" />
     <Compile Include="MVVM\View\Controls\ConversationView.xaml.cs">
       <DependentUpon>ConversationView.xaml</DependentUpon>
     </Compile>

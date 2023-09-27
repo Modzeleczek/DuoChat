@@ -151,7 +151,6 @@
     <Compile Include="MVVM\ViewModel\Observables\ClientObservable.cs" />
     <Compile Include="MVVM\ViewModel\Observables\Log.cs" />
     <Compile Include="MVVM\ViewModel\SettingsViewModel.cs" />
-    <Compile Include="MVVM\ViewModel\UserControlViewModel.cs" />
     <Compile Include="MVVM\View\Controls\ConnectedClientsView.xaml.cs">
       <DependentUpon>ConnectedClientsView.xaml</DependentUpon>
     </Compile>

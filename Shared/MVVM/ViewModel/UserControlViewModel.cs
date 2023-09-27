@@ -1,8 +1,8 @@
 ﻿using Shared.MVVM.View.Windows;
 
-namespace Client.MVVM.ViewModel
+namespace Shared.MVVM.ViewModel
 {
-    public class UserControlViewModel : Shared.MVVM.ViewModel.ViewModel
+    public class UserControlViewModel : ViewModel
     {
         protected UserControlViewModel(DialogWindow owner)
         {

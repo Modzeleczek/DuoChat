@@ -1,5 +1,6 @@
 ﻿using Server.MVVM.ViewModel.Observables;
 using Shared.MVVM.View.Windows;
+using Shared.MVVM.ViewModel;
 
 namespace Server.MVVM.ViewModel
 {
