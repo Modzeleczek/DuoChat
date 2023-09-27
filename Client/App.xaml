@@ -2,6 +2,8 @@
   x:Class="Client.App"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:ctrl="clr-namespace:Client.MVVM.View.Controls"
+  xmlns:vm="clr-namespace:Client.MVVM.ViewModel"
   xmlns:shared="clr-namespace:Shared">
   <Application.Resources>
     <ResourceDictionary>
@@ -34,6 +36,10 @@
         <ResourceDictionary Source="/MVVM/View/DynamicResources/Styles/TextFields.xaml" />
         <ResourceDictionary Source="/MVVM/View/DynamicResources/Styles/Border.xaml" />
       </ResourceDictionary.MergedDictionaries>
+
+      <DataTemplate DataType="{x:Type vm:ConversationViewModel}">
+        <ctrl:ConversationView />
+      </DataTemplate>
     </ResourceDictionary>
   </Application.Resources>
 </shared:ThemedApplication>

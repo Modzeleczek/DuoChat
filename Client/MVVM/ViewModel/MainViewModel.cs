@@ -27,13 +27,6 @@ namespace Client.MVVM.ViewModel
     public class MainViewModel : WindowViewModel
     {
         #region Commands
-        private RelayCommand send;
-        public RelayCommand Send
-        {
-            get => send;
-            private set { send = value; OnPropertyChanged(); }
-        }
-
         private RelayCommand openSettings;
         public RelayCommand OpenSettings
         {
@@ -135,18 +128,11 @@ namespace Client.MVVM.ViewModel
             set { conversations = value; OnPropertyChanged(); }
         }
 
-        private Conversation selectedConversation;
-        public Conversation SelectedConversation
+        private ConversationViewModel _conversationVM;
+        public ConversationViewModel ConversationVM
         {
-            get => selectedConversation;
-            set { selectedConversation = value; OnPropertyChanged(); }
-        }
-
-        private string writtenMessage;
-        public string WrittenMessage
-        {
-            get => writtenMessage;
-            set { writtenMessage= value; OnPropertyChanged(); }
+            get => _conversationVM;
+            private set { _conversationVM = value; OnPropertyChanged(); }
         }
         #endregion
 
@@ -177,6 +163,7 @@ namespace Client.MVVM.ViewModel
                 Servers = new ObservableCollection<Server>();
                 Accounts = new ObservableCollection<Account>();
                 Conversations = new ObservableCollection<Conversation>();
+                ConversationVM = new ConversationViewModel(window);
 
                 try
                 {
@@ -332,18 +319,6 @@ namespace Client.MVVM.ViewModel
                     throw;
                 }
                 Accounts.Remove(account);
-            });
-
-            Send = new RelayCommand(o =>
-            {
-                if (SelectedConversation == null ||
-                    WrittenMessage.Length == 0) return;
-                var rnd = Message.Random(rng);
-                rnd.PlainContent = WrittenMessage;
-                SelectedConversation.Messages.Add(rnd);
-                WrittenMessage = "";
-                /* TODO: pisanie do wybranej konwersacji
-                na wybranym koncie na wybranym serwerze */
             });
 
             Close = new RelayCommand(_ =>
@@ -503,7 +478,7 @@ namespace Client.MVVM.ViewModel
         private void ClearAccount()
         {
             selectedAccount = null;
-            SelectedConversation = null;
+            ConversationVM.Conversation = null;
             Conversations.Clear();
             OnPropertyChanged(nameof(SelectedAccount));
         }
@@ -514,7 +489,7 @@ namespace Client.MVVM.ViewModel
             Nie sprawdzamy, czy value == SelectedServer, aby można było
             reconnectować poprzez kliknięcie na już zaznaczony serwer. */
             selectedAccount = account;
-            SelectedConversation = null;
+            ConversationVM.Conversation = null;
             Conversations.Clear();
             if (account != null)
             {

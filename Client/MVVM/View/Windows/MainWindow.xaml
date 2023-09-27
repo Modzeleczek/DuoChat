@@ -1,4 +1,4 @@
-<w:DialogWindow
+﻿<w:DialogWindow
   x:Class="Client.MVVM.View.Windows.MainWindow"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -276,7 +276,7 @@
               BorderThickness="0,0,0,4"
               ItemContainerStyle="{StaticResource ConversationCardStyle}"
               ItemsSource="{Binding Conversations}"
-              SelectedItem="{Binding SelectedConversation}"
+              SelectedItem="{Binding ConversationVM.Conversation}"
               SelectionChanged="ListView_SelectionChanged"
               SelectionMode="Single" />
           </Border>
@@ -344,7 +344,7 @@
             <Style TargetType="Grid">
               <Setter Property="Visibility" Value="Hidden" />
               <Style.Triggers>
-                <DataTrigger Binding="{Binding Path=SelectedIndex, ElementName=ConversationsListView}" Value="-1">
+                <DataTrigger Binding="{Binding ConversationVM.Conversation}" Value="{x:Null}">
                   <Setter Property="Visibility" Value="Visible" />
                 </DataTrigger>
               </Style.Triggers>
@@ -365,103 +365,19 @@
             Text="{Binding Source={x:Static l:Translator.Instance}, Path=D.Welcome_to_DuoChat}" />
         </Grid>
 
-        <Grid Grid.Row="1" Grid.Column="3">
-          <Grid.Style>
-            <Style TargetType="Grid">
+        <ContentControl Grid.Row="1" Grid.Column="3"
+          Content="{Binding ConversationVM}">
+          <ContentControl.Style>
+            <Style TargetType="ContentControl">
               <Setter Property="Visibility" Value="Visible" />
               <Style.Triggers>
-                <DataTrigger Binding="{Binding Path=SelectedIndex, ElementName=ConversationsListView}" Value="-1">
+                <DataTrigger Binding="{Binding ConversationVM.Conversation}" Value="{x:Null}">
                   <Setter Property="Visibility" Value="Hidden" />
                 </DataTrigger>
               </Style.Triggers>
             </Style>
-          </Grid.Style>
-          <Grid.RowDefinitions>
-            <RowDefinition Height="50" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="70" />
-          </Grid.RowDefinitions>
-          <Border Grid.Row="0" Background="{DynamicResource SecondBackgroundColor}">
-            <Grid Margin="8" HorizontalAlignment="Stretch">
-              <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
-                <Label
-                  Margin="5,0,5,0"
-                  VerticalAlignment="Center"
-                  FontFamily="/MVVM/View/Fonts/RedHatDisplay"
-                  FontSize="18"
-                  FontWeight="SemiBold"
-                  Foreground="{DynamicResource SecondForegroundColor}">
-                  <Label.Content>
-                    <PriorityBinding>
-                      <Binding Path="SelectedConversation.Name" />
-                      <Binding Path="D.Conversation_name" Source="{x:Static l:Translator.Instance}" />
-                    </PriorityBinding>
-                  </Label.Content>
-                </Label>
-                <Image
-                  Width="25"
-                  Height="25"
-                  Margin="10,0,5,0"
-                  RenderOptions.BitmapScalingMode="Fant"
-                  Source="/MVVM/View/Icons/add.png" />
-              </StackPanel>
-
-              <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-                <Image
-                  Width="25"
-                  Height="25"
-                  Margin="5,0,5,0"
-                  RenderOptions.BitmapScalingMode="Fant"
-                  Source="/MVVM/View/Icons/phone.png" />
-                <Image
-                  Width="25"
-                  Height="25"
-                  Margin="5,0,5,0"
-                  RenderOptions.BitmapScalingMode="Fant"
-                  Source="{DynamicResource SettingsButtonImage}" />
-              </StackPanel>
-            </Grid>
-          </Border>
-          <!-- możliwe, że tu dam ItemsControl zamiast ListView -->
-          <ListView
-            Grid.Row="1"
-            Margin="8,0,0,0"
-            Background="Transparent"
-            BorderThickness="0"
-            ItemContainerStyle="{DynamicResource ChatItemStyle}"
-            ItemsSource="{Binding SelectedConversation.Messages}" />
-          <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-              <ColumnDefinition />
-              <ColumnDefinition Width="90" />
-            </Grid.ColumnDefinitions>
-            <TextBox
-              Grid.Row="1"
-              Grid.ColumnSpan="2"
-              Height="50"
-              Style="{DynamicResource MessageBoxStyle}"
-              Text="Message @Username">
-              <!-- obsługa przycisków w textboxie -->
-              <TextBox.InputBindings>
-                <KeyBinding Key="Return" Command="{Binding Send}" />
-              </TextBox.InputBindings>
-            </TextBox>
-
-            <StackPanel
-              Grid.Column="1"
-              Margin="0,0,16,0"
-              HorizontalAlignment="Right"
-              Orientation="Horizontal">
-
-              <Image
-                Width="25"
-                Height="25"
-                Margin="5,0,10,0"
-                RenderOptions.BitmapScalingMode="Fant"
-                Source="/MVVM/View/Icons/send.png" />
-            </StackPanel>
-          </Grid>
-        </Grid>
+          </ContentControl.Style>
+        </ContentControl>
       </Grid>
     </Border>
   </Grid>

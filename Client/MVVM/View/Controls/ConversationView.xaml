@@ -1,0 +1,93 @@
+﻿<UserControl x:Class="Client.MVVM.View.Controls.ConversationView"
+  x:ClassModifier="public"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:l="clr-namespace:Shared.MVVM.View.Localization"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  mc:Ignorable="d"
+  d:DesignHeight="450" d:DesignWidth="800">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="50" />
+      <RowDefinition Height="*" />
+      <RowDefinition Height="70" />
+    </Grid.RowDefinitions>
+
+    <Border Grid.Row="0" Background="{DynamicResource SecondBackgroundColor}">
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="auto" />
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="auto" />
+          <ColumnDefinition Width="auto" />
+        </Grid.ColumnDefinitions>
+
+        <Image Grid.Column="0"
+          Width="25"
+          Height="25"
+          Margin="10,0,5,0"
+          RenderOptions.BitmapScalingMode="Fant"
+          Source="/MVVM/View/Icons/add.png" />
+
+        <Label Grid.Column="1"
+          Margin="5,0,5,0"
+          VerticalAlignment="Center"
+          FontFamily="/MVVM/View/Fonts/RedHatDisplay"
+          FontSize="18"
+          FontWeight="SemiBold"
+          Foreground="{DynamicResource SecondForegroundColor}">
+          <!-- TODO: jeżeli konwersacja ma nazwę, to wyświetlić; w.p.p.
+            wyświetlić listę członków obciętą, tak żeby się zmieściła -->
+          <Label.Content>
+            <PriorityBinding>
+              <Binding Path="Conversation.Name" />
+              <Binding Path="D.Conversation_name" Source="{x:Static l:Translator.Instance}" />
+            </PriorityBinding>
+          </Label.Content>
+        </Label>
+
+        <Image Grid.Column="2"
+          Width="25"
+          Height="25"
+          Margin="5,0,5,0"
+          RenderOptions.BitmapScalingMode="Fant"
+          Source="/MVVM/View/Icons/phone.png" />
+
+        <Image Grid.Column="3"
+          Width="25"
+          Height="25"
+          Margin="5,0,5,0"
+          RenderOptions.BitmapScalingMode="Fant"
+          Source="{DynamicResource SettingsButtonImage}" />
+      </Grid>
+    </Border>
+
+    <ListView Grid.Row="1"
+      Background="Transparent"
+      BorderThickness="0"
+      ItemContainerStyle="{DynamicResource ChatItemStyle}"
+      ItemsSource="{Binding Conversation.Messages}" />
+
+    <Grid Grid.Row="2">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="auto" />
+      </Grid.ColumnDefinitions>
+      <TextBox
+        Grid.Column="0"
+        Style="{DynamicResource MessageBoxStyle}">
+        <!-- obsługa przycisków w textboxie -->
+        <TextBox.InputBindings>
+          <KeyBinding Key="Return" Command="{Binding Send}" />
+        </TextBox.InputBindings>
+      </TextBox>
+
+      <Image Grid.Column="1"
+        Width="25"
+        Margin="0,0,10,0"
+        RenderOptions.BitmapScalingMode="Fant"
+        Source="/MVVM/View/Icons/send.png" />
+    </Grid>
+  </Grid>
+</UserControl>

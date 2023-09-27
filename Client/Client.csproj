@@ -107,6 +107,10 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="MVVM\View\Controls\ConversationView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MVVM\View\DynamicResources\Themes\Dark.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -193,6 +197,7 @@
     <Compile Include="MVVM\Model\SQLiteStorage\Repositories\AccountRepository.cs" />
     <Compile Include="MVVM\Model\SQLiteStorage\ServerDatabase.cs" />
     <Compile Include="MVVM\Model\Storage.cs" />
+    <Compile Include="MVVM\ViewModel\ConversationViewModel.cs" />
     <Compile Include="MVVM\ViewModel\Observables\Account.cs" />
     <Compile Include="MVVM\ViewModel\Observables\Attachment.cs" />
     <Compile Include="MVVM\ViewModel\Observables\Conversation.cs" />
@@ -217,6 +222,10 @@
     <Compile Include="MVVM\ViewModel\ServerActions\EditServerViewModel.cs" />
     <Compile Include="MVVM\ViewModel\ServerActions\ServerEditorViewModel.cs" />
     <Compile Include="MVVM\ViewModel\SettingsViewModel.cs" />
+    <Compile Include="MVVM\ViewModel\UserControlViewModel.cs" />
+    <Compile Include="MVVM\View\Controls\ConversationView.xaml.cs">
+      <DependentUpon>ConversationView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MVVM\View\Converters\IPv4AddressToStringConverter.cs" />
     <Compile Include="MVVM\View\Converters\PortToStringConverter.cs" />
     <Compile Include="MVVM\View\DynamicResources\Styles\ResizableWindow.xaml.cs">
@@ -262,9 +271,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="MVVM\View\Controls\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="MVVM\View\Icons\add.png" />
     <Resource Include="MVVM\View\Icons\logo.png" />
