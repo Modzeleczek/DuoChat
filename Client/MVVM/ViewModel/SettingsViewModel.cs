@@ -1,4 +1,4 @@
-﻿using Client.MVVM.Model;
+using Client.MVVM.Model;
 using Shared.MVVM.Core;
 using Shared.MVVM.ViewModel;
 using Shared.MVVM.ViewModel.Results;
@@ -10,7 +10,6 @@ namespace Client.MVVM.ViewModel
     {
         #region Commands
         public RelayCommand LocalLogout { get; }
-        public RelayCommand ToggleLanguage { get; }
         public RelayCommand SwitchToEnglish { get; }
         public RelayCommand SwitchToPolish { get; }
         public RelayCommand ToggleTheme { get; }
@@ -37,12 +36,6 @@ namespace Client.MVVM.ViewModel
                 d.SwitchToPolish();
                 storage.SetActiveLanguage((int)d.ActiveLanguage);
             });
-
-            //ToggleLanguage = new RelayCommand(_ =>
-            //{
-            //    d.ToggleLanguage();
-            //    storage.SetActiveLanguage((int)d.ActiveLanguage);
-            //});
 
             ToggleTheme = new RelayCommand(_ =>
             {
