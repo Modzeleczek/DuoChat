@@ -30,9 +30,9 @@
       CornerRadius="10">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="40" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
+              <RowDefinition Height="40" />
+              <RowDefinition Height="*" />
+              <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
             <Border
@@ -40,101 +40,98 @@
               h:EnableDragHelper.EnableDrag="True"
               Background="{DynamicResource FirstBackgroundColor}"
               CornerRadius="10,10,0,0">
-                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
-                    <Label
-                      Margin="15,0,0,0"
-                      Content="{Binding ElementName=SettingsWindowName, Path=Title}"
-                      FontSize="14"
-                      FontWeight="SemiBold"
-                      Foreground="{DynamicResource FirstForegroundColor}" />
-                    <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-                        <Button
-                          Margin="4,1,16,0"
-                          Command="{Binding Path=Close}"
-                          Content="✕"
-                          Style="{DynamicResource TitleBarButtonStyle}" />
-                    </StackPanel>
-                </Grid>
+              <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                <Label
+                  Margin="15,0,0,0"
+                  Content="{Binding ElementName=SettingsWindowName, Path=Title}"
+                  FontSize="14"
+                  FontWeight="SemiBold"
+                  Foreground="{DynamicResource FirstForegroundColor}" />
+                <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                <Button
+                  Margin="4,1,16,0"
+                  Command="{Binding Path=Close}"
+                  Content="✕"
+                  Style="{DynamicResource TitleBarButtonStyle}" />
+                </StackPanel>
+              </Grid>
             </Border>
 
             <Grid Grid.Row="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
+              <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+              </Grid.RowDefinitions>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+              </Grid.ColumnDefinitions>
 
-                <Border
-                  Grid.Row="1"
-                  BorderBrush="{DynamicResource FirstBorderColor}"
-                  BorderThickness="0,1,0,1">
-                    <ToggleButton
-                      x:Name="Themes"
-                      Margin="10,5,5,5"
-                      Command="{Binding ToggleTheme}"
-                      Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Toggle_theme}"
-                      Foreground="{DynamicResource SecondForegroundColor}"
-                      IsChecked="False"
-                      Style="{DynamicResource StylishedToggleButton}" />
-                </Border>
+              <Border
+                Grid.Row="1"
+                BorderBrush="{DynamicResource FirstBorderColor}"
+                BorderThickness="0,1,0,1">
+                <ToggleButton
+                  x:Name="Themes"
+                  Margin="10,5,5,5"
+                  Command="{Binding ToggleTheme}"
+                  Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Toggle_theme}"
+                  Foreground="{DynamicResource SecondForegroundColor}"
+                  IsChecked="False"
+                  Style="{DynamicResource StylishedToggleButton}" />
+              </Border>
 
-                <Border
-                  Grid.Row="2"
-                  BorderBrush="{DynamicResource FirstForegroundColor}"
-                  BorderThickness="0,0,0,1">
-                    <Button
-                      Margin="10,6,5,6"
-                      HorizontalAlignment="Left"
-                      VerticalAlignment="Center"
-                      Command="{Binding LocalLogout}"
-                      Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Log_local_user_out}"
-                      FontFamily="/MVVM/View/Fonts/RedHatDisplay"
-                      FontSize="18"
-                      Foreground="{DynamicResource SecondForegroundColor}"
-                      Style="{DynamicResource MenuButtonStyle}" />
-                </Border>
+              <Border
+                Grid.Row="2"
+                BorderBrush="{DynamicResource FirstForegroundColor}"
+                BorderThickness="0,0,0,1">
+                <Button
+                  Margin="10,6,5,6"
+                  HorizontalAlignment="Left"
+                  VerticalAlignment="Center"
+                  Command="{Binding LocalLogout}"
+                  Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Log_local_user_out}"
+                  FontFamily="/MVVM/View/Fonts/RedHatDisplay"
+                  FontSize="18"
+                  Foreground="{DynamicResource SecondForegroundColor}"
+                  Style="{DynamicResource MenuButtonStyle}" />
+              </Border>
 
-                <Border
-                  Grid.Row="3"
-                  BorderBrush="{DynamicResource FirstBorderColor}"
-                  BorderThickness="0,0,0,1">
-                    <DockPanel HorizontalAlignment="Center" LastChildFill="True">
-
-
-                        <Button
-                          Height="50"
-                          Margin="10,6,5,6"
-                          HorizontalAlignment="Left"
-                          VerticalAlignment="Center"
-                          BorderBrush="{DynamicResource FirstForegroundColor}"
-                          BorderThickness="50"
-                          Command="{Binding SwitchToEnglish}"
-                          Foreground="{DynamicResource SecondForegroundColor}"
-                          Style="{DynamicResource MenuButtonStyle}">
-                            <Image
-                              RenderTransformOrigin="0.5,0.5"
-                              Source="/MVVM/View/Icons/flag_of_the_United_Kingdom.png"
-                              Stretch="Uniform" />
-                        </Button>
-                        <Button
-                          Height="50"
-                          Margin="10,6,5,6"
-                          HorizontalAlignment="Left"
-                          VerticalAlignment="Center"
-                          BorderBrush="{DynamicResource FirstForegroundColor}"
-                          BorderThickness="1"
-                          Command="{Binding SwitchToPolish}"
-                          Foreground="{DynamicResource SecondForegroundColor}"
-                          Style="{DynamicResource MenuButtonStyle}">
-                            <Image Source="/MVVM/View/Icons/flag_of_poland.png" Stretch="Uniform" />
-                        </Button>
-                    </DockPanel>
-                </Border>
-
+              <Border
+                Grid.Row="3"
+                BorderBrush="{DynamicResource FirstBorderColor}"
+                BorderThickness="0,0,0,1">
+                <DockPanel HorizontalAlignment="Center" LastChildFill="True">
+                  <Button
+                    Height="50"
+                    Margin="10,6,5,6"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    BorderBrush="{DynamicResource FirstForegroundColor}"
+                    BorderThickness="50"
+                    Command="{Binding SwitchToEnglish}"
+                    Foreground="{DynamicResource SecondForegroundColor}"
+                    Style="{DynamicResource MenuButtonStyle}">
+                    <Image
+                      RenderTransformOrigin="0.5,0.5"
+                      Source="/MVVM/View/Icons/flag_of_the_United_Kingdom.png"
+                      Stretch="Uniform" />
+                  </Button>
+                  <Button
+                    Height="50"
+                    Margin="10,6,5,6"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    BorderBrush="{DynamicResource FirstForegroundColor}"
+                    BorderThickness="1"
+                    Command="{Binding SwitchToPolish}"
+                    Foreground="{DynamicResource SecondForegroundColor}"
+                    Style="{DynamicResource MenuButtonStyle}">
+                      <Image Source="/MVVM/View/Icons/flag_of_poland.png" Stretch="Uniform" />
+                  </Button>
+                </DockPanel>
+              </Border>
             </Grid>
         </Grid>
     </Border>
