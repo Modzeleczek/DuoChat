@@ -11,7 +11,7 @@ namespace Shared.MVVM.View.Localization
     {
         public static Translator Instance { get; } = new Translator();
 
-        public enum Language { English, Polish }
+        public enum Language { English = 0, Polish = 1 }
         // domyślnie ustawiamy język angielski
         private Language _activeLanguage = Language.English;
         public Language ActiveLanguage
@@ -73,14 +73,9 @@ namespace Shared.MVVM.View.Localization
             ActiveLanguage = ActiveLanguage.Next();
         }
 
-        public void SwitchToEnglish()
+        public void SwitchLanguage(Language language)
         {
-            ActiveLanguage = Language.English;
-        }
-
-        public void SwitchToPolish() 
-        {
-            ActiveLanguage = Language.Polish;
+            ActiveLanguage = language;
         }
 
         private void FillDictionary()

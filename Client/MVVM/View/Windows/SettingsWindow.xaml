@@ -110,7 +110,8 @@
                     VerticalAlignment="Center"
                     BorderBrush="{DynamicResource FirstForegroundColor}"
                     BorderThickness="50"
-                    Command="{Binding SwitchToEnglish}"
+                    Command="{Binding SwitchLanguage}"
+                    CommandParameter="0"
                     Foreground="{DynamicResource SecondForegroundColor}"
                     Style="{DynamicResource MenuButtonStyle}">
                     <Image
@@ -125,7 +126,8 @@
                     VerticalAlignment="Center"
                     BorderBrush="{DynamicResource FirstForegroundColor}"
                     BorderThickness="1"
-                    Command="{Binding SwitchToPolish}"
+                    Command="{Binding SwitchLanguage}"
+                    CommandParameter="1"
                     Foreground="{DynamicResource SecondForegroundColor}"
                     Style="{DynamicResource MenuButtonStyle}">
                       <Image Source="/MVVM/View/Icons/flag_of_poland.png" Stretch="Uniform" />
