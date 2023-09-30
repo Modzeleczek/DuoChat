@@ -67,36 +67,6 @@ namespace Server.MVVM.ViewModel
                     int index = int.Parse((string)e);
                     if (SelectedTab == tabs[index]) return;
                     SelectedTab = tabs[index];
-
-                    /* long id = -1;
-                    switch (index)
-                    {
-                        case 0:
-                            database.EnterWriteLock();
-                            var user = new UserDTO
-                            {
-                                Login = "elo",
-                                PublicKey = new PublicKey(new byte[] { 5 * 31 })
-                            };
-                            database.Users.AddUser(ref user);
-                            id = user.Id;
-                            database.ExitWriteLock();
-                            break;
-                        case 1:
-                            database.EnterReadLock();
-                            var users = database.Users.GetAllUsers();
-                            if (users.Count > 0)
-                            {
-                                var first = users.First;
-                            }
-                            database.ExitReadLock();
-                            break;
-                        case 2:
-                            database.EnterWriteLock();
-                            database.Users.DeleteUser(id);
-                            database.ExitWriteLock();
-                            break;
-                    } */
                 });
 
                 SelectTab.Execute("0");

@@ -348,9 +348,6 @@ namespace Shared.MVVM.Model.Networking
                 if (StopRequested)
                     return new Cancellation();
 
-                /* if (!IsSocketConnected(client))
-                    return new Failure(interruptedMsg); */
-
                 int receivedBytes;
                 try
                 {
