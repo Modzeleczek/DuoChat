@@ -38,19 +38,19 @@ namespace Client.MVVM.ViewModel.AccountActions
                 // Wyrzuci Error, jeżeli konto nie istnieje.
                 var account = _storage.GetAccount(loggedUserKey, serverKey, accountLogin);
 
-                var login = ((TextBox)fields[0]).Text;
-                if (!ValidateLogin(login))
+                var newLogin = ((TextBox)fields[0]).Text;
+                if (!ValidateLogin(newLogin))
                     return;
 
                 /* _storage.GetAccount wyrzuci Error, jeżeli konto
                 nie istnieje, więc tu już nie sprawdzamy. */
 
                 // jeżeli zmieniamy klucz główny, czyli (login)
-                if (account.Login != login)
+                if (account.Login != newLogin)
                 {
-                    if (AccountExists(loggedUserKey, serverKey, login))
+                    if (AccountExists(loggedUserKey, serverKey, newLogin))
                     {
-                        Alert(AccountRepository.AlreadyExistsMsg(login));
+                        Alert(AccountRepository.AlreadyExistsMsg(newLogin));
                         return;
                     }
                 }
@@ -60,7 +60,7 @@ namespace Client.MVVM.ViewModel.AccountActions
 
                 var updatedAccount = new Account
                 {
-                    Login = login,
+                    Login = newLogin,
                     PrivateKey = privateKey
                 };
                 try
