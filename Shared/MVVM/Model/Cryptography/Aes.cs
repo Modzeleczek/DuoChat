@@ -7,10 +7,14 @@ namespace Shared.MVVM.Model.Cryptography
 {
     public static class Aes
     {
+        #region Fields
         /* Dla algorytmu Rijndael zgodnego ze specyfikacją AESa
         blok (na które przy szyfrowaniu jest dzielony tekst jawny)
         musi być 128-bitowy. */
         public const int KEY_LENGTH = 256 / 8, BLOCK_LENGTH = 128 / 8;
+        private const string AesTransformingError =
+            "|Error occured while| |AES transforming.|";
+        #endregion
 
         public static (byte[], byte[]) GenerateKeyIv()
         {
@@ -34,13 +38,10 @@ namespace Shared.MVVM.Model.Cryptography
             }
             catch (Error e)
             {
-                e.Prepend(AesTransformingError());
+                e.Prepend(AesTransformingError);
                 throw;
             }
         }
-
-        private static string AesTransformingError() =>
-            "|Error occured while| |AES transforming.|";
 
         private static AesCng CreateAes(byte[] key, byte[] iv)
         {
@@ -98,7 +99,7 @@ namespace Shared.MVVM.Model.Cryptography
             }
             catch (Error e)
             {
-                e.Prepend(AesTransformingError());
+                e.Prepend(AesTransformingError);
                 throw;
             }
         }
