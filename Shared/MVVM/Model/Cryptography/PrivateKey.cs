@@ -45,7 +45,7 @@ namespace Shared.MVVM.Model.Cryptography
         public static void Random(ProgressReporter reporter,
             int numberOfBits = 256 * 8, int enabledBitIndex = 64 * 8)
         {
-            reporter.Result = RandomInner(reporter, numberOfBits, enabledBitIndex);
+            reporter.SetResult(RandomInner(reporter, numberOfBits, enabledBitIndex));
         }
 
         private static Result RandomInner(ProgressReporter reporter,
@@ -110,7 +110,7 @@ namespace Shared.MVVM.Model.Cryptography
 
         public static void Parse(ProgressReporter reporter, string text)
         {
-            reporter.Result = ParseInner(reporter, text);
+            reporter.SetResult(ParseInner(reporter, text));
         }
 
         private static Result ParseInner(ProgressReporter reporter, string text)

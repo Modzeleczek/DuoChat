@@ -1,4 +1,4 @@
-﻿using Shared.MVVM.Core;
+using Shared.MVVM.Core;
 using Shared.MVVM.ViewModel.LongBlockingOperation;
 using Shared.MVVM.ViewModel.Results;
 using System;
@@ -138,7 +138,7 @@ namespace Client.MVVM.Model
                 catch (Exception e) { result = new Failure(e, FileMoveError(tempPath, path)); }
             }
         FINISH:
-            reporter.Result = result;
+            reporter.SetResult(result);
         }
 
         private static string FileDeleteError(string path) =>
@@ -224,7 +224,7 @@ namespace Client.MVVM.Model
             if (errors.Count > 0)
                 result = new Failure(MergeErrorMessages(errors));
 
-            reporter.Result = result;
+            reporter.SetResult(result);
         }
 
         private static string MergeErrorMessages(LinkedList<Error> errors)

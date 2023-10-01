@@ -1,4 +1,4 @@
-using Shared.MVVM.ViewModel.Results;
+﻿using Shared.MVVM.ViewModel.Results;
 using System.ComponentModel;
 
 namespace Shared.MVVM.ViewModel.LongBlockingOperation
@@ -25,8 +25,6 @@ namespace Shared.MVVM.ViewModel.LongBlockingOperation
         public double CoarseMax { get; set; } = 1;
 
         public bool CancellationPending { get => worker.CancellationPending; }
-
-        public Result Result { set => args.Result = value; }
         #endregion
 
         #region Fields
@@ -51,5 +49,10 @@ namespace Shared.MVVM.ViewModel.LongBlockingOperation
             worker.ReportProgress((int)
                 // cp / cmax + fp / fmax * 1 / cmax = (cp + fp / fmax) / cmax
                 (((CoarseProgress + FineProgress / FineMax) / CoarseMax) * 100.0));
+
+        public void SetResult(Result result)
+        {
+            args.Result = result;
+        }
     }
 }
