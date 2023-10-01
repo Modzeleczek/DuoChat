@@ -154,7 +154,6 @@
     <Compile Include="MVVM\View\Controls\ConnectedClientsView.xaml.cs">
       <DependentUpon>ConnectedClientsView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MVVM\View\Controls\ListViewControl.cs" />
     <Compile Include="MVVM\View\Controls\LogView.xaml.cs">
       <DependentUpon>LogView.xaml</DependentUpon>
     </Compile>
