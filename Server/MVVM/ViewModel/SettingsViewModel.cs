@@ -119,7 +119,7 @@ namespace Server.MVVM.ViewModel
                     e.Prepend("|Server was not started.|");
                     Alert(e.Message);
                     throw;
-                };
+                }
             });
 
             GenerateGuid = new RelayCommand(_ =>
