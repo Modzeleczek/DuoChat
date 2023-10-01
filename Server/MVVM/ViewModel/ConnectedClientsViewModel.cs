@@ -30,7 +30,7 @@ namespace Server.MVVM.ViewModel
         #endregion
 
         #region Fields
-        private Model.Server _server;
+        private readonly Model.Server _server;
         #endregion
 
         public ConnectedClientsViewModel(DialogWindow owner, Model.Server server)

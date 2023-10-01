@@ -17,8 +17,8 @@ namespace Shared.MVVM.Model.Cryptography
         private const CallingConvention CONVENTION = CallingConvention.Cdecl;
 
         // unsigned bit-endian - P[0] to najbardziej znaczący bajt liczby
-        private byte[] _p;
-        private byte[] _q;
+        private readonly byte[] _p;
+        private readonly byte[] _q;
         #endregion
 
         private PrivateKey(byte[] p, byte[] q)

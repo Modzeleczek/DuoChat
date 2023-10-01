@@ -1,4 +1,4 @@
-﻿using Shared.MVVM.ViewModel.Results;
+using Shared.MVVM.ViewModel.Results;
 using System.ComponentModel;
 
 namespace Shared.MVVM.ViewModel.LongBlockingOperation
@@ -30,8 +30,8 @@ namespace Shared.MVVM.ViewModel.LongBlockingOperation
         #endregion
 
         #region Fields
-        private BackgroundWorker worker;
-        private DoWorkEventArgs args;
+        private readonly BackgroundWorker worker;
+        private readonly DoWorkEventArgs args;
         #endregion
 
         public ProgressReporter(BackgroundWorker worker, DoWorkEventArgs args)

@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System;
 using System.Security.Cryptography;
 using Shared.MVVM.Core;
@@ -20,7 +20,7 @@ namespace Shared.MVVM.Model.Cryptography
         public static readonly byte[] PUBLIC_EXPONENT =
             { 0b0000_0001, 0b0000_0000, 0b0000_0001 };
 
-        private byte[] _modulus;
+        private readonly byte[] _modulus;
         #endregion
 
         public PublicKey(byte[] modulus)

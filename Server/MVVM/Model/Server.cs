@@ -32,7 +32,7 @@ namespace Server.MVVM.Model
         private PrivateKey _privateKey = null;
         private byte[] _publicKeyBytes = null;
         private int _capacity = 0;
-        private List<Client> _clients = new List<Client>();
+        private readonly List<Client> _clients = new List<Client>();
 
         private readonly Storage _storage;
         private readonly Log _log;

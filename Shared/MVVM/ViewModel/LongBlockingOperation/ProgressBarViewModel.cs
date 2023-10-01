@@ -1,4 +1,4 @@
-﻿using Shared.MVVM.Core;
+using Shared.MVVM.Core;
 using Shared.MVVM.View.Windows;
 using Shared.MVVM.ViewModel.Results;
 using System.ComponentModel;
@@ -41,7 +41,7 @@ namespace Shared.MVVM.ViewModel.LongBlockingOperation
         #endregion
 
         #region Fields
-        private BackgroundWorker worker;
+        private readonly BackgroundWorker worker;
         #endregion
 
         private ProgressBarViewModel(Work work, string description, bool cancelable,

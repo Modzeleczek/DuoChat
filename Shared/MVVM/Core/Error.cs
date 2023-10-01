@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace Shared.MVVM.Core
@@ -6,7 +6,7 @@ namespace Shared.MVVM.Core
     public class Error : Exception
     {
         #region Properties
-        private LinkedList<string> Strings = new LinkedList<string>();
+        private readonly LinkedList<string> Strings = new LinkedList<string>();
 
         public new string Message
         {
