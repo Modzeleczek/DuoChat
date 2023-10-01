@@ -619,15 +619,15 @@ namespace Client.MVVM.ViewModel
             /* Nie synchronizujemy, bo użytkownik może edytować tylko serwer,
             z którym nie jest połączony. Jeżeli chce edytować zaznaczony serwer,
             to jest z nim rozłączany przed otwarciem okna edycji serwera. */
-            if (!SelectedServer.Guid.Equals(Guid.Empty)
+            if ((!SelectedServer.Guid.Equals(Guid.Empty)
                 || !(SelectedServer.PublicKey is null))
-            {
                 /* Już wcześniej ustawiono GUID lub klucz publiczny,
                 więc aktualizujemy zgodnie z danymi od serwera, o ile
                 użytkownik się zgodzi. */
-                if (!AskIfServerTrusted(guid, publicKey))
-                    // W AskIfServerTrusted rozłączyliśmy się z serwerem.
-                    return;
+                && !AskIfServerTrusted(guid, publicKey))
+            {
+                // W AskIfServerTrusted rozłączyliśmy się z serwerem.
+                return;
             }
             
             /* Jeszcze nie ustawiono GUIDu i klucza publicznego lub

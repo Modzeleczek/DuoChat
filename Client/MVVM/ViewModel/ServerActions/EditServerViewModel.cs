@@ -59,13 +59,11 @@ namespace Client.MVVM.ViewModel.ServerActions
 
                 // jeżeli zmieniamy klucz główny, czyli (ip, port)
                 var newServerKey = new ServerPrimaryKey(ipAddress, port);
-                if (!newServerKey.Equals(serverKey))
+                if (!newServerKey.Equals(serverKey)
+                    && _storage.ServerExists(loggedUserKey, newServerKey))
                 {
-                    if (_storage.ServerExists(loggedUserKey, newServerKey))
-                    {
-                        Alert(ServersStorage.AlreadyExistsMsg(newServerKey));
-                        return;
-                    }
+                    Alert(ServersStorage.AlreadyExistsMsg(newServerKey));
+                    return;
                 }
 
                 var updatedServer = new Server(newServerKey)

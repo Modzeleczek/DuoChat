@@ -46,13 +46,11 @@ namespace Client.MVVM.ViewModel.AccountActions
                 nie istnieje, więc tu już nie sprawdzamy. */
 
                 // jeżeli zmieniamy klucz główny, czyli (login)
-                if (account.Login != newLogin)
+                if (account.Login != newLogin
+                    && AccountExists(loggedUserKey, serverKey, newLogin))
                 {
-                    if (AccountExists(loggedUserKey, serverKey, newLogin))
-                    {
-                        Alert(AccountRepository.AlreadyExistsMsg(newLogin));
-                        return;
-                    }
+                    Alert(AccountRepository.AlreadyExistsMsg(newLogin));
+                    return;
                 }
 
                 if (!ParsePrivateKey(((TextBox)fields[1]).Text, out PrivateKey privateKey))

@@ -114,17 +114,15 @@ namespace Shared.MVVM.Model.SQLiteStorage
                     con.Open();
                     using (var reader = cmd.ExecuteReader())
                     {
-                        if (reader.Read())
+                        if (reader.Read()
+                            && reader.GetString(0) == "ok") // (string)reader["integrity_check"]
                         {
-                            if (reader.GetString(0) == "ok") // (string)reader["integrity_check"]
-                            {
-                                // w wyniku zapytania nie może być więcej niż tylko 1 rekord "ok"
-                                if (!reader.Read())
-                                    return;
-                                else
-                                    throw new Error("|SQLite integrity check returned " +
-                                        "more than single 'ok' row.|");
-                            }
+                            // w wyniku zapytania nie może być więcej niż tylko 1 rekord "ok"
+                            if (!reader.Read())
+                                return;
+                            else
+                                throw new Error("|SQLite integrity check returned " +
+                                    "more than single 'ok' row.|");
                         }
                         throw new Error("|SQLite integrity check returned no rows.|");
                     }
