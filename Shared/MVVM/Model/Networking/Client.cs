@@ -13,7 +13,7 @@ namespace Shared.MVVM.Model.Networking
     public abstract class Client
     {
         #region Classes
-        private class PacketToSend
+        private sealed class PacketToSend
         {
             public byte[] Data { get; }
             private readonly object _monitorLock = new object();

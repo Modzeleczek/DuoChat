@@ -15,7 +15,7 @@ namespace Server.MVVM.ViewModel
     public class SettingsViewModel : UserControlViewModel
     {
         #region Classes
-        private class SettingsJson
+        private sealed class SettingsJson
         {
             public string Guid, PrivateKey, IpAddress, Port, Capacity;
         }
