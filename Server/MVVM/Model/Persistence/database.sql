@@ -1,5 +1,5 @@
-﻿DROP TABLE IF EXISTS "User";
-CREATE TABLE "User" (
+﻿DROP TABLE IF EXISTS "Account";
+CREATE TABLE "Account" (
   "id" INTEGER PRIMARY KEY AUTOINCREMENT,
   "login" TEXT NOT NULL,
 
@@ -23,18 +23,18 @@ DROP TABLE IF EXISTS "Conversation";
 CREATE TABLE "Conversation" (
   "id" INTEGER PRIMARY KEY AUTOINCREMENT,
 
-  /* Po usunięciu rekordu właściciela z tabeli User (różne możliwości):
+  /* Po usunięciu rekordu właściciela z tabeli Account (różne możliwości):
   - konwersacja pozostaje bez właściciela
   - przypisujemy jako właściciela najstarszego członka (lub administratora)
     wciąż obecnego w konwersacji.
-  - nie usuwamy rekordów z tabeli User, ale oznaczamy je jako usunięte i
+  - nie usuwamy rekordów z tabeli Account, ale oznaczamy je jako usunięte i
     pozostawiamy "usuniętego" właściciela konwersacji; dzięki temu można
-    "odusunąć" rekord właściciela w tabeli User i automatycznie dalej będzie on
+    "odusunąć" rekord właściciela w tabeli Account i automatycznie dalej będzie on
     właścicielem konwersacji
   */
   "owner_id" INTEGER,
   "name" TEXT NOT NULL,
-  FOREIGN KEY("owner_id") REFERENCES "User"("id") ON DELETE SET NULL
+  FOREIGN KEY("owner_id") REFERENCES "Account"("id") ON DELETE SET NULL
 );
 
 DROP TABLE IF EXISTS "ConversationParticipation";
@@ -45,7 +45,7 @@ CREATE TABLE "ConversationParticipation" (
   "is_administrator" INTEGER NOT NULL,
   PRIMARY KEY("conversation_id","participant_id"),
   FOREIGN KEY("conversation_id") REFERENCES "Conversation"("id") ON DELETE CASCADE,
-  FOREIGN KEY("participant_id") REFERENCES "User"("id") ON DELETE CASCADE
+  FOREIGN KEY("participant_id") REFERENCES "Account"("id") ON DELETE CASCADE
 ) WITHOUT ROWID;
 
 DROP TABLE IF EXISTS "Message";
@@ -53,7 +53,7 @@ CREATE TABLE "Message" (
   "id" INTEGER PRIMARY KEY AUTOINCREMENT,
   "conversation_id" INTEGER NOT NULL,
 
-  -- Jeżeli usuniemy nadawcę z tabeli User, to wiadomość ustawiamy na NULL.
+  -- Jeżeli usuniemy nadawcę z tabeli Account, to wiadomość ustawiamy na NULL.
   "sender_id" INTEGER,
 
   -- Czas unixowy, czyli liczba milisekund od 1 stycznia 1970.
@@ -64,9 +64,9 @@ CREATE TABLE "Message" (
 
   FOREIGN KEY("conversation_id") REFERENCES "Conversation"("id") ON DELETE CASCADE,
   
-  /* Po usunięciu rekordu nadawcy z tabeli User, wiadomość
+  /* Po usunięciu rekordu nadawcy z tabeli Account, wiadomość
   pozostaje bez nadawcy, ale uczestnicy konwersacji mogą ją odczytać. */
-  FOREIGN KEY("sender_id") REFERENCES "User"("id") ON DELETE SET NULL
+  FOREIGN KEY("sender_id") REFERENCES "Account"("id") ON DELETE SET NULL
 );
 
 DROP TABLE IF EXISTS "EncryptedMessageContent";
@@ -82,7 +82,7 @@ CREATE TABLE "EncryptedMessageContent" (
   "display_time" INTEGER NOT NULL, */
   PRIMARY KEY("message_id","receiver_id"),
   FOREIGN KEY("message_id") REFERENCES "Message"("id") ON DELETE CASCADE,
-  FOREIGN KEY("receiver_id") REFERENCES "User"("id") ON DELETE CASCADE
+  FOREIGN KEY("receiver_id") REFERENCES "Account"("id") ON DELETE CASCADE
 ) WITHOUT ROWID;
 
 DROP TABLE IF EXISTS "Attachment";
@@ -104,5 +104,5 @@ CREATE TABLE "EcryptedAttachmentContent" (
   "content" BLOB, */
   PRIMARY KEY("attachment_id","receiver_id"),
   FOREIGN KEY("attachment_id") REFERENCES "Attachment"("id") ON DELETE CASCADE,
-  FOREIGN KEY("receiver_id") REFERENCES "User"("id") ON DELETE CASCADE
+  FOREIGN KEY("receiver_id") REFERENCES "Account"("id") ON DELETE CASCADE
 ) WITHOUT ROWID;

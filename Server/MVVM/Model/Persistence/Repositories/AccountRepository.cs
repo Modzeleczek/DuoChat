@@ -10,24 +10,24 @@ using System.Data.SQLite;
 namespace Server.MVVM.Model.Persistence.Repositories
 {
     // Wzorzec DataAccessObject (DAO)
-    public class UserRepository : Repository
+    public class AccountRepository : Repository
     {
-        public UserRepository(Func<SQLiteConnection> connectionCreator) :
+        public AccountRepository(Func<SQLiteConnection> connectionCreator) :
             base(connectionCreator)
         { }
 
-        public void AddUser(UserDTO user)
+        public void AddAccount(AccountDTO account)
         {
-            EnsureUserExists(user.Login, false);
+            EnsureAccountExists(account.Login, false);
 
             try
             {
-                var query = "INSERT INTO User(login, public_key) VALUES(@login, @public_key);";
+                var query = "INSERT INTO Account(login, public_key) VALUES(@login, @public_key);";
                 using (var con = CreateConnection())
                 using (var cmd = new SQLiteCommand(query, con))
                 {
-                    cmd.Parameters.AddWithValue("@login", user.Login);
-                    var bytes = user.PublicKey.ToBytesNoLength();
+                    cmd.Parameters.AddWithValue("@login", account.Login);
+                    var bytes = account.PublicKey.ToBytesNoLength();
                     cmd.Parameters.Add("@public_key", DbType.Binary, bytes.Length).Value = bytes;
                     con.Open();
                     if (cmd.ExecuteNonQuery() != 1)
@@ -37,47 +37,47 @@ namespace Server.MVVM.Model.Persistence.Repositories
             catch (Exception e) { throw QueryError(e); }
         }
 
-        private void EnsureUserExists(string login, bool shouldExist)
+        private void EnsureAccountExists(string login, bool shouldExist)
         {
-            // Login, z perspektywy aplikacji, jest identyfikatorem rekordu tabel User.
-            bool userExists;
-            try { userExists = UserExists(login); }
+            // Login, z perspektywy aplikacji, jest identyfikatorem rekordu tabel Account.
+            bool accountExists;
+            try { accountExists = AccountExists(login); }
             catch (Error e)
             {
-                e.Prepend("|Could not| |check if| |user| |already exists.|");
+                e.Prepend("|Could not| |check if| |account| |already exists.|");
                 throw;
             }
 
             if (shouldExist) // Powinien istnieć, a nie istnieje
             {
-                if (!userExists)
-                    throw UserDoesNotExistError(login);
+                if (!accountExists)
+                    throw AccountDoesNotExistError(login);
             }
             else // Nie powinien istnieć, a istnieje
             {
-                if (userExists)
-                    throw new Error($"|User with login| {login} |already exists.|");
+                if (accountExists)
+                    throw new Error($"|Account with login| {login} |already exists.|");
             }
         }
 
-        private Error UserDoesNotExistError(string login) =>
-            new Error($"|User with login| {login} |does not exist.|");
+        private Error AccountDoesNotExistError(string login) =>
+            new Error($"|Account with login| {login} |does not exist.|");
 
-        public List<UserDTO> GetAllUsers()
+        public List<AccountDTO> GetAllAccounts()
         {
             try
             {
-                var query = "SELECT id, login, public_key FROM User;";
+                var query = "SELECT id, login, public_key FROM Account;";
                 using (var con = CreateConnection())
                 using (var cmd = new SQLiteCommand(query, con))
                 {
                     con.Open();
                     using (var reader = cmd.ExecuteReader())
                     {
-                        var list = new List<UserDTO>();
+                        var list = new List<AccountDTO>();
                         while (reader.Read())
                         {
-                            list.Add(ReadOneUser(reader));
+                            list.Add(ReadOneAccount(reader));
                         }
                         return list;
                     }
@@ -86,9 +86,9 @@ namespace Server.MVVM.Model.Persistence.Repositories
             catch (Exception e) { throw QueryError(e); }
         }
 
-        private UserDTO ReadOneUser(SQLiteDataReader reader)
+        private AccountDTO ReadOneAccount(SQLiteDataReader reader)
         {
-            return new UserDTO
+            return new AccountDTO
             {
                 Id = (long)reader["id"], // reader.GetInt64(0)
                 Login = (string)reader["login"], // reader.GetString(1)
@@ -96,11 +96,11 @@ namespace Server.MVVM.Model.Persistence.Repositories
             };
         }
 
-        public bool UserExists(string login)
+        public bool AccountExists(string login)
         {
             try
             {
-                var query = "SELECT COUNT(id) FROM User WHERE login = @login;";
+                var query = "SELECT COUNT(id) FROM Account WHERE login = @login;";
                 using (var con = CreateConnection())
                 using (var cmd = new SQLiteCommand(query, con))
                 {
@@ -108,8 +108,8 @@ namespace Server.MVVM.Model.Persistence.Repositories
                     con.Open();
                     var count = (long)cmd.ExecuteScalar(); // nie da się zrzutować na int
                     if (count > 1)
-                        throw new Error($"|More than one user with login| '{login}' |exists|.");
-                    // powinno być możliwe tylko 0 lub 1, bo "login" to klucz główny tabeli Account
+                        throw new Error($"|More than one account with login| '{login}' |exists|.");
+                    // powinno być możliwe tylko 0 lub 1, bo "login" to pole unikalne tabeli Account
                     if (count == 1)
                         return true;
                     return false;
@@ -118,13 +118,13 @@ namespace Server.MVVM.Model.Persistence.Repositories
             catch (Exception e) { throw QueryError(e); }
         }
 
-        public UserDTO GetUser(string login)
+        public AccountDTO GetAccount(string login)
         {
-            EnsureUserExists(login, true);
+            EnsureAccountExists(login, true);
 
             try
             {
-                var query = "SELECT id, login, public_key FROM User WHERE login = @login;";
+                var query = "SELECT id, login, public_key FROM Account WHERE login = @login;";
                 using (var con = CreateConnection())
                 using (var cmd = new SQLiteCommand(query, con))
                 {
@@ -133,38 +133,39 @@ namespace Server.MVVM.Model.Persistence.Repositories
                     using (var reader = cmd.ExecuteReader())
                     {
                         if (!reader.Read())
-                            throw UserDoesNotExistError(login);
-                        return ReadOneUser(reader);
+                            throw AccountDoesNotExistError(login);
+                        return ReadOneAccount(reader);
                     }
                 }
             }
             catch (Exception e) { throw QueryError(e); }
         }
 
-        public void UpdateUser(string login, UserDTO user)
+        public void UpdateAccount(string login, AccountDTO account)
         {
-            // Czy stary użytkownik istnieje?
-            EnsureUserExists(login, true);
+            // Czy stare konto istnieje?
+            EnsureAccountExists(login, true);
 
-            if (user.Login != login) // jeżeli zmieniamy login
+            if (account.Login != login) // jeżeli zmieniamy login
             {
-                // Czy nowy użytkownik jeszcze nie istnieje?
-                EnsureUserExists(user.Login, false);
+                // Czy nowe konto jeszcze nie istnieje?
+                EnsureAccountExists(account.Login, false);
             }
 
             try
             {
-                var query = "UPDATE User SET login = @new_login, public_key = @public_key WHERE login = @login;";
+                var query = "UPDATE Account SET login = @new_login, public_key = @public_key " +
+                    "WHERE login = @login;";
                 using (var con = CreateConnection())
                 using (var cmd = new SQLiteCommand(query, con))
                 {
-                    cmd.Parameters.AddWithValue("@new_login", user.Login);
-                    var bytes = user.PublicKey.ToBytesNoLength();
+                    cmd.Parameters.AddWithValue("@new_login", account.Login);
+                    var bytes = account.PublicKey.ToBytesNoLength();
                     cmd.Parameters.Add("@public_key", DbType.Binary, bytes.Length).Value = bytes;
                     cmd.Parameters.AddWithValue("@login", login);
                     con.Open();
                     /* po sprawdzeniu na górze, że jest dokładnie 1 wiersz z loginem
-                    "login" (nie user.Login), nie powinno się wykonać */
+                    "login" (nie account.Login), nie powinno się wykonać */
                     if (cmd.ExecuteNonQuery() != 1)
                         throw NotExactly1RowError();
                 }
@@ -172,21 +173,21 @@ namespace Server.MVVM.Model.Persistence.Repositories
             catch (Exception e) { throw QueryError(e); }
         }
 
-        public void DeleteUser(string login)
+        public void DeleteAccount(string login)
         {
-            EnsureUserExists(login, true);
+            EnsureAccountExists(login, true);
 
             try
             {
-                var query = "DELETE FROM User WHERE login = @login;";
+                var query = "DELETE FROM Account WHERE login = @login;";
                 using (var con = CreateConnection())
                 using (var cmd = new SQLiteCommand(query, con))
                 {
                     cmd.Parameters.AddWithValue("@login", login);
                     con.Open();
-                    /* UserExists wyrzuciłoby wyjątek, jeżeli istniałoby
+                    /* AccountExists wyrzuciłoby wyjątek, jeżeli istniałoby
                     kilka kont o tym samym loginie, który jest identyfikatorem
-                    z perspektywy aplikacji */
+                    z perspektywy aplikacji. */
                     if (cmd.ExecuteNonQuery() != 1)
                         throw NotExactly1RowError();
                 }

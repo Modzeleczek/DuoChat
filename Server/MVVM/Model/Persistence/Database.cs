@@ -8,12 +8,12 @@ namespace Server.MVVM.Model.Persistence
         #region Properties
         /* Jak DbSety z Entity Frameworka, ale nie do końca,
         bo nie każda tabela z bazy danych ma swoje repozytorium. */
-        public UserRepository Users { get; }
+        public AccountRepository Accounts { get; }
         #endregion
 
         public Database(string path) : base(path)
         {
-            Users = new UserRepository(CreateConnection);
+            Accounts = new AccountRepository(CreateConnection);
         }
 
         protected override string DDLEmbeddedResource()

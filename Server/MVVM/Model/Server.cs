@@ -1,4 +1,4 @@
-﻿using System.Net.Sockets;
+using System.Net.Sockets;
 using System.Net;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -267,19 +267,19 @@ namespace Server.MVVM.Model
             ushort loginLength = reader.ReadUInt8();
             string login = reader.ReadUtf8String(loginLength);
             PublicKey publicKey = PublicKey.FromPacketReader(reader);
-            bool publicKeyBelongsToUser = reader.VerifySignature(publicKey, client.TokenCache);
+            bool publicKeyBelongsToAccount = reader.VerifySignature(publicKey, client.TokenCache);
             byte[] nextPacketToken = reader.ReadBytes(8);
 
             Action outsideLock;
             try
             {
                 _syncRoot.EnterWriteLock();
-                var usersDb = _storage.Database.Users;
-                if (usersDb.UserExists(login))
+                var accountsDb = _storage.Database.Accounts;
+                if (accountsDb.AccountExists(login))
                 {
                     // Login już istnieje.
-                    var user = usersDb.GetUser(login);
-                    if (!publicKey.Equals(user.PublicKey))
+                    var account = accountsDb.GetAccount(login);
+                    if (!publicKey.Equals(account.PublicKey))
                         // Klient wysłał inny klucz publiczny niż serwer ma zapisany w bazie.
                         outsideLock = () =>
                         {
@@ -289,7 +289,7 @@ namespace Server.MVVM.Model
                                 "|it sent a public key different from the one saved in the database|.");
                         };
 
-                    if (!publicKeyBelongsToUser)
+                    if (!publicKeyBelongsToAccount)
                         // Klient nie zna klucza prywatnego.
                         outsideLock = () =>
                         {
@@ -300,7 +300,7 @@ namespace Server.MVVM.Model
                 }
                 else
                     // Login jeszcze nie istnieje, więc zapisujemy go w bazie.
-                    usersDb.AddUser(new UserDTO { Login = login, PublicKey = publicKey });
+                    accountsDb.AddAccount(new AccountDTO { Login = login, PublicKey = publicKey });
 
                 /* Login nie istnieje lub istnieje i klient podpisał token swoim kluczem
                 prywatnym powiązanym z kluczem publicznym publicKey. Zapisujemy dane

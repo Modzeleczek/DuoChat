@@ -140,8 +140,8 @@
     <Compile Include="MVVM\Model\Client.cs" />
     <Compile Include="MVVM\Model\ClientPrimaryKey.cs" />
     <Compile Include="MVVM\Model\Persistence\Database.cs" />
-    <Compile Include="MVVM\Model\Persistence\DTO\UserDTO.cs" />
-    <Compile Include="MVVM\Model\Persistence\Repositories\UserRepository.cs" />
+    <Compile Include="MVVM\Model\Persistence\DTO\AccountDTO.cs" />
+    <Compile Include="MVVM\Model\Persistence\Repositories\AccountRepository.cs" />
     <Compile Include="MVVM\Model\Persistence\Storage.cs" />
     <Compile Include="MVVM\Model\Server.cs" />
     <Compile Include="MVVM\ViewModel\AccountsViewModel.cs" />

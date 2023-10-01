@@ -148,6 +148,7 @@
   <l:Entry x:Key="updating" PL="aktualizowania"/>
   <l:Entry x:Key="update" PL="zaktualizować"/>
   <l:Entry x:Key="user in database." PL="użytkownika w bazie danych."/>
+  <l:Entry x:Key="user" PL="użytkownik"/>
   <l:Entry x:Key="adding" PL="dodawania"/>
   <l:Entry x:Key="add" PL="dodać"/>
   <l:Entry x:Key="user to database." PL="użytkownika do bazy danych."/>
@@ -177,7 +178,6 @@
     PL="pliku BSON serwerów lokalnego użytkownika"/>
   <l:Entry x:Key="the newly-added server's database."
     PL="bazy danych nowo dodanego serwera."/>
-  <l:Entry x:Key="account" PL="konto"/>
   <l:Entry x:Key="Delete account" PL="Usuń konto"/>
   <l:Entry x:Key="Login" PL="Login"/>
   <l:Entry x:Key="Private key" PL="Klucz prywatny"/>
@@ -186,15 +186,11 @@
     PL="Login zakodowany w UTF-8 może mieć co najwyżej 255 bajtów"/>
   <l:Entry x:Key="Invalid private key format."
     PL="Nieprawidłowy format klucza prywatnego."/>
-  <l:Entry x:Key="executing query." PL="wykonywania zapytania."/>
-  <l:Entry x:Key="More than one account with login"
-    PL="Więcej niż jedno konto z loginem"/>
   <l:Entry x:Key="to server's database." PL="do bazy danych serwera."/>
   <l:Entry x:Key="connecting to server's database file."
     PL="łączenia z plikiem bazy danych serwera."/>
   <l:Entry x:Key="Number of rows affected by the query is other than 1."
     PL="Liczba wierszy, na które wpływ miało zapytanie, jest inna niż 1."/>
-  <l:Entry x:Key="Account with login" PL="Konto o loginie"/>
   <l:Entry x:Key="Could not" PL="Nie można"/>
   <l:Entry x:Key="save" PL="zapisać"/>
   <l:Entry x:Key="load" PL="wczytać"/>
@@ -315,10 +311,6 @@
   <l:Entry x:Key="public key length" PL="długości klucza publicznego"/>
   <l:Entry x:Key="public key value" PL="wartości klucza publicznego"/>
 
-  <l:Entry x:Key="User with login" PL="Użytkownik z loginem"/>
-  <l:Entry x:Key="More than one user with login"
-    PL="Więcej niż jeden użytkownik z loginem"/>
-
   <l:Entry x:Key="Observable client has already been authenticated"
     PL="Obserwowalny klient został już uwierzytelniony"/>
 
@@ -396,7 +388,11 @@
   <l:Entry x:Key="Interlocutor crashed." PL="Rozmówca zcrashował."/>
 
   <l:Entry x:Key="check if" PL="sprawdzić, czy"/>
-  <l:Entry x:Key="user" PL="użytkownik"/>
+  <l:Entry x:Key="account" PL="konto"/>
+  <l:Entry x:Key="executing query." PL="wykonywania zapytania."/>
+  <l:Entry x:Key="More than one account with login"
+    PL="Więcej niż jedno konto o loginie"/>
+  <l:Entry x:Key="Account with login" PL="Konto o loginie"/>
   <l:Entry x:Key="already exists." PL="już istnieje."/>
   <l:Entry x:Key="exists" PL="istnieje"/>
   <l:Entry x:Key="creating" PL="tworzenia"/>

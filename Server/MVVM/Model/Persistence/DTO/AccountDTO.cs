@@ -2,15 +2,15 @@
 
 namespace Server.MVVM.Model.Persistence.DTO
 {
-    public class UserDTO
+    public class AccountDTO
     {
         public long Id { get; set; }
 
         /* Login jest identyfikatorem z punktu widzenia aplikacji i unikalną
         kolumną, a jednocześnie kluczem kandydującym (jednoznacznie
-        identyfikuje każdy rekord tabeli) tabeli User. Natomiast, z
+        identyfikuje każdy rekord tabeli) tabeli Account. Natomiast, z
         perspektywy bazy danych, Liczbowa kolumna Id jest faktycznym kluczem
-        głównym tabeli User, co ma na celu szybsze wykonywanie operacji
+        głównym tabeli Account, co ma na celu szybsze wykonywanie operacji
         łączenia tabel, bo szybciej porównuje się 2 liczby o stałej długości
         niż 2 stringi o dowolnych długościach. */
         public string Login { get; set; }
