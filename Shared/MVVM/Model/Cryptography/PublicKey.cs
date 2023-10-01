@@ -1,10 +1,11 @@
-using System.IO;
+﻿using System.IO;
 using System;
 using System.Security.Cryptography;
 using Shared.MVVM.Core;
 using System.Data.SQLite;
 using System.Net;
 using Shared.MVVM.Model.Networking;
+using System.Collections.Generic;
 
 namespace Shared.MVVM.Model.Cryptography
 {
@@ -47,6 +48,14 @@ namespace Shared.MVVM.Model.Cryptography
                     return false;
 
             return true;
+        }
+
+        public override int GetHashCode()
+        {
+            int hashCode = 805403592;
+            hashCode = hashCode * -1521134295 + Length.GetHashCode();
+            hashCode = hashCode * -1521134295 + EqualityComparer<byte[]>.Default.GetHashCode(_modulus);
+            return hashCode;
         }
 
         public static PublicKey Parse(string text)
