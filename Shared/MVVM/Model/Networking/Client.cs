@@ -120,7 +120,7 @@ namespace Shared.MVVM.Model.Networking
         {
             /* Wątek wysyłający złapał SocketException z Socket.Send -
             rozmówca (konkretnie odbiorca) wykonał Socket.Close lub zcrashował. */
-            if (senderRes is InterlocutorFailure senderIF)
+            if (senderRes is InterlocutorFailure)
             {
                 /* Wątek odbierający złapał SocketException z Socket.Receive -
                 rozmówca (konkretnie nadawca) zcrashował. */
