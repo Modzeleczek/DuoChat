@@ -84,7 +84,7 @@ namespace Client.MVVM.View.Windows
 
                 button.SetBinding(Button.CommandProperty, new Binding
                 {
-                    Path = new PropertyPath(buttonCommandPaths[i]),
+                    Path = new PropertyPath(path: buttonCommandPaths[i]),
                     Mode = BindingMode.OneWay
                 });
                 /* handlerom dodawanych przycisków też przekazujemy _fields,
