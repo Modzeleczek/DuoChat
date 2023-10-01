@@ -25,7 +25,7 @@ namespace Shared.MVVM.Core
             return canExecute == null || canExecute(parameter);
         }
 
-        public void Execute(object parameter = null)
+        public void Execute(object parameter)
         {
             execute(parameter);
         }
