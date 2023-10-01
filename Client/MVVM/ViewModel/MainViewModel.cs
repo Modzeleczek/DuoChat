@@ -139,7 +139,6 @@ namespace Client.MVVM.ViewModel
         #region Fields
         private LocalUserPrimaryKey _loggedUserKey;
         private readonly Model.Client _client = new Model.Client();
-        private readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
         private readonly Random rng = new Random();
         private Storage _storage;
         #endregion
