@@ -575,7 +575,7 @@ namespace Client.MVVM.ViewModel
             {
                 case 0: ReceiveNoSlots(); break;
                 case 1: ReceiveServerIntroduction(reader); break;
-                /* Client.ProcessHandle łapie wyjątek i kończy się ze
+                /* Client.ProcessProtocol łapie wyjątek i kończy się ze
                 statusem Failure, który w EndedConnection zostanie
                 zinterpretowany jako błąd klienta. */
                 default: throw UnexpectedReceptionError();

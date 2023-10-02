@@ -82,7 +82,7 @@ namespace Shared.MVVM.Model.Networking
                 /* TODO: usunąć sendera, żeby wątek zlecający wysłanie pakietu sam go wysyłał -
                 nie można, bo Client.Send, oprócz pakietów, wysyła okresowo keep-alive.
                 Natomiast można usunąć 1 z 3 poniższych wątków (np. handler) i w wątku
-                Client.Process wykonywać jego metodę (ProcessHandle), a po jej zakończeniu
+                Client.Process wykonywać jego metodę (ProcessProtocol), a po jej zakończeniu
                 czekać na pozostałe wątki (Task.WaitAll(sender, receiver)). */
                 var sender = Task.Factory.StartNew(ProcessSend, option);
                 var receiver = Task.Factory.StartNew(ProcessReceive, option);

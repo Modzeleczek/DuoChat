@@ -76,7 +76,7 @@ namespace Server.MVVM.ViewModel
 
         private void ClientAuthenticated(Model.Client client)
         {
-            // Wątek Client.ProcessHandle; write lock
+            // Wątek Client.ProcessProtocol; write lock
             var primaryKey = client.GetPrimaryKey();
             var observableClient = Clients.FirstOrDefault(e => primaryKey.Equals(e.GetPrimaryKey()));
             if (observableClient is null)
