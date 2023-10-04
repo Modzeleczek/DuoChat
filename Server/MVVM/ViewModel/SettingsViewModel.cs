@@ -246,7 +246,12 @@ namespace Server.MVVM.ViewModel
             {
                 Alert("|Settings file does not exist. Default settings will be loaded.|");
                 Guid = "5b8d0d10-d6d0-42af-8e35-6bcb4bf18872";
-                PrivateKey = "cm0iaUQj443FfN49ph9E9tFuOURkFrM6U8mya7bVclipEiYYucYIAkCMs4gz1sVgYF3TMNXDI2tW3essYROD22xMHRkQRZDy54LxaB8peto3DfSA7g1uW/l6kZhzQBB0QDhWjbxrfNV9vQCL1GhX3yPD7bFp1Hdb2ROJxXlB9ac=;VzcEpdIXqHpyn8+ol80vUkTX1LNHduUC/sCwNom9WH+ergMlBfEEcE7RlZ+dvdGC/Ji2elbnvJBZAGWH13MImUGMEGEoiphCrfGttbqTntoUpL34WRfC+ttxFRgmstCSQKQkuiAz+FqhM7QzesW49bTEH0tcwJf026QMvxEgqgk=";
+                PrivateKey = "cm0iaUQj443FfN49ph9E9tFuOURkFrM6U8mya7bVclipEiYYucYIAkCMs4g" +
+                    "z1sVgYF3TMNXDI2tW3essYROD22xMHRkQRZDy54LxaB8peto3DfSA7g1uW/l6kZhzQBB" +
+                    "0QDhWjbxrfNV9vQCL1GhX3yPD7bFp1Hdb2ROJxXlB9ac=;VzcEpdIXqHpyn8+ol80vUk" +
+                    "TX1LNHduUC/sCwNom9WH+ergMlBfEEcE7RlZ+dvdGC/Ji2elbnvJBZAGWH13MImUGMEG" +
+                    "EoiphCrfGttbqTntoUpL34WRfC+ttxFRgmstCSQKQkuiAz+FqhM7QzesW49bTEH0tcwJ" +
+                    "f026QMvxEgqgk=";
                 IpAddress = "127.0.0.1";
                 // według https://stackoverflow.com/a/38141340, powinniśmy używać portów <1024, 49151>
                 Port = "13795";
