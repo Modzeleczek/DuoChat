@@ -21,7 +21,7 @@ namespace Client.MVVM.Model
         public static void DecryptFile(ProgressReporter reporter,
             string path, byte[] key, byte[] initializationVector)
         {
-            var result = EncryptSingleFile(reporter, path, key, initializationVector);
+            var result = DecryptSingleFile(reporter, path, key, initializationVector);
             FileTransformationCleanup(reporter, result, path);
         }
 
