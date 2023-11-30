@@ -2,7 +2,7 @@
 {
     public class Entry
     {
-        public string EN { get; set; }
-        public string PL { get; set; }
+        public string? EN { get; set; } = null;
+        public string PL { get; set; } = null!;
     }
 }

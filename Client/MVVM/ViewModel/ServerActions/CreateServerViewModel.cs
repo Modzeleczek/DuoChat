@@ -5,7 +5,6 @@ using Shared.MVVM.Model.Networking;
 using System.Collections.Generic;
 using Client.MVVM.View.Windows;
 using Shared.MVVM.ViewModel.Results;
-using Client.MVVM.ViewModel.Observables;
 using Client.MVVM.Model;
 using Client.MVVM.Model.BsonStorages;
 
@@ -16,11 +15,11 @@ namespace Client.MVVM.ViewModel.ServerActions
         public CreateServerViewModel(Storage storage, LocalUserPrimaryKey loggedUserKey)
             : base(storage)
         {
-            var currentWindowLoadedHandler = WindowLoaded;
+            var currentWindowLoadedHandler = WindowLoaded!;
             WindowLoaded = new RelayCommand(e =>
             {
                 currentWindowLoadedHandler.Execute(e);
-                var win = (FormWindow)window;
+                var win = (FormWindow)window!;
                 win.AddTextField("|Name|");
                 win.AddTextField("|IP address|");
                 win.AddTextField("|Port|");
@@ -28,7 +27,7 @@ namespace Client.MVVM.ViewModel.ServerActions
 
             Confirm = new RelayCommand(controls =>
             {
-                var fields = (List<Control>)controls;
+                var fields = (List<Control>)controls!;
 
                 storage.GetLocalUser(loggedUserKey);
 
@@ -54,24 +53,24 @@ namespace Client.MVVM.ViewModel.ServerActions
                 w BSONie, a nie w SQLu, czyli nie jest podatna na SQL injection. */
                 var name = ((TextBox)fields[0]).Text;
 
-                if (!ParseIpAddress(((TextBox)fields[1]).Text, out IPv4Address ipAddress))
+                if (!ParseIpAddress(((TextBox)fields[1]).Text, out IPv4Address? ipAddress))
                     return;
 
-                if (!ParsePort(((TextBox)fields[2]).Text, out Port port))
+                if (!ParsePort(((TextBox)fields[2]).Text, out Port? port))
                     return;
 
-                var serverKey = new ServerPrimaryKey(ipAddress, port);
+                var serverKey = new ServerPrimaryKey(ipAddress!, port!);
                 if (storage.ServerExists(loggedUserKey, serverKey))
                 {
                     Alert(ServersStorage.AlreadyExistsMsg(serverKey));
                     return;
                 }
 
-                var newServer = new Server(serverKey)
+                var newServer = new Observables.Server(serverKey)
                 {
                     Name = name,
                     Guid = Guid.Empty,
-                    PublicKey = null,
+                    PublicKey = null
                 };
                 try { storage.AddServer(loggedUserKey, newServer); }
                 catch (Error e)

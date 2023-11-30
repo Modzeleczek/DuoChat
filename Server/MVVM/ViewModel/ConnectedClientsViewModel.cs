@@ -1,12 +1,9 @@
 using Server.MVVM.Model;
+using Server.MVVM.Model.Networking;
 using Server.MVVM.ViewModel.Observables;
 using Shared.MVVM.Core;
-using Shared.MVVM.Model.Cryptography;
-using Shared.MVVM.Model.Networking;
 using Shared.MVVM.View.Windows;
 using Shared.MVVM.ViewModel;
-using Shared.MVVM.ViewModel.Results;
-using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -30,99 +27,94 @@ namespace Server.MVVM.ViewModel
         #endregion
 
         #region Fields
-        private readonly Model.Server _server;
+        private readonly ServerMonolith _server;
+        private readonly ILogger _logger;
         #endregion
 
-        public ConnectedClientsViewModel(DialogWindow owner, Model.Server server)
+        public ConnectedClientsViewModel(DialogWindow owner, ServerMonolith server, ILogger logger)
             : base(owner)
         {
             _server = server;
+            _logger = logger;
 
             DisconnectClient = new RelayCommand(obj =>
             {
                 // Wykonywane przez wątek UI
-                var client = (ClientObservable)obj;
+                var client = (ClientObservable)obj!;
                 var key = client.GetPrimaryKey();
-                server.DisconnectClientAsync(key);
-                // Klient zostanie usunięty z listy w ClientEndedConnection.
-            });
+                client.DisableInteraction();
+
+                RequestClientRemove(client, UIRequest.Operations.DisconnectClient, key);
+            },
+            obj => !((ClientObservable)obj!).HasDisabledInteraction);
 
             BlockIP = new RelayCommand(obj =>
             {
                 // Wątek UI
-                var client = (ClientObservable)obj;
+                var client = (ClientObservable)obj!;
                 var key = client.GetPrimaryKey();
-                /* TODO: tabela w bazie danych i w Server.Process przy
-                akceptowaniu klienta sprawdzanie, czy nie jest zbanowany. */
-            });
+                client.DisableInteraction();
+
+                RequestClientRemove(client, UIRequest.Operations.BlockClientIP, key.IpAddress);
+            },
+            obj => !((ClientObservable)obj!).HasDisabledInteraction);
 
             server.ClientConnected += ClientConnected;
-            server.ClientAuthenticated += ClientAuthenticated;
+            server.ClientHandshaken += ClientHandshaken;
             server.ClientEndedConnection += ClientEndedConnection;
         }
 
-        private void ClientConnected(Model.Client client)
+        private void RequestClientRemove(ClientObservable clientObs,
+            UIRequest.Operations operation, object parameter)
         {
-            /* Synchronizujemy wszystkie operacje wykonywane na stanie serwera.
-            Wątek Server.Process; write lock */
-            var clientObservable = new ClientObservable(client.GetPrimaryKey());
+            // Wątek UI
+            window!.SetEnabled(false);
+            _server.Request(new UIRequest(operation, parameter,
+                () => UIInvoke(() => window.SetEnabled(true))));
+            Clients.Remove(clientObs);
+        }
+
+        private void ClientConnected(Client client)
+        {
+            // Wątek Server.Process
+            var clientObs = new ClientObservable(client.GetPrimaryKey());
 
             UIInvoke(() =>
             {
-                Clients.Add(clientObservable);
-                _server.Log($"{clientObservable.DisplayedName} |connected|.");
+                Clients.Add(clientObs);
+                _logger.Log($"{clientObs.DisplayedName} |connected|.");
             });
         }
 
-        private void ClientAuthenticated(Model.Client client)
+        private void ClientHandshaken(Client client)
         {
-            // Wątek Client.ProcessProtocol; write lock
-            var primaryKey = client.GetPrimaryKey();
-            var observableClient = Clients.FirstOrDefault(e => primaryKey.Equals(e.GetPrimaryKey()));
-            if (observableClient is null)
-            {
-                // Nieprawdopodobne: rozłączamy, bo klienta nie ma na liście.
-                client.DisconnectAsync();
-                return;
-            }
+            // Wątek Server.Process
+            var clientObs = FindClientObservable(client);
 
             UIInvoke(() =>
             {
-                observableClient.Authenticate(client.Login);
-                _server.Log($"{observableClient.DisplayedName} |was authenticated|.");
+                clientObs.Authenticate(client.Login!);
+                _logger.Log($"{clientObs.DisplayedName} |was authenticated|.");
             });
         }
 
-        private void ClientEndedConnection(Model.Client client, Result result)
+        private ClientObservable FindClientObservable(Client client)
         {
-            // Wątek Client.Process; write lock
-            var primaryKey = client.GetPrimaryKey();
-            var clientObservable = Clients.SingleOrDefault(
-                e => primaryKey.Equals(e.GetPrimaryKey()));
-            if (clientObservable is null)
-            {
-                // Nieprawdopodobne
-                client.DisconnectAsync();
-                return;
-            }
+            var clientKey = client.GetPrimaryKey();
+            var clientObs = Clients.Single(c => clientKey.Equals(c.GetPrimaryKey()));
+            // if (clientObs is null) nieprawdopodobne
+            return clientObs;
+        }
 
-            string message;
-            if (result is Success)
-                message = "|disconnected|.";
-            else if (result is Failure failure)
-                message = failure.Reason.Prepend("|crashed|.").Message;
-            else // result is Cancellation
-                message = "|was disconnected|.";
-            message = $"{clientObservable.DisplayedName} {message}";
+        private void ClientEndedConnection(Client client, string statusMsg)
+        {
+            // Wątek Server.Process
+            var clientObs = FindClientObservable(client);
 
             UIInvoke(() =>
             {
-                Clients.Remove(clientObservable);
-                /* Jesteśmy w write locku, dzięki czemu mamy pewność, że
-                wiadomość w logu o aktualnym dostępie do ObservableCollection
-                (Remove) nie zostanie wyprzedzona przez wiadomość z
-                jakiegokolwiek innego dostępu. */
-                _server.Log(message);
+                Clients.Remove(clientObs);
+                _logger.Log($"{clientObs.DisplayedName} {statusMsg}");
             });
         }
     }

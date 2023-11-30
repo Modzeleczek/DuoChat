@@ -44,7 +44,7 @@ namespace Client.MVVM.Model
             return string.Format(format, IpAddress, Port);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is ServerPrimaryKey other
                 && IpAddress.Equals(other.IpAddress) && Port.Equals(other.Port);

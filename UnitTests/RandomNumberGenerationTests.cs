@@ -2,7 +2,6 @@
 using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.ViewModel.LongBlockingOperation;
 using Shared.MVVM.ViewModel.Results;
-using System;
 using System.ComponentModel;
 using System.Numerics;
 using System.Security.Cryptography;
@@ -34,12 +33,8 @@ namespace UnitTests
 
         private BigInteger PrivateKey_FirstProbablePrimeGreaterThan(BigInteger min)
         {
-            var type = typeof(PrivateKey);
-            PrivateType privateType = new PrivateType(type);
-            object[] parameterValues = { min };
-
-            return (BigInteger)privateType.InvokeStatic(
-                "FirstProbablePrimeGreaterOrEqual", parameterValues);
+            return typeof(PrivateKey).InvokeStatic<BigInteger>(
+                "FirstProbablePrimeGreaterOrEqual", min);
         }
 
         protected int CountBitsInBinaryRepresentation(BigInteger number)
@@ -76,20 +71,23 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void PrivateKey_Random_ShouldGeneratePrivateKey()
+        public void PrivateKey_Random_WhenRequested258Bytes_ShouldGeneratePrivateKeyWith258ByteLongPublicKey()
         {
             // Arrange
             var doWorkEventArgs = new DoWorkEventArgs(null);
             var progressReporter = new ProgressReporter(doWorkEventArgs);
 
             // Act
-            PrivateKey.Random(progressReporter);
+            PrivateKey.Random(progressReporter, 258 * 8, 64 * 8);
             var result = doWorkEventArgs.Result;
 
             // Assert
             // Wyrzuci wyjątek, jeżeli nie uda się zrzutować.
-            var actual = (PrivateKey)((Success)result).Data;
+            var actual = (PrivateKey)((Success)result!).Data!;
             Console.WriteLine(actual);
+
+            var actPublicKey = actual.ToPublicKey();
+            Assert.AreEqual(258, actPublicKey.Length);
         }
     }
 }

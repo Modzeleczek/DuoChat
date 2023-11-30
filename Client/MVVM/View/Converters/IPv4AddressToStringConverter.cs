@@ -18,7 +18,7 @@ namespace Client.MVVM.View.Converters
             return ipAddress.ToString();
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object? ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             try { return IPv4Address.Parse((string)value); }
             catch (Error) { return null; }

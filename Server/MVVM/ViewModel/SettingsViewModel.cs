@@ -1,4 +1,6 @@
 using Newtonsoft.Json;
+using Server.MVVM.Model;
+using Server.MVVM.Model.Networking;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking;
@@ -17,7 +19,8 @@ namespace Server.MVVM.ViewModel
         #region Classes
         private sealed class SettingsJson
         {
-            public string Guid, PrivateKey, IpAddress, Port, Capacity;
+            public string IpAddress = null!, Port = null!;
+            public string? Guid, PrivateKey, Capacity;
         }
         #endregion
 
@@ -33,36 +36,36 @@ namespace Server.MVVM.ViewModel
         #endregion
 
         #region Properties
-        private string _guid;
-        public string Guid
+        private string? _guid;
+        public string? Guid
         {
             get => _guid;
             set { _guid = value; OnPropertyChanged(); }
         }
 
-        private string _privateKey;
-        public string PrivateKey
+        private string? _privateKey;
+        public string? PrivateKey
         {
             get => _privateKey;
             set { _privateKey = value; OnPropertyChanged(); }
         }
 
-        private string _ipAddress;
+        private string _ipAddress = null!;
         public string IpAddress
         {
             get => _ipAddress;
             set { _ipAddress = value; OnPropertyChanged(); }
         }
 
-        private string _port;
+        private string _port = null!;
         public string Port
         {
             get => _port;
             set { _port = value; OnPropertyChanged(); }
         }
 
-        private string _capacity;
-        public string Capacity
+        private string? _capacity;
+        public string? Capacity
         {
             get => _capacity;
             set { _capacity = value; OnPropertyChanged(); }
@@ -80,43 +83,40 @@ namespace Server.MVVM.ViewModel
         private const string PATH = "settings.json";
         #endregion
 
-        public SettingsViewModel(DialogWindow owner, Model.Server server)
+        public SettingsViewModel(DialogWindow owner, ServerMonolith server, ILogger logger)
             : base(owner)
         {
             LoadFromFile();
 
-            server.Stopped += (result) =>
-            {
-                RefreshServerStopped(server);
-                string message = null;
-                if (!(result is Failure failure)) message = "|Server was safely stopped.|";
-                else message = failure.Reason.Prepend("|Server was suddenly stopped.|").Message;
-                Alert(message);
-            };
-
             ToggleServer = new RelayCommand(_ =>
             {
-                // if (!ServerStopped)
-                if (server.IsRunning)
+                if (!ServerStopped)
                 {
-                    server.Stop();
+                    window!.SetEnabled(false);
+                    server.Request(new UIRequest(UIRequest.Operations.StopServer, null,
+                        () => UIInvoke(() =>
+                            {
+                                ServerStopped = true;
+                                logger.Log("|Server was stopped|.");
+                                window!.SetEnabled(true);
+                            })));
                     return;
                 }
+
                 if (!ParseGuid(out Guid guid)) return;
-                if (!ParseIpAddress(out IPv4Address ipAddress)) return;
-                if (!ParsePort(out Port port)) return;
+                if (!ParseIpAddress(out IPv4Address? ipAddress)) return;
+                if (!ParsePort(out Port? port)) return;
                 if (!ParseCapacity(out int capacity)) return;
-                if (!ParsePrivateKey(out PrivateKey privateKey)) return;
+                if (!ParsePrivateKey(out PrivateKey? privateKey)) return;
 
                 try
                 {
-                    server.Start(guid, privateKey, ipAddress, port, capacity);
-                    RefreshServerStopped(server);
-                    Alert("|Server was started.|");
+                    server.StartServer(guid, privateKey!, ipAddress!, port!, capacity);
+                    ServerStopped = false;
+                    logger.Log("|Server was started|.");
                 }
                 catch (Error e)
                 {
-                    e.Prepend("|Server was not started.|");
                     Alert(e.Message);
                     throw;
                 }
@@ -124,7 +124,7 @@ namespace Server.MVVM.ViewModel
 
             GenerateGuid = new RelayCommand(_ =>
             {
-                var result = ConfirmationViewModel.ShowDialog(window,
+                var result = ConfirmationViewModel.ShowDialog(window!,
                     "|Do you want to generate a new GUID? Users may not trust a server changing its GUID without prior notice.|",
                     "|Generate GUID|", "|No|", "|Yes|");
                 if (result is Success)
@@ -133,16 +133,16 @@ namespace Server.MVVM.ViewModel
 
             GeneratePrivateKey = new RelayCommand(_ =>
             {
-                var result = ConfirmationViewModel.ShowDialog(window,
+                var result = ConfirmationViewModel.ShowDialog(window!,
                     "|Do you want to generate a new private key? Server's public key is derived from private key and users may not trust a server changing it without prior notice.|",
                     "|Generate private key|", "|No|", "|Yes|");
                 if (result is Success)
                 {
-                    var genRes = ProgressBarViewModel.ShowDialog(window,
+                    var genRes = ProgressBarViewModel.ShowDialog(window!,
                         "|Private key generation|", true,
                         (reporter) => Shared.MVVM.Model.Cryptography.PrivateKey.Random(reporter));
                     if (!(genRes is Success success)) return; // anulowano (Cancellation)
-                    PrivateKey = ((PrivateKey)success.Data).ToString();
+                    PrivateKey = ((PrivateKey)success.Data!).ToString();
                 }
             });
 
@@ -167,7 +167,7 @@ namespace Server.MVVM.ViewModel
             return true;
         }
 
-        private bool ParsePrivateKey(out PrivateKey privateKey)
+        private bool ParsePrivateKey(out PrivateKey? privateKey)
         {
             privateKey = null;
 
@@ -177,7 +177,7 @@ namespace Server.MVVM.ViewModel
                 return false;
             }
 
-            var result = ProgressBarViewModel.ShowDialog(window,
+            var result = ProgressBarViewModel.ShowDialog(window!,
                 "|Private key validation|", true,
                 (reporter) => Shared.MVVM.Model.Cryptography.PrivateKey.Parse(
                     reporter, PrivateKey));
@@ -187,11 +187,11 @@ namespace Server.MVVM.ViewModel
                 return false;
 
             // powodzenie
-            privateKey = (PrivateKey)success.Data;
+            privateKey = (PrivateKey)success.Data!;
             return true;
         }
 
-        private bool ParseIpAddress(out IPv4Address ipAddress)
+        private bool ParseIpAddress(out IPv4Address? ipAddress)
         {
             try
             {
@@ -207,7 +207,7 @@ namespace Server.MVVM.ViewModel
             }
         }
 
-        private bool ParsePort(out Port port)
+        private bool ParsePort(out Port? port)
         {
             try
             {
@@ -246,12 +246,12 @@ namespace Server.MVVM.ViewModel
             {
                 Alert("|Settings file does not exist. Default settings will be loaded.|");
                 Guid = "5b8d0d10-d6d0-42af-8e35-6bcb4bf18872";
-                PrivateKey = "cm0iaUQj443FfN49ph9E9tFuOURkFrM6U8mya7bVclipEiYYucYIAkCMs4g" +
-                    "z1sVgYF3TMNXDI2tW3essYROD22xMHRkQRZDy54LxaB8peto3DfSA7g1uW/l6kZhzQBB" +
-                    "0QDhWjbxrfNV9vQCL1GhX3yPD7bFp1Hdb2ROJxXlB9ac=;VzcEpdIXqHpyn8+ol80vUk" +
-                    "TX1LNHduUC/sCwNom9WH+ergMlBfEEcE7RlZ+dvdGC/Ji2elbnvJBZAGWH13MImUGMEG" +
-                    "EoiphCrfGttbqTntoUpL34WRfC+ttxFRgmstCSQKQkuiAz+FqhM7QzesW49bTEH0tcwJ" +
-                    "f026QMvxEgqgk=";
+                PrivateKey = "59oF9YEte3yRp1IY2sFOR+PH6EWOCGCTanc8TPF/QSvCMi+6nCBDziJ7P" +
+                    "2jKWPhka1F7VChMbIhN1QkEyW0NDK29R+6gHZr0dg3cJQMeLNzpyXD/KxaR8wPAolc" +
+                    "W1012OcTdjsmRCQT6e8Fdm6hwKWNquYyMLNPIohiOtQB8jy4=;+UShzWdMi9leQFfM" +
+                    "bvLirbgqlp728rvujtPLjYMDuWCyEsWPtxFd/KUsp75sQjH4hLf0404+JE68DpsbsE" +
+                    "8OewL4ApIopRg8t+/UPkE7Pjz7oD0vJcC0E06qj/Mnjz+hbP/kxtnWEdP8mBluIDYr" +
+                    "UO6hpJyUrSylvqDy5ZbqvnA=";
                 IpAddress = "127.0.0.1";
                 // według https://stackoverflow.com/a/38141340, powinniśmy używać portów <1024, 49151>
                 Port = "13795";
@@ -260,6 +260,12 @@ namespace Server.MVVM.ViewModel
             }
             string json = File.ReadAllText(PATH, Encoding.UTF8);
             var settings = JsonConvert.DeserializeObject<SettingsJson>(json);
+            if (settings is null)
+            {
+                Alert("|Could not| |load settings file|.");
+                return;
+            }
+
             Guid = settings.Guid;
             PrivateKey = settings.PrivateKey;
             IpAddress = settings.IpAddress;
@@ -280,11 +286,6 @@ namespace Server.MVVM.ViewModel
             };
             var json = JsonConvert.SerializeObject(settings);
             File.WriteAllText(PATH, json, Encoding.UTF8);
-        }
-
-        private void RefreshServerStopped(Model.Server server)
-        {
-            ServerStopped = !server.IsRunning;
         }
     }
 }

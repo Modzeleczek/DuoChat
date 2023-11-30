@@ -7,13 +7,19 @@ namespace Server.MVVM.Model.Persistence
     {
         #region Properties
         /* Jak DbSety z Entity Frameworka, ale nie do końca,
-        bo nie każda tabela z bazy danych ma swoje repozytorium. */
-        public AccountRepository Accounts { get; }
+        bo nie każda tabela z bazy danych musi mieć repozytorium. */
+        public AccountByIdRepository AccountsById { get; }
+        public AccountByLoginRepository AccountsByLogin { get; }
+        public ClientIPBlockRepository ClientIPBlocks { get; }
+        public ConversationRepository Conversations { get; }
         #endregion
 
         public Database(string path) : base(path)
         {
-            Accounts = new AccountRepository(CreateConnection);
+            AccountsById = new AccountByIdRepository(this);
+            AccountsByLogin = new AccountByLoginRepository(this);
+            ClientIPBlocks = new ClientIPBlockRepository(this);
+            Conversations = new ConversationRepository(this);
         }
 
         protected override string DDLEmbeddedResource()

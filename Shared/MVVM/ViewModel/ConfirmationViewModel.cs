@@ -24,8 +24,8 @@ namespace Shared.MVVM.ViewModel
             ConfirmButtonText = confirmButtonText; // patrz Title
         }
 
-        public static Result ShowDialog(Window owner, string description, string title = null,
-            string cancelButtonText = null, string confirmButtonText = null)
+        public static Result ShowDialog(Window owner, string description, string? title = null,
+            string? cancelButtonText = null, string? confirmButtonText = null)
         {
             string finalTitle = title ?? "|Confirmation|";
             string finalCancButTxt = cancelButtonText ?? "|Cancel|";

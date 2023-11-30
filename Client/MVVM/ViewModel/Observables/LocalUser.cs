@@ -13,7 +13,7 @@ namespace Client.MVVM.ViewModel.Observables
     {
         #region Properties
         // Unikalny identyfikator (klucz główny)
-        private string _name = null;
+        private string _name = null!;
         // JsonProperty, żeby właściwość została BSON-zserializowana, mimo że ma prywatny setter.
         [JsonProperty]
         public string Name
@@ -25,13 +25,13 @@ namespace Client.MVVM.ViewModel.Observables
         }
 
         // Sól do skrótu hasła nie jest obserwowalna.
-        public byte[] PasswordSalt { get; set; } = null;
+        public byte[] PasswordSalt { get; set; } = null!;
 
         // Skrót hasła nie jest obserwowalny.
-        public byte[] PasswordDigest { get; set; } = null;
+        public byte[] PasswordDigest { get; set; } = null!;
 
         // Wektor inicjujący i sól hasła do odszyfrowania bazy danych.
-        private byte[] _dbInitializationVector = null;
+        private byte[] _dbInitializationVector = null!;
         public byte[] DbInitializationVector
         {
             get => _dbInitializationVector;
@@ -45,7 +45,7 @@ namespace Client.MVVM.ViewModel.Observables
             }
         }
 
-        private byte[] _dbSalt = null;
+        private byte[] _dbSalt = null!;
         public byte[] DbSalt
         {
             get => _dbSalt;

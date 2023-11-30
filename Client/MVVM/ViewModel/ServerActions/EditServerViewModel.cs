@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using Client.MVVM.View.Windows;
 using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.ViewModel.Results;
-using Client.MVVM.ViewModel.Observables;
 using Client.MVVM.Model.BsonStorages;
 
 namespace Client.MVVM.ViewModel.ServerActions
@@ -18,11 +17,11 @@ namespace Client.MVVM.ViewModel.ServerActions
             LocalUserPrimaryKey loggedUserKey, ServerPrimaryKey serverKey)
             : base(storage)
         {
-            var currentWindowLoadedHandler = WindowLoaded;
+            var currentWindowLoadedHandler = WindowLoaded!;
             WindowLoaded = new RelayCommand(e =>
             {
                 currentWindowLoadedHandler.Execute(e);
-                var win = (FormWindow)window;
+                var win = (FormWindow)window!;
 
                 var server = _storage.GetServer(loggedUserKey, serverKey);
                 win.AddTextField("|Name|", server.Name);
@@ -36,29 +35,29 @@ namespace Client.MVVM.ViewModel.ServerActions
 
             Confirm = new RelayCommand(controls =>
             {
-                var fields = (List<Control>)controls;
+                var fields = (List<Control>)controls!;
 
                 _storage.GetServer(loggedUserKey, serverKey);
 
                 // nie walidujemy, bo jest to przechowywane w polu w BSONie, a nie w SQLu
                 var name = ((TextBox)fields[0]).Text;
 
-                if (!ParseIpAddress(((TextBox)fields[1]).Text, out IPv4Address ipAddress))
+                if (!ParseIpAddress(((TextBox)fields[1]).Text, out IPv4Address? ipAddress))
                     return;
 
-                if (!ParsePort(((TextBox)fields[2]).Text, out Port port))
+                if (!ParsePort(((TextBox)fields[2]).Text, out Port? port))
                     return;
 
                 if (!ParseGuid(((TextBox)fields[3]).Text, out Guid guid))
                     return;
 
-                if (!ParsePublicKey(((TextBox)fields[4]).Text, out PublicKey publicKey))
+                if (!ParsePublicKey(((TextBox)fields[4]).Text, out PublicKey? publicKey))
                     return;
 
                 // _storage.GetServer wyrzuci Error, jeżeli serwer nie istnieje.
 
                 // jeżeli zmieniamy klucz główny, czyli (ip, port)
-                var newServerKey = new ServerPrimaryKey(ipAddress, port);
+                var newServerKey = new ServerPrimaryKey(ipAddress!, port!);
                 if (!newServerKey.Equals(serverKey)
                     && _storage.ServerExists(loggedUserKey, newServerKey))
                 {
@@ -66,11 +65,11 @@ namespace Client.MVVM.ViewModel.ServerActions
                     return;
                 }
 
-                var updatedServer = new Server(newServerKey)
+                var updatedServer = new Observables.Server(newServerKey)
                 {
                     Name = name,
                     Guid = guid,
-                    PublicKey = publicKey,
+                    PublicKey = publicKey!
                 };
                 try { _storage.UpdateServer(loggedUserKey, serverKey, updatedServer); }
                 catch (Error e)
@@ -99,7 +98,7 @@ namespace Client.MVVM.ViewModel.ServerActions
             return true;
         }
 
-        private bool ParsePublicKey(string text, out PublicKey publicKey)
+        private bool ParsePublicKey(string text, out PublicKey? publicKey)
         {
             publicKey = null;
             if (string.IsNullOrEmpty(text))

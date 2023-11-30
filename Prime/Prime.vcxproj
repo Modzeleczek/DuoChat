@@ -45,12 +45,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)build\$(Configuration)\x64\$(ProjectName)\</OutDir>
+    <OutDir>$(SolutionDir)build\$(ProjectName)\x64\$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\$(Platform)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IntDir>$(Configuration)\$(Platform)\</IntDir>
-    <OutDir>$(SolutionDir)build\$(Configuration)\x86\$(ProjectName)\</OutDir>
+    <OutDir>$(SolutionDir)build\$(ProjectName)\x86\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>

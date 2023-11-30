@@ -19,8 +19,8 @@ namespace Shared.MVVM.ViewModel
             ButtonText = d[buttonText];
         }
 
-        public static void ShowDialog(Window owner, string description, string title = null,
-            string buttonText = null)
+        public static void ShowDialog(Window? owner, string description, string? title = null,
+            string? buttonText = null)
         {
             string finalTitle = title ?? "|Alert|";
             string finalButTxt = buttonText ?? "|OK|";

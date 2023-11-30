@@ -91,7 +91,7 @@ namespace Client.MVVM.Model
             if (localUserKey is null)
                 // storage/local_users/
                 return path;
-            PathAppend(ref path, localUserKey.ToString());
+            PathAppend(ref path, localUserKey.ToString()!);
 
             if (serversBson is null)
                 // storage/local_users/{localUserKey}/
@@ -107,7 +107,7 @@ namespace Client.MVVM.Model
                 return path;
 
             // storage/local_users/{localUserKey}/servers/{serverKey}
-            return PathAppend(ref path, serverKey.ToString());
+            return PathAppend(ref path, serverKey.ToString()!);
         }
 
         private string PathAppend(ref string path, string newPart)
@@ -289,7 +289,7 @@ namespace Client.MVVM.Model
         #endregion
 
         #region Server
-        public void AddServer(LocalUserPrimaryKey localUserKey, Server server)
+        public void AddServer(LocalUserPrimaryKey localUserKey, ViewModel.Observables.Server server)
         {
             /* Tu nie łapiemy wyjątków, bo są to operacje "nieatomowe" i nie mutujące
             (nie zmieniające aktualnie panującego, prawidłowego stanu obiektów)
@@ -317,7 +317,7 @@ namespace Client.MVVM.Model
             }
         }
 
-        public List<Server> GetAllServers(LocalUserPrimaryKey localUserKey)
+        public List<ViewModel.Observables.Server> GetAllServers(LocalUserPrimaryKey localUserKey)
         {
             return GetServersBsonStorage(localUserKey).GetAll();
         }
@@ -327,12 +327,12 @@ namespace Client.MVVM.Model
             return GetServersBsonStorage(localUserKey).Exists(serverKey);
         }
 
-        public Server GetServer(LocalUserPrimaryKey localUserKey, ServerPrimaryKey serverKey)
+        public ViewModel.Observables.Server GetServer(LocalUserPrimaryKey localUserKey, ServerPrimaryKey serverKey)
         {
             return GetServersBsonStorage(localUserKey).Get(serverKey);
         }
 
-        public void UpdateServer(LocalUserPrimaryKey localUserKey, ServerPrimaryKey serverKey, Server newServer)
+        public void UpdateServer(LocalUserPrimaryKey localUserKey, ServerPrimaryKey serverKey, ViewModel.Observables.Server newServer)
         {
             var bsonStorage = GetServersBsonStorage(localUserKey);
             var fsStorage = GetServersFileSystemStorage(localUserKey);
@@ -382,36 +382,36 @@ namespace Client.MVVM.Model
         public void AddAccount(LocalUserPrimaryKey localUserKey, ServerPrimaryKey serverKey,
             Account account)
         {
-            GetServerDatabase(localUserKey, serverKey).Accounts.AddAccount(account);
+            GetServerDatabase(localUserKey, serverKey).Accounts.Add(account);
         }
 
         public List<Account> GetAllAccounts(LocalUserPrimaryKey localUserKey, ServerPrimaryKey serverKey)
         {
-            return GetServerDatabase(localUserKey, serverKey).Accounts.GetAllAccounts();
+            return GetServerDatabase(localUserKey, serverKey).Accounts.GetAll();
         }
 
         public bool AccountExists(LocalUserPrimaryKey localUserKey, ServerPrimaryKey serverKey,
             string accountLogin)
         {
-            return GetServerDatabase(localUserKey, serverKey).Accounts.AccountExists(accountLogin);
+            return GetServerDatabase(localUserKey, serverKey).Accounts.Exists(accountLogin);
         }
 
         public Account GetAccount(LocalUserPrimaryKey localUserKey, ServerPrimaryKey serverKey,
             string accountLogin)
         {
-            return GetServerDatabase(localUserKey, serverKey).Accounts.GetAccount(accountLogin);
+            return GetServerDatabase(localUserKey, serverKey).Accounts.Get(accountLogin);
         }
 
         public void UpdateAccount(LocalUserPrimaryKey localUserKey, ServerPrimaryKey serverKey,
             string accountLogin, Account newAccount)
         {
-            GetServerDatabase(localUserKey, serverKey).Accounts.UpdateAccount(accountLogin, newAccount);
+            GetServerDatabase(localUserKey, serverKey).Accounts.Update(accountLogin, newAccount);
         }
 
         public void DeleteAccount(LocalUserPrimaryKey localUserKey, ServerPrimaryKey serverKey,
             string accountLogin)
         {
-            GetServerDatabase(localUserKey, serverKey).Accounts.DeleteAccount(accountLogin);
+            GetServerDatabase(localUserKey, serverKey).Accounts.Delete(accountLogin);
         }
         #endregion
 

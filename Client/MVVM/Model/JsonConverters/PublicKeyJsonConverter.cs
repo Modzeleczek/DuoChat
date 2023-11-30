@@ -6,19 +6,20 @@ namespace Client.MVVM.Model.JsonConverters
 {
     public class PublicKeyJsonConverter : JsonConverter<PublicKey>
     {
-        public override PublicKey ReadJson(JsonReader reader, Type objectType,
-            PublicKey existingValue, bool hasExistingValue, JsonSerializer serializer)
+        public override PublicKey? ReadJson(JsonReader reader, Type objectType,
+            PublicKey? existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             /* Nie dopuszczamy do stworzenia PublicKey
             z parametrem modulus będacym nullem. */
             return reader.Value is byte[] bytes ? PublicKey.FromBytesNoLength(bytes) : null;
         }
 
-        public override void WriteJson(JsonWriter writer, PublicKey value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, PublicKey? value, JsonSerializer serializer)
         {
             if (value is null)
                 writer.WriteNull();
-            writer.WriteValue(value.ToBytesNoLength());
+            else
+                writer.WriteValue(value.ToBytesNoLength());
         }
     }
 }

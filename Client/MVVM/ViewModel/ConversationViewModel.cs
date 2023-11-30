@@ -14,8 +14,8 @@ namespace Client.MVVM.ViewModel
         #endregion
 
         #region Properties
-        private Conversation _conversation;
-        public Conversation Conversation
+        private Conversation? _conversation;
+        public Conversation? Conversation
         {
             get => _conversation;
             set { _conversation = value; OnPropertyChanged(); }
@@ -48,7 +48,7 @@ namespace Client.MVVM.ViewModel
                     IsDeleted = false,
                     Attachments = new List<Attachment>()
                 };
-                _conversation.Messages.Add(message);
+                _conversation!.Messages.Add(message);
                 WrittenMessage = string.Empty;
                 /* TODO: pisanie do wybranej konwersacji
                 na wybranym koncie na wybranym serwerze */

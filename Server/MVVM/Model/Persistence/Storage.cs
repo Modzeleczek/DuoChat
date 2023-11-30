@@ -6,9 +6,12 @@ namespace Server.MVVM.Model.Persistence
 {
     public class Storage
     {
+        #region Properties
+        public Database Database { get; }
+        #endregion
+
         #region Fields
         private const string ROOT_DIRECTORY = "storage";
-        public Database Database { get; }
         #endregion
 
         public Storage()

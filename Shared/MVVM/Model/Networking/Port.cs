@@ -14,7 +14,7 @@ namespace Shared.MVVM.Model.Networking
             Value = value;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (!(obj is Port other)) return false;
             return Value == other.Value;

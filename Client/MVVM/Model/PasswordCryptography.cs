@@ -14,7 +14,7 @@ namespace Client.MVVM.Model
         #endregion
 
         // TODO: przenieść do wspólnego viewmodelu LocalUserActions
-        public static string ValidatePassword(SecureString password)
+        public static string? ValidatePassword(SecureString password)
         {
             if (password == null)
                 return "|Specify a password.|";

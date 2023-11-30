@@ -23,7 +23,7 @@ namespace Client.MVVM.ViewModel.LocalUsers
         #endregion
 
         #region Properties
-        private ObservableCollection<LocalUser> localUsers;
+        private ObservableCollection<LocalUser> localUsers = null!;
         public ObservableCollection<LocalUser> LocalUsers
         {
             get => localUsers;
@@ -37,7 +37,7 @@ namespace Client.MVVM.ViewModel.LocalUsers
             {
                 /* musi być w WindowLoaded, bo musimy mieć przypisane window, kiedy
                 chcemy otwierać nowe okno nad LocalUsersWindow */
-                window = (DialogWindow)windowLoadedE;
+                window = (DialogWindow)windowLoadedE!;
 
                 try { LocalUsers = new ObservableCollection<LocalUser>(storage.GetAllLocalUsers()); }
                 catch (Error e)
@@ -55,17 +55,17 @@ namespace Client.MVVM.ViewModel.LocalUsers
                     Title = "|Create local user|",
                     ConfirmButtonText = "|Create|"
                 };
-                new FormWindow(window, vm).ShowDialog();
+                new FormWindow(window!, vm).ShowDialog();
                 /* ShowDialog blokuje wykonanie kodu z tego obiektu typu command
                 do momentu zamknięcia okna tworzenia użytkownika */
                 if (vm.Result is Success success)
-                    LocalUsers.Add((LocalUser)success.Data);
+                    LocalUsers.Add((LocalUser)success.Data!);
             });
 
             Login = new RelayCommand(clickedUser =>
             {
-                var user = (LocalUser)clickedUser;
-                var result = LocalLoginViewModel.ShowDialog(window, storage,
+                var user = (LocalUser)clickedUser!;
+                var result = LocalLoginViewModel.ShowDialog(window!, storage,
                     user.GetPrimaryKey(), true, "|Log in|");
                 if (result is Success success)
                     OnRequestClose(new Success(new { LoggedUser = user, Password = success.Data }));
@@ -73,8 +73,8 @@ namespace Client.MVVM.ViewModel.LocalUsers
 
             ChangeName = new RelayCommand(clickedUser =>
             {
-                var user = (LocalUser)clickedUser;
-                var loginRes = LocalLoginViewModel.ShowDialog(window, storage,
+                var user = (LocalUser)clickedUser!;
+                var loginRes = LocalLoginViewModel.ShowDialog(window!, storage,
                     user.GetPrimaryKey(), false);
                 // nie udało się zalogować
                 if (!(loginRes is Success))
@@ -85,36 +85,36 @@ namespace Client.MVVM.ViewModel.LocalUsers
                     Title = "|Change_name|",
                     ConfirmButtonText = "|Save|"
                 };
-                new FormWindow(window, vm).ShowDialog();
+                new FormWindow(window!, vm).ShowDialog();
                 if (vm.Result is Success success)
                 {
-                    var updatedUser = (LocalUser)success.Data;
+                    var updatedUser = (LocalUser)success.Data!;
                     updatedUser.CopyTo(user);
                 }
             });
 
             ChangePassword = new RelayCommand(clickedUser =>
             {
-                var user = (LocalUser)clickedUser;
-                var loginRes = LocalLoginViewModel.ShowDialog(window, storage,
+                var user = (LocalUser)clickedUser!;
+                var loginRes = LocalLoginViewModel.ShowDialog(window!, storage,
                     user.GetPrimaryKey(), true);
                 if (!(loginRes is Success success))
                     return;
-                var currentPassword = (SecureString)success.Data;
+                var currentPassword = (SecureString)success.Data!;
                 var vm = new ChangeLocalUserPasswordViewModel(storage,
                     user.GetPrimaryKey(), currentPassword)
                 {
                     Title = "|Change_password|",
                     ConfirmButtonText = "|Save|"
                 };
-                new FormWindow(window, vm).ShowDialog();
+                new FormWindow(window!, vm).ShowDialog();
                 currentPassword.Dispose();
             });
 
             Delete = new RelayCommand(clickedUser =>
             {
-                var user = (LocalUser)clickedUser;
-                var loginRes = LocalLoginViewModel.ShowDialog(window, storage, user.GetPrimaryKey(), false);
+                var user = (LocalUser)clickedUser!;
+                var loginRes = LocalLoginViewModel.ShowDialog(window!, storage, user.GetPrimaryKey(), false);
                 if (!(loginRes is Success))
                     return;
                 try { storage.DeleteLocalUser(user.GetPrimaryKey()); }

@@ -11,14 +11,14 @@ namespace Shared.MVVM.Model.Networking
     {
         private const int ENCRYPTED_KEY_IV_SIZE = sizeof(ushort);
 
-        private LinkedList<byte[]> parts = new LinkedList<byte[]>();
+        private readonly LinkedList<byte[]> parts = new LinkedList<byte[]>();
 
         public PacketBuilder() { }
 
-        public void Append(long number, int bytesCount) =>
+        public void Append(ulong number, int bytesCount) =>
             parts.AddLast(Serialize(number, bytesCount));
 
-        private byte[] Serialize(long number, int bytesCount)
+        private byte[] Serialize(ulong number, int bytesCount)
         {
             // Zakładamy, że number można zapisać na bytesCount bajtów.
             var buffer = new byte[bytesCount];
@@ -36,7 +36,7 @@ namespace Shared.MVVM.Model.Networking
 
         public void Append(byte[] bytes) => parts.AddLast(bytes);
 
-        public void Prepend(long number, int bytesCount) =>
+        public void Prepend(ulong number, int bytesCount) =>
             parts.AddFirst(Serialize(number, bytesCount));
 
         public void Prepend(byte[] bytes) => parts.AddFirst(bytes);
@@ -57,7 +57,7 @@ namespace Shared.MVVM.Model.Networking
             /* Zastępujemy części pakietu w oddzielnych buforach
             jednym złączonym buforem mergedParts. */
             parts.Clear();
-            Append(signature.Length, 2);
+            Append((ulong)signature.Length, 2);
             Append(signature);
             Append(mergedParts);
         }
@@ -74,7 +74,7 @@ namespace Shared.MVVM.Model.Networking
             }
 
             Prepend(encrKeyIv);
-            Prepend(encrKeyIv.Length, ENCRYPTED_KEY_IV_SIZE);
+            Prepend((ulong)encrKeyIv.Length, ENCRYPTED_KEY_IV_SIZE);
         }
 
         private byte[] RandomAesEncrypt()
@@ -97,7 +97,7 @@ namespace Shared.MVVM.Model.Networking
         private byte[] MergeParts(int totalSize)
         {
             if (parts.Count == 1)
-                return parts.First.Value;
+                return parts.First!.Value;
 
             var buffer = new byte[totalSize];
             int position = 0;
@@ -122,9 +122,9 @@ namespace Shared.MVVM.Model.Networking
         {
             var totalSize = CalculateSize();
             // dodajemy rozmiar całego pakietu jako pierwszą część pakietu
-            Prepend(totalSize, Client.PREFIX_SIZE);
+            Prepend((ulong)totalSize, PacketSendBuffer.PACKET_PREFIX_SIZE);
             // dodajemy rozmiar dodanego prefiksu
-            return MergeParts(totalSize + Client.PREFIX_SIZE);
+            return MergeParts(totalSize + PacketSendBuffer.PACKET_PREFIX_SIZE);
         }
 
         private int CalculateSize()
@@ -138,7 +138,7 @@ namespace Shared.MVVM.Model.Networking
 
         public static PacketBuilder operator +(PacketBuilder pb, (long, int) numberBytesCount)
         {
-            pb.Append(numberBytesCount.Item1, numberBytesCount.Item2);
+            pb.Append((ulong)numberBytesCount.Item1, numberBytesCount.Item2);
             return pb;
         }
 
@@ -150,7 +150,7 @@ namespace Shared.MVVM.Model.Networking
 
         public static PacketBuilder operator +((long, int) numberBytesCount, PacketBuilder pb)
         {
-            pb.Prepend(numberBytesCount.Item1, numberBytesCount.Item2);
+            pb.Prepend((ulong)numberBytesCount.Item1, numberBytesCount.Item2);
             return pb;
         }
 
@@ -163,7 +163,7 @@ namespace Shared.MVVM.Model.Networking
         public void AppendSignature(PrivateKey privateKey, byte[] data)
         {
             byte[] signature = Rsa.Sign(privateKey, data);
-            Append(signature.Length, 2);
+            Append((ulong)signature.Length, 2);
             Append(signature);
         }
     }

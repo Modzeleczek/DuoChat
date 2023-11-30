@@ -17,7 +17,7 @@ namespace Client.MVVM.ViewModel.LocalUsers.LocalUserActions
         {
             WindowLoaded = new RelayCommand(e =>
             {
-                var win = (FormWindow)e;
+                var win = (FormWindow)e!;
                 window = win;
                 win.AddTextField("|Username|");
                 win.AddPasswordField("|Password|");
@@ -27,7 +27,7 @@ namespace Client.MVVM.ViewModel.LocalUsers.LocalUserActions
 
             Confirm = new RelayCommand(controls =>
             {
-                var fields = (List<Control>)controls;
+                var fields = (List<Control>)controls!;
 
                 LocalUserPrimaryKey localUserKey;
                 // Walidacja nazwy użytkownika
@@ -79,7 +79,7 @@ namespace Client.MVVM.ViewModel.LocalUsers.LocalUserActions
                 }
 
                 // zaszyfrowujemy katalog użytkownika jego hasłem
-                var encryptRes = ProgressBarViewModel.ShowDialog(window,
+                var encryptRes = ProgressBarViewModel.ShowDialog(window!,
                     "|Encrypting user's database.|", false,
                     (reporter) => storage.EncryptLocalUser(ref reporter,
                     newUser.GetPrimaryKey(), password));
@@ -107,7 +107,7 @@ namespace Client.MVVM.ViewModel.LocalUsers.LocalUserActions
             var defaultCloseHandler = Close;
             Close = new RelayCommand(e =>
             {
-                var fields = (List<Control>)e;
+                var fields = (List<Control>)e!;
                 ((PasswordBox)fields[1]).SecurePassword.Dispose();
                 ((PasswordBox)fields[2]).SecurePassword.Dispose();
                 // odpowiednik base.Close w nadpisanej metodzie wirtualnej

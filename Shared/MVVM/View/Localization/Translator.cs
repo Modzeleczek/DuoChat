@@ -60,9 +60,9 @@ namespace Shared.MVVM.View.Localization
         {
             var activeDict = (IDictionary<string, object>)D;
             string noTrans = "|No translation:|" + key;
-            if (!activeDict.TryGetValue(key, out object obj))
+            if (!activeDict.TryGetValue(key, out object? obj))
                 return noTrans;
-            string translated = obj as string;
+            string? translated = obj as string;
             if (translated is null)
                 return noTrans;
             return translated;

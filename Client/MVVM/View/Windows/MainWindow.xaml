@@ -4,7 +4,7 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:h="clr-namespace:Shared.MVVM.View.Helpers"
-  xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+  xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:l="clr-namespace:Shared.MVVM.View.Localization"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:w="clr-namespace:Shared.MVVM.View.Windows"

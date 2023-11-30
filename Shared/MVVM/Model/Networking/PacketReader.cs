@@ -77,6 +77,16 @@ namespace Shared.MVVM.Model.Networking
             return ret;
         }
 
+        /* public string ReadLengthAndUtf8String(int lengthBytes)
+        {
+            if (lengthBytes > 8)
+                throw new ArgumentException("lengthBytes must be in range <0, 8>",
+                    nameof(lengthBytes));
+
+            ulong length = 0;
+            IPAddress.NetworkToHostOrder(BitConverter.)
+        } */
+
         public byte ReadUInt8()
         {
             /* Przy tylko 1 bajcie nie ma sensu przekształcanie
@@ -122,6 +132,14 @@ namespace Shared.MVVM.Model.Networking
             Buffer.BlockCopy(_packet, _byteIndex, slice, 0, slice.Length);
             Proceed(slice.Length);
             return new Guid(slice);
+        }
+
+        public ulong ReadUInt64()
+        {
+            ulong ret = (ulong)IPAddress.NetworkToHostOrder(
+                BitConverter.ToInt64(_packet, _byteIndex));
+            Proceed(sizeof(ulong));
+            return ret;
         }
     }
 }

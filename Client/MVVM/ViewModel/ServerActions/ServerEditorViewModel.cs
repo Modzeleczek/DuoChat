@@ -18,13 +18,13 @@ namespace Client.MVVM.ViewModel.ServerActions
 
             WindowLoaded = new RelayCommand(e =>
             {
-                var win = (FormWindow)e;
+                var win = (FormWindow)e!;
                 window = win;
                 RequestClose += () => win.Close();
             });
         }
 
-        protected bool ParseIpAddress(string text, out IPv4Address ipAddress)
+        protected bool ParseIpAddress(string text, out IPv4Address? ipAddress)
         {
             try
             {
@@ -40,7 +40,7 @@ namespace Client.MVVM.ViewModel.ServerActions
             }
         }
 
-        protected bool ParsePort(string text, out Port port)
+        protected bool ParsePort(string text, out Port? port)
         {
             try
             {

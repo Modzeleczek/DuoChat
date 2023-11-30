@@ -2,9 +2,9 @@
 {
     public class Success : Result
     {
-        public object Data { get; }
+        public object? Data { get; }
 
-        public Success(object data = null)
+        public Success(object? data = null)
         {
             Data = data;
         }

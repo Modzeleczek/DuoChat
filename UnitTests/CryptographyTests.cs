@@ -1,6 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Shared.MVVM.Model.Cryptography;
-using System;
 using System.Security.Cryptography;
 using System.Text;
 using Aes = Shared.MVVM.Model.Cryptography.Aes;
@@ -31,21 +30,23 @@ namespace UnitTests
         [TestMethod]
         public void Rsa_Verify_DeserializedKeyAnd1MiBLongData_ShouldReturnTrue()
         {
+            // Zmieniłem formaty kluczy, więc trzeba wygenerować nowe i tu wkleić.
+
             // Arrange
             PrivateKey privateKey = PrivateKey.Parse(
-                "ZLVfVP8XFEmW4S2Oslvevpl5C7LbNTRJrHhYXcltO/os6tcjjmNvfqe6YC3yUQMzhAr/SG" +
-                "21YH2RJJpbKYfH20Tb7UD3XRUYC4UHlhdlNogHNwV5EjDGOV2PmmSKG+kcqibeb2aITeEt" +
-                "xLIwVbZEE2DVDq7H5F+78bIVM9qhDXc=;Ye8n4Al5GTc/EeJ2RV5BlHQ/drOE1sUxZ2y5i" +
-                "6mw88GUPpDPAgIiv93R5WZPOW8qjakdlYISmdwzAxCTO8weU58qepWGQyK1thPoZXQj5p/" +
-                "6Y9CPZb19wT5rzI5I7swHX6jlsgpsCbtrUW2+WPPCtDMGISjXerg9tc3C+LLYUik=");
+                "GXLP0l69Qw27thjMPUTUmJ9x7vgXfQ/fTUjygPZTyQoLjIdBJq+S9SE0+zY6+qmc2k2TAO" +
+                "VWwoJ8gigYfuJ+IRBnOfLue4XJwNDaZS8qdm8ILHtCfqAqIDUl2+iHSd7rCcaLEZaAnUBT" +
+                "30ICrpsQz5/Umghn8sn6DESeJfzDv2k=;afd0rahxsmvuhSjyrGeLFSzt4zYmdnbWg13/p" +
+                "zGKqS0zW2zmcoCocRKoN4wyrRy6ACXUzwLHmYLGMr+ri/Jxfx8o+8DDER8mqAacrY5ISOg" +
+                "99CjrgtBV+NCIZHV00td4GLaDtK9k/cWNf4oRrFoeBUx/5/dvvKSF83vDiD1VoTw=");
             PublicKey publicKey = privateKey.ToPublicKey();
-            byte[] data = Encoding.UTF8.GetBytes(new string('a', 1 << 20));
+            byte[] data = Encoding.UTF8.GetBytes(new string('a', 1 << 20)); 
             byte[] signature = Convert.FromBase64String(
-                "E+gS9/iI6mwI7SNWcvv/ZxcMqB/zsC2hZWv0HTYz1OJsflKM6ODxhT23TfNzOlj8A5B8lK" +
-                "Zn5rX+MRVrC95brtrt5/LWyF/vn5t7fVJrt1GyOOwUh0xX7/xsTZuNSRI7tsn7GrILpiTq" +
-                "CKC2GVlubUvhiR7W2wFFTisUCG2xFHpTMyHAr2rgNV+onLGU2X+80tPo3KHRg5qMuRt1yw" +
-                "CYaG13Mp5XKSIDNH9B+FY1kE3g3wYEKYsoYlTgtJ8e2Uki5nSnOLDCaI1dzaJbKwL74xFK" +
-                "5Rlcc/xCw2PExJgaDXZPq/TJ0iFFpasitzBDBbgxkib9jUU9Bdq2ASU3rNmHGQ==");
+                "BJ3BwU0dvQOnSZqXD2SJ5mBdWbQrAn7T9jrw9C9fx1Jn12UoVwvKgmecYC3n+BWO0RHM25" +
+                "3gPr0PJ9OfScL+Nc56VHXCO/gidc33ZQ64yfYT1f7trrx/CSAsw/Ee5N9NWh2lbuJdpgkO" +
+                "U3dnRfd/ltKE/srQVVj3aBhCpn+kK7g83KOZYVUPRwWJmTuFwfoLuPzuDwmOALscXAOUcF" +
+                "QHarR0odbzrSkJIYY7PqwCmdIqMoG0tPF8e2BaQgGhI/PJqBRb2Ddi0xwpHk6g2l700TIH" +
+                "ClWNxm8dgUI3HYT25X/9yLIf2qIP7xq/ShvAjiXqnsF/1k1KNsGAh60ugFdbwQ==");
 
             const bool expected = true;
 
@@ -78,49 +79,32 @@ namespace UnitTests
             Assert.AreEqual(expected, actual);
         }
 
-        private void Reverse(ref byte[] array)
-        {
-            for (int i = 0; i < array.Length / 2; ++i)
-            {
-                byte temp = array[i];
-                array[i] = array[array.Length - 1 - i];
-                array[array.Length - 1 - i] = temp;
-            }
-        }
-
         [TestMethod]
         public void Rsa_Decrypt_DeserializedKeyAnd64BLongPlainText_ShouldReturnPlainText()
         {
+            // Zmieniłem formaty kluczy, więc trzeba wygenerować nowe i tu wkleić.
+
             // Arrange
             // Składamy klucz prywatny z 2 liczb pierwszych.
-            // Bajty w kolejności little-endian
-            string pLeString =
-                "9exTRLqrUsCU4cncab1z1aQGIku2PupipLlYgmP6j5wEKK504dVM2pCWbZDmsLp5oBNggW" +
-                "2I5KMIM9WWzo1ezUfhK2AZhUmAd0iAxSww8cCER+H9EN7EHpTN04hL3B7Di4NHtKHyvzMZ" +
-                "V4JTYC8b/lew8gXZzetcMhEqrqCLjwU=";
-            string qLeString =
-                "hb4xlb5QblKo1EOTy3XDe8+uNRXidmwhoracoZriSLL96jEI4fOFgLuDpxzCHoNQDB7e+Z" +
-                "vFjK4NMIqPmf0DLiaBw5CFpce7JcOavqupzcplqqwzuZ0WOVfZEvLkz3vXC2TB5GDWd1Gx" +
-                "6pjPo4QvZq+wsVmggA2DIki5ZqsTRGs=";
+            // Kodowanie bez znaku (unsigned) i bajty w kolejności little-endian
+            string pULEString =
+                "GXLP0l69Qw27thjMPUTUmJ9x7vgXfQ/fTUjygPZTyQoLjIdBJq+S9SE0+zY6+qmc2k2TAO" +
+                "VWwoJ8gigYfuJ+IRBnOfLue4XJwNDaZS8qdm8ILHtCfqAqIDUl2+iHSd7rCcaLEZaAnUBT" +
+                "30ICrpsQz5/Umghn8sn6DESeJfzDv2k=";
+            string qULEString =
+                "afd0rahxsmvuhSjyrGeLFSzt4zYmdnbWg13/pzGKqS0zW2zmcoCocRKoN4wyrRy6ACXUzw" +
+                "LHmYLGMr+ri/Jxfx8o+8DDER8mqAacrY5ISOg99CjrgtBV+NCIZHV00td4GLaDtK9k/cWN" +
+                "f4oRrFoeBUx/5/dvvKSF83vDiD1VoTw=";
 
-            // Zamieniamy na big-endian
-            byte[] p = Convert.FromBase64String(pLeString);
-            Reverse(ref p);
-            byte[] q = Convert.FromBase64String(qLeString);
-            Reverse(ref q);
-
-            string pBeString = Convert.ToBase64String(p);
-            string qBeString = Convert.ToBase64String(q);
-
-            string pqString = $"{pBeString};{qBeString}";
+            string pqString = $"{pULEString};{qULEString}";
             PrivateKey privateKey = PrivateKey.Parse(pqString);
 
-            byte[] ciphText = Convert.FromBase64String("ADu4fg594oNA3WNTkIkqYQevst2A/k" +
-                "jHWqk+dCRg09bEYj5vefJQqA7fCxMyYfeJzyOQ+hQumNan3Fy4QV3WlxZrlrMV8qe0pCb" +
-                "uPMpZ6m+AFZBxmWSo3Tb5TLNH2Nf2lVWcAdyIwO5pbetL4Dmn/I031E+Q2DUykuFm+qa1" +
-                "9D6LDPmyo49qJr9LpJtV60cWvQH6hwuHd5SORMmhPTygB26NJbdEbXumaYj3jS2XqF3vw" +
-                "RXVG/jvyyqYiuuiqpq+JMDEV68Q7l6Z+X+1jCdD00+ecLDUJ7evZt6un5qv85Q4ARN55H" +
-                "msDzxhOr/DFJDkln9mO+mJyhOvXKh0EHpjfA==");
+            byte[] ciphText = Convert.FromBase64String("DJ6/nschLmUXIZdp5hPPUi449iRIFap" +
+                "dSFude5mDlTnWZodNX+0NN87NIFbP1HMPv4xg8HiaG0ukQoKYkFEKlXDU8ndNGxbzI15hv" +
+                "IR93oFJnk2TKtMXCnCgS3V20gTAmaxbgaV+0n2SlrNUZCqHiC7H/jUcT+llDhi2aQaK6N8" +
+                "bWNR1pKGY6SpgsmlQZpOwJ3KVwMBTF+IxFNccVc0aHGL64IYHtyz1MfFyodIQbEm1fOyld" +
+                "K5mD1bmnqLoUfO0Mfur8/i9y3/Op35Ddp4cSmEJIDVaGUUE9OzDWEk0WD32HxLH0Erk0aZ" +
+                "24p1yh4rjIzOPRmkXJm/n7ArrouQjuQ==");
             string expected = new string('a', 64);
 
             // Act
@@ -160,17 +144,21 @@ namespace UnitTests
             using (var rng = RandomNumberGenerator.Create())
             {
                 // Arrange
-                PrivateKey privateKey = PrivateKey.Random(2064);
+                PrivateKey privateKey = PrivateKey.Random(258 * 8);
                 PublicKey publicKey = privateKey.ToPublicKey();
 
-                byte[] plain = Encoding.UTF8.GetBytes("abcd");
+                byte[] expPlain = Encoding.UTF8.GetBytes("abcd");
 
                 // Act
-                byte[] cipher = Rsa.Encrypt(publicKey, plain);
+                byte[] cipher = Rsa.Encrypt(publicKey, expPlain);
+                byte[] actPlain = Rsa.Decrypt(privateKey, cipher);
 
                 // Assert
                 Console.WriteLine(publicKey.Length);
-                Console.WriteLine(Encoding.UTF8.GetString(Rsa.Decrypt(privateKey, cipher)));
+                Console.WriteLine(Encoding.UTF8.GetString(actPlain));
+
+                Assert.AreEqual(258, publicKey.Length);
+                expPlain.BytesEqual(actPlain);
             }
         }
     }

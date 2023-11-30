@@ -7,14 +7,14 @@ namespace Shared.MVVM.ViewModel
     public class WindowViewModel : ViewModel
     {
         #region Commands
-        private RelayCommand _windowLoaded;
-        public RelayCommand WindowLoaded
+        private RelayCommand? _windowLoaded = null;
+        public RelayCommand? WindowLoaded
         {
             get => _windowLoaded;
             protected set { _windowLoaded = value; OnPropertyChanged(); }
         }
 
-        private RelayCommand _close;
+        private RelayCommand _close = null!;
         public RelayCommand Close
         {
             get => _close;
@@ -28,7 +28,7 @@ namespace Shared.MVVM.ViewModel
         }
 
         public Result Result { get; protected set; } = new Cancellation();
-        public event Action RequestClose = null;
+        public event Action? RequestClose = null;
 
         private readonly object _closeLock = new object();
         private bool _closed = false;

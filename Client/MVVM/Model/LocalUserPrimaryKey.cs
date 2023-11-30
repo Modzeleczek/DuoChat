@@ -32,7 +32,7 @@ namespace Client.MVVM.Model
             return Name;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is LocalUserPrimaryKey other && Name.Equals(other.Name);
         }

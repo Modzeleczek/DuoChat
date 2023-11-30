@@ -8,7 +8,7 @@ namespace Shared.MVVM.ViewModel
 {
     public class ViewModel : ObservableObject
     {
-        protected DialogWindow window;
+        protected DialogWindow? window;
         protected readonly Translator d = Translator.Instance;
 
         protected void Alert(string description) =>

@@ -1,6 +1,7 @@
 ﻿using Server.MVVM.Model;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model.Networking;
+using System;
 
 namespace Server.MVVM.ViewModel.Observables
 {
@@ -15,16 +16,15 @@ namespace Server.MVVM.ViewModel.Observables
         {
             get
             {
-                string keyString = GetPrimaryKey().ToString("{0}:{1}");
-                if (!IsAuthenticated)
-                    return keyString;
-                else
-                    return keyString + $" {_login}";
+                string keyString = GetPrimaryKey().ToString();
+                return keyString + (IsAuthenticated ? $" {_login}" : string.Empty);
             }
         }
 
-        private string _login = null;
-        public bool IsAuthenticated => _login != null;
+        private string? _login = null;
+        private bool IsAuthenticated => !(_login is null);
+
+        public bool HasDisabledInteraction { get; private set; } = false;
         #endregion
 
         public ClientObservable(ClientPrimaryKey key)
@@ -41,10 +41,19 @@ namespace Server.MVVM.ViewModel.Observables
         public void Authenticate(string login)
         {
             if (IsAuthenticated)
-                throw new Error("|Observable client has already been authenticated|.");
+                throw new InvalidOperationException("Observable client has been authenticated.");
 
             _login = login;
             OnPropertyChanged(nameof(DisplayedName));
+        }
+
+        public void DisableInteraction()
+        {
+            if (HasDisabledInteraction)
+                throw new InvalidCastException("Observable client has disabled interaction.");
+
+            HasDisabledInteraction = true;
+            OnPropertyChanged(nameof(HasDisabledInteraction));
         }
     }
 }

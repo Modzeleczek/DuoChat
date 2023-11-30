@@ -51,7 +51,7 @@ namespace Shared.MVVM.View.Helpers
                         }
                     }
                     var window = parent as Window;
-                    window.DragMove();
+                    window!.DragMove();
                 }
             }
         }

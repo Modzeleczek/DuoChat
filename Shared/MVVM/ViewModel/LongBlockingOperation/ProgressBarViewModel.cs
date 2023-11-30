@@ -18,7 +18,7 @@ namespace Shared.MVVM.ViewModel.LongBlockingOperation
             set { progress = value; OnPropertyChanged(); }
         }
 
-        private string description;
+        private string description = null!;
         public string Description
         {
             get => description;
@@ -49,9 +49,14 @@ namespace Shared.MVVM.ViewModel.LongBlockingOperation
         {
             /* potrzebne, jeżeli chcemy pojawiać alerty nad oknem postępu
             (ProgressBarWindow) */
-            WindowLoaded = new RelayCommand(e => window = (DialogWindow)e);
+            WindowLoaded = new RelayCommand(e => window = (DialogWindow)e!);
             /* worker.CancelAsync tylko ustawia worker.cancellationPending na true;
             getterem do worker.cancellationPending jest worker.CancellationPending */
+            worker = new BackgroundWorker
+            {
+                WorkerReportsProgress = true,
+                WorkerSupportsCancellation = true
+            };
             Close = new RelayCommand(e =>
             {
                 if (!worker.CancellationPending)
@@ -61,14 +66,9 @@ namespace Shared.MVVM.ViewModel.LongBlockingOperation
                     Cancelable = false; // deaktywujemy przycisk anulowania
                 }
             });
-            worker = new BackgroundWorker
-            {
-                WorkerReportsProgress = true,
-                WorkerSupportsCancellation = true
-            };
             DoWorkEventHandler doWork = (worker, args) =>
             {
-                work(new ProgressReporter((BackgroundWorker)worker, args));
+                work(new ProgressReporter((BackgroundWorker)worker!, args));
             };
             worker.DoWork += doWork;
             worker.ProgressChanged += Worker_ProgressChanged;
@@ -84,14 +84,13 @@ namespace Shared.MVVM.ViewModel.LongBlockingOperation
         }
 
         // wywoływane co wywołanie worker.ReportProgress
-        private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        private void Worker_ProgressChanged(object? sender, ProgressChangedEventArgs e)
         {
             Progress = e.ProgressPercentage;
         }
 
         // wywoływane po wyjściu z handlera DoWork poprzez return lub wyjątek
-        private void Worker_RunWorkerCompleted(object sender,
-            RunWorkerCompletedEventArgs e)
+        private void Worker_RunWorkerCompleted(object? sender, RunWorkerCompletedEventArgs e)
         {
             /* if (e.Error != null) // wystąpił błąd
             else if (e.Cancelled) // użytkownik anulował
@@ -100,7 +99,7 @@ namespace Shared.MVVM.ViewModel.LongBlockingOperation
             u nas we wszystkich 3 przypadkach (błąd, anulowanie, powodzenie)
             informacja dla wywołującego viewmodelu jest w e.Result */
 
-            var result = (Result)e.Result;
+            var result = (Result)e.Result!;
             if (result is Failure failure) // wystąpił błąd
                 Alert(failure.Reason.Message);
             // if (e.Result is Cancellation) // użytkownik anulował

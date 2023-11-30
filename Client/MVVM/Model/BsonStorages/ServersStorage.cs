@@ -1,15 +1,16 @@
-﻿using Client.MVVM.ViewModel.Observables;
-using Shared.MVVM.Core;
+﻿using Shared.MVVM.Core;
 using System.Collections.Generic;
 
 namespace Client.MVVM.Model.BsonStorages
 {
-    public class ServersStorage : BsonStorage<Server, ServerPrimaryKey, ServersStorage.BsonStructure>
+    public class ServersStorage : BsonStorage<ViewModel.Observables.Server, ServerPrimaryKey,
+        ServersStorage.BsonStructure>
     {
         #region Classes
         public class BsonStructure
         {
-            public List<Server> Servers { get; set; } = new List<Server>();
+            public List<ViewModel.Observables.Server> Servers { get; set; } =
+                new List<ViewModel.Observables.Server>();
         }
         #endregion
 
@@ -37,12 +38,12 @@ namespace Client.MVVM.Model.BsonStorages
             $"|and port| {key.Port} |does not exist.|";
         #endregion
 
-        protected override List<Server> GetInternalList(BsonStructure structure)
+        protected override List<ViewModel.Observables.Server> GetInternalList(BsonStructure structure)
         {
             return structure.Servers;
         }
 
-        protected override ServerPrimaryKey GetPrimaryKey(Server item)
+        protected override ServerPrimaryKey GetPrimaryKey(ViewModel.Observables.Server item)
         {
             return item.GetPrimaryKey();
         }

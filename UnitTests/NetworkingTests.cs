@@ -1,7 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking;
-using System;
 using System.Net;
 
 namespace UnitTests
@@ -40,7 +39,7 @@ namespace UnitTests
             pb.Append(0x1234, 2);
             pb.Append(0xABCDE, 4);
             byte[] actPacket = pb.Build();
-            int actLengthWoPrefix = actPacket.Length - Client.PREFIX_SIZE;
+            int actLengthWoPrefix = actPacket.Length - PacketSendBuffer.PACKET_PREFIX_SIZE;
             int actPrefixValue = IPAddress.NetworkToHostOrder(
                 BitConverter.ToInt32(actPacket, 0));
 
@@ -201,6 +200,34 @@ namespace UnitTests
             Console.WriteLine($"prefix: {actPrefix}");
             Console.WriteLine($"op code: {actOpCode}");
             Console.WriteLine($"payload: {actPayload.ToHexString()}");
+        }
+
+        [TestMethod]
+        public void PacketBuilder_Sign_WithoutData_ShouldOnlyPrependSignature()
+        {
+            // Arrange
+            PrivateKey privateKey = PrivateKey.Random();
+            PublicKey publicKey = privateKey.ToPublicKey(); 
+            PacketBuilder pb = new PacketBuilder();
+
+            // Act
+            pb.Sign(privateKey);
+            byte[] built = pb.Build();
+
+            // Assert
+            PacketReader pr = new PacketReader(built);
+            int actPrefix = pr.ReadInt32();
+
+            Assert.IsTrue(pr.VerifySignature(publicKey));
+
+            pr = new PacketReader(built);
+            pr.ReadInt32();
+            int actSignatureLength = pr.ReadUInt16();
+            byte[] actSignatureValue = pr.ReadBytes(actSignatureLength);
+
+            Console.WriteLine($"prefix: {actPrefix}");
+            Console.WriteLine($"signature length: {actSignatureLength}");
+            Console.WriteLine($"signature value: {actSignatureValue.ToHexString()}");
         }
     }
 }

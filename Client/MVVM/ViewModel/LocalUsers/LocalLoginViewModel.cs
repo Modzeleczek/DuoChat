@@ -17,15 +17,15 @@ namespace Client.MVVM.ViewModel.LocalUsers
         {
             WindowLoaded = new RelayCommand(e =>
             {
-                var win = (FormWindow)e;
+                var win = (FormWindow)e!;
                 window = win;
                 win.AddPasswordField("|Password|");
                 RequestClose += () => win.Close();
             });
 
-            Confirm = new RelayCommand(e =>
+            Confirm = new RelayCommand(controls =>
             {
-                var fields = (List<Control>)e;
+                var fields = (List<Control>)controls!;
 
                 var localUser = storage.GetLocalUser(localUserKey);
 
@@ -36,7 +36,7 @@ namespace Client.MVVM.ViewModel.LocalUsers
                     Alert("|Wrong password.|");
                     return;
                 }
-                SecureString resultData = null;
+                SecureString? resultData = null;
                 if (returnEnteredPassword)
                     resultData = password;
                 else
@@ -47,14 +47,14 @@ namespace Client.MVVM.ViewModel.LocalUsers
             var defaultCloseHandler = Close;
             Close = new RelayCommand(e =>
             {
-                var fields = (List<Control>)e;
+                var fields = (List<Control>)e!;
                 ((PasswordBox)fields[0]).SecurePassword.Dispose();
                 defaultCloseHandler?.Execute(e);
             });
         }
 
         public static Result ShowDialog(Window owner, Storage storage,
-            LocalUserPrimaryKey localUserKey, bool returnEnteredPassword, string title = null)
+            LocalUserPrimaryKey localUserKey, bool returnEnteredPassword, string? title = null)
         {
             var vm = new LocalLoginViewModel(storage, localUserKey, returnEnteredPassword);
             vm.Title = title ?? "|Enter your password|";

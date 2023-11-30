@@ -1,23 +1,27 @@
-﻿using Server.MVVM.ViewModel.Observables;
+﻿using Shared.MVVM.View.Localization;
 using Shared.MVVM.View.Windows;
 using Shared.MVVM.ViewModel;
+using System;
+using System.Collections.ObjectModel;
 
 namespace Server.MVVM.ViewModel
 {
-    public class LogViewModel : UserControlViewModel
+    public class LogViewModel : UserControlViewModel, ILogger
     {
-        private string _log;
-        public string Log
-        {
-            get => _log;
-            set { _log = value; OnPropertyChanged(); }
-        }
+        public ObservableCollection<string> Lines { get; } =
+            new ObservableCollection<string>();
 
-        public LogViewModel(DialogWindow owner, Log log)
+        public LogViewModel(DialogWindow owner)
             : base(owner)
+        { }
+
+        public void Log(string message)
         {
-            log.ChangedState += (stringBuilder) =>
-                Log = stringBuilder.ToString();
+            /* Append jest wywoływane tylko w wątku UI albo przez inne wątki
+            w dispatcherze UI (czyli w zasadzie też w wątku UI), więc nie
+            trzeba go synchronizować dedykowanym monitor lockiem. */
+            var d = Translator.Instance;
+            Lines.Add($"{DateTime.UtcNow}: {d[message]}");
         }
     }
 }

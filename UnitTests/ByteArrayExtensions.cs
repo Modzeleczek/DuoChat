@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 using System.Text;
 
 namespace UnitTests
@@ -31,6 +30,11 @@ namespace UnitTests
             byte[] ret = new byte[count];
             Buffer.BlockCopy(array, startIndex, ret, 0, count);
             return ret;
+        }
+
+        public static byte[] Slice(this byte[] array, int startIndex)
+        {
+            return array.Slice(startIndex, array.Length - startIndex);
         }
     }
 }

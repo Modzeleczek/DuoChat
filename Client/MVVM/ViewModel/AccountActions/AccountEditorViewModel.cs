@@ -27,22 +27,22 @@ namespace Client.MVVM.ViewModel.AccountActions
 
             WindowLoaded = new RelayCommand(e =>
             {
-                var win = (FormWindow)e;
+                var win = (FormWindow)e!;
                 window = win;
                 RequestClose += () => win.Close();
             });
 
             GeneratePrivateKey = new RelayCommand(e =>
             {
-                var fields = (List<Control>)e;
+                var fields = (List<Control>)e!;
 
-                var result = ProgressBarViewModel.ShowDialog(window,
+                var result = ProgressBarViewModel.ShowDialog(window!,
                     "|Private key generation|", true,
                     (reporter) => PrivateKey.Random(reporter));
                 if (!(result is Success success)) return; // anulowano
 
                 var textBox = (TextBox)fields[1];
-                textBox.Text = ((PrivateKey)success.Data).ToString();
+                textBox.Text = ((PrivateKey)success.Data!).ToString();
             });
         }
 
@@ -82,11 +82,11 @@ namespace Client.MVVM.ViewModel.AccountActions
             }
         }
 
-        protected bool ParsePrivateKey(string text, out PrivateKey privateKey)
+        protected bool ParsePrivateKey(string text, out PrivateKey? privateKey)
         {
             privateKey = null;
             // klucz prywatny walidujemy jako ostatni, bo najdłużej to trwa
-            var result = ProgressBarViewModel.ShowDialog(window,
+            var result = ProgressBarViewModel.ShowDialog(window!,
                 "|Private key validation|", true,
                 (reporter) => PrivateKey.Parse(reporter, text));
 
@@ -95,7 +95,7 @@ namespace Client.MVVM.ViewModel.AccountActions
                 return false;
 
             // powodzenie
-            privateKey = (PrivateKey)success.Data;
+            privateKey = (PrivateKey)success.Data!;
             return true;
         }
     }

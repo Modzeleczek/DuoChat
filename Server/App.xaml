@@ -23,7 +23,6 @@
         <ResourceDictionary Source="/MVVM/View/Resources/Dynamic/Styles/TextFields.xaml" />
 
         <!-- Indywidualne serwera -->
-        <ResourceDictionary Source="/MVVM/View/Themes/ClientListItem.xaml" />
       </ResourceDictionary.MergedDictionaries>
 
       <DataTemplate DataType="{x:Type vm:SettingsViewModel}">
@@ -36,6 +35,10 @@
 
       <DataTemplate DataType="{x:Type vm:LogViewModel}">
         <ctrl:LogView />
+      </DataTemplate>
+
+      <DataTemplate DataType="{x:Type vm:AccountsViewModel}">
+        <ctrl:AccountsView />
       </DataTemplate>
     </ResourceDictionary>
   </Application.Resources>

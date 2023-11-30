@@ -101,7 +101,7 @@ namespace Client.MVVM.View.Windows
             public Rect rcWork; // Working area
             public int dwFlags;
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x20)]
-            public char[] szDevice;
+            public char[] szDevice = null!;
         }
 
         // To get a handle to the specified monitor

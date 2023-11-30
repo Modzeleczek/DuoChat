@@ -21,7 +21,7 @@ namespace Shared.MVVM.Model.Networking
             BinaryRepresentation = BitConverter.ToUInt32(bytes, 0);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (!(obj is IPv4Address other)) return false;
             return BinaryRepresentation == other.BinaryRepresentation;

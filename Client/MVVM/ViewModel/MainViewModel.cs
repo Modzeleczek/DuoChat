@@ -1,4 +1,5 @@
 using Client.MVVM.Model;
+using Client.MVVM.Model.Networking;
 using Client.MVVM.View.Windows;
 using Client.MVVM.ViewModel.AccountActions;
 using Client.MVVM.ViewModel.LocalUsers;
@@ -6,7 +7,6 @@ using Client.MVVM.ViewModel.Observables;
 using Client.MVVM.ViewModel.ServerActions;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model.Cryptography;
-using Shared.MVVM.Model.Networking;
 using Shared.MVVM.View.Localization;
 using Shared.MVVM.View.Windows;
 using Shared.MVVM.ViewModel;
@@ -14,121 +14,234 @@ using Shared.MVVM.ViewModel.LongBlockingOperation;
 using Shared.MVVM.ViewModel.Results;
 using System;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Security;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
-using static Client.MVVM.Model.Client;
 
 namespace Client.MVVM.ViewModel
 {
     public class MainViewModel : WindowViewModel
     {
         #region Commands
-        private RelayCommand openSettings;
+        private RelayCommand _openSettings = null!;
         public RelayCommand OpenSettings
         {
-            get => openSettings;
-            private set { openSettings = value; OnPropertyChanged(); }
+            get => _openSettings;
+            private set { _openSettings = value; OnPropertyChanged(); }
         }
 
-        private RelayCommand addServer;
+        private RelayCommand _addServer = null!;
         public RelayCommand AddServer
         {
-            get => addServer;
-            private set { addServer = value; OnPropertyChanged(); }
+            get => _addServer;
+            private set { _addServer = value; OnPropertyChanged(); }
         }
 
-        private RelayCommand editServer;
+        private RelayCommand _editServer = null!;
         public RelayCommand EditServer
         {
-            get => editServer;
-            private set { editServer = value; OnPropertyChanged(); }
+            get => _editServer;
+            private set { _editServer = value; OnPropertyChanged(); }
         }
 
-        private RelayCommand deleteServer;
+        private RelayCommand _deleteServer = null!;
         public RelayCommand DeleteServer
         {
-            get => deleteServer;
-            private set { deleteServer = value; OnPropertyChanged(); }
+            get => _deleteServer;
+            private set { _deleteServer = value; OnPropertyChanged(); }
         }
 
-        private RelayCommand addAccount;
+        private RelayCommand _addAccount = null!;
         public RelayCommand AddAccount
         {
-            get => addAccount;
-            private set { addAccount = value; OnPropertyChanged(); }
+            get => _addAccount;
+            private set { _addAccount = value; OnPropertyChanged(); }
         }
 
-        private RelayCommand editAccount;
+        private RelayCommand _editAccount = null!;
         public RelayCommand EditAccount
         {
-            get => editAccount;
-            private set { editAccount = value; OnPropertyChanged(); }
+            get => _editAccount;
+            private set { _editAccount = value; OnPropertyChanged(); }
         }
 
-        private RelayCommand deleteAccount;
+        private RelayCommand _deleteAccount = null!;
         public RelayCommand DeleteAccount
         {
-            get => deleteAccount;
-            private set { deleteAccount = value; OnPropertyChanged(); }
+            get => _deleteAccount;
+            private set { _deleteAccount = value; OnPropertyChanged(); }
         }
         #endregion
 
         #region Properties
-        private ObservableCollection<Server> servers;
-        public ObservableCollection<Server> Servers
+        private ObservableCollection<Observables.Server> _servers =
+            new ObservableCollection<Observables.Server>();
+        // Potencjalnie można usunąć _servers i zostawić samą właściwość Servers.
+        public ObservableCollection<Observables.Server> Servers
         {
-            get => servers;
-            set { servers = value; OnPropertyChanged(); }
+            get => _servers;
+            set { _servers = value; OnPropertyChanged(); }
         }
 
-        private Server selectedServer;
-        public Server SelectedServer
+        private Observables.Server? _selectedServer = null;
+        public Observables.Server? SelectedServer
         {
-            get => selectedServer;
+            get => _selectedServer;
             /* Asynchronicznie rozłączamy z serwerem (poprzez
             SelectedAccount = null). */
-            set { SelectServerAsync(value); }
-        }
-
-        private ObservableCollection<Account> accounts;
-        public ObservableCollection<Account> Accounts
-        {
-            get => accounts;
-            set { accounts = value; OnPropertyChanged(); }
-        }
-
-        private Account selectedAccount;
-        public Account SelectedAccount
-        {
-            get => selectedAccount;
             set
             {
-                // Wyłączamy wszelkie interakcje z oknem.
-                window.SetEnabled(false);
-                // Rozłączamy aktualne konto, o ile jesteśmy połączeni.
-                _client.DisconnectAsync()
-                    .ContinueWith((task) => UIInvoke(() =>
+                window!.SetEnabled(false);
+
+                if (!(SelectedServer is null) && !(SelectedAccount is null))
+                {
+                    _client.Request(new UIRequest(UIRequest.Operations.Disconnect, null, null));
+                    _client.ClientProcessTask.ContinueWith(_ => UIInvoke(() =>
                     {
-                        // Łączymy z nowym kontem.
-                        Connect(value);
-                        // Przywracamy interakcje z oknem.
-                        window.SetEnabled(true);
+                        ClearSelectedAccount();
+
+                        FinishSettingSelectedServer(value);
                     }));
+                }
+                else
+                    FinishSettingSelectedServer(value);
             }
         }
 
-        private ObservableCollection<Conversation> conversations;
-        public ObservableCollection<Conversation> Conversations
+        private void ClearSelectedAccount()
         {
-            get => conversations;
-            set { conversations = value; OnPropertyChanged(); }
+            _selectedAccount = null;
+            OnPropertyChanged(nameof(SelectedAccount));
+            ConversationVM.Conversation = null;
+            Conversations.Clear();
         }
 
-        private ConversationViewModel _conversationVM;
+        private void FinishSettingSelectedServer(Observables.Server? value)
+        {
+            // Wątek UI
+            _selectedServer = value;
+            OnPropertyChanged(nameof(SelectedServer));
+
+            // Czyścimy i odświeżamy listę kont.
+            Accounts.Clear();
+            if (value != null)
+            {
+                try
+                {
+                    var accounts = _storage.GetAllAccounts(_loggedUserKey, value.GetPrimaryKey());
+                    foreach (var acc in accounts)
+                        Accounts.Add(acc);
+                }
+                catch (Error e)
+                {
+                    e.Prepend("|Could not| |read user's account list|.");
+                    Alert(e.Message);
+                    throw;
+                }
+            }
+
+            window!.SetEnabled(true);
+        }
+
+        private ObservableCollection<Account> _accounts =
+            new ObservableCollection<Account>();
+        public ObservableCollection<Account> Accounts
+        {
+            get => _accounts;
+            set { _accounts = value; OnPropertyChanged(); }
+        }
+
+        private Account? _selectedAccount = null;
+        public Account? SelectedAccount
+        {
+            get => _selectedAccount;
+            set
+            {
+                /* Na pewno !(SelectedServer is null), w przeciwnym przypadku użytkownik nie
+                widzi nic na liście kont. */
+
+                // Wyłączamy wszelkie interakcje z oknem.
+                window!.SetEnabled(false);
+
+                if (!(SelectedAccount is null))
+                {
+                    // Rozłączamy aktualne konto, bo jesteśmy połączeni.
+                    _client.Request(new UIRequest(UIRequest.Operations.Disconnect, null, null));
+
+                    /* Nie można waitować wątkiem UI, bo czeka on na zakończenie
+                    operacji, a jednocześnie kod operacji może chcieć wywołać
+                    UIInvoke, co powoduje deadlock. */
+                    _client.ClientProcessTask.ContinueWith(_ =>
+                    {
+                        /* Łączymy z nowym kontem. Nie sprawdzamy, czy value == SelectedAccount,
+                        aby można było reconnectować poprzez kliknięcie na już zaznaczony serwer.
+                        Connect w anonimowym wątku */
+                        if (!(value is null) && !TryConnect(value))
+                            // Nie udało się połączyć.
+                            value = null;
+                        UIInvoke(() => FinishSettingSelectedAccount(value));
+                    });
+                }
+                else
+                {
+                    // Nie jesteśmy połączeni. Connect w wątku UI.
+                    if (!(value is null) && !TryConnect(value))
+                        // Nie udało się połączyć.
+                        value = null;
+                    FinishSettingSelectedAccount(value);
+                }
+            }
+        }
+
+        private bool TryConnect(Account value)
+        {
+            // Na pewno !(account is null)
+            try
+            {
+                /* Synchroniczne łączenie, ale wciąż mamy wyłączone interakcje, aby użytkownik
+                widział, że nie powinien nic klikać, bo wątek UI jest zablokowany. */
+                var serverKey = SelectedServer!.GetPrimaryKey();
+                _client.Connect(serverKey.IpAddress, serverKey.Port,
+                    value.Login, value.PrivateKey);
+                return true;
+            }
+            catch (Error e)
+            {
+                Alert(e.Message);
+                return false;
+            }
+        }
+
+        private void FinishSettingSelectedAccount(Account? value)
+        {
+            // Jeżeli value is null, to odznaczamy konto na liście w UI.
+            _selectedAccount = value;
+            OnPropertyChanged(nameof(SelectedAccount));
+
+            // Czyścimy i odświeżamy listę konwersacji.
+            ConversationVM.Conversation = null;
+            Conversations.Clear();
+            if (value != null)
+            {
+                /* Jesteśmy po synchronicznym w stosunku do aktualnego wątku połączeniu klienta do
+                serwera (wywołanie Connect), więc pobieramy konwersacje z serwera. */
+                _client.Request(new UIRequest(UIRequest.Operations.GetConversations, null, null));
+                // Odpowiedź zamierzamy dostać w OnGetConversations.
+            }
+
+            // Przywracamy interakcje z oknem.
+            window!.SetEnabled(true);
+        }
+
+        private ObservableCollection<Conversation> _conversations =
+            new ObservableCollection<Conversation>();
+        public ObservableCollection<Conversation> Conversations
+        {
+            get => _conversations;
+            set { _conversations = value; OnPropertyChanged(); }
+        }
+
+        private ConversationViewModel _conversationVM = null!;
         public ConversationViewModel ConversationVM
         {
             get => _conversationVM;
@@ -138,36 +251,32 @@ namespace Client.MVVM.ViewModel
 
         #region Fields
         private LocalUserPrimaryKey _loggedUserKey;
-        private readonly Model.Client _client = new Model.Client();
-        private readonly Random rng = new Random();
-        private Storage _storage;
+        private readonly ClientMonolith _client;
+        private readonly Storage _storage;
         #endregion
 
         public MainViewModel()
         {
+            // Do potomnych okien przekazujemy na zasadzie dependency injection.
+            try { _storage = new Storage(); }
+            catch (Error e)
+            {
+                Alert(e.Message);
+                throw;
+            }
+
+            _client = new ClientMonolith(_storage);
+
             WindowLoaded = new RelayCommand(windowLoadedE =>
             {
-                window = (DialogWindow)windowLoadedE;
+                window = (DialogWindow)windowLoadedE!;
+                // window.SetEnabled(false)
                 // zapobiega ALT + F4 w głównym oknie
                 window.Closable = false;
 
-                // Do potomnych okien przekazujemy na zasadzie dependency injection.
-                try { _storage = new Storage(); }
-                catch (Error e)
-                {
-                    Alert(e.Message);
-                    throw;
-                }
-
-                Servers = new ObservableCollection<Server>();
-                Accounts = new ObservableCollection<Account>();
-                Conversations = new ObservableCollection<Conversation>();
                 ConversationVM = new ConversationViewModel(window);
 
-                try
-                {
-                    d.ActiveLanguage = (Translator.Language)_storage.GetActiveLanguage();
-                }
+                try { d.ActiveLanguage = (Translator.Language)_storage.GetActiveLanguage(); }
                 catch (Error e)
                 {
                     Alert(e.Message);
@@ -175,10 +284,7 @@ namespace Client.MVVM.ViewModel
                     throw;
                 }
 
-                try
-                {
-                    ((App)Application.Current).ActiveTheme = (App.Theme)_storage.GetActiveTheme();
-                }
+                try { ((App)Application.Current).ActiveTheme = (App.Theme)_storage.GetActiveTheme(); }
                 catch (Error e)
                 {
                     Alert(e.Message);
@@ -209,21 +315,20 @@ namespace Client.MVVM.ViewModel
                     Title = "|Add_server|",
                     ConfirmButtonText = "|Add|"
                 };
-                new FormWindow(window, vm).ShowDialog();
+                new FormWindow(window!, vm).ShowDialog();
                 var result = vm.Result;
                 if (result is Success success)
-                    Servers.Add((Server)success.Data);
+                    Servers.Add((Observables.Server)success.Data!);
             });
             EditServer = new RelayCommand(obj =>
             {
-                var server = (Server)obj;
-                /* Synchronicznie rozłączamy i odznaczamy
-                aktualnie wybrany serwer. */
+                var server = (Observables.Server)obj!;
+                /* Asynchronicznie rozłączamy i odznaczamy aktualnie wybrany
+                serwer. Na UI zostanie wyświetlony dialog (okno) edycji serwera,
+                a w oknie pod nim użytkownik nie może w tym czasie nic kliknąć,
+                dzięki czemu możemy w tle asynchronicznie rozłączyć. */
                 if (SelectedServer == server)
-                    /* Nie można waitować wątkiem UI, bo czeka on na zakończenie kodu z
-                    wewnątrz await _client.DisconnectAsync().ContinueWith, a jednocześnie
-                    ten kod chce wywołać UIInvoke, co powoduje deadlock. */
-                    SelectServerAsync(null);
+                    SelectedServer = null;
 
                 var vm = new EditServerViewModel(_storage,
                     _loggedUserKey, server.GetPrimaryKey())
@@ -231,26 +336,26 @@ namespace Client.MVVM.ViewModel
                     Title = "|Edit server|",
                     ConfirmButtonText = "|Save|"
                 };
-                new FormWindow(window, vm).ShowDialog();
+                new FormWindow(window!, vm).ShowDialog();
                 if (vm.Result is Success success)
                 {
-                    var updatedServer = (Server)success.Data;
+                    var updatedServer = (Observables.Server)success.Data!;
                     updatedServer.CopyTo(server);
                 }
             });
             DeleteServer = new RelayCommand(obj =>
             {
-                var server = (Server)obj;
+                var server = (Observables.Server)obj!;
 
                 var serverKey = server.GetPrimaryKey();
-                var confirmRes = ConfirmationViewModel.ShowDialog(window,
+                var confirmRes = ConfirmationViewModel.ShowDialog(window!,
                     "|Do you want to delete| |server|" +
                     $" {serverKey.ToString("{0}:{1}")}?",
                     "|Delete server|", "|No|", "|Yes|");
                 if (!(confirmRes is Success)) return;
 
                 if (SelectedServer == server)
-                    SelectServerAsync(null);
+                    SelectedServer = null;
 
                 try { _storage.DeleteServer(_loggedUserKey, serverKey); }
                 catch (Error e)
@@ -266,49 +371,49 @@ namespace Client.MVVM.ViewModel
             AddAccount = new RelayCommand(_ =>
             {
                 var vm = new CreateAccountViewModel(_storage, _loggedUserKey,
-                    SelectedServer.GetPrimaryKey())
+                    SelectedServer!.GetPrimaryKey())
                 {
                     Title = "|Add_account|",
                     ConfirmButtonText = "|Add|"
                 };
-                new FormWindow(window, vm).ShowDialog();
+                new FormWindow(window!, vm).ShowDialog();
                 if (vm.Result is Success success)
-                    Accounts.Add((Account)success.Data);
+                    Accounts.Add((Account)success.Data!);
             });
             EditAccount = new RelayCommand(obj =>
             {
-                var account = (Account)obj;
+                var account = (Account)obj!;
                 if (SelectedAccount == account)
-                    DisconnectAccount();
+                    SelectedAccount = null;
 
                 var vm = new EditAccountViewModel(_storage, _loggedUserKey,
-                    SelectedServer.GetPrimaryKey(), account.Login)
+                    SelectedServer!.GetPrimaryKey(), account.Login)
                 {
                     Title = "|Edit account|",
                     ConfirmButtonText = "|Save|"
                 };
-                new FormWindow(window, vm).ShowDialog();
+                new FormWindow(window!, vm).ShowDialog();
                 if (vm.Result is Success success)
                 {
-                    var updatedAccount = (Account)success.Data;
+                    var updatedAccount = (Account)success.Data!;
                     updatedAccount.CopyTo(account);
                 }
             });
             DeleteAccount = new RelayCommand(obj =>
             {
-                var account = (Account)obj;
-                var confirmRes = ConfirmationViewModel.ShowDialog(window,
+                var account = (Account)obj!;
+                var confirmRes = ConfirmationViewModel.ShowDialog(window!,
                     "|Do you want to delete| |account|" + $" {account.Login}?",
                     "|Delete account|", "|No|", "|Yes|");
                 if (!(confirmRes is Success)) return;
 
                 if (SelectedAccount == account)
-                    DisconnectAccount();
-                
+                    SelectedAccount = null;
+
                 try
                 {
                     _storage.DeleteAccount(_loggedUserKey,
-                        SelectedServer.GetPrimaryKey(), account.Login);
+                        SelectedServer!.GetPrimaryKey(), account.Login);
                 }
                 catch (Error e)
                 {
@@ -322,7 +427,7 @@ namespace Client.MVVM.ViewModel
 
             Close = new RelayCommand(_ =>
             {
-                window.Closable = true;
+                window!.Closable = true;
                 // zamknięcie MainWindow powoduje zakończenie programu
                 window.Close();
             });
@@ -330,25 +435,26 @@ namespace Client.MVVM.ViewModel
             OpenSettings = new RelayCommand(_ =>
             {
                 var vm = new SettingsViewModel(_storage);
-                var win = new SettingsWindow(window, vm);
+                var win = new SettingsWindow(window!, vm);
                 vm.RequestClose += () => win.Close();
                 win.ShowDialog();
                 if (vm.Result is Success settingsSuc &&
-                    (SettingsViewModel.Operations)settingsSuc.Data ==
+                    (SettingsViewModel.Operations)settingsSuc.Data! ==
                     SettingsViewModel.Operations.LocalLogout) // wylogowanie
                 {
-                    ClearLists();
-                    var loginRes = LocalLoginViewModel.ShowDialog(window, _storage, _loggedUserKey, true);
+                    SelectedServer = null;
+                    Servers.Clear();
+                    var loginRes = LocalLoginViewModel.ShowDialog(window!, _storage, _loggedUserKey, true);
                     if (!(loginRes is Success loginSuc))
                     {
                         ResetLists();
                         return;
                     }
-                    var currentPassword = (SecureString)loginSuc.Data;
+                    var currentPassword = (SecureString)loginSuc.Data!;
 
                     _storage.SetLoggedLocalUser(false);
 
-                    var encryptRes = ProgressBarViewModel.ShowDialog(window,
+                    var encryptRes = ProgressBarViewModel.ShowDialog(window!,
                         "|Encrypting user's database.|", true,
                         (reporter) => _storage.EncryptLocalUser(ref reporter, _loggedUserKey,
                         currentPassword));
@@ -369,14 +475,18 @@ namespace Client.MVVM.ViewModel
                 }
             });
 
-            _client.EndedConnection += EndedConnection;
+            _client.ServerIntroduced += OnServerIntroduced;
+            // _client.ServerHandshaken += OnServerHandshaken;
+            _client.ReceivedConversationsAndUsersList += OnReceivedConversationsAndUsersList;
+            // _client.ServerEndedConnection += OnServerEndedConnection;
+            _client.ClientStopped += OnClientStopped;
         }
 
         private void ShowLocalUsersDialog()
         {
             while (true)
             {
-                var loginRes = LocalUsersViewModel.ShowDialog(window, _storage);
+                var loginRes = LocalUsersViewModel.ShowDialog(window!, _storage);
                 /* jeżeli użytkownik zamknął okno bez zalogowania się
                 (nie ma innych możliwych wyników niż Success i Cancellation) */
                 if (!(loginRes is Success loginSuc))
@@ -385,12 +495,12 @@ namespace Client.MVVM.ViewModel
                     return;
                 }
                 // jeżeli użytkownik się zalogował, to vm.Result is Success
-                var dat = (dynamic)loginSuc.Data;
+                var dat = (dynamic)loginSuc.Data!;
                 var curPas = (SecureString)dat.Password;
                 var user = (LocalUser)dat.LoggedUser;
                 var userKey = user.GetPrimaryKey();
 
-                var decryptRes = ProgressBarViewModel.ShowDialog(window,
+                var decryptRes = ProgressBarViewModel.ShowDialog(window!,
                     "|Decrypting user's database.|", true,
                     (reporter) => _storage.DecryptLocalUser(ref reporter, userKey, curPas));
                 curPas.Dispose();
@@ -406,12 +516,6 @@ namespace Client.MVVM.ViewModel
                     return;
                 }
             }
-        }
-
-        private void ClearLists()
-        {
-            SelectServerAsync(null);
-            Servers.Clear();
         }
 
         private void ResetLists()
@@ -431,217 +535,46 @@ namespace Client.MVVM.ViewModel
             }
         }
 
-        private void SelectServerAsync(Server server)
+        #region Zdarzenia klienta
+        private void OnServerIntroduced(RemoteServer server)
         {
-            window.SetEnabled(false);
-            _client.DisconnectAsync().ContinueWith((task) => UIInvoke(() =>
-            {
-                ClearAccount();
-                selectedServer = server;
-                Accounts.Clear();
-                if (server != null)
-                {
-                    try
-                    {
-                        var accounts = _storage.GetAllAccounts(
-                            _loggedUserKey, server.GetPrimaryKey());
-                        foreach (var acc in accounts)
-                            Accounts.Add(acc);
-                    }
-                    catch (Error e)
-                    {
-                        e.Prepend("|Could not| |read user's account list|.");
-                        Alert(e.Message);
-                        throw;
-                    }
-                }
-                OnPropertyChanged(nameof(SelectedServer));
-                window.SetEnabled(true);
-            }));
-        }
-
-        private void DisconnectAccount()
-        {
-            // Wyłączamy interakcje z oknem.
-            window.SetEnabled(false);
-            // Rozłączamy aktualne konto, o ile jesteśmy połączeni.
-            _client.DisconnectAsync().ContinueWith((task) => UIInvoke(() =>
-            {
-                // Odznaczamy konto w GUI.
-                ClearAccount();
-                // Przywracamy interakcje z oknem.
-                window.SetEnabled(true);
-            }));
-        }
-
-        private void ClearAccount()
-        {
-            selectedAccount = null;
-            ConversationVM.Conversation = null;
-            Conversations.Clear();
-            OnPropertyChanged(nameof(SelectedAccount));
-        }
-
-        private void Connect(Account account)
-        {
-            /* Wątek UI na zlecenie anonimowego wątku
-            Nie sprawdzamy, czy value == SelectedServer, aby można było
-            reconnectować poprzez kliknięcie na już zaznaczony serwer. */
-            selectedAccount = account;
-            ConversationVM.Conversation = null;
-            Conversations.Clear();
-            if (account != null)
-            {
-                try
-                {
-                    // Synchroniczne łączenie.
-                    var serverKey = SelectedServer.GetPrimaryKey();
-                    _client.Connect(serverKey, ProcessProtocol);
-
-                    // RANDOM: TODO: pobieranie konwersacji z serwera
-                    var cnvCnt = rng.Next(0, 5);
-                    for (int i = 0; i < cnvCnt; ++i)
-                        Conversations.Add(Conversation.Random(rng));
-                }
-                catch (Error e)
-                {
-                    selectedAccount = null;
-                    Alert(e.Message);
-                }
-            }
-            OnPropertyChanged(nameof(SelectedAccount));
-        }
-
-        #region Errors
-        private Error UnexpectedReceptionError() =>
-            new Error("|Received an unexpected packet| |from server|.");
-
-        private Error UnrecognizedTokenError() =>
-            new Error("|Server sent an unrecognized token|.");
-
-        private Error ReceptionTimedOut() =>
-            new Error("|Receiving a packet from the server timed out|.");
-        #endregion
-
-        private Result ProcessProtocol()
-        {
-            try
-            {
-                ReceiveNoSlotsOrServerIntroduction();
-                SendClientIntroduction();
-                ReceiveAuthenticationOrNoAuthentication();
-
-                while (true)
-                {
-                    /* TODO: w pętli obsługiwać:
-                    - interakcje z wątku UI; można zrobić coś na zasadzie dispatchera wątku
-                    Client.ProcessProtocol, które powodują wysłanie requesta i czekanie na odpowiedź
-                    - broadcasty odbierane od serwera */
-                    if (_client.StopRequested)
-                        break;
-                }
-
-                return new Success();
-            }
-            catch (IndexOutOfRangeException e)
-            {
-                /* Nie ma sensu robić bardzo szczegółowego opisu błędów
-                spowodowanych odebraniem niekompletnego (za krótkiego) pakietu,
-                bo zakładamy, że użytkownicy nie będą za często fabrykować pakietów.
-                Wystarczy prosty opis błędu. */
-                return new Failure(e, "|Received an incomplete packet|.");
-            }
-            catch (Error e)
-            {
-                /* Rozłączamy, jeżeli wystąpił jakikolwiek błąd przy zarządzaniu
-                stanem klienta, np. jeżeli klient wysłał pakiet, podczas gdy była
-                kolej serwera na wysłanie czegoś do klienta - w ten sposób klient
-                złamał protokół. */
-                return new Failure(e, e.Message);
-            }
-        }
-
-        private void ReceiveNoSlotsOrServerIntroduction()
-        {
-            // Wątek Client.ProcessProtocol
-            /* Wywołujemy blokującą metodę Client.Receive i czekamy na monitor locku
-            w ciągu timeoutu 1000 milisekund. */
-            if (!_client.Receive(out byte[] packet, 1000))
-                // Timeout
-                throw ReceptionTimedOut();
-
-            var reader = new PacketReader(packet);
-            switch (reader.ReadUInt8())
-            {
-                case 0: ReceiveNoSlots(); break;
-                case 1: ReceiveServerIntroduction(reader); break;
-                /* Client.ProcessProtocol łapie wyjątek i kończy się ze
-                statusem Failure, który w EndedConnection zostanie
-                zinterpretowany jako błąd klienta. */
-                default: throw UnexpectedReceptionError();
-            }
-        }
-
-        private void ReceiveAuthenticationOrNoAuthentication()
-        {
-            if (!_client.Receive(out byte[] packet, 1000))
-                throw ReceptionTimedOut();
-
-            var reader = new PacketReader(packet);
-            switch (reader.ReadUInt8())
-            {
-                case 2: ReceiveAuthentication(reader); break;
-                case 3: ReceiveNoAuthentication(reader); break;
-                default: throw UnexpectedReceptionError();
-            }
-        }
-
-        private void ReceiveNoSlots()
-        {
-            /* Wykonywane przez wątek Client.ProcessProtocol - ten wątek jest
-            zablokowany przez wywołanie UIInvoke do czasu zamknięcia
-            alertu przyciskiem OK przez użytkownika. Zatem również
-            wątek Client.Process czeka na zakończenie wątku Client.Handle,
-            czyli event LostConnection nie zostanie wykonany przed
-            zamknięciem alertu. */
-            UIInvoke(() => Alert("|Server is full|."));
-            // Serwer rozłączy klienta.
-        }
-
-        private void ReceiveServerIntroduction(PacketReader reader)
-        {
-            // Wątek Client.ProcessProtocol
-            Guid guid = reader.ReadGuid();
-            PublicKey publicKey = PublicKey.FromPacketReader(reader);
-            _client.TokenCache = reader.ReadBytes(256);
-
+            // Wątek Client.Process
             /* Nie synchronizujemy, bo użytkownik może edytować tylko serwer,
             z którym nie jest połączony. Jeżeli chce edytować zaznaczony serwer,
             to jest z nim rozłączany przed otwarciem okna edycji serwera. */
-            if ((!SelectedServer.Guid.Equals(Guid.Empty)
+            if ((!SelectedServer!.Guid.Equals(server.Guid)
                 || !(SelectedServer.PublicKey is null))
-                /* Już wcześniej ustawiono GUID lub klucz publiczny,
-                więc aktualizujemy zgodnie z danymi od serwera, o ile
-                użytkownik się zgodzi. */
-                && !AskIfServerTrusted(guid, publicKey))
+                /* Już wcześniej ustawiono GUID lub klucz publiczny, więc aktualizujemy
+                zgodnie z danymi od serwera, o ile użytkownik się zgodzi. Użytkownik
+                musi szybko klikać, bo serwer liczy timeout, podczas którego czeka
+                na przedstawienie się klienta. */
+                && !AskIfServerTrusted(server.Guid!.Value, server.PublicKey!))
             {
-                // W AskIfServerTrusted rozłączyliśmy się z serwerem.
+                /* Serwer rozłączy klienta przez timeout, ale możemy
+                też sami się rozłączyć za pomocą UIRequesta. */
+                window!.SetEnabled(false);
+                _client.Request(new UIRequest(UIRequest.Operations.Disconnect, server,
+                    () => UIInvoke(() => window.SetEnabled(true))));
                 return;
             }
-            
+
             /* Jeszcze nie ustawiono GUIDu i klucza publicznego lub
             były już ustawione, ale użytkownik zgodził się na
             aktualizację. */
-            SelectedServer.Guid = guid;
-            SelectedServer.PublicKey = publicKey;
+            SelectedServer.Guid = server.Guid.Value;
+            SelectedServer.PublicKey = server.PublicKey;
             _storage.UpdateServer(_loggedUserKey,
                 SelectedServer.GetPrimaryKey(), SelectedServer);
+
+            window!.SetEnabled(false);
+            _client.Request(new UIRequest(UIRequest.Operations.IntroduceClient, server,
+                () => UIInvoke(() => window.SetEnabled(true))));
         }
 
         private bool AskIfServerTrusted(Guid guid, PublicKey publicKey)
         {
             bool guidChanged = false;
-            if (!guid.Equals(SelectedServer.Guid))
+            if (!guid.Equals(SelectedServer!.Guid))
                 guidChanged = true;
             bool publicKeyChanged = false;
             if (!publicKey.Equals(SelectedServer.PublicKey))
@@ -661,102 +594,32 @@ namespace Client.MVVM.ViewModel
 
             return UIInvoke<bool>(() =>
             {
-                var confirmRes = ConfirmationViewModel.ShowDialog(window,
+                var confirmRes = ConfirmationViewModel.ShowDialog(window!,
                     $"{sb}. |Do you still want to connect to the server|?",
                     "|Connect|", "|No|", "|Yes|");
-                if (!(confirmRes is Success))
-                {
-                    // Rozłączamy z serwerem.
-                    DisconnectAccount();
-                    return false;
-                }
-                return true;
+                return confirmRes is Success;
             });
         }
 
-        private void SendClientIntroduction()
+        private void OnServerHandshaken(RemoteServer server)
         {
-            // Wątek Client.ProcessProtocol
-            // 255 Przedstawienie się klienta (10)
-            byte[] loginBytes = Encoding.UTF8.GetBytes(SelectedAccount.Login);
-            // Długość zserializowanego loginu musi mieścić się na 1 bajcie.
-            if (loginBytes.Length > 255)
-                throw new Error("|UTF-8 encoded login can be at most 255 bytes long|.");
 
-            PublicKey publicKey = SelectedAccount.PrivateKey.ToPublicKey();
-            if (publicKey.Length > 256)
-                throw new Error("|Public key can be at most 256 bytes long|.");
-            byte[] publicKeyBytes = publicKey.ToBytes();
-
-            byte[] tokenToSign = _client.TokenCache;
-            _client.TokenCache = RandomGenerator.Generate(8);
-
-            var pb = new PacketBuilder();
-            pb.Append(loginBytes.Length, 1);
-            pb.Append(loginBytes);
-            /* Długość klucza znajduje się już w bajtach
-            zwróconych przez PublicKey.ToBytes(). */
-            pb.Append(publicKeyBytes);
-            pb.AppendSignature(SelectedAccount.PrivateKey, tokenToSign);
-            pb.Append(_client.TokenCache);
-            pb.Encrypt(SelectedServer.PublicKey);
-            pb.Prepend(255, 1);
-            /* Wywołujemy blokującą metodę Client.Send czekamy na
-            monitor locku obiektu Client.PacketToSend. */
-            _client.Send(pb.Build());
         }
 
-        private void ReceiveAuthentication(PacketReader reader)
+        private void OnReceivedConversationsAndUsersList(RemoteServer server,
+            Conversation[] conversations)
         {
-            // Wątek Client.ProcessProtocol
-            reader.Decrypt(SelectedAccount.PrivateKey);
-            if (!reader.VerifySignature(selectedServer.PublicKey))
-                throw new Error("|Could not| |verify server's signature|.");
-
-            byte[] receivedToken = reader.ReadBytes(8);
-            if (!receivedToken.SequenceEqual(_client.TokenCache))
-                throw UnrecognizedTokenError();
-
-            _client.TokenCache = reader.ReadBytes(8);
+            ConversationVM.Conversation = null;
+            Conversations.Clear();
+            
+            foreach (var c in conversations)
+                Conversations.Add(c);
         }
 
-        private void ReceiveNoAuthentication(PacketReader reader)
+        private void OnClientStopped()
         {
-            // Wątek Client.ProcessProtocol
-            if (!reader.VerifySignature(SelectedServer.PublicKey, _client.TokenCache))
-                throw UnrecognizedTokenError();
 
-            // Serwer rozłączy klienta.
         }
-
-        private void EndedConnection(Result result)
-        {
-            // Wątek Client.Process
-            /* Jeżeli my (klient) się rozłączamy, czyli
-            _disconnectRequested == true, to w Client.Process
-            po Task.WaitAll nie wykona się SpecifyConnectionEnding
-            i result jest typu Cancellation. */
-            string message;
-            if (result is Success)
-                message = "|Disconnected by server|.";
-            else if (result is Failure fail)
-            {
-                var reason = fail.Reason;
-                string failMsg;
-                if (fail is InterlocutorFailure)
-                    failMsg = "|Server| |crashed|.";
-                else // result is Failure
-                    failMsg = "|Disconnected due to a client error|.";
-                message = reason.Prepend(failMsg).Message;
-            }
-            else // result is Cancellation
-                message = "|Disconnected|.";
-
-            UIInvoke(() =>
-            {
-                ClearAccount();
-                Alert(message);
-            });
-        }
+        #endregion
     }
 }

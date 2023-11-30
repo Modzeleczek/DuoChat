@@ -4,9 +4,11 @@ namespace Client.MVVM.ViewModel.Observables
 {
     public class Attachment
     {
-        public string Name { get; set; }
-        public string Type { get; set; }
-        public byte[] PlainContent { get; set; }
+        public string Name { get; set; } = null!;
+
+        public string Type { get; set; } = null!;
+
+        public byte[] PlainContent { get; set; } = null!;
 
         public static Attachment Random(Random rng)
         {

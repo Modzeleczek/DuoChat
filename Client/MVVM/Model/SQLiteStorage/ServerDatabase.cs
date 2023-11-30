@@ -11,7 +11,7 @@ namespace Client.MVVM.Model.SQLiteStorage
 
         public ServerDatabase(string path) : base(path)
         {
-            Accounts = new AccountRepository(CreateConnection);
+            Accounts = new AccountRepository(this);
         }
 
         protected override string DDLEmbeddedResource()

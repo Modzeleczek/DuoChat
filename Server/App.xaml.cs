@@ -9,7 +9,7 @@ namespace Server
     {
         protected override void OnStartup(StartupEventArgs e)
         {
-            new MainWindow(null, new MainViewModel()).Show();
+            new MainWindow(null!, new MainViewModel()).Show();
         }
 
         public App()

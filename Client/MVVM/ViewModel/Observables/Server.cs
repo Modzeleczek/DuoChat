@@ -11,14 +11,14 @@ namespace Client.MVVM.ViewModel.Observables
     public class Server : ObservableObject
     {
         #region Properties
-        private string name = null;
+        private string name = null!;
         public string Name
         {
             get => name;
             set { name = value; OnPropertyChanged(); }
         }
 
-        private IPv4Address ipAddress = null;
+        private IPv4Address ipAddress = null!;
         [JsonProperty, JsonConverter(typeof(IPv4AddressJsonConverter))]
         public IPv4Address IpAddress
         {
@@ -26,7 +26,7 @@ namespace Client.MVVM.ViewModel.Observables
             private set { ipAddress = value; OnPropertyChanged(); }
         }
 
-        private Port port = null;
+        private Port port = null!;
         [JsonProperty, JsonConverter(typeof(PortJsonConverter))]
         public Port Port
         {
@@ -37,7 +37,7 @@ namespace Client.MVVM.ViewModel.Observables
         public Guid Guid { get; set; } = Guid.Empty;
 
         [JsonProperty, JsonConverter(typeof(PublicKeyJsonConverter))]
-        public PublicKey PublicKey { get; set; } = null;
+        public PublicKey? PublicKey { get; set; } = null;
         #endregion
 
         // Do BSON-deserializacji

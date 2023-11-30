@@ -15,6 +15,8 @@ CREATE TABLE "Account" (
   /* Lub przechowujemy obrazy w katalogu w systemie plików na serwerze.
   "image" BLOB, */
 
+  "is_blocked" INTEGER NOT NULL,
+
   UNIQUE("login"),
   UNIQUE("public_key")
 );
@@ -106,3 +108,8 @@ CREATE TABLE "EcryptedAttachmentContent" (
   FOREIGN KEY("attachment_id") REFERENCES "Attachment"("id") ON DELETE CASCADE,
   FOREIGN KEY("receiver_id") REFERENCES "Account"("id") ON DELETE CASCADE
 ) WITHOUT ROWID;
+
+DROP TABLE IF EXISTS "ClientIPBlock";
+CREATE TABLE "ClientIPBlocks" (
+  "ip_address" INTEGER PRIMARY KEY
+);

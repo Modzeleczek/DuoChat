@@ -15,7 +15,7 @@ namespace Client.MVVM.ViewModel.LocalUsers.LocalUserActions
         {
             WindowLoaded = new RelayCommand(e =>
             {
-                var win = (FormWindow)e;
+                var win = (FormWindow)e!;
                 window = win;
                 win.AddTextField("|Username|", localUserKey.Name);
                 RequestClose += () => win.Close();
@@ -23,7 +23,7 @@ namespace Client.MVVM.ViewModel.LocalUsers.LocalUserActions
 
             Confirm = new RelayCommand(controls =>
             {
-                var fields = (List<Control>)controls;
+                var fields = (List<Control>)controls!;
 
                 var localUser = storage.GetLocalUser(localUserKey);
 

@@ -1,62 +1,23 @@
-using Client.MVVM.ViewModel.Observables;
-using Shared.MVVM.Core;
 using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.SQLiteStorage.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Data;
+using Shared.MVVM.Model.SQLiteStorage;
+using Client.MVVM.ViewModel.Observables;
 using System.Data.SQLite;
+using System.Data;
 
 namespace Client.MVVM.Model.SQLiteStorage.Repositories
 {
-    public class AccountRepository : Repository
+    public class AccountRepository : Repository<Account, string>
     {
-        public AccountRepository(Func<SQLiteConnection> connectionCreator) :
-            base(connectionCreator)
+        #region Fields
+        private const string TABLE = "Account";
+        private const string F_login = "login";
+        private const string F_private_key = "private_key";
+        #endregion
+
+        public AccountRepository(ISQLiteConnector sqliteConnector) :
+            base(sqliteConnector)
         { }
-
-        public void AddAccount(Account account)
-        {
-            EnsureAccountExists(account.Login, false);
-
-            try
-            {
-                var query = "INSERT INTO Account (login, private_key) VALUES (@login, @private_key);";
-                using (var con = CreateConnection())
-                using (var cmd = new SQLiteCommand(query, con))
-                {
-                    cmd.Parameters.AddWithValue("@login", account.Login);
-                    var bytes = account.PrivateKey.ToBytes();
-                    cmd.Parameters.Add("@private_key", DbType.Binary, bytes.Length).Value = bytes;
-                    con.Open();
-                    if (cmd.ExecuteNonQuery() != 1)
-                        throw NotExactly1RowError();
-                }
-            }
-            catch (Exception e) { throw QueryError(e); }
-        }
-
-        private void EnsureAccountExists(string login, bool shouldExist)
-        {
-            try
-            {
-                if (shouldExist) // Powinien istnieć, a nie istnieje
-                {
-                    if (!AccountExists(login))
-                        throw new Error(NotExistsMsg(login));
-                }
-                else // Nie powinien istnieć, a istnieje
-                {
-                    if (AccountExists(login))
-                        throw new Error(AlreadyExistsMsg(login));
-                }
-            }
-            catch (Error e)
-            {
-                e.Prepend("|Could not| |check if| |account| |already exists.|");
-                throw;
-            }
-        }
 
         #region Errors
         public static string AlreadyExistsMsg(string login) =>
@@ -66,133 +27,74 @@ namespace Client.MVVM.Model.SQLiteStorage.Repositories
             $"|Account with login| {login} |does not exist.|";
         #endregion
 
-        public List<Account> GetAllAccounts()
+        protected override string AddQuery()
         {
-            try
-            {
-                var query = "SELECT login, private_key FROM Account;";
-                using (var con = CreateConnection())
-                using (var cmd = new SQLiteCommand(query, con))
-                {
-                    con.Open();
-                    using (var reader = cmd.ExecuteReader())
-                    {
-                        var list = new List<Account>();
-                        while (reader.Read())
-                        {
-                            list.Add(ReadOneAccount(reader));
-                        }
-                        return list;
-                    }
-                }
-            }
-            catch (Exception e) { throw QueryError(e); }
+            return $"INSERT INTO {TABLE}({F_login}, {F_private_key}) VALUES(@{F_login}, @{F_private_key});";
         }
 
-        private Account ReadOneAccount(SQLiteDataReader reader)
+        protected override void SetAddParameters(SQLiteParameterCollection parColl, Account dto)
+        {
+            parColl.AddWithValue($"@{F_login}", dto.Login);
+            var bytes = dto.PrivateKey.ToBytes();
+            parColl.Add($"@{F_private_key}", DbType.Binary, bytes.Length).Value = bytes;
+        }
+
+        protected override string EntityName()
+        {
+            return "|account|";
+        }
+
+        protected override string KeyName()
+        {
+            return "|login;M|";
+        }
+
+        protected override string GetAllQuery()
+        {
+            return $"SELECT {F_login}, {F_private_key} FROM {TABLE};";
+        }
+
+        protected override Account ReadOneEntity(SQLiteDataReader reader)
         {
             return new Account
             {
-                Login = (string)reader["login"], // reader.GetString(0)
-                PrivateKey = PrivateKey.FromBytes((byte[])reader["private_key"])
+                // (ulong)(long)
+                Login = (string)reader[F_login], // reader.GetString(0)
+                PrivateKey = PrivateKey.FromBytes((byte[])reader[F_private_key])
             };
         }
 
-        public bool AccountExists(string login)
+        protected override string ExistsQuery()
         {
-            try
-            {
-                var query = "SELECT COUNT(login) FROM Account WHERE login = @login;";
-                using (var con = CreateConnection())
-                using (var cmd = new SQLiteCommand(query, con))
-                {
-                    cmd.Parameters.AddWithValue("@login", login);
-                    con.Open();
-                    var count = (long)cmd.ExecuteScalar(); // nie da się zrzutować na int
-                    if (count > 1)
-                        throw new Error($"|More than one account with login| '{login}' |exists|.");
-                    // powinno być możliwe tylko 0 lub 1, bo "login" to klucz główny tabeli Account
-                    if (count == 1)
-                        return true;
-                    return false;
-                }
-            }
-            catch (Exception e) { throw QueryError(e); }
+            return $"SELECT COUNT({F_login}) FROM {TABLE} WHERE {F_login} = @{F_login};";
         }
 
-        public Account GetAccount(string login)
+        protected override void SetKeyParameter(SQLiteParameterCollection parColl, string key)
         {
-            EnsureAccountExists(login, true);
-
-            try
-            {
-                var query = "SELECT login, private_key FROM Account WHERE login = @login;";
-                using (var con = CreateConnection())
-                using (var cmd = new SQLiteCommand(query, con))
-                {
-                    cmd.Parameters.AddWithValue("@login", login);
-                    con.Open();
-                    using (var reader = cmd.ExecuteReader())
-                    {
-                        if (!reader.Read())
-                            throw new Error(NotExistsMsg(login));
-                        return ReadOneAccount(reader);
-                    }
-                }
-            }
-            catch (Exception e) { throw QueryError(e); }
+            parColl.AddWithValue($"@{F_login}", key);
         }
 
-        public void UpdateAccount(string login, Account account)
+        protected override string GetQuery()
         {
-            // Czy stare konto istnieje?
-            EnsureAccountExists(login, true);
-
-            if (account.Login != login) // jeżeli zmieniamy login
-            {
-                // Czy nowe konto jeszcze nie istnieje?
-                EnsureAccountExists(account.Login, false);
-            }
-
-            try
-            {
-                var query = "UPDATE Account SET login = @new_login, private_key = @private_key WHERE login = @login;";
-                using (var con = CreateConnection())
-                using (var cmd = new SQLiteCommand(query, con))
-                {
-                    cmd.Parameters.AddWithValue("@new_login", account.Login);
-                    var bytes = account.PrivateKey.ToBytes();
-                    cmd.Parameters.Add("@private_key", DbType.Binary, bytes.Length).Value = bytes;
-                    cmd.Parameters.AddWithValue("@login", login);
-                    con.Open();
-                    /* po sprawdzeniu na górze, że jest dokładnie 1 wiersz z loginem
-                    "login" (nie account.Login), nie powinno się wykonać */
-                    if (cmd.ExecuteNonQuery() != 1)
-                        throw NotExactly1RowError();
-                }
-            }
-            catch (Exception e) { throw QueryError(e); }
+            return $"SELECT {F_login}, {F_private_key} FROM {TABLE} WHERE {F_login} = @{F_login};";
         }
 
-        public void DeleteAccount(string login)
+        protected override string UpdateQuery()
         {
-            EnsureAccountExists(login, true);
+            return $"UPDATE {TABLE} SET {F_login} = @new_{F_login}, {F_private_key} = @{F_private_key} " +
+                $"WHERE {F_login} = @{F_login};";
+        }
 
-            try
-            {
-                var query = "DELETE FROM Account WHERE login = @login;";
-                using (var con = CreateConnection())
-                using (var cmd = new SQLiteCommand(query, con))
-                {
-                    cmd.Parameters.AddWithValue("@login", login);
-                    con.Open();
-                    /* AccountExists wyrzuciłoby wyjątek, jeżeli istniałoby
-                    kilka kont o tym samym loginie, który jest kluczem głównym */
-                    if (cmd.ExecuteNonQuery() != 1)
-                        throw NotExactly1RowError();
-                }
-            }
-            catch (Exception e) { throw QueryError(e); }
+        protected override void SetUpdateParameters(SQLiteParameterCollection parColl, Account dto)
+        {
+            parColl.AddWithValue($"@new_{F_login}", dto.Login);
+            var bytes = dto.PrivateKey.ToBytes();
+            parColl.Add($"@{F_private_key}", DbType.Binary, bytes.Length).Value = bytes;
+        }
+
+        protected override string DeleteQuery()
+        {
+            return $"DELETE FROM {TABLE} WHERE {F_login} = @{F_login};";
         }
     }
 }

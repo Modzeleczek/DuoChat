@@ -27,7 +27,7 @@ namespace Client.MVVM.ViewModel
 
             SwitchLanguage = new RelayCommand(par =>
             {
-                int languageId = int.Parse((string)par);
+                int languageId = int.Parse((string)par!);
                 d.SwitchLanguage((Translator.Language)languageId);
                 storage.SetActiveLanguage((int)d.ActiveLanguage);
             });

@@ -71,7 +71,7 @@ namespace Client.MVVM.Model.BsonStorages
                 {
                     var ser = new JsonSerializer();
                     var structure = ser.Deserialize<BsonStructure>(bdr);
-                    return structure;
+                    return structure!;
                 }
             }
             catch (Exception e)

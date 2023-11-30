@@ -17,7 +17,7 @@ namespace Client.MVVM.ViewModel.LocalUsers.LocalUserActions
         {
             WindowLoaded = new RelayCommand(e =>
             {
-                var win = (FormWindow)e;
+                var win = (FormWindow)e!;
                 window = win;
                 win.AddPasswordField("|New password|");
                 win.AddPasswordField("|Confirm password|");
@@ -26,7 +26,7 @@ namespace Client.MVVM.ViewModel.LocalUsers.LocalUserActions
 
             Confirm = new RelayCommand(controls =>
             {
-                var fields = (List<Control>)controls;
+                var fields = (List<Control>)controls!;
 
                 /* Wyrzuci wyjątek, który zamknie aplikację, jeżeli
                 użytkownik nie istnieje, bo np. został ręcznie (niezależnie
@@ -51,7 +51,7 @@ namespace Client.MVVM.ViewModel.LocalUsers.LocalUserActions
                 }
 
                 // Odszyfrowujemy katalog użytkownika starym hasłem.
-                var decryptRes = ProgressBarViewModel.ShowDialog(window,
+                var decryptRes = ProgressBarViewModel.ShowDialog(window!,
                     "|Decrypting user's database.|", true,
                     (reporter) => storage.DecryptLocalUser(ref reporter, localUserKey, oldPassword));
                 if (decryptRes is Cancellation)
@@ -105,7 +105,7 @@ namespace Client.MVVM.ViewModel.LocalUsers.LocalUserActions
             var defaultCloseHandler = Close;
             Close = new RelayCommand(e =>
             {
-                var fields = (List<Control>)e;
+                var fields = (List<Control>)e!;
                 ((PasswordBox)fields[0]).SecurePassword.Dispose();
                 ((PasswordBox)fields[1]).SecurePassword.Dispose();
                 defaultCloseHandler?.Execute(e);
@@ -127,7 +127,7 @@ namespace Client.MVVM.ViewModel.LocalUsers.LocalUserActions
             LocalUserPrimaryKey localUserKey, SecureString password)
         {
             // zaszyfrowujemy katalog użytkownika nowym hasłem
-            var encryptRes = ProgressBarViewModel.ShowDialog(window,
+            var encryptRes = ProgressBarViewModel.ShowDialog(window!,
                 "|Encrypting user's database.|", false,
                 (reporter) => storage.EncryptLocalUser(ref reporter, localUserKey, password));
 

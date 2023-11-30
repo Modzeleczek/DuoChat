@@ -18,7 +18,7 @@ namespace Client.MVVM.View.Converters
             return port.ToString();
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object? ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             try { return Port.Parse((string)value); }
             catch (Error) { return null; }

@@ -2,10 +2,10 @@
 using System;
 using System.Security.Cryptography;
 using Shared.MVVM.Core;
-using System.Data.SQLite;
 using System.Net;
 using Shared.MVVM.Model.Networking;
 using System.Collections.Generic;
+using System.Data.SQLite;
 
 namespace Shared.MVVM.Model.Cryptography
 {
@@ -29,7 +29,7 @@ namespace Shared.MVVM.Model.Cryptography
             _modulus = modulus;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (!(obj is PublicKey other))
                 return false;

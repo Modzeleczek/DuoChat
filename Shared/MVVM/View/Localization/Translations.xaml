@@ -1,4 +1,4 @@
-<ResourceDictionary
+﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:l="clr-namespace:Shared.MVVM.View.Localization">
@@ -144,12 +144,10 @@
     PL="odczytać listy serwerów użytkownika"/>
   <l:Entry x:Key="read user's account list"
     PL="odczytać listy kont użytkownika"/>
-  <l:Entry x:Key="server" PL="serwer"/>
   <l:Entry x:Key="updating" PL="aktualizowania"/>
   <l:Entry x:Key="update" PL="zaktualizować"/>
   <l:Entry x:Key="user in database." PL="użytkownika w bazie danych."/>
   <l:Entry x:Key="user" PL="użytkownik"/>
-  <l:Entry x:Key="adding" PL="dodawania"/>
   <l:Entry x:Key="add" PL="dodać"/>
   <l:Entry x:Key="user to database." PL="użytkownika do bazy danych."/>
   <l:Entry x:Key="reading user list." PL="odczytywania listy użytkowników."/>
@@ -191,7 +189,6 @@
     PL="łączenia z plikiem bazy danych serwera."/>
   <l:Entry x:Key="Number of rows affected by the query is other than 1."
     PL="Liczba wierszy, na które wpływ miało zapytanie, jest inna niż 1."/>
-  <l:Entry x:Key="Could not" PL="Nie można"/>
   <l:Entry x:Key="save" PL="zapisać"/>
   <l:Entry x:Key="load" PL="wczytać"/>
   <l:Entry x:Key="local users' BSON file" PL="pliku BSON lokalnych użytkowników"/>
@@ -215,11 +212,6 @@
   <l:Entry x:Key="Invalid public key format."
     PL="Nieprawidłowy format klucza publicznego."/>
 
-  <l:Entry x:Key="Disconnected by server" PL="Rozłączono przez serwer"/>
-  <l:Entry x:Key="Disconnected" PL="Rozłączono"/>
-  <l:Entry x:Key="Disconnected due to a client error"
-    PL="Rozłączono z powodu błędu klienta"/>
-
   <l:Entry x:Key="Text representation" PL="Reprezentacja tekstowa"/>
   <l:Entry x:Key="does not consist of two parts separated with"
     PL="nie składa się z dwóch części rozdzielonych"/>
@@ -230,25 +222,25 @@
   <l:Entry x:Key="was removed from the conversation" PL="został usunięty z konwersacji"/>
 
   <l:Entry x:Key="Server is full" PL="Serwer jest pełny"/>
-  <l:Entry x:Key="from server" PL="od serwera"/>
   <l:Entry x:Key="Server changed its" PL="Serwer zmienił swój"/>
   <l:Entry x:Key="and" PL="i"/>
   <l:Entry x:Key="public key" PL="klucz publiczny"/>
   <l:Entry x:Key="Do you still want to connect to the server"
     PL="Czy wciąż chcesz połączyć się z serwerem"/>
   <l:Entry x:Key="Connect" PL="Połącz"/>
-  <l:Entry x:Key="Receiving a packet from the server timed out"
-    PL="Przekroczono czas oczekiwania na odebranie pakietu od serwera"/>
+  <l:Entry x:Key="Form" PL="Formularz"/>
 
-  <!-- błędy pakietów -->
-  <l:Entry x:Key="UTF-8 encoded login can be at most 255 bytes long"
-    PL="Login zakodowany w UTF-8 może mieć co najwyżej 255 bajtów"/>
-  <l:Entry x:Key="Public key can be at most 256 bytes long"
-    PL="Klucz publiczny może mieć co najwyżej 256 bajtów"/>
-  <l:Entry x:Key="verify server's signature"
-    PL="zweryfikować sygnatury serwera"/>
-  <l:Entry x:Key="Server sent an unrecognized token"
-    PL="Serwer przesłał nierozpoznany token"/>
+  <l:Entry x:Key="has no free slots" PL="nie ma wolnych miejsc"/>
+  <l:Entry x:Key="has blocked" PL="zablokował"/>
+  <l:Entry x:Key="client's current IP address" PL="aktualny adres IP klienta"/>
+  <l:Entry x:Key="refused to authenticate client"
+    PL="odmówił uwierzytelnienia klienta"/>
+  <l:Entry x:Key="client's account" PL="konto klienta"/>
+  <l:Entry x:Key="now blocks" PL="od teraz blokuje"/>
+  <l:Entry x:Key="Server sent participant's id but did not send their details"
+    PL="Serwer przesłał id uczestnika, ale nie przesłał jego szczegółów"/>
+  <l:Entry x:Key="Server does not know your account"
+    PL="Serwer nie zna twojego konta"/>
 
   <!-- tylko do serwera -->
   <!-- klucze używane w plikach .xaml - muszą być prawidłowymi nazwami zmiennych -->
@@ -263,17 +255,17 @@
   <l:Entry x:Key="Log" PL="Log"/>
   <l:Entry x:Key="Disconnect" PL="Rozłącz"/>
   <l:Entry x:Key="Block_IP" EN="Block IP" PL="Zablokuj IP"/>
+  <l:Entry x:Key="Block" PL="Zablokuj"/>
+  <l:Entry x:Key="Unblock" PL="Odblokuj"/>
 
   <!-- klucze używane w plikach .cs - nie muszą być prawidłowymi nazwami zmiennych -->
   <l:Entry x:Key="Invalid capacity format."
     PL="Nieprawidłowy format pojemności."/>
-  <l:Entry x:Key="Server was started." PL="Serwer został uruchomiony."/>
-  <l:Entry x:Key="Server was not started."
-    PL="Serwer nie został uruchomiony."/>
-  <l:Entry x:Key="Server was safely stopped."
-    PL="Serwer został bezpiecznie zatrzymany."/>
-  <l:Entry x:Key="Server was suddenly stopped."
-    PL="Serwer został nagle zatrzymany."/>
+  <l:Entry x:Key="Server was started" PL="Serwer został uruchomiony"/>
+  <l:Entry x:Key="Server was not started"
+    PL="Serwer nie został uruchomiony"/>
+  <l:Entry x:Key="Server was stopped"
+    PL="Serwer został zatrzymany"/>
   <l:Entry x:Key="Capacity must be positive."
     PL="Pojemność musi być dodatnia."/>
   <l:Entry x:Key="Generate or enter a GUID."
@@ -286,33 +278,58 @@
   <l:Entry x:Key="Generate GUID" PL="Wygeneruj GUID"/>
   <l:Entry x:Key="Settings file does not exist. Default settings will be loaded."
     PL="Plik ustawień nie istnieje. Zostaną załadowane domyślne ustawienia."/>
+  <l:Entry x:Key="load settings file" PL="załadować pliku ustawień"/>
   <l:Entry x:Key="Do you want to generate a new private key? Server's public key is derived from private key and users may not trust a server changing it without prior notice."
     PL="Czy chcesz wygenerować nowy klucz prywatny. Klucz publiczny serwera pochodzi od klucza prywatnego i użytkownicy mogą nie ufać serwerowi zmieniającemu go bez uprzedniej zapowiedzi."/>
   <l:Entry x:Key="Private key validation" PL="Walidacja klucza prywatnego"/>
   <l:Entry x:Key="Database file" PL="Plik bazy danych"/>
   <l:Entry x:Key="Server is not running." PL="Serwer nie jest uruchomiony."/>
   <l:Entry x:Key="starting the server" PL="uruchamiania serwera"/>
-  <l:Entry x:Key="from client" PL="od klienta"/>
 
-  <l:Entry x:Key="disconnected" PL="rozłączył się"/>
-  <l:Entry x:Key="was disconnected" PL="został rozłączony"/>
-  <l:Entry x:Key="was authenticated" PL="został uwierzytelniony"/>
   <l:Entry x:Key="connected" PL="połączył się"/>
+  <l:Entry x:Key="was authenticated" PL="został uwierzytelniony"/>
   <l:Entry x:Key="Server stopped" PL="Serwer zatrzymany"/>
-  <l:Entry x:Key="Client" PL="Klient"/>
-  <l:Entry x:Key="not authenticated" PL="nie uwierzytelniony"/>
-  <l:Entry x:Key="because" PL=", bo"/>
-  <l:Entry x:Key="it does not own the public key sent by it"
-    PL="nie należy do niego przesłany przez niego klucz publiczny"/>
-  <l:Entry x:Key="it sent a public key different from the one saved in the database"
+  <l:Entry x:Key="sent token different than the one that it received from the server"
+    PL="przesłał token różny od tego, który otrzymał od serwera"/>
+  <l:Entry x:Key="does not own the public key sent by it"
+    PL="nie jest właścicielem przesłanego przez niego klucza publicznego"/>
+  <l:Entry x:Key="sent a public key different from the one saved in the database"
     PL="przesłał klucz publiczny różny od zapisanego w bazie danych"/>
+  <l:Entry x:Key="tried to authenticate using blocked account"
+    PL="próbował się uwierzytelnić za pomocą zablokowanego konta"/>
+  <l:Entry x:Key="IP address is now blocked"
+    PL="adres IP jest od teraz zablokowany"/>
 
   <l:Entry x:Key="reading" PL="odczytywania"/>
   <l:Entry x:Key="public key length" PL="długości klucza publicznego"/>
   <l:Entry x:Key="public key value" PL="wartości klucza publicznego"/>
+  <l:Entry x:Key="from SQLiteDataReader" PL="z SQLiteDataReader"/>
 
-  <l:Entry x:Key="Observable client has already been authenticated"
-    PL="Obserwowalny klient został już uwierzytelniony"/>
+  <l:Entry x:Key="sending error" PL="błąd wysyłania"/>
+  <l:Entry x:Key="timed out sending packet"
+    PL="przekroczył czas oczekiwania na wysłanie pakietu"/>
+  <l:Entry x:Key="timed out receiving packet"
+    PL="przekroczył czas oczekiwania na odebranie pakietu"/>
+  <l:Entry x:Key="Handling UI request timed out"
+    PL="Przekroczono czas oczekiwania na obsłużenie żądania interfejsu użytkownika"/>
+  <l:Entry x:Key="Client" PL="Klient"/>
+
+  <l:Entry x:Key="sent a packet although" PL="przesłał pakiet, mimo że"/>
+  <l:Entry x:Key="server" PL="serwer"/>
+  <l:Entry x:Key="client" PL="klient"/>
+  <l:Entry x:Key="did not expect any" PL="żadnego nie oczekiwał"/>
+  <l:Entry x:Key="sent" PL="przesłał"/>
+  <l:Entry x:Key="'keep alive' packets in a row"
+    PL="pakietów 'keep alive' z rzędu"/>
+
+  <l:Entry x:Key="with" PL="o"/>
+  <l:Entry x:Key="login;M" PL="loginie"/>
+  <l:Entry x:Key="More than 1" PL="Więcej niż 1"/>
+  <l:Entry x:Key="client IP block" PL="blokada IP klienta"/>
+  <l:Entry x:Key="IP address;M" PL="adresie IP"/>
+  <l:Entry x:Key="conversation" PL="konwersacja"/>
+  <l:Entry x:Key="id;M" PL="id"/>
+  <l:Entry x:Key="Server is stopping" PL="Serwer się zatrzymuje"/>
 
   <!-- do klienta i serwera -->
   <!-- klucze używane w plikach .xaml - muszą być prawidłowymi nazwami zmiennych -->
@@ -358,40 +375,28 @@
   <l:Entry x:Key="RSA sign" PL="podpisać RSA"/>
   <l:Entry x:Key="AES key and IV" PL="klucza i wektora inicjująego AESa"/>
 
-  <l:Entry x:Key="Cannot send whole packet." PL="Nie można wysłać całego pakietu."/>
+  <l:Entry x:Key="Cannot send whole packet" PL="Nie można wysłać całego pakietu"/>
   <l:Entry x:Key="sending" PL="wysyłania"/>
   <l:Entry x:Key="receiving" PL="odbierania"/>
   <l:Entry x:Key="packet" PL="pakietu"/>
-  <l:Entry x:Key="Operating system error." PL="Błąd systemu operacyjnego."/>
-  <l:Entry x:Key="Socket already disposed."
-    PL="Gniazdo już zostało zamknięte."/>
+  <l:Entry x:Key="Socket already closed"
+    PL="Gniazdo już zostało zamknięte"/>
   <l:Entry x:Key="Connection closed." PL="Połączenie zakończone."/>
-  <l:Entry x:Key="TCP socket's receive buffer"
-    PL="Bufor odbiorczy gniazda TCP"/>
-  <l:Entry x:Key="has insufficient capacity."
-    PL="ma niewystarczającą pojemność."/>
-  <l:Entry x:Key="Received packet too large for PacketBuffer."
-    PL="Odebrano pakiet za duży dla PacketBuffera."/>
-  <l:Entry x:Key="Received fabricated packet."
-    PL="Odebrano sfabrykowany pakiet."/>
-  <l:Entry x:Key="Received packet's body is larger than its prefix value."
-    PL="Ciało odebranego pakietu jest większe niż wartość jego prefiksu."/>
-  <l:Entry x:Key="received packet to queue."
-    PL="odebranego pakietu do kolejki."/>
-  <l:Entry x:Key="TCP socket's send buffer" PL="Bufor nadawczy gniazda TCP"/>
-  <l:Entry x:Key="Tried to send a packet larger than send buffer size."
-    PL="Próbowano wysłać pakiet większy niż rozmiar bufora nadawczego."/>
+  <l:Entry x:Key="Received packet too large for PacketBuffer"
+    PL="Odebrano pakiet za duży dla PacketBuffera"/>
+  <l:Entry x:Key="Received packet with prefix value greater than max packet size"
+    PL="Odebrano pakiet z prefiksem o wartości większej niż maksymalny rozmiar pakietu"/>
+  <l:Entry x:Key="Received packet's body is larger than its prefix value"
+    PL="Ciało odebranego pakietu jest większe niż wartość jego prefiksu"/>
   <l:Entry x:Key="executing Client.Process" PL="wykonywania Client.Process"/>
   <l:Entry x:Key="Connection broken." PL="Połączenie zerwane."/>
   <l:Entry x:Key="Unexpected connection ending."
     PL="Niespodziewane zakończenie połączenia."/>
-  <l:Entry x:Key="Interlocutor crashed." PL="Rozmówca zcrashował."/>
 
   <l:Entry x:Key="check if" PL="sprawdzić, czy"/>
   <l:Entry x:Key="account" PL="konto"/>
   <l:Entry x:Key="executing query." PL="wykonywania zapytania."/>
-  <l:Entry x:Key="More than one account with login"
-    PL="Więcej niż jedno konto o loginie"/>
+  <l:Entry x:Key="returned no rows" PL="nie zwróciło żadnych wierszy"/>
   <l:Entry x:Key="Account with login" PL="Konto o loginie"/>
   <l:Entry x:Key="already exists." PL="już istnieje."/>
   <l:Entry x:Key="exists" PL="istnieje"/>
@@ -405,14 +410,13 @@
   <l:Entry x:Key="executing SQLite integrity check."
     PL="wykonywania sprawdzenia integralności SQLite."/>
 
-  <l:Entry x:Key="Received an unexpected packet"
-    PL="Odebrano nieoczekiwany pakiet"/>
-  <l:Entry x:Key="Server" PL="Serwer"/>
-  <l:Entry x:Key="crashed" PL="niespodziewanie się zamknął"/>
-  <l:Entry x:Key="Sending a packet timed out"
-    PL="Przekroczono czas oczekiwania na wysłanie pakietu"/>
+  <l:Entry x:Key="an unexpected packet" PL="nieoczekiwany pakiet"/>
+  <l:Entry x:Key="an unrecognized token" PL="nierozpoznany token"/>
+  <l:Entry x:Key="Could not" PL="Nie można"/>
 
-  <!-- błędy pakietów -->
-  <l:Entry x:Key="Received an incomplete packet"
-    PL="Odebrano niekompletny pakiet"/>
+  <l:Entry x:Key="disconnected (closed its socket)"
+    PL="rozłączył się (zamknął swoje gniazdo)"/>
+  <l:Entry x:Key="reception error" PL="błąd odbierania"/>
+  <l:Entry x:Key="was disconnected" PL="został rozłączony"/>
+
 </ResourceDictionary>

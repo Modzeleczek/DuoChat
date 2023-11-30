@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace Shared.MVVM.Model.SQLiteStorage
 {
-    public abstract class SQLiteDatabase
+    public abstract class SQLiteDatabase : ISQLiteConnector
     {
         protected readonly string _path;
 
@@ -18,17 +18,21 @@ namespace Shared.MVVM.Model.SQLiteStorage
             CreateOrValidateFile();
         }
 
-        protected SQLiteConnection CreateConnection()
+        public SQLiteConnection CreateConnection()
         {
-            var connectionString = $"Data Source={_path}; Version=3; New=True; Compress=True; " +
-                $"foreign keys=true; Journal Mode=Off";
-            return new SQLiteConnection(connectionString, true);
+            // https://stackoverflow.com/a/22297821
+            var csb = new SQLiteConnectionStringBuilder();
+            csb.DataSource = _path;
+            csb.Version = 3;
+            csb.ForeignKeys = true;
+            csb.JournalMode = SQLiteJournalModeEnum.Off;
+            return new SQLiteConnection(csb.ToString());
         }
 
         protected void RecreateSchema()
         {
-            string ddl = ReadEmbeddedResource(DDLEmbeddedResource());
-            if (ddl == null)
+            string? ddl = ReadEmbeddedResource(DDLEmbeddedResource());
+            if (ddl is null)
                 throw new KeyNotFoundException(
                     "Embedded resource with database DDL code does not exist.");
             
@@ -51,13 +55,15 @@ namespace Shared.MVVM.Model.SQLiteStorage
 
         protected abstract string DDLEmbeddedResource();
 
-        private string ReadEmbeddedResource(string path)
+        private string? ReadEmbeddedResource(string path)
         {
             var assembly = Assembly.GetExecutingAssembly();
             // Format: "{Namespace}.{Folder}.{filename}.{Extension}"
-            using (Stream stream = assembly.GetManifestResourceStream(path))
+            using (Stream? stream = assembly.GetManifestResourceStream(path))
             {
-                if (stream == null) return null;
+                if (stream == null)
+                    return null;
+
                 using (StreamReader reader = new StreamReader(stream))
                     return reader.ReadToEnd();
             }
@@ -71,7 +77,10 @@ namespace Shared.MVVM.Model.SQLiteStorage
                 return;
             }
 
-            // Plik bazy danych jeszcze nie istnieje i musi zostać utworzony.
+            /* Plik bazy danych jeszcze nie istnieje i musi zostać utworzony. Trzeba go
+            tworzyć za pomocą SQLiteConnection.CreateFile, bo po utworzeniu File.Create
+            próba otwarcia na nim SQLiteConnection.Open wyrzuca wyjątek
+            System.Data.SQLite.SQLiteException: 'unable to open database file'. */
             try { SQLiteConnection.CreateFile(_path); }
             catch (Exception e)
             {
@@ -93,7 +102,7 @@ namespace Shared.MVVM.Model.SQLiteStorage
                     danymi, można w obiekcie createSchemaError, czyli
                     "pierwotnego" błędu, trzymać referencje do kolejnych
                     "łańcuchowych" błędów. */
-                    var deleteError = new Error(deleteException,
+            var deleteError = new Error(deleteException,
                         "|Error occured while| |deleting| " +
                         $"|server's SQLite file| '{_path}'.");
                     createSchemaError.Append(deleteError.Message);

@@ -1,5 +1,4 @@
 ﻿using Client.MVVM.Model;
-using Client.MVVM.Model.BsonStorages;
 using Client.MVVM.Model.SQLiteStorage.Repositories;
 using Client.MVVM.View.Windows;
 using Client.MVVM.ViewModel.Observables;
@@ -17,11 +16,11 @@ namespace Client.MVVM.ViewModel.AccountActions
             LocalUserPrimaryKey loggedUserKey, ServerPrimaryKey serverKey)
             : base(storage)
         {
-            var currentWindowLoadedHandler = WindowLoaded;
+            var currentWindowLoadedHandler = WindowLoaded!;
             WindowLoaded = new RelayCommand(e =>
             {
                 currentWindowLoadedHandler.Execute(e);
-                var win = (FormWindow)window;
+                var win = (FormWindow)window!;
                 win.AddTextField("|Login|");
                 win.AddHoverableTextField("|Private key|",
                     new string[] { nameof(GeneratePrivateKey)},
@@ -30,7 +29,7 @@ namespace Client.MVVM.ViewModel.AccountActions
 
             Confirm = new RelayCommand(controls =>
             {
-                var fields = (List<Control>)controls;
+                var fields = (List<Control>)controls!;
 
                 // Wyrzuci Error, jeżeli serwer nie istnieje.
                 _storage.GetServer(loggedUserKey, serverKey);
@@ -45,13 +44,13 @@ namespace Client.MVVM.ViewModel.AccountActions
                     return;
                 }
                 
-                if (!ParsePrivateKey(((TextBox)fields[1]).Text, out PrivateKey privateKey))
+                if (!ParsePrivateKey(((TextBox)fields[1]).Text, out PrivateKey? privateKey))
                     return;
 
                 var newAccount = new Account
                 {
                     Login = login,
-                    PrivateKey = privateKey
+                    PrivateKey = privateKey!
                 };
                 try { _storage.AddAccount(loggedUserKey, serverKey, newAccount); }
                 catch (Error e)
