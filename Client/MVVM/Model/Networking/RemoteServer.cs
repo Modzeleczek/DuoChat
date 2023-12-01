@@ -1,7 +1,9 @@
-﻿using Client.MVVM.Model.Networking.PacketOrders;
+using Client.MVVM.Model.Networking.PacketOrders;
 using Shared.MVVM.Model;
 using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking;
+using Shared.MVVM.Model.Networking.Packets;
+using Shared.MVVM.Model.Networking.Reception;
 using System;
 using System.Collections.Concurrent;
 using System.Net;
@@ -205,7 +207,7 @@ namespace Client.MVVM.Model.Networking
                 while (true)
                 {
                     byte[]? packet = _receiveBuffer.ReceiveUntilCompletedOrInterrupted(
-                        _tcpClient.Client, _cts.Token);
+                        new SocketWrapper(_tcpClient.Client), _cts.Token);
                     ServerEvent @event;
                     if (packet is null)
                         @event = new ServerEvent(ServerEvent.Types.ServerClosedSocket, this);

@@ -1,7 +1,8 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking;
 using System.Net;
+using System.Net.Sockets;
 
 namespace UnitTests
 {
@@ -228,6 +229,78 @@ namespace UnitTests
             Console.WriteLine($"prefix: {actPrefix}");
             Console.WriteLine($"signature length: {actSignatureLength}");
             Console.WriteLine($"signature value: {actSignatureValue.ToHexString()}");
+        }
+
+        class ReceiveSocketMock : IReceiveSocket
+        {
+            #region Fields
+            private readonly Random _rng = new Random();
+            private byte[]? _packet = new byte[0];
+            private int _index = 0;
+            private Func<byte[]> _packetGenerator;
+            #endregion
+
+            public ReceiveSocketMock(Func<byte[]> packetGenerator)
+            {
+                _packetGenerator = packetGenerator;
+            }
+
+            public ValueTask<int> ReceiveAsync(Memory<byte> buffer, SocketFlags socketFlags, CancellationToken cancellationToken)
+            {
+                // int returnedByteCount = _rng.Next(1, 5);
+                int returnedByteCount = 4;
+                if (returnedByteCount > buffer.Length)
+                    returnedByteCount = buffer.Length;
+
+                using (var handle = buffer.Pin())
+                {
+                    unsafe
+                    {
+                        byte* p = (byte*)handle.Pointer;
+                        for (int i = 0; i < returnedByteCount; ++i)
+                        {
+                            if (_index >= _packet!.Length)
+                            {
+                                _packet = _packetGenerator();
+                                _index = 0;
+                            }
+                            *(p + i) = _packet![_index];
+                            ++_index;
+                        }
+                    }
+                }
+
+                return new ValueTask<int>(returnedByteCount);
+            }
+        }
+
+        [TestMethod]
+        public void PacketReceiveBuffer_ReceiveUntilCompletedOrInterrupted_WhenReceivedOrdinaryPacket_ShouldReturnIt()
+        {
+            // Arrange
+            var packetReceiveBuffer = new PacketReceiveBuffer();
+            var socketMock = new ReceiveSocketMock(() =>
+            {
+                var pb = new PacketBuilder();
+                for (int i = 0; i < 5; i++)
+                    pb.Append((ulong)i, 1);
+                return pb.Build();
+            });
+            byte[] expectedPacket0 = new byte[] { 0, 1, 2, 3, 4 };
+            byte[] expectedPacket1 = new byte[] { 0, 1, 2, 3, 4 };
+
+            // Act
+            byte[]? actualPacket0 = packetReceiveBuffer.ReceiveUntilCompletedOrInterrupted(
+                socketMock, CancellationToken.None);
+            byte[]? actualPacket1 = packetReceiveBuffer.ReceiveUntilCompletedOrInterrupted(
+                socketMock, CancellationToken.None);
+
+            // Assert
+            Console.WriteLine(actualPacket0.ToHexString());
+            Console.WriteLine(actualPacket1.ToHexString());
+
+            expectedPacket0.BytesEqual(actualPacket0);
+            expectedPacket1.BytesEqual(actualPacket1);
         }
     }
 }

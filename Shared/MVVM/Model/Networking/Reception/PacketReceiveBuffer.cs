@@ -52,7 +52,7 @@ namespace Shared.MVVM.Model.Networking
             _state = State.Prefix;
         }
 
-        public byte[]? ReceiveUntilCompletedOrInterrupted(Socket socket,
+        public byte[]? ReceiveUntilCompletedOrInterrupted(IReceiveSocket socket,
             CancellationToken cancellationToken)
         {
             /* Pętla pozwala odbierać pakiety większe niż socket.ReceiveBufferSize,
@@ -89,6 +89,22 @@ namespace Shared.MVVM.Model.Networking
             następnym (-ych) wywołaniach. */
         }
 
+        private void SocketReceive(IReceiveSocket socket, CancellationToken cancellationToken)
+        {
+            uint remainingBufferCapacity = MAX_PACKET_SIZE - _receivedBytes;
+
+            ValueTask<int> valueTask = socket.ReceiveAsync(
+                new Memory<byte>(_buffer, (int)_receivedBytes, (int)remainingBufferCapacity),
+                SocketFlags.None, cancellationToken);
+            Task<int> task = valueTask.AsTask();
+            task.Wait();
+
+            /* Dzięki ostatniemu parametrowi Memory i remainingBufferCapacity,
+            _receivedBytes zawsze jest mniejsze lub równe MAX_PACKET_SIZE.
+            Przesuwamy _receivedBytes o liczbę odebranych bajtów. */
+            _receivedBytes += (uint)task.Result;
+        }
+
         private void InterpretByte()
         {
             switch (_state)
@@ -101,35 +117,43 @@ namespace Shared.MVVM.Model.Networking
         private void HandlePrefix()
         {
             if (_prefixByteCounter == PREFIX_SIZE)
-            {
-                // Właśnie skończyliśmy odczytywać prefiks pakietu.
-
-                // Zamieniamy sieciową kolejność big-endian na kolejność hosta.
-                uint prefixValue = (uint)IPAddress.NetworkToHostOrder(
-                    (int)BitConverter.ToUInt32(_prefixBuffer, 0));
-                if (PREFIX_SIZE + prefixValue > MAX_PACKET_SIZE)
-                    /* Klient nie mógł, tylko wykonując swój kod, stworzyć pakietu
-                    o tak dużym rozmiarze, co oznacza, że ktoś sfabrykował pakiet. */
-                    throw new Error("|Received packet with prefix value greater than max packet size|.");
-
-                // Odebraliśmy pakiet keep alive.
-                if (prefixValue == 0)
-                {
-                    // Pozostajemy w stanie Prefix.
-                    FlushPacket();
-                    StartNewPacket();
-                }
-
-                // Przechodzimy do stanu Content.
-                // _packetEndIndexExclusive = _packetBeginIndexInclusive + PREFIX_SIZE + prefixValue
-                _packetEndIndexExclusive = _nowInterpretedByteIndex + prefixValue;
-                _state = State.Content;
-            }
+                FinishPrefix();
             else
             {
                 _prefixBuffer[_prefixByteCounter] = _buffer[CircularIndex(_nowInterpretedByteIndex)];
                 ++_prefixByteCounter;
                 ++_nowInterpretedByteIndex;
+                if (_prefixByteCounter == PREFIX_SIZE)
+                    FinishPrefix();
+            }
+        }
+
+        private void FinishPrefix()
+        {
+            // Właśnie skończyliśmy odczytywać prefiks pakietu.
+
+            // Zamieniamy sieciową kolejność big-endian na kolejność hosta.
+            uint prefixValue = (uint)IPAddress.NetworkToHostOrder(
+                (int)BitConverter.ToUInt32(_prefixBuffer, 0));
+            if (PREFIX_SIZE + prefixValue > MAX_PACKET_SIZE)
+                /* Klient nie mógł, tylko wykonując swój kod, stworzyć pakietu
+                o tak dużym rozmiarze, co oznacza, że ktoś sfabrykował pakiet. */
+                throw new Error("|Received packet with prefix value greater than max packet size|.");
+
+            // Odebraliśmy pakiet keep alive.
+            if (prefixValue == 0)
+            {
+                // Pozostajemy w stanie Prefix.
+                FlushPacket();
+                StartNewPacket();
+            }
+            // Odebraliśmy pakiet nie keep alive.
+            else
+            {
+                // Przechodzimy do stanu Content.
+                // _packetEndIndexExclusive = _packetBeginIndexInclusive + PREFIX_SIZE + prefixValue
+                _packetEndIndexExclusive = _nowInterpretedByteIndex + prefixValue;
+                _state = State.Content;
             }
         }
 
@@ -172,33 +196,21 @@ namespace Shared.MVVM.Model.Networking
         private void HandleContent()
         {
             if (_nowInterpretedByteIndex == _packetEndIndexExclusive)
-            {
-                // Przechodzimy do stanu Prefix.
-                // Nie inkrementujemy _nowInterpretedByteIndex, bo już jesteśmy za poprzednim pakietem.
-                FlushPacket();
-                StartNewPacket();
-            }
+                FinishContent();
             else
             {
                 ++_nowInterpretedByteIndex;
+                if (_nowInterpretedByteIndex == _packetEndIndexExclusive)
+                    FinishContent();
             }
         }
 
-        private void SocketReceive(Socket socket, CancellationToken cancellationToken)
+        private void FinishContent()
         {
-            uint remainingBufferCapacity = MAX_PACKET_SIZE - _receivedBytes;
-
-            ValueTask<int> valueTask = socket.ReceiveAsync(
-                new Memory<byte>(_buffer, (int)_receivedBytes, (int)remainingBufferCapacity),
-                SocketFlags.None, cancellationToken);
-            Task<int> task = valueTask.AsTask();
-            task.Wait();
-
-            /* Dzięki ostatniemu parametrowi Memory i remainingBufferCapacity,
-            _receivedBytes zawsze jest mniejsze lub równe MAX_PACKET_SIZE.
-            Przesuwamy _receivedBytes o liczbę odebranych bajtów. */
-            _receivedBytes += (uint)task.Result;
+            // Przechodzimy do stanu Prefix.
+            // Nie inkrementujemy _nowInterpretedByteIndex, bo już jesteśmy za poprzednim pakietem.
+            FlushPacket();
+            StartNewPacket();
         }
     }
 }
-
