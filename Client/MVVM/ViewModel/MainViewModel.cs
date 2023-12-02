@@ -222,13 +222,6 @@ namespace Client.MVVM.ViewModel
             // Czyścimy i odświeżamy listę konwersacji.
             ConversationVM.Conversation = null;
             Conversations.Clear();
-            if (value != null)
-            {
-                /* Jesteśmy po synchronicznym w stosunku do aktualnego wątku połączeniu klienta do
-                serwera (wywołanie Connect), więc pobieramy konwersacje z serwera. */
-                _client.Request(new GetConversations(SelectedServer!.GetPrimaryKey()));
-                // Odpowiedź zamierzamy dostać w OnGetConversations.
-            }
 
             // Przywracamy interakcje z oknem.
             window!.SetEnabled(true);
@@ -477,7 +470,7 @@ namespace Client.MVVM.ViewModel
             });
 
             _client.ServerIntroduced += OnServerIntroduced;
-            // _client.ServerHandshaken += OnServerHandshaken;
+            _client.ServerHandshaken += OnServerHandshaken;
             _client.ReceivedConversationsAndUsersList += OnReceivedConversationsAndUsersList;
             // _client.ServerEndedConnection += OnServerEndedConnection;
             _client.ClientStopped += OnClientStopped;
@@ -600,7 +593,10 @@ namespace Client.MVVM.ViewModel
 
         private void OnServerHandshaken(RemoteServer server)
         {
-
+            // Wątek Client.Process
+            // Jesteśmy po uścisku dłoni, więc pobieramy konwersacje z serwera.
+            _client.Request(new GetConversations(server.GetPrimaryKey()));
+            // Odpowiedź zamierzamy dostać w OnReceivedConversationsAndUsersList.
         }
 
         private void OnReceivedConversationsAndUsersList(RemoteServer server,
