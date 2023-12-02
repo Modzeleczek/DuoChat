@@ -2,7 +2,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking;
 using System.Net;
-using System.Net.Sockets;
+using UnitTests.Mocks;
 
 namespace UnitTests
 {
@@ -231,63 +231,19 @@ namespace UnitTests
             Console.WriteLine($"signature value: {actSignatureValue.ToHexString()}");
         }
 
-        class ReceiveSocketMock : IReceiveSocket
-        {
-            #region Fields
-            private readonly Random _rng = new Random();
-            private byte[]? _packet = new byte[0];
-            private int _index = 0;
-            private Func<byte[]> _packetGenerator;
-            #endregion
-
-            public ReceiveSocketMock(Func<byte[]> packetGenerator)
-            {
-                _packetGenerator = packetGenerator;
-            }
-
-            public ValueTask<int> ReceiveAsync(Memory<byte> buffer, SocketFlags socketFlags, CancellationToken cancellationToken)
-            {
-                // int returnedByteCount = _rng.Next(1, 5);
-                int returnedByteCount = 4;
-                if (returnedByteCount > buffer.Length)
-                    returnedByteCount = buffer.Length;
-
-                using (var handle = buffer.Pin())
-                {
-                    unsafe
-                    {
-                        byte* p = (byte*)handle.Pointer;
-                        for (int i = 0; i < returnedByteCount; ++i)
-                        {
-                            if (_index >= _packet!.Length)
-                            {
-                                _packet = _packetGenerator();
-                                _index = 0;
-                            }
-                            *(p + i) = _packet![_index];
-                            ++_index;
-                        }
-                    }
-                }
-
-                return new ValueTask<int>(returnedByteCount);
-            }
-        }
-
         [TestMethod]
-        public void PacketReceiveBuffer_ReceiveUntilCompletedOrInterrupted_WhenReceivedOrdinaryPacket_ShouldReturnIt()
+        public void PacketReceiveBuffer_ReceiveUntilCompletedOrInterrupted_WhenReceived2OrdinaryPackets_ShouldReturnThem()
         {
             // Arrange
             var packetReceiveBuffer = new PacketReceiveBuffer();
-            var socketMock = new ReceiveSocketMock(() =>
+
+            int[] returnedByteCounts = new int[] { 4, 3, 5, 2 };
+            byte[] byteStream = new byte[]
             {
-                var pb = new PacketBuilder();
-                for (int i = 0; i < 5; i++)
-                    pb.Append((ulong)i, 1);
-                return pb.Build();
-            });
-            byte[] expectedPacket0 = new byte[] { 0, 1, 2, 3, 4 };
-            byte[] expectedPacket1 = new byte[] { 0, 1, 2, 3, 4 };
+                0, 0, 0, 4, 1, 2, 3, 4, // Pierwszy pakiet
+                0, 0, 0, 2, 5, 6 // Drugi pakiet
+            };
+            var socketMock = new ReceiveSocketMock(returnedByteCounts, byteStream);
 
             // Act
             byte[]? actualPacket0 = packetReceiveBuffer.ReceiveUntilCompletedOrInterrupted(
@@ -296,11 +252,32 @@ namespace UnitTests
                 socketMock, CancellationToken.None);
 
             // Assert
-            Console.WriteLine(actualPacket0.ToHexString());
-            Console.WriteLine(actualPacket1.ToHexString());
+            Console.WriteLine(actualPacket0!.ToHexString());
+            Console.WriteLine(actualPacket1!.ToHexString());
 
-            expectedPacket0.BytesEqual(actualPacket0);
-            expectedPacket1.BytesEqual(actualPacket1);
+            byteStream.Slice(4, 4).BytesEqual(actualPacket0); // Pierwszy pakiet
+            byteStream.Slice(12, 2).BytesEqual(actualPacket1); // Drugi pakiet
+        }
+
+        [TestMethod]
+        public void PacketReceiveBuffer_ReceiveUntilCompletedOrInterrupted_WhenReceived0Bytes_ShouldReturnNull()
+        {
+            // Arrange
+            var packetReceiveBuffer = new PacketReceiveBuffer();
+
+            int[] returnedByteCounts = new int[] { };
+            byte[] byteStream = new byte[] { };
+            var socketMock = new ReceiveSocketMock(returnedByteCounts, byteStream);
+
+            // Act
+            byte[]? actualPacket0 = packetReceiveBuffer.ReceiveUntilCompletedOrInterrupted(
+                socketMock, CancellationToken.None);
+            byte[]? actualPacket1 = packetReceiveBuffer.ReceiveUntilCompletedOrInterrupted(
+                socketMock, CancellationToken.None);
+
+            // Assert
+            Assert.IsNull(actualPacket0);
+            Assert.IsNull(actualPacket1);
         }
     }
 }
