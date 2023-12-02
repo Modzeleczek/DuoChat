@@ -14,6 +14,8 @@ using Shared.MVVM.Model.Networking.Packets;
 using Shared.MVVM.Model.Networking.Packets.ServerToClient;
 using Server.MVVM.Model.Networking.Packets.ServerToClient;
 using Shared.MVVM.Model.Networking.Packets.ClientToServer;
+using Shared.MVVM.Model;
+using Client.MVVM.Model.Networking.UIRequests;
 
 namespace Client.MVVM.Model.Networking
 {
@@ -546,37 +548,49 @@ namespace Client.MVVM.Model.Networking
             if (_uiRequest is null)
                 return;
 
-            switch (_uiRequest.Operation)
+            switch (_uiRequest)
             {
-                case UIRequest.Operations.Disconnect:
-                    DisconnectUIRequest((RemoteServer)_uiRequest.Parameter!);
+                case IntroduceClient introduceClient:
+                    IntroduceClientUIRequest(introduceClient);
                     break;
-                case UIRequest.Operations.IntroduceClient:
-                    IntroduceClientUIRequest((RemoteServer)_uiRequest.Parameter!);
+                case Disconnect disconnect:
+                    DisconnectUIRequest(disconnect);
                     break;
-                case UIRequest.Operations.GetConversations:
-                    GetConversationsUIRequest((RemoteServer)_uiRequest.Parameter!);
+                case GetConversations getConversations:
+                    GetConversationsUIRequest(getConversations);
                     break;
             }
 
-            _uiRequest.Callback?.Invoke();
+            // TODO: sprawdzić, czy bez tego timeout żądania IntroduceClient rozłączy klienta po sekundzie od połączenia
+            // _uiRequest.TryMarkAsDone();
         }
 
-        private void IntroduceClientUIRequest(RemoteServer server)
+        private void IntroduceClientUIRequest(IntroduceClient request)
         {
+            ServerPrimaryKey serverKey = request.ServerKey;
+            if (_remoteServer is null || !serverKey.Equals(_remoteServer.GetPrimaryKey()))
+                return;
+            RemoteServer server = _remoteServer;
+
             server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets
                 .Authentication_Or_NoAuthentication_Or_AccountAlreadyBlocked);
             server.EnqueueToSend(ClientIntroduction.Serialize(_privateKey!, server.PublicKey!,
                 _login!, server.VerificationToken, server.LocalSeed), ClientIntroduction.CODE);
         }
 
-        private void DisconnectUIRequest(RemoteServer server)
+        private void DisconnectUIRequest(Disconnect request)
         {
-            DisconnectThenNotify(server, "|was disconnected|.");
+            if (!(_remoteServer is null) && request.ServerKey.Equals(_remoteServer.GetPrimaryKey()))
+                DisconnectThenNotify(_remoteServer, "|was disconnected|.");
         }
 
-        private void GetConversationsUIRequest(RemoteServer server)
+        private void GetConversationsUIRequest(GetConversations request)
         {
+            ServerPrimaryKey serverKey = request.ServerKey;
+            if (_remoteServer is null || !serverKey.Equals(_remoteServer.GetPrimaryKey()))
+                return;
+            RemoteServer server = _remoteServer;
+
             server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Notification);
             server.EnqueueToSend(GetConversationsAndUsers.Serialize(_privateKey!, server.PublicKey!,
                 server.GenerateToken()), GetConversationsAndUsers.CODE);

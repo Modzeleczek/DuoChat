@@ -1,5 +1,6 @@
 using Client.MVVM.Model;
 using Client.MVVM.Model.Networking;
+using Client.MVVM.Model.Networking.UIRequests;
 using Client.MVVM.View.Windows;
 using Client.MVVM.ViewModel.AccountActions;
 using Client.MVVM.ViewModel.LocalUsers;
@@ -95,7 +96,7 @@ namespace Client.MVVM.ViewModel
 
                 if (!(SelectedServer is null) && !(SelectedAccount is null))
                 {
-                    _client.Request(new UIRequest(UIRequest.Operations.Disconnect, null, null));
+                    _client.Request(new Disconnect(SelectedServer.GetPrimaryKey()));
                     _client.ClientProcessTask.ContinueWith(_ => UIInvoke(() =>
                     {
                         ClearSelectedAccount();
@@ -166,7 +167,7 @@ namespace Client.MVVM.ViewModel
                 if (!(SelectedAccount is null))
                 {
                     // Rozłączamy aktualne konto, bo jesteśmy połączeni.
-                    _client.Request(new UIRequest(UIRequest.Operations.Disconnect, null, null));
+                    _client.Request(new Disconnect(SelectedServer!.GetPrimaryKey()));
 
                     /* Nie można waitować wątkiem UI, bo czeka on na zakończenie
                     operacji, a jednocześnie kod operacji może chcieć wywołać
@@ -225,7 +226,7 @@ namespace Client.MVVM.ViewModel
             {
                 /* Jesteśmy po synchronicznym w stosunku do aktualnego wątku połączeniu klienta do
                 serwera (wywołanie Connect), więc pobieramy konwersacje z serwera. */
-                _client.Request(new UIRequest(UIRequest.Operations.GetConversations, null, null));
+                _client.Request(new GetConversations(SelectedServer!.GetPrimaryKey()));
                 // Odpowiedź zamierzamy dostać w OnGetConversations.
             }
 
@@ -552,9 +553,7 @@ namespace Client.MVVM.ViewModel
             {
                 /* Serwer rozłączy klienta przez timeout, ale możemy
                 też sami się rozłączyć za pomocą UIRequesta. */
-                window!.SetEnabled(false);
-                _client.Request(new UIRequest(UIRequest.Operations.Disconnect, server,
-                    () => UIInvoke(() => window.SetEnabled(true))));
+                _client.Request(new Disconnect(server.GetPrimaryKey()));
                 return;
             }
 
@@ -566,9 +565,7 @@ namespace Client.MVVM.ViewModel
             _storage.UpdateServer(_loggedUserKey,
                 SelectedServer.GetPrimaryKey(), SelectedServer);
 
-            window!.SetEnabled(false);
-            _client.Request(new UIRequest(UIRequest.Operations.IntroduceClient, server,
-                () => UIInvoke(() => window.SetEnabled(true))));
+            _client.Request(new IntroduceClient(server.GetPrimaryKey()));
         }
 
         private bool AskIfServerTrusted(Guid guid, PublicKey publicKey)

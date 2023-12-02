@@ -4,23 +4,15 @@ using System.Threading;
 
 namespace Shared.MVVM.Model
 {
-    public class UIRequest : TimeoutableOrder
+    public abstract class UIRequest : TimeoutableOrder
     {
-        #region Properties
-        public object? Parameter { get; }
-        public Action? Callback { get; }
-        #endregion
-
-        protected UIRequest(object? parameter, Action? callback, int millisecondsTimeout)
+        protected UIRequest(int millisecondsTimeout = Timeout.Infinite)
         {
-            Parameter = parameter;
             // Callback jest wspólny dla normalnej sytuacji i timeoutu.
-            Callback = callback;
-
-            StartTimeoutTaskIfNeeded(millisecondsTimeout, callback);
+            StartTimeoutTaskIfNeeded(millisecondsTimeout);
         }
 
-        private void StartTimeoutTaskIfNeeded(int millisecondsTimeout, Action? callback)
+        private void StartTimeoutTaskIfNeeded(int millisecondsTimeout)
         {
             if (millisecondsTimeout == Timeout.Infinite)
                 return;
@@ -34,7 +26,7 @@ namespace Shared.MVVM.Model
 
                     if (TryMarkAsTimedOut())
                         // Wystąpił timeout.
-                        callback?.Invoke();
+                        OnTimeout();
                     /* Jeżeli TryMarkAsTimedOut zwróci false, to znaczy, że TryMarkAsDone
                     zostało wywołane przed timeoutem, ale już po zwróceniu sterowania
                     z Wait. Wówczas pomijamy timeout. */
@@ -43,5 +35,7 @@ namespace Shared.MVVM.Model
                 catch (AggregateException e) when (e.InnerException is TaskCanceledException) { }
             });
         }
+
+        protected virtual void OnTimeout() { }
     }
 }
