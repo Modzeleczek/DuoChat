@@ -1,4 +1,4 @@
-﻿using Shared.MVVM.Model.Cryptography;
+using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking;
 using System;
 using System.Net.Sockets;
@@ -242,10 +242,9 @@ namespace Client.MVVM.Model.Networking
         {
             RemoteServer server = @event.Sender;
 
-            byte[] packet = (byte[])@event.Data!;
-            var operation = (Packet.Codes)packet[0];
+            var code = (Packet.Codes)@event.Data!;
 
-            switch (operation)
+            switch (code)
             {
                 case Packet.Codes.ClientIntroduction:
                 case Packet.Codes.GetConversationsAndUsers:
@@ -576,7 +575,7 @@ namespace Client.MVVM.Model.Networking
             server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets
                 .Authentication_Or_NoAuthentication_Or_AccountAlreadyBlocked);
             server.EnqueueToSend(ClientIntroduction.Serialize(_privateKey!, server.PublicKey!,
-                _login!, server.VerificationToken, server.LocalSeed));
+                _login!, server.VerificationToken, server.LocalSeed), ClientIntroduction.CODE);
         }
 
         private void DisconnectUIRequest(RemoteServer server)
@@ -588,7 +587,7 @@ namespace Client.MVVM.Model.Networking
         {
             server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Notification);
             server.EnqueueToSend(GetConversationsAndUsers.Serialize(_privateKey!, server.PublicKey!,
-                server.GenerateToken()));
+                server.GenerateToken()), GetConversationsAndUsers.CODE);
         }
         #endregion
     }

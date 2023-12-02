@@ -119,7 +119,7 @@ namespace Server.MVVM.Model
 
                         // Jeżeli TryMarkAsDone zwróci true, to znaczy, że wysyłanie zakończyło się przed timeoutem.
                         if (order.TryMarkAsDone())
-                            _eventProcessor.Enqueue(new ClientEvent(ClientEvent.Types.SendSuccess, this));
+                            _eventProcessor.Enqueue(new ClientEvent(ClientEvent.Types.SendSuccess, this, order.Code));
                         /* Jeżeli false, to wystąpił timeout i w kolejce zdarzeń jest już zdarzenie o timeoucie.
                         Ignorujemy wysłanie. */
                     }
@@ -171,10 +171,10 @@ namespace Server.MVVM.Model
                 item.TryMarkAsDone();
         }
          
-        public bool EnqueueToSend(byte[] packet)
+        public bool EnqueueToSend(byte[] packet, Packet.Codes code)
         {
             // Wątek Server.Process
-            var order = new SendPacketOrder(packet);
+            var order = new SendPacketOrder(packet, code);
             lock (_sendQueueCompleteAddingLock)
             {
                 if (_sendQueue.IsCompleted)

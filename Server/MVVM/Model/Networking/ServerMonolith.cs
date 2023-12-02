@@ -1,4 +1,4 @@
-﻿using Shared.MVVM.Model.Cryptography;
+using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking;
 using System;
 using System.Collections.Generic;
@@ -168,7 +168,7 @@ namespace Server.MVVM.Model.Networking
                 /* EnqueueToSend nie zablokuje wywołującego wątku, bo do konstruktora
                 _sendQueue nie przekazaliśmy BoundedCapacity, czyli kolejka
                 może mieć nieograniczoną liczbę elementów. */
-                client.EnqueueToSend(NoSlots.Serialize());
+                client.EnqueueToSend(NoSlots.Serialize(), NoSlots.CODE);
                 return;
             }
 
@@ -176,7 +176,7 @@ namespace Server.MVVM.Model.Networking
                 client.GetPrimaryKey().IpAddress.BinaryRepresentation))
             {
                 // Klient ma zablokowany adres IP.
-                client.EnqueueToSend(IPAlreadyBlocked.Serialize());
+                client.EnqueueToSend(IPAlreadyBlocked.Serialize(), IPAlreadyBlocked.CODE);
                 return;
             }
 
@@ -185,7 +185,8 @@ namespace Server.MVVM.Model.Networking
             ClientConnected?.Invoke(client);
             client.VerificationToken = RandomUInt64();
             client.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.ClientIntroduction, 10000);
-            client.EnqueueToSend(ServerIntroduction.Serialize(_guid, _publicKeyBytes!, client.VerificationToken));
+            client.EnqueueToSend(ServerIntroduction.Serialize(_guid, _publicKeyBytes!,
+                client.VerificationToken), ServerIntroduction.CODE);
         }
 
         private ulong RandomUInt64()
@@ -247,17 +248,16 @@ namespace Server.MVVM.Model.Networking
             Client client = @event.Sender;
             // var clientKey = client.GetPrimaryKey()
 
-            byte[] packet = (byte[])@event.Data!;
-            var operation = (Packet.Codes)packet[0];
+            var code = (Packet.Codes)@event.Data!;
             // Log($"Sent {operation} to client {clientKey}.")
 
-            switch (operation)
+            switch (code)
             {
                 case Packet.Codes.NoSlots:
                 case Packet.Codes.IPAlreadyBlocked:
                 case Packet.Codes.NoAuthentication:
                 case Packet.Codes.AccountAlreadyBlocked:
-                    DisconnectThenNotify(client, operation.ToString());
+                    DisconnectThenNotify(client, code.ToString());
                     break;
                 case Packet.Codes.IPNowBlocked:
                     DisconnectThenNotify(client, "|IP address is now blocked|.");
@@ -373,7 +373,7 @@ namespace Server.MVVM.Model.Networking
                     Log($"{client} |tried to authenticate using blocked account| " +
                         $"'{existingAccount.Login}'.");
                     client.EnqueueToSend(AccountAlreadyBlocked.Serialize(_privateKey!,
-                        client.PublicKey!, client.GenerateToken()));
+                        client.PublicKey!, client.GenerateToken()), AccountAlreadyBlocked.CODE);
                     return;
                 }
             }
@@ -393,7 +393,7 @@ namespace Server.MVVM.Model.Networking
             client.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Request);
             // Wątek receiver klienta zaczyna nasłuchiwać żądań.
             client.EnqueueToSend(Authentication.Serialize(_privateKey!, client.PublicKey!,
-                client.GenerateToken(), localSeed));
+                client.GenerateToken(), localSeed), Authentication.CODE);
         }
 
         private void InterruptHandshake(Client client, string errorMsg)
@@ -404,7 +404,7 @@ namespace Server.MVVM.Model.Networking
             /* TODO: w EnqueueToSend nowy parametr, który jest "przyczyną"
             tego, że chcemy wysłać dany pakiet. */
             client.EnqueueToSend(NoAuthentication.Serialize(_privateKey!,
-                client.PublicKey!, client.GenerateToken()));
+                client.PublicKey!, client.GenerateToken()), NoAuthentication.CODE);
         }
         #endregion
 
@@ -515,7 +515,7 @@ namespace Server.MVVM.Model.Networking
 
             client.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Request);
             client.EnqueueToSend(ConversationsAndUsersLists.Serialize(_privateKey!, client.PublicKey!,
-                client.GenerateToken(), model));
+                client.GenerateToken(), model), ConversationsAndUsersLists.CODE);
         }
 
         private string RandomString(int length)
@@ -538,7 +538,7 @@ namespace Server.MVVM.Model.Networking
                 client.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Request);
                 client.EnqueueToSend(RequestError.Serialize(_privateKey!, client.PublicKey!,
                     client.GenerateToken(), AddConversation.CODE,
-                    (byte)AddConversation.Errors.AccountDoesNotExist));
+                    (byte)AddConversation.Errors.AccountDoesNotExist), RequestError.CODE);
                 // Nie rozłączamy, bo nie jest to błąd protokołu, tylko błąd "biznesowy".
                 return;
             }
@@ -636,7 +636,7 @@ namespace Server.MVVM.Model.Networking
                 client.IsNotifiable = false;
                 _clients.Remove(client.GetPrimaryKey());
                 client.EnqueueToSend(IPNowBlocked.Serialize(_privateKey!, client.PublicKey!,
-                    client.GenerateToken()));
+                    client.GenerateToken()), IPNowBlocked.CODE);
             }
         }
 

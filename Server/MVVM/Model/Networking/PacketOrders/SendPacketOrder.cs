@@ -1,4 +1,5 @@
 ﻿using Shared.MVVM.Model;
+using Shared.MVVM.Model.Networking.Packets;
 
 namespace Server.MVVM.Model.Networking.PacketOrders
 {
@@ -6,11 +7,13 @@ namespace Server.MVVM.Model.Networking.PacketOrders
     {
         #region Properties
         public byte[] Packet { get; }
+        public Packet.Codes Code { get; }
         #endregion
 
-        public SendPacketOrder(byte[] packet)
+        public SendPacketOrder(byte[] packet, Packet.Codes code)
         {
             Packet = packet;
+            Code = code;
         }
     }
 }
