@@ -58,7 +58,8 @@
                     CommandParameter="{Binding}"
                     Content="{Binding Source={x:Static l:Translator.Instance},
                       Path=D.Disconnect}"
-                    Style="{DynamicResource CornerRadiusButtonStyle}" />
+                    Style="{DynamicResource CornerRadiusButtonStyle}"
+                    IsEnabled="{Binding Path=HasDisabledInteraction}" />
                   <Button
                     Margin="5,0,0,0"
                     Command="{Binding Path=DataContext.BlockIP,
@@ -66,7 +67,8 @@
                     CommandParameter="{Binding}"
                     Content="{Binding Source={x:Static l:Translator.Instance},
                       Path=D.Block_IP}"
-                    Style="{DynamicResource CornerRadiusButtonStyle}" />
+                    Style="{DynamicResource CornerRadiusButtonStyle}"
+                    IsEnabled="{Binding Path=HasDisabledInteraction}" />
                 </StackPanel>
               </Grid>
             </Border>

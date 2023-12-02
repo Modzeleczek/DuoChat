@@ -45,8 +45,7 @@ namespace Server.MVVM.ViewModel
                 client.DisableInteraction();
 
                 RequestClientRemove(client, UIRequest.Operations.DisconnectClient, key);
-            },
-            obj => !((ClientObservable)obj!).HasDisabledInteraction);
+            });
 
             BlockIP = new RelayCommand(obj =>
             {
@@ -56,8 +55,7 @@ namespace Server.MVVM.ViewModel
                 client.DisableInteraction();
 
                 RequestClientRemove(client, UIRequest.Operations.BlockClientIP, key.IpAddress);
-            },
-            obj => !((ClientObservable)obj!).HasDisabledInteraction);
+            });
 
             server.ClientConnected += ClientConnected;
             server.ClientHandshaken += ClientHandshaken;
