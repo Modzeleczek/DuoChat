@@ -110,6 +110,6 @@ CREATE TABLE "EcryptedAttachmentContent" (
 ) WITHOUT ROWID;
 
 DROP TABLE IF EXISTS "ClientIPBlock";
-CREATE TABLE "ClientIPBlocks" (
+CREATE TABLE "ClientIPBlock" (
   "ip_address" INTEGER PRIMARY KEY
 );
