@@ -54,7 +54,8 @@ namespace Server.MVVM.ViewModel
                 accountObs.IsConnected = false;
             });
 
-            server.ClientHandshaken += ClientHandshaken;
+            server.ClientHandshaken += OnClientHandshaken;
+            server.ClientEndedConnection += OnClientEndedConnection;
 
             // Inicjujemy listę kont.
             foreach (var a in accounts)
@@ -76,7 +77,7 @@ namespace Server.MVVM.ViewModel
             UIInvoke(() => window!.SetEnabled(true));
         }
 
-        private void ClientHandshaken(Client client)
+        private void OnClientHandshaken(Client client)
         {
             // Wątek Server.Process
             var accountObs = Accounts.SingleOrDefault(a => a.Login.Equals(client.Login));
@@ -96,7 +97,7 @@ namespace Server.MVVM.ViewModel
             UIInvoke(() => accountObs.IsConnected = true);
         }
 
-        private void ClientEndedConnection(Client client, string statusMsg)
+        private void OnClientEndedConnection(Client client, string statusMsg)
         {
             _ = statusMsg;
 
