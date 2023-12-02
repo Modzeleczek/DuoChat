@@ -38,6 +38,8 @@ namespace Shared.MVVM.Model.Networking
 
         public void Reset()
         {
+            _receivedBytes = 0;
+            _nowInterpretedByteIndex = 0;
             StartNewPacket();
         }
 
