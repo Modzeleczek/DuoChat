@@ -1,4 +1,4 @@
-using Client.MVVM.Model.Networking.PacketOrders;
+﻿using Client.MVVM.Model.Networking.PacketOrders;
 using Shared.MVVM.Model;
 using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking;
@@ -236,16 +236,16 @@ namespace Client.MVVM.Model.Networking
             int millisecondsTimeout = RECEIVE_TIMEOUT_MILLISECONDS)
         {
             // Wątek Client.Process
-            // Jeszcze niczego nie oczekujemy i nie ma timeoutu.
-            if (ReceiveOrder is null)
-                return true;
-
-            // Odwołujemy aktualny timeout.
-            if (!ReceiveOrder.TryMarkAsDone())
+            // Już czegoś oczekujemy i jest ustawione odliczanie timeoutu.
+            if (!(ReceiveOrder is null)
+                // Próbujemy odwołać aktualny timeout.
+                && !ReceiveOrder.TryMarkAsDone())
                 /* Wystąpił timeout i task timeoutujący już dodał do kolejki
                 zdarzenie o timeoucie. */
                 return false;
-            // else: kolejne wywołanie SetExpectedPacket wystąpiło przed timeoutem.
+
+            /* Jeszcze niczego nie oczekujemy i nie ma timeoutu lub czegoś już oczekujemy i udało
+            się odwołać timeout (kolejne wywołanie SetExpectedPacket wystąpiło przed timeoutem). */
 
             ReceiveOrder = new ReceivePacketOrder(expectedPacket);
             ContiguousKeepAlivesCounter = 0;
