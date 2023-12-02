@@ -71,7 +71,7 @@ namespace Shared.MVVM.Model.Networking
             /* Kopiujemy do bufora prefiks o wartości 0 lub równy rozmiarowi
             pakietu w kolejności big-endian. */
             for (int i = 0; i < _prefix.Length; ++i)
-                _prefix[i] = (byte)(prefixValue >> i);
+                _prefix[i] = (byte)(prefixValue >> (i * 8));
             /* Można też za pomocą % zapewnić kolejność big-endian w packet.Length i wtedy
             nie trzeba używać IPAddress.HostToNetworkOrder. */
         }
