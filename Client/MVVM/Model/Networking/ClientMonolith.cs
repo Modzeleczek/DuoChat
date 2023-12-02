@@ -548,6 +548,12 @@ namespace Client.MVVM.Model.Networking
             if (_uiRequest is null)
                 return;
 
+            // TODO: sprawdzić, czy bez tego timeout żądania IntroduceClient rozłączy klienta po sekundzie od połączenia
+            if (!_uiRequest.TryMarkAsDone())
+                /* Jeżeli nie uda się oznaczyć jako wykonane, to znaczy, że
+                nastąpił timeout. Wówczas nie wykonujemy żądania. */
+                return;
+
             switch (_uiRequest)
             {
                 case IntroduceClient introduceClient:
@@ -560,9 +566,6 @@ namespace Client.MVVM.Model.Networking
                     GetConversationsUIRequest(getConversations);
                     break;
             }
-
-            // TODO: sprawdzić, czy bez tego timeout żądania IntroduceClient rozłączy klienta po sekundzie od połączenia
-            // _uiRequest.TryMarkAsDone();
         }
 
         private void IntroduceClientUIRequest(IntroduceClient request)
