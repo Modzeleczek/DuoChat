@@ -9,7 +9,7 @@
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:w="clr-namespace:Shared.MVVM.View.Windows"
   x:Name="MainWindowName"
-  Title="{Binding Source={x:Static l:Translator.Instance}, Path=D.Server}"
+  Title="{Binding Source={x:Static l:Translator.Instance}, Path=D.DuoChat}"
   Width="800"
   Height="450"
   x:ClassModifier="public"
