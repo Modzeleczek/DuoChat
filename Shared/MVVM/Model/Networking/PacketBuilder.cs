@@ -120,11 +120,7 @@ namespace Shared.MVVM.Model.Networking
 
         public byte[] Build()
         {
-            var totalSize = CalculateSize();
-            // dodajemy rozmiar całego pakietu jako pierwszą część pakietu
-            Prepend((ulong)totalSize, PacketSendBuffer.PACKET_PREFIX_SIZE);
-            // dodajemy rozmiar dodanego prefiksu
-            return MergeParts(totalSize + PacketSendBuffer.PACKET_PREFIX_SIZE);
+            return MergeParts(CalculateSize());
         }
 
         private int CalculateSize()
