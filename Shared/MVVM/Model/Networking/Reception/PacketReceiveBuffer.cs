@@ -140,6 +140,9 @@ namespace Shared.MVVM.Model.Networking
                 o tak dużym rozmiarze, co oznacza, że ktoś sfabrykował pakiet. */
                 throw new Error("|Received packet with prefix value greater than max packet size|.");
 
+            // _packetEndIndexExclusive = _packetBeginIndexInclusive + PREFIX_SIZE + prefixValue LUB
+            _packetEndIndexExclusive = _nowInterpretedByteIndex + prefixValue;
+
             // Odebraliśmy pakiet keep alive.
             if (prefixValue == 0)
             {
@@ -151,8 +154,6 @@ namespace Shared.MVVM.Model.Networking
             else
             {
                 // Przechodzimy do stanu Content.
-                // _packetEndIndexExclusive = _packetBeginIndexInclusive + PREFIX_SIZE + prefixValue
-                _packetEndIndexExclusive = _nowInterpretedByteIndex + prefixValue;
                 _state = State.Content;
             }
         }

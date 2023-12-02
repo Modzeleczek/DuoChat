@@ -279,5 +279,41 @@ namespace UnitTests
             Assert.IsNull(actualPacket0);
             Assert.IsNull(actualPacket1);
         }
+
+        [TestMethod]
+        public void PacketReceiveBuffer_ReceiveUntilCompletedOrInterrupted_WhenReceivedKeepAlive_ShouldReturn0LengthPacket()
+        {
+            // Arrange
+            var packetReceiveBuffer = new PacketReceiveBuffer();
+
+            int[] returnedByteCounts = new int[] { 1, 2, 1 };
+            byte[] byteStream = new byte[] { 0, 0, 0, 0 }; // Keep alive
+            var socketMock = new ReceiveSocketMock(returnedByteCounts, byteStream);
+
+            // Act
+            byte[]? actualPacket = packetReceiveBuffer.ReceiveUntilCompletedOrInterrupted(
+                socketMock, CancellationToken.None);
+
+            // Assert
+            Assert.AreEqual(0, actualPacket!.Length);
+        }
+
+        [TestMethod]
+        public void PacketReceiveBuffer_ReceiveUntilCompletedOrInterrupted_WhenReceivedIncompletePacket_ShouldReturnNull()
+        {
+            // Arrange
+            var packetReceiveBuffer = new PacketReceiveBuffer();
+
+            int[] returnedByteCounts = new int[] { 1, 1, 1 };
+            byte[] byteStream = new byte[] { 1, 0, 0 }; // Niepełny pakiet
+            var socketMock = new ReceiveSocketMock(returnedByteCounts, byteStream);
+
+            // Act
+            byte[]? actualPacket = packetReceiveBuffer.ReceiveUntilCompletedOrInterrupted(
+                socketMock, CancellationToken.None);
+
+            // Assert
+            Assert.IsNull(actualPacket);
+        }
     }
 }
