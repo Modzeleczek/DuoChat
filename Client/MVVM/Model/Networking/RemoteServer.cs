@@ -42,8 +42,8 @@ namespace Client.MVVM.Model.Networking
         private readonly object _sendQueueCompleteAddingLock = new object();
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
         // Wczesna inicjalizacja
-        private Task _senderTask = Task.CompletedTask;
-        private Task _receiverTask = Task.CompletedTask;
+        private Task? _senderTask = null;
+        private Task? _receiverTask = null;
         private readonly TcpClient _tcpClient;
         private readonly IEventProcessor _eventProcessor;
         private readonly PacketSendBuffer _sendBuffer = new PacketSendBuffer();
