@@ -1,4 +1,4 @@
-using Server.MVVM.Model.Persistence.DTO;
+﻿using Server.MVVM.Model.Persistence.DTO;
 using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.SQLiteStorage;
 using Shared.MVVM.Model.SQLiteStorage.Repositories;
@@ -57,7 +57,7 @@ namespace Server.MVVM.Model.Persistence.Repositories
             return new AccountDto
             {
                 Id = (ulong)(long)reader[F_id], // reader.GetInt64(0)
-                Login = (string)reader[F_id], // reader.GetString(1)
+                Login = (string)reader[F_login], // reader.GetString(1)
                 PublicKey = PublicKey.FromBytesNoLength((byte[])reader[F_public_key]),
                 IsBlocked = (byte)(long)reader[F_is_blocked]
             };

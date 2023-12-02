@@ -52,7 +52,7 @@ namespace Server.MVVM.Model.Persistence.Repositories
 
         protected override string ExistsQuery()
         {
-            return $"SELECT COUNT(${F_ip_address}) FROM {TABLE} WHERE {F_ip_address} = @{F_ip_address};";
+            return $"SELECT COUNT({F_ip_address}) FROM {TABLE} WHERE {F_ip_address} = @{F_ip_address};";
         }
 
         protected override void SetKeyParameter(SQLiteParameterCollection parColl, uint key)
