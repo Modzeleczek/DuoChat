@@ -58,7 +58,6 @@ namespace Client.MVVM.Model.SQLiteStorage.Repositories
         {
             return new Account
             {
-                // (ulong)(long)
                 Login = (string)reader[F_login], // reader.GetString(0)
                 PrivateKey = PrivateKey.FromBytes((byte[])reader[F_private_key])
             };

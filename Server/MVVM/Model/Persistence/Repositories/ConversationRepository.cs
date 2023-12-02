@@ -48,8 +48,7 @@ namespace Server.MVVM.Model.Persistence.Repositories
         {
             return new ConversationDto
             {
-                // (ulong)(long)
-                Id = (ulong)reader[F_id],
+                Id = (ulong)(long)reader[F_id],
                 OwnerId = (ulong)reader[F_owner_id],
                 Name = (string)reader[F_name]
             };
