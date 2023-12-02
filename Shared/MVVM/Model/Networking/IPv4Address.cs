@@ -16,9 +16,12 @@ namespace Shared.MVVM.Model.Networking
         public IPv4Address(IPAddress ipAddress)
         {
             var bytes = ipAddress.GetAddressBytes();
-            if (bytes.Length != 4)
-                throw new ArgumentException("ipAddress must be IPv4", nameof(ipAddress));
-            BinaryRepresentation = BitConverter.ToUInt32(bytes, 0);
+            if (bytes.Length == 4)
+                BinaryRepresentation = BitConverter.ToUInt32(bytes.AsSpan());
+            else
+                /* Traktujemy ostatnie 4 bajty adresu IPv6 jako adres IPv4. To tylko łata,
+                bo powinniśmy obsługiwać IPv6 zamiast zakładać, że zawsze to zadziała. */
+                BinaryRepresentation = BitConverter.ToUInt32(bytes.AsSpan(16 - 4));
         }
 
         public override bool Equals(object? obj)
