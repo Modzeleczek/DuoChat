@@ -1,4 +1,4 @@
-using Shared.MVVM.Model.Cryptography;
+﻿using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking;
 using System;
 using System.Collections.Generic;
@@ -330,7 +330,11 @@ namespace Server.MVVM.Model.Networking
         private void HandleExpectedClientIntroduction(Client client, byte[] packet)
         {
             // Pakiet już bez prefiksu, bo PacketReceiveBuffer go ucina.
-            ClientIntroduction.Deserialize(packet, _privateKey!,
+            var pr = new PacketReader(packet);
+            if ((Packet.Codes)pr.ReadUInt8() != ClientIntroduction.CODE)
+                InterruptHandshake(client, UnexpectedPacketErrorMsg);
+
+            ClientIntroduction.Deserialize(pr, _privateKey!,
                 out PublicKey publicKey, out bool senderSignatureValid, out string login,
                 out ulong verificationToken, out ulong remoteSeed);
 

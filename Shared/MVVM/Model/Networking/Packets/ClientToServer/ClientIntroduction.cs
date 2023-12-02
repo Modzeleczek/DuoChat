@@ -42,14 +42,14 @@ namespace Shared.MVVM.Model.Networking.Packets.ClientToServer
             return pb.Build();
         }
 
-        public static void Deserialize(byte[] packet, PrivateKey receiverPrivateKey,
+        public static void Deserialize(PacketReader pr, PrivateKey receiverPrivateKey,
             out PublicKey publicKey,
             out bool senderSignatureValid,
             out string login,
             out ulong verificationToken,
             out ulong remoteSeed)
         {
-            var pr = new PacketReader(packet);
+            // Kod operacji musi być wcześniej odczytany.
             pr.Decrypt(receiverPrivateKey);
 
             publicKey = PublicKey.FromPacketReader(pr);
