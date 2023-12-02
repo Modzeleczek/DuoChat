@@ -265,7 +265,7 @@ namespace Client.MVVM.ViewModel
                 throw;
             }
 
-            _client = new ClientMonolith(_storage);
+            _client = new ClientMonolith();
 
             WindowLoaded = new RelayCommand(windowLoadedE =>
             {

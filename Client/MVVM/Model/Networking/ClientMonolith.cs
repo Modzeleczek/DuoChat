@@ -24,9 +24,6 @@ namespace Client.MVVM.Model.Networking
         // Stałe
         private const int CONNECT_TIMEOUT_SECONDS = 2;
 
-        // Usługi
-        private readonly Storage _storage;
-
         // Dane lokalnego hosta
         private string? _login = null;
         private PrivateKey? _privateKey = null;
@@ -52,11 +49,6 @@ namespace Client.MVVM.Model.Networking
         public event Action<RemoteServer, string>? ServerEndedConnection;
         public event Action? ClientStopped;
         #endregion
-
-        public ClientMonolith(Storage storage)
-        {
-            _storage = storage;
-        }
 
         public void Connect(IPv4Address ipAddress, Port port, string login, PrivateKey privateKey)
         {
