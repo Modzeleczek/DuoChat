@@ -86,12 +86,12 @@ namespace Client.MVVM.Model.Networking
                     /* Wątek UI canceluje _eventQueueWaitBreaker.Token, kiedy
                     chce wysłać żądanie do wątku Server.Process. */
 
-                    HandleUIRequest();
-
                     /* Jeżeli token został zcancelowany przez wątek UI zlecający żądanie,
                     to tworzymy nowy token, bo próba wywołania _receiveQueue.TryTake z już
                     zcancelowanym tokenem od razu wyrzuci OperationCanceledException. */
                     _eventQueueWaitBreaker = new CancellationTokenSource();
+
+                    HandleUIRequest();
                 }
             }
 
