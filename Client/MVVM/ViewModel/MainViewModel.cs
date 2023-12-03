@@ -93,18 +93,11 @@ namespace Client.MVVM.ViewModel
                 window!.SetEnabled(false);
 
                 if (!(SelectedServer is null) && !(SelectedAccount is null))
-                {
                     _client.Request(new Disconnect(SelectedServer.GetPrimaryKey(), () => UIInvoke(() =>
-                    {
-                        // Wątek UI na zlecenie wątku Client.Process
-                        _selectedAccount = null;
-                        OnPropertyChanged(nameof(SelectedAccount));
-                        ConversationVM.Conversation = null;
-                        Conversations.Clear();
-
-                        FinishSettingSelectedServer(value);
-                    })));
-                }
+                        // Wątek UI na zlecenie (poprzez UIInvoke) wątku Client.Process
+                        /* Przed wywołaniem niniejszego callbacka w OnServerEndedConnection
+                        czyścimy konwersacje i zaznaczone konto. */
+                        FinishSettingSelectedServer(value))));
                 else
                     // Na pewno SelectedAccount is null.
                     FinishSettingSelectedServer(value);
@@ -118,7 +111,7 @@ namespace Client.MVVM.ViewModel
 
             // Czyścimy i odświeżamy listę kont.
             Accounts.Clear();
-            if (value != null)
+            if (!(value is null))
             {
                 try
                 {
@@ -165,10 +158,9 @@ namespace Client.MVVM.ViewModel
                         // Chcemy się połączyć.
                         DisconnectAndConnectWithAccount(value);
                     else
-                        // Nie chcemy się połączyć.
-                        _client.Request(new Disconnect(SelectedServer!.GetPrimaryKey(),
-                            // Wątek Client.Process
-                            () => RefreshSelectedAccount(null, null)));
+                        /* Nie chcemy się połączyć. Disconnect bez callbacka, bo
+                        obsługujemy rozłączenie w OnServerEndedConnection. */
+                        _client.Request(new Disconnect(SelectedServer!.GetPrimaryKey(), null));
                 }
                 else
                 {
@@ -464,7 +456,7 @@ namespace Client.MVVM.ViewModel
             _client.ServerIntroduced += OnServerIntroduced;
             _client.ServerHandshaken += OnServerHandshaken;
             _client.ReceivedConversationsAndUsersList += OnReceivedConversationsAndUsersList;
-            // _client.ServerEndedConnection += OnServerEndedConnection;
+            _client.ServerEndedConnection += OnServerEndedConnection;
             _client.ClientStopped += OnClientStopped;
         }
 
@@ -599,6 +591,21 @@ namespace Client.MVVM.ViewModel
             
             foreach (var c in conversations)
                 Conversations.Add(c);
+        }
+
+        private void OnServerEndedConnection(RemoteServer server, string statusMsg)
+        {
+            // Wątek Client.Process
+            UIInvoke(() =>
+            {
+                _selectedAccount = null;
+                OnPropertyChanged(nameof(SelectedAccount));
+
+                ConversationVM.Conversation = null;
+                Conversations.Clear();
+
+                Alert($"{server} {statusMsg}");
+            });
         }
 
         private void OnClientStopped()
