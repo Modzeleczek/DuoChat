@@ -18,6 +18,8 @@ using Shared.MVVM.Model.Networking.Packets.ServerToClient;
 using Shared.MVVM.Model.Networking.Packets;
 using Shared.MVVM.Model.Networking.Packets.ClientToServer;
 using Server.MVVM.Model.Networking.Packets.ServerToClient;
+using Server.MVVM.Model.Networking.UIRequests;
+using Shared.MVVM.Model;
 
 namespace Server.MVVM.Model.Networking
 {
@@ -589,32 +591,31 @@ namespace Server.MVVM.Model.Networking
                 nastąpił timeout. Wówczas nie wykonujemy żądania. */
                 return;
 
-            switch (_uiRequest.Operation)
+            switch (_uiRequest)
             {
-                case UIRequest.Operations.StopServer:
+                case StopServer:
                     _stopRequested = true;
                     break;
-                case UIRequest.Operations.DisconnectClient:
-                    DisconnectClientUIRequest((ClientPrimaryKey)_uiRequest.Parameter!);
+                case DisconnectClient disconnectClient:
+                    DisconnectClientUIRequest(disconnectClient);
                     break;
-                case UIRequest.Operations.BlockClientIP:
-                    BlockClientIPUIRequest((IPv4Address)_uiRequest.Parameter!);
+                case BlockClientIP blockClientIP:
+                    BlockClientIPUIRequest(blockClientIP);
                     break;
-                case UIRequest.Operations.UnblockClientIP:
-                    UnblockClientIPUIRequest((IPv4Address)_uiRequest.Parameter!);
+                case UnblockClientIP unblockClientIP:
+                    UnblockClientIPUIRequest(unblockClientIP);
                     break;
-                case UIRequest.Operations.BlockAccount:
+                case BlockAccount:
                     break;
-                case UIRequest.Operations.UnblockAccount:
+                case UnblockAccount:
                     break;
             }
-
-            _uiRequest.Callback?.Invoke();
         }
 
-        private void DisconnectClientUIRequest(ClientPrimaryKey clientKey)
+        private void DisconnectClientUIRequest(DisconnectClient request)
         {
             // Wątek Server.Process
+            ClientPrimaryKey clientKey = request.ClientKey;
             if (!_clients.TryGetValue(clientKey, out Client? client))
                 // Nieprawdopodobne
                 throw new KeyNotFoundException($"Disconnect: Client {clientKey} does not exist.");
@@ -622,9 +623,11 @@ namespace Server.MVVM.Model.Networking
             DisconnectThenNotify(client, "|was disconnected|.");
         }
 
-        private void BlockClientIPUIRequest(IPv4Address ipAddress)
+        private void BlockClientIPUIRequest(BlockClientIP request)
         {
             // Wątek Server.Process
+            IPv4Address ipAddress = request.IPAddress;
+
             var repo = _storage.Database.ClientIPBlocks;
             if (!repo.Exists(ipAddress.BinaryRepresentation))
                 repo.Add(new ClientIPBlockDto { IpAddress = ipAddress.BinaryRepresentation });
@@ -644,9 +647,11 @@ namespace Server.MVVM.Model.Networking
             }
         }
 
-        private void UnblockClientIPUIRequest(IPv4Address ipAddress)
+        private void UnblockClientIPUIRequest(UnblockClientIP request)
         {
             // Wątek Server.Process
+            IPv4Address ipAddress = request.IPAddress;
+
             var repo = _storage.Database.ClientIPBlocks;
             if (repo.Exists(ipAddress.BinaryRepresentation))
                 repo.Delete(ipAddress.BinaryRepresentation);
