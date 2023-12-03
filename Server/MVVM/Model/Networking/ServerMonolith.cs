@@ -599,15 +599,20 @@ namespace Server.MVVM.Model.Networking
                 case DisconnectClient disconnectClient:
                     DisconnectClientUIRequest(disconnectClient);
                     break;
+                case DisconnectAccount disconnectAccount:
+                    DisconnectAccountUIRequest(disconnectAccount);
+                    break;
                 case BlockClientIP blockClientIP:
                     BlockClientIPUIRequest(blockClientIP);
                     break;
                 case UnblockClientIP unblockClientIP:
                     UnblockClientIPUIRequest(unblockClientIP);
                     break;
-                case BlockAccount:
+                case BlockAccount blockAccount:
+                    BlockAccountUIRequest(blockAccount);
                     break;
-                case UnblockAccount:
+                case UnblockAccount unblockAccount:
+                    UnblockAccountUIRequest(unblockAccount);
                     break;
             }
         }
@@ -616,17 +621,33 @@ namespace Server.MVVM.Model.Networking
         {
             // Wątek Server.Process
             ClientPrimaryKey clientKey = request.ClientKey;
+
             if (!_clients.TryGetValue(clientKey, out Client? client))
-                // Nieprawdopodobne
-                throw new KeyNotFoundException($"Disconnect: Client {clientKey} does not exist.");
+                // Jeżeli nie znaleźliśmy klienta, to zakładamy, że żądanie zostało wykonane.
+                return;
 
             DisconnectThenNotify(client, "|was disconnected|.");
+
+            request.Callback?.Invoke();
+        }
+
+        private void DisconnectAccountUIRequest(DisconnectAccount request)
+        {
+            // Wątek Server.Process
+            string login = request.Login;
+
+            var clientsWithLogin = _clients.Values.Where(c => login.Equals(c.Login));
+            // Jeżeli nie znaleźliśmy żadnych klientów, to zakładamy, że żądanie zostało wykonane.
+            foreach (var client in clientsWithLogin)
+                DisconnectThenNotify(client, "|was disconnected|.");
+
+            request.Callback?.Invoke();
         }
 
         private void BlockClientIPUIRequest(BlockClientIP request)
         {
             // Wątek Server.Process
-            IPv4Address ipAddress = request.IPAddress;
+            IPv4Address ipAddress = request.IpAddress;
 
             var repo = _storage.Database.ClientIPBlocks;
             if (!repo.Exists(ipAddress.BinaryRepresentation))
@@ -645,16 +666,47 @@ namespace Server.MVVM.Model.Networking
                 client.EnqueueToSend(IPNowBlocked.Serialize(_privateKey!, client.PublicKey!,
                     client.GenerateToken()), IPNowBlocked.CODE);
             }
+
+            request.Callback?.Invoke();
         }
 
         private void UnblockClientIPUIRequest(UnblockClientIP request)
         {
             // Wątek Server.Process
-            IPv4Address ipAddress = request.IPAddress;
+            IPv4Address ipAddress = request.IpAddress;
 
             var repo = _storage.Database.ClientIPBlocks;
             if (repo.Exists(ipAddress.BinaryRepresentation))
                 repo.Delete(ipAddress.BinaryRepresentation);
+
+            request.Callback?.Invoke();
+        }
+
+        private void BlockAccountUIRequest(BlockAccount request)
+        {
+            // Wątek Server.Process
+            SetAccountBlock(request.Login, 1);
+
+            request.Callback?.Invoke();
+        }
+
+        private void SetAccountBlock(string login, byte isBlocked)
+        {
+            var repo = _storage.Database.AccountsByLogin;
+            if (repo.Exists(login))
+            {
+                var accountDto = repo.Get(login);
+                accountDto.IsBlocked = isBlocked;
+                repo.Update(login, accountDto);
+            }
+        }
+
+        private void UnblockAccountUIRequest(UnblockAccount request)
+        {
+            // Wątek Server.Process
+            SetAccountBlock(request.Login, 0);
+
+            request.Callback?.Invoke();
         }
         #endregion
     }

@@ -1,4 +1,4 @@
-using Server.MVVM.Model.Persistence.DTO;
+﻿using Server.MVVM.Model.Persistence.DTO;
 using Shared.MVVM.Model.SQLiteStorage;
 using System.Data.SQLite;
 
@@ -35,6 +35,11 @@ namespace Server.MVVM.Model.Persistence.Repositories
         public AccountDto Get(string login)
         {
             return Get((0, login));
+        }
+
+        public void Update(string login, AccountDto dto)
+        {
+            Update((0, login), dto);
         }
     }
 }

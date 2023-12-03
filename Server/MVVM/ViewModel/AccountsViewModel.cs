@@ -1,5 +1,6 @@
 ﻿using Server.MVVM.Model;
 using Server.MVVM.Model.Networking;
+using Server.MVVM.Model.Networking.UIRequests;
 using Server.MVVM.Model.Persistence.DTO;
 using Server.MVVM.ViewModel.Observables;
 using Shared.MVVM.Core;
@@ -36,11 +37,18 @@ namespace Server.MVVM.ViewModel
                 // Wątek UI
                 var accountObs = (AccountObservable)obj!;
 
-                DisableInteraction();
-                server.Request(new UIRequest(accountObs.IsBlocked ?
-                    UIRequest.Operations.UnblockClientIP : UIRequest.Operations.BlockClientIP,
-                    accountObs.Login, EnableInteraction));
-                accountObs.IsBlocked = !accountObs.IsBlocked;
+                window!.SetEnabled(false);
+                server.Request(accountObs.IsBlocked ?
+                    new UnblockAccount(accountObs.Login, () => UIInvoke(() =>
+                    {
+                        accountObs.IsBlocked = false;
+                        window!.SetEnabled(true);
+                    })) :
+                    new BlockAccount(accountObs.Login, () => UIInvoke(() =>
+                    {
+                        accountObs.IsBlocked = true;
+                        window!.SetEnabled(true);
+                    })));
             });
 
             Disconnect = new RelayCommand(obj =>
@@ -48,10 +56,12 @@ namespace Server.MVVM.ViewModel
                 // Wątek UI
                 var accountObs = (AccountObservable)obj!;
 
-                DisableInteraction();
-                server.Request(new UIRequest(UIRequest.Operations.DisconnectClient,
-                    accountObs.Login, EnableInteraction));
-                accountObs.IsConnected = false;
+                window!.SetEnabled(false);
+                server.Request(new DisconnectAccount(accountObs.Login, () => UIInvoke(() =>
+                {
+                    accountObs.IsConnected = false;
+                    window.SetEnabled(true);
+                })));
             });
 
             server.ClientHandshaken += OnClientHandshaken;
@@ -65,16 +75,6 @@ namespace Server.MVVM.ViewModel
                     IsBlocked = a.IsBlocked == 1,
                     IsConnected = false
                 });
-        }
-
-        private void DisableInteraction()
-        {
-            window!.SetEnabled(false);
-        }
-
-        private void EnableInteraction()
-        {
-            UIInvoke(() => window!.SetEnabled(true));
         }
 
         private void OnClientHandshaken(Client client)

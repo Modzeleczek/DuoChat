@@ -1,6 +1,7 @@
 using Newtonsoft.Json;
 using Server.MVVM.Model;
 using Server.MVVM.Model.Networking;
+using Server.MVVM.Model.Networking.UIRequests;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking;
@@ -93,13 +94,12 @@ namespace Server.MVVM.ViewModel
                 if (!ServerStopped)
                 {
                     window!.SetEnabled(false);
-                    server.Request(new UIRequest(UIRequest.Operations.StopServer, null,
-                        () => UIInvoke(() =>
-                            {
-                                ServerStopped = true;
-                                logger.Log("|Server was stopped|.");
-                                window!.SetEnabled(true);
-                            })));
+                    server.Request(new StopServer(() => UIInvoke(() =>
+                    {
+                        ServerStopped = true;
+                        logger.Log("|Server was stopped|.");
+                        window!.SetEnabled(true);
+                    })));
                     return;
                 }
 

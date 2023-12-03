@@ -1,5 +1,6 @@
 using Server.MVVM.Model;
 using Server.MVVM.Model.Networking;
+using Server.MVVM.Model.Networking.UIRequests;
 using Server.MVVM.ViewModel.Observables;
 using Shared.MVVM.Core;
 using Shared.MVVM.View.Windows;
@@ -41,35 +42,35 @@ namespace Server.MVVM.ViewModel
             {
                 // Wykonywane przez wątek UI
                 var client = (ClientObservable)obj!;
-                var key = client.GetPrimaryKey();
+                var clientKey = client.GetPrimaryKey();
                 client.DisableInteraction();
 
-                RequestClientRemove(client, UIRequest.Operations.DisconnectClient, key);
+                window!.SetEnabled(false);
+                _server.Request(new DisconnectClient(clientKey, () => UIInvoke(() =>
+                {
+                    Clients.Remove(client);
+                    window.SetEnabled(true);
+                })));
             });
 
             BlockIP = new RelayCommand(obj =>
             {
                 // Wątek UI
                 var client = (ClientObservable)obj!;
-                var key = client.GetPrimaryKey();
+                var clientKey = client.GetPrimaryKey();
                 client.DisableInteraction();
 
-                RequestClientRemove(client, UIRequest.Operations.BlockClientIP, key.IpAddress);
+                window!.SetEnabled(false);
+                _server.Request(new BlockClientIP(clientKey.IpAddress, () => UIInvoke(() =>
+                {
+                    Clients.Remove(client);
+                    window.SetEnabled(true);
+                })));
             });
 
             server.ClientConnected += ClientConnected;
             server.ClientHandshaken += ClientHandshaken;
             server.ClientEndedConnection += ClientEndedConnection;
-        }
-
-        private void RequestClientRemove(ClientObservable clientObs,
-            UIRequest.Operations operation, object parameter)
-        {
-            // Wątek UI
-            window!.SetEnabled(false);
-            _server.Request(new UIRequest(operation, parameter,
-                () => UIInvoke(() => window.SetEnabled(true))));
-            Clients.Remove(clientObs);
         }
 
         private void ClientConnected(Client client)

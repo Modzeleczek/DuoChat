@@ -1,17 +1,20 @@
 ﻿using Shared.MVVM.Model;
 using Shared.MVVM.Model.Networking;
+using System;
 
 namespace Server.MVVM.Model.Networking.UIRequests
 {
-    internal class BlockClientIP : UIRequest
+    public class BlockClientIP : UIRequest
     {
         #region Properties
-        public IPv4Address IPAddress { get; }
+        public IPv4Address IpAddress { get; }
+        public Action Callback { get; }
         #endregion
 
-        public BlockClientIP(IPv4Address ipAddress)
+        public BlockClientIP(IPv4Address ipAddress, Action callback)
         {
-            IPAddress = ipAddress;
+            IpAddress = ipAddress;
+            Callback = callback;
         }
     }
 }

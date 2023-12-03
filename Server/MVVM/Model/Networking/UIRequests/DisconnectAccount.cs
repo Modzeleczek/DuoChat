@@ -3,16 +3,16 @@ using System;
 
 namespace Server.MVVM.Model.Networking.UIRequests
 {
-    public class DisconnectClient : UIRequest
+    public class DisconnectAccount : UIRequest
     {
         #region Properties
-        public ClientPrimaryKey ClientKey { get; }
+        public string Login { get; }
         public Action Callback { get; }
         #endregion
 
-        public DisconnectClient(ClientPrimaryKey clientKey, Action callback)
+        public DisconnectAccount(string login, Action callback)
         {
-            ClientKey = clientKey;
+            Login = login;
             Callback = callback;
         }
     }

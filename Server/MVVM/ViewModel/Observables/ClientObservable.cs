@@ -17,12 +17,12 @@ namespace Server.MVVM.ViewModel.Observables
             get
             {
                 string keyString = GetPrimaryKey().ToString();
-                return keyString + (IsAuthenticated ? $" {_login}" : string.Empty);
+                return keyString + (Login is null ? string.Empty : $" {_login}");
             }
         }
 
         private string? _login = null;
-        private bool IsAuthenticated => !(_login is null);
+        public string? Login { get => _login; }
 
         public bool HasDisabledInteraction { get; private set; } = false;
         #endregion
@@ -40,7 +40,7 @@ namespace Server.MVVM.ViewModel.Observables
 
         public void Authenticate(string login)
         {
-            if (IsAuthenticated)
+            if (!(Login is null))
                 throw new InvalidOperationException("Observable client has been authenticated.");
 
             _login = login;

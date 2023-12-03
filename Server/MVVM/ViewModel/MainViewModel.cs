@@ -1,5 +1,5 @@
-using Server.MVVM.Model;
 using Server.MVVM.Model.Networking;
+using Server.MVVM.Model.Networking.UIRequests;
 using Server.MVVM.Model.Persistence;
 using Shared.MVVM.Core;
 using Shared.MVVM.View.Windows;
@@ -58,14 +58,12 @@ namespace Server.MVVM.ViewModel
                     // Wątek UI
                     window.SetEnabled(false);
                     // Asynchroniczne zatrzymanie.
-                    server.Request(new UIRequest(UIRequest.Operations.StopServer, null,
-                        () => UIInvoke(() =>
-                        {
-                            // Wykonujemy to samo bez timeoutu i z timeoutem.
-                            window.Closable = true;
-                            // Zamknięcie MainWindow powoduje zakończenie programu.
-                            window.Close();
-                        }), 1000));
+                    server.Request(new StopServer(() => UIInvoke(() =>
+                    {
+                        window.Closable = true;
+                        // Zamknięcie MainWindow powoduje zakończenie programu.
+                        window.Close();
+                    })));
                 });
 
                 var setVM = new SettingsViewModel(window, server, logVM);
