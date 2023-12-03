@@ -163,7 +163,7 @@ namespace Shared.MVVM.Model.SQLiteStorage.Repositories
             /* Zakładamy, że KeyT jest typem prostym (wartościowym lub stringiem)
             lub co najwyżej krotką (tuple) zawierającą tylko typy proste (w takiej
             krotce Equals porównuje parami jej kolejne pola). */
-            if (!key!.Equals(dtoKey))
+            if (!KeysEqual(key, dtoKey))
             {
                 // Jeżeli zmieniamy klucz encji.
                 // Czy nowa encja jeszcze nie istnieje?
@@ -186,6 +186,10 @@ namespace Shared.MVVM.Model.SQLiteStorage.Repositories
                 }
             }
             catch (Exception e) { throw QueryError(e); }
+        }
+        protected virtual bool KeysEqual(KeyT key1, KeyT key2)
+        {
+            return key1!.Equals(key2);
         }
         protected abstract string UpdateQuery();
         protected abstract void SetUpdateParameters(SQLiteParameterCollection parColl,

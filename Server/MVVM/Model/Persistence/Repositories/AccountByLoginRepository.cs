@@ -1,4 +1,4 @@
-﻿using Server.MVVM.Model.Persistence.DTO;
+using Server.MVVM.Model.Persistence.DTO;
 using Shared.MVVM.Model.SQLiteStorage;
 using System.Data.SQLite;
 
@@ -20,6 +20,11 @@ namespace Server.MVVM.Model.Persistence.Repositories
         protected override string KeyCondition()
         {
             return $"{F_login} = @{F_login}";
+        }
+
+        protected override bool KeysEqual((ulong id, string login) key1, (ulong id, string login) key2)
+        {
+            return key1.login.Equals(key2.login);
         }
 
         public bool Exists(string login)

@@ -21,6 +21,11 @@ namespace Server.MVVM.Model.Persistence.Repositories
             return $"{F_id} = @{F_id}";
         }
 
+        protected override bool KeysEqual((ulong id, string login) key1, (ulong id, string login) key2)
+        {
+            return key1.id.Equals(key2.id);
+        }
+
         public bool Exists(ulong id)
         {
             // AccountsById zwraca uwagę tylko na Id, a ignoruje Login.
