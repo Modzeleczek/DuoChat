@@ -76,8 +76,8 @@ namespace Server.MVVM.Model.Persistence.Repositories
 
         protected override string UpdateQuery()
         {
-            return $"UPDATE {TABLE} SET {F_login} = @new_{F_login}, {F_public_key} = @{F_public_key} " +
-                $"{F_is_blocked} = @{F_is_blocked} WHERE {KeyCondition()};";
+            return $"UPDATE {TABLE} SET {F_login} = @new_{F_login}, {F_public_key} = @{F_public_key}, "
+                + $"{F_is_blocked} = @{F_is_blocked} WHERE {KeyCondition()};";
         }
 
         protected override void SetUpdateParameters(SQLiteParameterCollection parColl, AccountDto dto)
