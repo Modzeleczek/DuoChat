@@ -1,8 +1,7 @@
-using Shared.MVVM.Model.Cryptography;
+﻿using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking;
 using System;
 using System.Net.Sockets;
-using System.Net;
 using System.Threading.Tasks;
 using Shared.MVVM.Core;
 using System.Threading;
@@ -34,7 +33,7 @@ namespace Client.MVVM.Model.Networking
         private RemoteServer? _remoteServer = null;
 
         // Do przebiegu sterowania
-        public Task ClientProcessTask { get; private set; } = Task.CompletedTask;
+        private Task _clientProcessTask;
         private bool _stopRequested = false;
         private readonly BlockingCollection<ServerEvent> _eventQueue =
             new BlockingCollection<ServerEvent>();
@@ -52,79 +51,15 @@ namespace Client.MVVM.Model.Networking
         public event Action? ClientStopped;
         #endregion
 
-        public void Connect(IPv4Address ipAddress, Port port, string login, PrivateKey privateKey)
+        public ClientMonolith()
         {
-            // Wątek UI
-            _login = login;
-            _privateKey = privateKey;
-            _stopRequested = false;
-
-            // Tworzymy socket.
-            /* TODO: fejkowe "factory" zwracające ciągle ten sam obiekt RemoteServer,
-            tylko ze zresetowanym stanem (wyczyszczone bufory itp.). */
-            _remoteServer = new RemoteServer(CreateConnectedTcpClient(
-                ipAddress.ToIPAddress(), port.Value), this);
-
             // Uruchamiamy wątek Client.Process.
-            ClientProcessTask = Task.Factory.StartNew(Process, TaskCreationOptions.LongRunning);
-        }
-
-        private TcpClient CreateConnectedTcpClient(IPAddress ipAddress, int port)
-        {
-            Error? error = null;
-            // https://stackoverflow.com/a/43237063
-            TcpClient tcpClient = new TcpClient();
-            var timeOut = TimeSpan.FromSeconds(CONNECT_TIMEOUT_SECONDS);
-            var cancellationCompletionSource = new TaskCompletionSource<bool>();
-            try
-            {
-                /* W obiekcie CancellationTokenSource tworzy się task "anulujący",
-                który zostanie anulowany po czasie timeOut. */
-                using (var cts = new CancellationTokenSource(timeOut))
-                {
-                    // Rozpoczynamy taska "łączącego", który łączy TcpClienta z serwerem.
-                    var connectingTask = tcpClient.ConnectAsync(ipAddress, port);
-                    /* Ustawiamy funkcję, która zostanie wykonana w momencie anulowania taska
-                    obiektu CancellationTokenSource (czyli po czasie timeOut). */
-                    using (cts.Token.Register(() => cancellationCompletionSource.TrySetResult(true)))
-                    {
-                        /* Blokując, czekamy na zakończenie pierwszego z dwóch tasków:
-                        łączącego lub anulującego; jeżeli pierwszy zakończy się nie task łączący,
-                        ale anulujący, to wyrzucamy wyjątek. */
-                        var whenAny = Task.WhenAny(connectingTask, cancellationCompletionSource.Task);
-                        whenAny.Wait();
-                        if (whenAny.Result != connectingTask)
-                            throw new OperationCanceledException(cts.Token);
-                        /* Jeżeli w tasku łączącym został wyrzucony wyjątek, to wyrzucamy
-                        go w aktualnej metodzie, aby został obsłużony w catchach na dole. */
-                        // throw exception inside 'task' (if any)
-                        if (connectingTask.Exception?.InnerException != null)
-                            throw connectingTask.Exception.InnerException;
-                    }
-                }
-                return tcpClient;
-            }
-            catch (OperationCanceledException e)
-            { error = new Error(e, "|Server connection timed out.|"); }
-            catch (SocketException e)
-            // Dokładna przyczyna braku połączenia jest w SocketException.Message.
-            { error = new Error(e, "|No response from the server.|"); }
-            catch (Exception e)
-            { error = new Error(e, "|Error occured while| |connecting to the server.|"); }
-            /* System.ArgumentNullException - nie może wystąpić, bo walidujemy adres IP
-            System.ArgumentOutOfRangeException - nie może wystąpić, bo walidujemy port
-            System.ObjectDisposedException - nie może wystąpić, bo tworzymy nowy,
-            niezdisposowany obiekt TcpClient */
-            // Wykonuje się, jeżeli złapiemy jakikolwiek wyjątek.
-            tcpClient?.Close();
-            throw error;
+            _clientProcessTask = Task.Factory.StartNew(Process, TaskCreationOptions.LongRunning);
         }
 
         private void Process()
         {
             // Wątek Client.Process
-            StartHandshake();
-
             while (true)
             {
                 /* Nie używamy monitor locka, bo _stopRequested może zmienić
@@ -159,6 +94,7 @@ namespace Client.MVVM.Model.Networking
                     _eventQueueWaitBreaker = new CancellationTokenSource();
                 }
             }
+
             ClientStopped?.Invoke();
         }
 
@@ -228,8 +164,6 @@ namespace Client.MVVM.Model.Networking
             _remoteServer = null;
 
             ServerEndedConnection?.Invoke(server, errorMsg);
-
-            _stopRequested = true;
         }
 
         private void OnSendSuccess(ServerEvent @event)
@@ -556,6 +490,9 @@ namespace Client.MVVM.Model.Networking
 
             switch (_uiRequest)
             {
+                case Connect connect:
+                    ConnectUIRequest(connect);
+                    break;
                 case IntroduceClient introduceClient:
                     IntroduceClientUIRequest(introduceClient);
                     break;
@@ -566,6 +503,79 @@ namespace Client.MVVM.Model.Networking
                     GetConversationsUIRequest(getConversations);
                     break;
             }
+        }
+
+        private void ConnectUIRequest(Connect request)
+        {
+            // Wątek Client.Process
+            ServerPrimaryKey serverKey = request.ServerKey;
+            if (!(_remoteServer is null))
+            {
+                // Jesteśmy już połączeni, więc rozłączamy.
+                DisconnectUIRequest(new Disconnect(serverKey, null));
+            }
+
+            _login = request.Login;
+            _privateKey = request.PrivateKey;
+            
+            Error? error = null;
+            // https://stackoverflow.com/a/43237063
+            TcpClient tcpClient = new TcpClient();
+            var timeOut = TimeSpan.FromSeconds(CONNECT_TIMEOUT_SECONDS);
+            var cancellationCompletionSource = new TaskCompletionSource<bool>();
+            try
+            {
+                /* W obiekcie CancellationTokenSource tworzy się task "anulujący",
+                który zostanie anulowany po czasie timeOut. */
+                using (var cts = new CancellationTokenSource(timeOut))
+                {
+                    // Rozpoczynamy taska "łączącego", który łączy TcpClienta z serwerem.
+                    var connectingTask = tcpClient.ConnectAsync(
+                        serverKey.IpAddress.ToIPAddress(), serverKey.Port.Value);
+                    /* Ustawiamy funkcję, która zostanie wykonana w momencie anulowania taska
+                    obiektu CancellationTokenSource (czyli po czasie timeOut). */
+                    using (cts.Token.Register(() => cancellationCompletionSource.TrySetResult(true)))
+                    {
+                        /* Blokując, czekamy na zakończenie pierwszego z dwóch tasków:
+                        łączącego lub anulującego; jeżeli pierwszy zakończy się nie task łączący,
+                        ale anulujący, to wyrzucamy wyjątek. */
+                        var whenAny = Task.WhenAny(connectingTask, cancellationCompletionSource.Task);
+                        whenAny.Wait();
+                        if (whenAny.Result != connectingTask)
+                            throw new OperationCanceledException(cts.Token);
+                        /* Jeżeli w tasku łączącym został wyrzucony wyjątek, to wyrzucamy
+                        go w aktualnej metodzie, aby został obsłużony w catchach na dole. */
+                        // throw exception inside 'task' (if any)
+                        if (connectingTask.Exception?.InnerException != null)
+                            throw connectingTask.Exception.InnerException;
+                    }
+                }
+
+                // Tworzymy nakładkę RemoteServer na Socket.
+                /* TODO: fejkowe "factory" zwracające ciągle ten sam obiekt RemoteServer,
+                tylko ze zresetowanym stanem (wyczyszczone bufory itp.). */
+                _remoteServer = new RemoteServer(tcpClient, this);
+                StartHandshake();
+
+                request.Callback.Invoke(null);
+                return;
+            }
+            catch (OperationCanceledException e)
+            { error = new Error(e, "|Server connection timed out.|"); }
+            catch (SocketException e)
+            // Dokładna przyczyna braku połączenia jest w SocketException.Message.
+            { error = new Error(e, "|No response from the server.|"); }
+            catch (Exception e)
+            { error = new Error(e, "|Error occured while| |connecting to the server.|"); }
+            /* System.ArgumentNullException - nie może wystąpić, bo walidujemy adres IP
+            System.ArgumentOutOfRangeException - nie może wystąpić, bo walidujemy port
+            System.ObjectDisposedException - nie może wystąpić, bo tworzymy nowy,
+            niezdisposowany obiekt TcpClient */
+            // Wykonuje się, jeżeli złapiemy jakikolwiek wyjątek.
+            tcpClient.Close();
+            _remoteServer = null;
+
+            request.Callback.Invoke(error.Message);
         }
 
         private void IntroduceClientUIRequest(IntroduceClient request)
@@ -583,8 +593,13 @@ namespace Client.MVVM.Model.Networking
 
         private void DisconnectUIRequest(Disconnect request)
         {
-            if (!(_remoteServer is null) && request.ServerKey.Equals(_remoteServer.GetPrimaryKey()))
-                DisconnectThenNotify(_remoteServer, "|was disconnected|.");
+            ServerPrimaryKey serverKey = request.ServerKey;
+            if (_remoteServer is null || !serverKey.Equals(_remoteServer.GetPrimaryKey()))
+                return;
+            RemoteServer remoteServer = _remoteServer;
+
+            DisconnectThenNotify(remoteServer, "|was disconnected|.");
+            request.Callback?.Invoke();
         }
 
         private void GetConversationsUIRequest(GetConversations request)
@@ -599,5 +614,12 @@ namespace Client.MVVM.Model.Networking
                 server.GenerateToken()), GetConversationsAndUsers.CODE);
         }
         #endregion
+
+        public void Stop()
+        {
+            // Wątek UI
+            _stopRequested = true;
+            _clientProcessTask.Wait();
+        }
     }
 }

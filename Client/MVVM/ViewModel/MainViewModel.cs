@@ -88,38 +88,31 @@ namespace Client.MVVM.ViewModel
         public Observables.Server? SelectedServer
         {
             get => _selectedServer;
-            /* Asynchronicznie rozłączamy z serwerem (poprzez
-            SelectedAccount = null). */
             set
             {
                 window!.SetEnabled(false);
 
                 if (!(SelectedServer is null) && !(SelectedAccount is null))
                 {
-                    _client.Request(new Disconnect(SelectedServer.GetPrimaryKey()));
-                    _client.ClientProcessTask.ContinueWith(_ => UIInvoke(() =>
+                    _client.Request(new Disconnect(SelectedServer.GetPrimaryKey(), () => UIInvoke(() =>
                     {
-                        ClearSelectedAccount();
+                        // Wątek UI na zlecenie wątku Client.Process
+                        _selectedAccount = null;
+                        OnPropertyChanged(nameof(SelectedAccount));
+                        ConversationVM.Conversation = null;
+                        Conversations.Clear();
 
                         FinishSettingSelectedServer(value);
-                    }));
+                    })));
                 }
                 else
+                    // Na pewno SelectedAccount is null.
                     FinishSettingSelectedServer(value);
             }
         }
 
-        private void ClearSelectedAccount()
-        {
-            _selectedAccount = null;
-            OnPropertyChanged(nameof(SelectedAccount));
-            ConversationVM.Conversation = null;
-            Conversations.Clear();
-        }
-
         private void FinishSettingSelectedServer(Observables.Server? value)
         {
-            // Wątek UI
             _selectedServer = value;
             OnPropertyChanged(nameof(SelectedServer));
 
@@ -129,7 +122,8 @@ namespace Client.MVVM.ViewModel
             {
                 try
                 {
-                    var accounts = _storage.GetAllAccounts(_loggedUserKey, value.GetPrimaryKey());
+                    var accounts = _storage.GetAllAccounts(_loggedUserKey,
+                        value.GetPrimaryKey());
                     foreach (var acc in accounts)
                         Accounts.Add(acc);
                 }
@@ -167,64 +161,61 @@ namespace Client.MVVM.ViewModel
                 if (!(SelectedAccount is null))
                 {
                     // Rozłączamy aktualne konto, bo jesteśmy połączeni.
-                    _client.Request(new Disconnect(SelectedServer!.GetPrimaryKey()));
-
-                    /* Nie można waitować wątkiem UI, bo czeka on na zakończenie
-                    operacji, a jednocześnie kod operacji może chcieć wywołać
-                    UIInvoke, co powoduje deadlock. */
-                    _client.ClientProcessTask.ContinueWith(_ =>
-                    {
-                        /* Łączymy z nowym kontem. Nie sprawdzamy, czy value == SelectedAccount,
-                        aby można było reconnectować poprzez kliknięcie na już zaznaczony serwer.
-                        Connect w anonimowym wątku */
-                        if (!(value is null) && !TryConnect(value))
-                            // Nie udało się połączyć.
-                            value = null;
-                        UIInvoke(() => FinishSettingSelectedAccount(value));
-                    });
+                    if (!(value is null))
+                        // Chcemy się połączyć.
+                        DisconnectAndConnectWithAccount(value);
+                    else
+                        // Nie chcemy się połączyć.
+                        _client.Request(new Disconnect(SelectedServer!.GetPrimaryKey(),
+                            // Wątek Client.Process
+                            () => RefreshSelectedAccount(null, null)));
                 }
                 else
                 {
-                    // Nie jesteśmy połączeni. Connect w wątku UI.
-                    if (!(value is null) && !TryConnect(value))
-                        // Nie udało się połączyć.
-                        value = null;
-                    FinishSettingSelectedAccount(value);
+                    // Nie jesteśmy połączeni.
+                    if (!(value is null))
+                        // Chcemy się połączyć.
+                        DisconnectAndConnectWithAccount(value);
+                    // Nie chcemy się połączyć.
                 }
             }
         }
 
-        private bool TryConnect(Account value)
+        private void DisconnectAndConnectWithAccount(Account value)
         {
-            // Na pewno !(account is null)
-            try
-            {
-                /* Synchroniczne łączenie, ale wciąż mamy wyłączone interakcje, aby użytkownik
-                widział, że nie powinien nic klikać, bo wątek UI jest zablokowany. */
-                var serverKey = SelectedServer!.GetPrimaryKey();
-                _client.Connect(serverKey.IpAddress, serverKey.Port,
-                    value.Login, value.PrivateKey);
-                return true;
-            }
-            catch (Error e)
-            {
-                Alert(e.Message);
-                return false;
-            }
+            _client.Request(new Connect(SelectedServer!.GetPrimaryKey(),
+                value.Login, value.PrivateKey, errorMsg =>
+                {
+                    // Można też dać UIInvoke na całą lambdę.
+                    // Wątek Client.Process
+                    Account? newValue = value;
+                    if (!(errorMsg is null))
+                        // Nie połączyliśmy się.
+                        newValue = null;
+
+                    RefreshSelectedAccount(newValue, errorMsg);
+                }));
         }
 
-        private void FinishSettingSelectedAccount(Account? value)
+        private void RefreshSelectedAccount(Account? newValue, string? errorMsg)
         {
+            // Wątek Client.Process
             // Jeżeli value is null, to odznaczamy konto na liście w UI.
-            _selectedAccount = value;
-            OnPropertyChanged(nameof(SelectedAccount));
+            _selectedAccount = newValue;
+            UIInvoke(() =>
+            {
+                OnPropertyChanged(nameof(SelectedAccount));
 
-            // Czyścimy i odświeżamy listę konwersacji.
-            ConversationVM.Conversation = null;
-            Conversations.Clear();
+                // Czyścimy i odświeżamy listę konwersacji.
+                ConversationVM.Conversation = null;
+                Conversations.Clear();
 
-            // Przywracamy interakcje z oknem.
-            window!.SetEnabled(true);
+                if (!(errorMsg is null))
+                    Alert(errorMsg);
+
+                // Przywracamy interakcje z oknem.
+                window!.SetEnabled(true);
+            });
         }
 
         private ObservableCollection<Conversation> _conversations =
@@ -421,6 +412,7 @@ namespace Client.MVVM.ViewModel
 
             Close = new RelayCommand(_ =>
             {
+                _client.Stop();
                 window!.Closable = true;
                 // zamknięcie MainWindow powoduje zakończenie programu
                 window.Close();
@@ -546,7 +538,7 @@ namespace Client.MVVM.ViewModel
             {
                 /* Serwer rozłączy klienta przez timeout, ale możemy
                 też sami się rozłączyć za pomocą UIRequesta. */
-                _client.Request(new Disconnect(server.GetPrimaryKey()));
+                _client.Request(new Disconnect(server.GetPrimaryKey(), null));
                 return;
             }
 
