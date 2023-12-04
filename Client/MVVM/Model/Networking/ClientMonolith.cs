@@ -1,4 +1,4 @@
-﻿using Shared.MVVM.Model.Cryptography;
+using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking;
 using System;
 using System.Net.Sockets;
@@ -48,7 +48,6 @@ namespace Client.MVVM.Model.Networking
         public event Action<RemoteServer, Conversation[]>? ReceivedConversationsAndUsersList;
         public event Action<RemoteServer, string>? ReceivedRequestError;
         public event Action<RemoteServer, string>? ServerEndedConnection;
-        public event Action? ClientStopped;
         #endregion
 
         public ClientMonolith()
@@ -94,8 +93,6 @@ namespace Client.MVVM.Model.Networking
                     HandleUIRequest();
                 }
             }
-
-            ClientStopped?.Invoke();
         }
 
         public void Enqueue(ServerEvent @event)

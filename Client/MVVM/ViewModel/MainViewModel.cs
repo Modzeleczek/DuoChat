@@ -457,7 +457,6 @@ namespace Client.MVVM.ViewModel
             _client.ServerHandshaken += OnServerHandshaken;
             _client.ReceivedConversationsAndUsersList += OnReceivedConversationsAndUsersList;
             _client.ServerEndedConnection += OnServerEndedConnection;
-            _client.ClientStopped += OnClientStopped;
         }
 
         private void ShowLocalUsersDialog()
@@ -606,11 +605,6 @@ namespace Client.MVVM.ViewModel
 
                 Alert($"{server} {statusMsg}");
             });
-        }
-
-        private void OnClientStopped()
-        {
-
         }
         #endregion
     }
