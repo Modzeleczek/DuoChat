@@ -175,39 +175,37 @@ namespace Client.MVVM.ViewModel
 
         private void DisconnectAndConnectWithAccount(Account value)
         {
-            _client.Request(new Connect(SelectedServer!.GetPrimaryKey(),
-                value.Login, value.PrivateKey, errorMsg =>
-                {
-                    // Można też dać UIInvoke na całą lambdę.
-                    // Wątek Client.Process
-                    Account? newValue = value;
-                    if (!(errorMsg is null))
-                        // Nie połączyliśmy się.
-                        newValue = null;
-
-                    RefreshSelectedAccount(newValue, errorMsg);
-                }));
-        }
-
-        private void RefreshSelectedAccount(Account? newValue, string? errorMsg)
-        {
-            // Wątek Client.Process
-            // Jeżeli value is null, to odznaczamy konto na liście w UI.
-            _selectedAccount = newValue;
-            UIInvoke(() =>
+            // Wątek UI
+            _client.Request(new Disconnect(SelectedServer!.GetPrimaryKey(), () =>
             {
-                OnPropertyChanged(nameof(SelectedAccount));
+                // Wątek Client.Process
+                _client.Request(new Connect(SelectedServer!.GetPrimaryKey(),
+                    value.Login, value.PrivateKey, errorMsg =>
+                    {
+                        // Wątek Client.Process
+                        // Można też dać UIInvoke na całą lambdę.
+                        Account? newValue = value;
+                        if (!(errorMsg is null))
+                            // Nie połączyliśmy się.
+                            newValue = null;
 
-                // Czyścimy i odświeżamy listę konwersacji.
-                ConversationVM.Conversation = null;
-                Conversations.Clear();
+                        _selectedAccount = newValue;
+                        UIInvoke(() =>
+                        {
+                            // Wątek UI
+                            OnPropertyChanged(nameof(SelectedAccount));
 
-                if (!(errorMsg is null))
-                    Alert(errorMsg);
+                            /* Przed callbackiem UIRequesta Disconnect zostanie
+                            wykonane OnServerEndedConnection. */
+                            if (!(errorMsg is null))
+                                // Nie połączyliśmy się.
+                                Alert(errorMsg);
 
-                // Przywracamy interakcje z oknem.
-                window!.SetEnabled(true);
-            });
+                            // Przywracamy interakcje z oknem.
+                            window!.SetEnabled(true);
+                        });
+                    }));
+            }));
         }
 
         private ObservableCollection<Conversation> _conversations =
