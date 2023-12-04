@@ -1,4 +1,4 @@
-using Shared.MVVM.Model.Cryptography;
+﻿using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking;
 using System;
 using System.Collections.Generic;
@@ -13,7 +13,6 @@ using System.Text;
 using System.Linq;
 using System.Collections.Concurrent;
 using Server.MVVM.Model.Networking.PacketOrders;
-using Server.MVVM.ViewModel;
 using Shared.MVVM.Model.Networking.Packets.ServerToClient;
 using Shared.MVVM.Model.Networking.Packets;
 using Shared.MVVM.Model.Networking.Packets.ClientToServer;
@@ -28,7 +27,6 @@ namespace Server.MVVM.Model.Networking
         #region Fields
         // Usługi
         private readonly Storage _storage;
-        private readonly ILogger _logger;
 
         // Dane lokalnego hosta
         private Guid _guid = Guid.Empty;
@@ -58,17 +56,11 @@ namespace Server.MVVM.Model.Networking
         public event Action<Client, string>? ClientEndedConnection;
         #endregion
 
-        public ServerMonolith(Storage storage, ILogger logger)
+        public ServerMonolith(Storage storage)
         {
             _storage = storage;
-            _logger = logger;
 
             _serverProcessTask = Task.Factory.StartNew(Process, TaskCreationOptions.LongRunning);
-        }
-
-        private void Log(string message)
-        {
-            _logger.Log(message);
         }
 
         private void Process()
@@ -220,7 +212,7 @@ namespace Server.MVVM.Model.Networking
             Client client = @event.Sender;
             // var clientKey = client.GetPrimaryKey()
 
-            var code = (Packet.Codes)@event.Data!;
+            var (code, reason) = ((Packet.Codes, string))@event.Data!;
             // Log($"Sent {operation} to client {clientKey}.")
 
             switch (code)
@@ -229,7 +221,7 @@ namespace Server.MVVM.Model.Networking
                 case Packet.Codes.IPAlreadyBlocked:
                 case Packet.Codes.NoAuthentication:
                 case Packet.Codes.AccountAlreadyBlocked:
-                    DisconnectThenNotify(client, code.ToString());
+                    DisconnectThenNotify(client, $"{code}: {reason}");
                     break;
                 case Packet.Codes.IPNowBlocked:
                     DisconnectThenNotify(client, "|IP address is now blocked|.");
@@ -346,10 +338,10 @@ namespace Server.MVVM.Model.Networking
                 
                 if (existingAccount.IsBlocked == 1)
                 {
-                    Log($"{client} |tried to authenticate using blocked account| " +
-                        $"'{existingAccount.Login}'.");
                     client.EnqueueToSend(AccountAlreadyBlocked.Serialize(_privateKey!,
-                        client.PublicKey!, client.GenerateToken()), AccountAlreadyBlocked.CODE);
+                        client.PublicKey!, client.GenerateToken()), AccountAlreadyBlocked.CODE,
+                        $"{client} |tried to authenticate using blocked account| " +
+                        $"'{existingAccount.Login}'.");
                     return;
                 }
             }
@@ -376,11 +368,9 @@ namespace Server.MVVM.Model.Networking
         {
             // Wciąż client.IsNotifiable == false, więc nie ustawiamy tego.
 
-            Log($"{client} {errorMsg}");
-            /* TODO: w EnqueueToSend nowy parametr, który jest "przyczyną"
-            tego, że chcemy wysłać dany pakiet. */
             client.EnqueueToSend(NoAuthentication.Serialize(_privateKey!,
-                client.PublicKey!, client.GenerateToken()), NoAuthentication.CODE);
+                client.PublicKey!, client.GenerateToken()), NoAuthentication.CODE,
+                $"{client} {errorMsg}");
         }
         #endregion
 

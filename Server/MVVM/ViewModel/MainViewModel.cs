@@ -43,7 +43,7 @@ namespace Server.MVVM.ViewModel
                 try
                 {
                     storage = new Storage();
-                    server = new ServerMonolith(storage, logVM);
+                    server = new ServerMonolith(storage);
                 }
                 catch (Error e)
                 {
