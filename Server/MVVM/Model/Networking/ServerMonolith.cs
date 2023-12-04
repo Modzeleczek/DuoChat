@@ -1,4 +1,4 @@
-﻿using Shared.MVVM.Model.Cryptography;
+using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking;
 using System;
 using System.Collections.Generic;
@@ -17,7 +17,6 @@ using Server.MVVM.ViewModel;
 using Shared.MVVM.Model.Networking.Packets.ServerToClient;
 using Shared.MVVM.Model.Networking.Packets;
 using Shared.MVVM.Model.Networking.Packets.ClientToServer;
-using Server.MVVM.Model.Networking.Packets.ServerToClient;
 using Server.MVVM.Model.Networking.UIRequests;
 using Shared.MVVM.Model;
 

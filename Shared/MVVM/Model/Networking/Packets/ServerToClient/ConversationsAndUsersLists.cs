@@ -1,9 +1,7 @@
-﻿using Shared.MVVM.Model.Cryptography;
-using Shared.MVVM.Model.Networking;
-using Shared.MVVM.Model.Networking.Packets;
+using Shared.MVVM.Model.Cryptography;
 using System.Text;
 
-namespace Server.MVVM.Model.Networking.Packets.ServerToClient
+namespace Shared.MVVM.Model.Networking.Packets.ServerToClient
 {
     public class ConversationsAndUsersLists : Packet
     {

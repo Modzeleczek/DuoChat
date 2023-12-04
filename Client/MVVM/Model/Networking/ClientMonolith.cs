@@ -11,7 +11,6 @@ using Client.MVVM.ViewModel.Observables;
 using System.Collections.Generic;
 using Shared.MVVM.Model.Networking.Packets;
 using Shared.MVVM.Model.Networking.Packets.ServerToClient;
-using Server.MVVM.Model.Networking.Packets.ServerToClient;
 using Shared.MVVM.Model.Networking.Packets.ClientToServer;
 using Shared.MVVM.Model;
 using Client.MVVM.Model.Networking.UIRequests;
