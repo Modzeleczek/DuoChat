@@ -592,10 +592,14 @@ namespace Client.MVVM.Model.Networking
         {
             ServerPrimaryKey serverKey = request.ServerKey;
             if (_remoteServer is null || !serverKey.Equals(_remoteServer.GetPrimaryKey()))
+            {
+                request.Callback?.Invoke();
                 return;
+            }
             RemoteServer remoteServer = _remoteServer;
 
             DisconnectThenNotify(remoteServer, "|was disconnected|.");
+
             request.Callback?.Invoke();
         }
 
