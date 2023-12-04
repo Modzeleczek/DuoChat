@@ -33,7 +33,7 @@ namespace Client.MVVM.Model.Networking
         private RemoteServer? _remoteServer = null;
 
         // Do przebiegu sterowania
-        private Task _clientProcessTask;
+        private readonly Task _clientProcessTask;
         private bool _stopRequested = false;
         private readonly BlockingCollection<ServerEvent> _eventQueue =
             new BlockingCollection<ServerEvent>();
