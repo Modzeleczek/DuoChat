@@ -68,12 +68,12 @@ namespace Server.MVVM.ViewModel
                 })));
             });
 
-            server.ClientConnected += ClientConnected;
-            server.ClientHandshaken += ClientHandshaken;
-            server.ClientEndedConnection += ClientEndedConnection;
+            server.ClientConnected += OnClientConnected;
+            server.ClientHandshaken += OnClientHandshaken;
+            server.ClientEndedConnection += OnClientEndedConnection;
         }
 
-        private void ClientConnected(Client client)
+        private void OnClientConnected(Client client)
         {
             // Wątek Server.Process
             var clientObs = new ClientObservable(client.GetPrimaryKey());
@@ -85,7 +85,7 @@ namespace Server.MVVM.ViewModel
             });
         }
 
-        private void ClientHandshaken(Client client)
+        private void OnClientHandshaken(Client client)
         {
             // Wątek Server.Process
             var clientObs = FindClientObservable(client);
@@ -105,7 +105,7 @@ namespace Server.MVVM.ViewModel
             return clientObs;
         }
 
-        private void ClientEndedConnection(Client client, string statusMsg)
+        private void OnClientEndedConnection(Client client, string statusMsg)
         {
             // Wątek Server.Process
             var clientObs = FindClientObservable(client);
