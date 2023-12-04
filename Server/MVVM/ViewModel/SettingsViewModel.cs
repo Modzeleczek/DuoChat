@@ -111,9 +111,12 @@ namespace Server.MVVM.ViewModel
 
                 try
                 {
-                    server.StartServer(guid, privateKey!, ipAddress!, port!, capacity);
-                    ServerStopped = false;
-                    logger.Log("|Server was started|.");
+                    server.Request(new StartServer(guid, privateKey!, ipAddress!, port!, capacity,
+                        (errorMsg) => UIInvoke(() =>
+                        {
+                            ServerStopped = false;
+                            logger.Log("|Server was started|.");
+                        })));
                 }
                 catch (Error e)
                 {

@@ -43,8 +43,9 @@ namespace Server.MVVM.Model.Networking
 
         // Do przebiegu sterowania
         private TcpListener? _listener = null;
-        private Task? _serverProcessTask = null;
+        private readonly Task _serverProcessTask;
         private bool _stopRequested = false;
+        private bool _isAcceptingClients = false;
         private readonly BlockingCollection<ClientEvent> _eventQueue =
             new BlockingCollection<ClientEvent>();
         // Wczesna (eager) inicjalizacja
@@ -53,7 +54,6 @@ namespace Server.MVVM.Model.Networking
         #endregion
 
         #region Events
-        public event Action? ServerStopped;
         public event Action<Client>? ClientConnected;
         public event Action<Client>? ClientHandshaken;
         public event Action<Client, string>? ClientEndedConnection;
@@ -63,37 +63,13 @@ namespace Server.MVVM.Model.Networking
         {
             _storage = storage;
             _logger = logger;
+
+            _serverProcessTask = Task.Factory.StartNew(Process, TaskCreationOptions.LongRunning);
         }
 
         private void Log(string message)
         {
             _logger.Log(message);
-        }
-
-        public void StartServer(Guid guid, PrivateKey privateKey,
-            IPv4Address ipAddress, Port port, int capacity)
-        {
-            // Wątek UI
-            _guid = guid;
-            _privateKey = privateKey;
-            // Memoizujemy, bo obliczanie klucza publicznego jest kosztowne.
-            _publicKeyBytes = privateKey.ToPublicKey().ToBytes();
-            _capacity = capacity;
-            _clients.Clear();
-            _stopRequested = false;
-
-            // Tworzymy socket.
-            var localEndPoint = new IPEndPoint(ipAddress.ToIPAddress(), port.Value);
-            _listener = new TcpListener(localEndPoint);
-            try { _listener.Start(); }
-            catch (SocketException se)
-            {
-                _listener.Stop();
-                throw new Error(se, "|Error occured while| |starting the server|.");
-            }
-
-            // Uruchamiamy wątek Server.Process.
-            _serverProcessTask = Task.Factory.StartNew(Process, TaskCreationOptions.LongRunning);
         }
 
         private void Process()
@@ -107,7 +83,8 @@ namespace Server.MVVM.Model.Networking
                     break;
 
                 // Akceptujemy jednego klienta lub odrzucamy, jeżeli nie ma miejsca.
-                AcceptPendingClientIfAny();
+                if (_isAcceptingClients)
+                    AcceptPendingClientIfAny();
 
                 /* Obsługujemy jedno zdarzenie klienta. Jeżeli w kolejce jest więcej
                 zdarzeń, to pętla kręci się i bez spania po kolei je obsługuje. */
@@ -136,12 +113,6 @@ namespace Server.MVVM.Model.Networking
                     HandleUIRequest();
                 }
             }
-
-            var clients = _clients.Select(c => c.Value).ToArray();
-            foreach (var client in clients)
-                DisconnectThenNotify(client, "|Server is stopping|.");
-            _listener!.Stop();
-            ServerStopped?.Invoke();
         }
 
         public void Enqueue(ClientEvent @event)
@@ -593,8 +564,11 @@ namespace Server.MVVM.Model.Networking
 
             switch (_uiRequest)
             {
-                case StopServer:
-                    _stopRequested = true;
+                case StartServer startServer:
+                    StartServerUIRequest(startServer);
+                    break;
+                case StopServer stopServer:
+                    StopServerUIRequest(stopServer);
                     break;
                 case DisconnectClient disconnectClient:
                     DisconnectClientUIRequest(disconnectClient);
@@ -615,6 +589,43 @@ namespace Server.MVVM.Model.Networking
                     UnblockAccountUIRequest(unblockAccount);
                     break;
             }
+        }
+
+        public void StartServerUIRequest(StartServer request)
+        {
+            // Wątek UI
+            _guid = request.Guid;
+            _privateKey = request.PrivateKey;
+            // Memoizujemy, bo obliczanie klucza publicznego jest kosztowne.
+            _publicKeyBytes = request.PrivateKey.ToPublicKey().ToBytes();
+            _capacity = request.Capacity;
+            _clients.Clear();
+            _isAcceptingClients = true;
+
+            string? errorMsg = null;
+            // Tworzymy socket.
+            var localEndPoint = new IPEndPoint(request.IpAddress.ToIPAddress(), request.Port.Value);
+            _listener = new TcpListener(localEndPoint);
+            try { _listener.Start(); }
+            catch (SocketException se)
+            {
+                _listener.Stop();
+                errorMsg = new Error(se, "|Error occured while| |starting the server|.").Message;
+            }
+
+            request.Callback?.Invoke(errorMsg);
+        }
+
+        private void StopServerUIRequest(StopServer request)
+        {
+            _isAcceptingClients = false;
+            // Rozłączamy wszystkich klientów.
+            var clients = _clients.Select(c => c.Value).ToArray();
+            foreach (var client in clients)
+                DisconnectThenNotify(client, "|Server is stopping|.");
+            _listener!.Stop();
+            
+            request.Callback?.Invoke();
         }
 
         private void DisconnectClientUIRequest(DisconnectClient request)
@@ -709,5 +720,12 @@ namespace Server.MVVM.Model.Networking
             request.Callback?.Invoke();
         }
         #endregion
+
+        public void Stop()
+        {
+            // Wątek UI
+            _stopRequested = true;
+            _serverProcessTask.Wait();
+        }
     }
 }
