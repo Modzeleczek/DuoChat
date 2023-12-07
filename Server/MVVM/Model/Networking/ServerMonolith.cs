@@ -1,4 +1,4 @@
-﻿using Shared.MVVM.Model.Cryptography;
+using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking;
 using System;
 using System.Collections.Generic;
@@ -296,7 +296,10 @@ namespace Server.MVVM.Model.Networking
             // Pakiet już bez prefiksu, bo PacketReceiveBuffer go ucina.
             var pr = new PacketReader(packet);
             if ((Packet.Codes)pr.ReadUInt8() != ClientIntroduction.CODE)
+            {
                 InterruptHandshake(client, UnexpectedPacketErrorMsg);
+                return;
+            }
 
             ClientIntroduction.Deserialize(pr, _privateKey!,
                 out PublicKey publicKey, out bool senderSignatureValid, out string login,
