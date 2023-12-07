@@ -157,8 +157,10 @@ namespace Client.MVVM.Model.Networking
             {
                 // Client.Process lub wątek timeoutujący zcancelował CTS.
                 /* Tylko anulujemy timeout (lub nie, jeżeli już wątek timeoutujący
-                wykonał TryMarkAsTimedOut, ale przynajmniej próbujemy). */
-                order!.TryMarkAsDone();
+                wykonał TryMarkAsTimedOut, ale przynajmniej próbujemy). Jeżeli
+                złapany został wyjątek rzucony podczas wysyłania keep alive, to
+                order jest nullem. */
+                order?.TryMarkAsDone();
             }
             catch (Exception e)
             {
