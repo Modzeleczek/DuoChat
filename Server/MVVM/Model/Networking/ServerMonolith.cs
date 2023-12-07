@@ -454,9 +454,13 @@ namespace Server.MVVM.Model.Networking
                     participants[p] = new ConversationsAndUsersLists.ParticipantModel
                     {
                         ParticipantId = id,
-                        JoinTime = _rng.NextInt64(),
+                        /* DateTimeOffset.FromUnixTimeMilliseconds(p.JoinTime).UtcDateTime
+                        "Valid values are between -62135596800000 and 253402300799999, inclusive. */
+                        JoinTime = new DateTimeOffset(DateTime.UtcNow)
+                            .AddMilliseconds(_rng.Next(1 << 20)).ToUnixTimeMilliseconds(),
                         IsAdministrator = (byte)_rng.Next(2)
                     };
+                    new DateTimeOffset().ToUnixTimeMilliseconds();
 
                     if (!accounts.ContainsKey(id))
                         accounts.Add(id, new ConversationsAndUsersLists.AccountModel
