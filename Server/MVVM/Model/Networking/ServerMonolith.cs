@@ -622,7 +622,7 @@ namespace Server.MVVM.Model.Networking
             var clients = _clients.Select(c => c.Value).ToArray();
             foreach (var client in clients)
                 DisconnectThenNotify(client, "|Server is stopping|.");
-            _listener!.Stop();
+            _listener?.Stop();
             
             request.Callback?.Invoke();
         }
