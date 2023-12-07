@@ -584,6 +584,9 @@ namespace Server.MVVM.Model.Networking
                 case UnblockAccount unblockAccount:
                     UnblockAccountUIRequest(unblockAccount);
                     break;
+                case StopProcess stopProcess:
+                    StopProcessUIRequest(stopProcess);
+                    break;
             }
         }
 
@@ -715,13 +718,16 @@ namespace Server.MVVM.Model.Networking
 
             request.Callback?.Invoke();
         }
-        #endregion
 
-        public void Stop()
+        private void StopProcessUIRequest(StopProcess request)
         {
-            // Wątek UI
+            // Wątek Server.Process
+            /* Pętla w Process zakończy się natychmiast po ustawieniu
+            tego i powrocie ze StopProcessUIRequest. */
             _stopRequested = true;
-            _serverProcessTask.Wait();
+
+            request.Callback?.Invoke();
         }
+        #endregion
     }
 }

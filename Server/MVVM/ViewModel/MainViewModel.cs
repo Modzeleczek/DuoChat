@@ -58,12 +58,17 @@ namespace Server.MVVM.ViewModel
                     // Wątek UI
                     window.SetEnabled(false);
                     // Asynchroniczne zatrzymanie.
-                    server.Request(new StopServer(() => UIInvoke(() =>
+                    server.Request(new StopServer(() =>
                     {
-                        window.Closable = true;
-                        // Zamknięcie MainWindow powoduje zakończenie programu.
-                        window.Close();
-                    })));
+                        // Wątek Server.Process
+                        server.Request(new StopProcess(() => UIInvoke(() =>
+                        {
+                            // Wątek UI na zlecenie (poprzez UIInvoke) wątku Server.Process
+                            window.Closable = true;
+                            // Zamknięcie MainWindow powoduje zakończenie programu.
+                            window.Close();
+                        })));
+                    }));
                 });
 
                 var setVM = new SettingsViewModel(window, server, logVM);
