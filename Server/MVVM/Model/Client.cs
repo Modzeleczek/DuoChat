@@ -296,12 +296,12 @@ namespace Server.MVVM.Model
         
         public ulong GenerateToken()
         {
-            return _localSeed++;
+            return _remoteSeed++;
         }
 
         public bool VerifyReceivedToken(ulong token)
         {
-            return (_remoteSeed++) == token;
+            return (_localSeed++) == token;
         }
     }
 }

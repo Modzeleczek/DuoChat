@@ -1,4 +1,4 @@
-﻿using Client.MVVM.Model.Networking.PacketOrders;
+using Client.MVVM.Model.Networking.PacketOrders;
 using Shared.MVVM.Model;
 using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking;
@@ -309,12 +309,12 @@ namespace Client.MVVM.Model.Networking
         
         public ulong GenerateToken()
         {
-            return LocalSeed++;
+            return _remoteSeed!++.Value;
         }
 
         public bool VerifyReceivedToken(ulong token)
         {
-            return (_remoteSeed++) == token;
+            return (LocalSeed++) == token;
         }
     }
 }
