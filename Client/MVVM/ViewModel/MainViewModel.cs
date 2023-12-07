@@ -402,10 +402,20 @@ namespace Client.MVVM.ViewModel
 
             Close = new RelayCommand(_ =>
             {
-                _client.Stop();
-                window!.Closable = true;
-                // zamknięcie MainWindow powoduje zakończenie programu
-                window.Close();
+                var stopProcessRequest = new StopProcess(() => UIInvoke(() =>
+                {
+                    // Wątek Client.Process
+                    window!.Closable = true;
+                    // zamknięcie MainWindow powoduje zakończenie programu
+                    window.Close();
+                }));
+
+                if (!(SelectedAccount is null))
+                    _client.Request(new Disconnect(SelectedServer!.GetPrimaryKey(),
+                        // Wątek Client.Process
+                        () => _client.Request(stopProcessRequest)));
+
+                _client.Request(stopProcessRequest);
             });
 
             OpenSettings = new RelayCommand(_ =>

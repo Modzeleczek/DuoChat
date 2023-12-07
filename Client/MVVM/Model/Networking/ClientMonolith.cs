@@ -498,6 +498,9 @@ namespace Client.MVVM.Model.Networking
                 case GetConversations getConversations:
                     GetConversationsUIRequest(getConversations);
                     break;
+                case StopProcess stopProcess:
+                    StopProcessUIRequest(stopProcess);
+                    break;
             }
         }
 
@@ -613,13 +616,16 @@ namespace Client.MVVM.Model.Networking
             server.EnqueueToSend(GetConversationsAndUsers.Serialize(_privateKey!, server.PublicKey!,
                 server.GenerateToken()), GetConversationsAndUsers.CODE);
         }
-        #endregion
 
-        public void Stop()
+        private void StopProcessUIRequest(StopProcess request)
         {
-            // Wątek UI
+            // Wątek Client.Process
+            /* Pętla w Process zakończy się natychmiast po ustawieniu
+            tego i powrocie ze StopProcessUIRequest. */
             _stopRequested = true;
-            _clientProcessTask.Wait();
+
+            request.Callback?.Invoke();
         }
+        #endregion
     }
 }
