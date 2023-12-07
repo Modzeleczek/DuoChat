@@ -185,7 +185,7 @@ namespace Server.MVVM.Model
             }
 
             StartTimeoutTaskIfNeeded(order, SEND_TIMEOUT_MILLISECONDS,
-                ClientEvent.Types.SendTimeout, null);
+                ClientEvent.Types.SendTimeout, order);
             return true;
         }
         #endregion
