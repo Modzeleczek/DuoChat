@@ -228,10 +228,6 @@ namespace Client.MVVM.Model.Networking
             // Oczekujemy pakietu innego niż powiadomienie.
             switch (expectedPacket)
             {
-                case ReceivePacketOrder.ExpectedPackets.KeepAlive:
-                    // Nie odebraliśmy keep alive, więc rozłączamy.
-                    DisconnectThenNotify(server, UnexpectedPacketErrorMsg);
-                    break;
                 case ReceivePacketOrder.ExpectedPackets
                     .NoSlots_Or_IPAlreadyBlocked_Or_ServerIntroduction:
                     if (!(HandleExpectedNoSlots_Or_IPAlreadyBlocked(server, packet)
@@ -242,6 +238,9 @@ namespace Client.MVVM.Model.Networking
                     .Authentication_Or_NoAuthentication_Or_AccountAlreadyBlocked:
                     HandleExpectedAuthentication_Or_NoAuthentication_Or_AccountAlreadyBlocked(
                         server, packet);
+                    break;
+                default: // Oczekujemy np. KeepAlive, ale go nie odebraliśmy.
+                    DisconnectThenNotify(server, UnexpectedPacketErrorMsg);
                     break;
             }
         }

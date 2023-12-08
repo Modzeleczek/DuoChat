@@ -281,12 +281,11 @@ namespace Server.MVVM.Model.Networking
             // Oczekujemy pakietu innego niż żądanie.
             switch (expectedPacket)
             {
-                case ReceivePacketOrder.ExpectedPackets.KeepAlive:
-                    // Nie odebraliśmy keep alive, więc rozłączamy.
-                    DisconnectThenNotify(client, UnexpectedPacketErrorMsg);
-                    break;
                 case ReceivePacketOrder.ExpectedPackets.ClientIntroduction:
                     HandleExpectedClientIntroduction(client, packet);
+                    break;
+                default: // Oczekujemy np. KeepAlive, ale go nie odebraliśmy.
+                    DisconnectThenNotify(client, UnexpectedPacketErrorMsg);
                     break;
             }
         }
