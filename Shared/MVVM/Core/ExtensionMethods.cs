@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace Shared.MVVM.Core
 {
@@ -19,5 +20,32 @@ namespace Shared.MVVM.Core
             int j = Array.IndexOf<T>(Arr, src) + 1;
             return (Arr.Length == j) ? Arr[0] : Arr[j];
         }
+
+        #region Byte array
+        public static string ToHexString(this byte[] array, int startIndex, int count)
+        {
+            var sb = new StringBuilder();
+            for (int i = startIndex; i < startIndex + count; ++i)
+                sb.Append($"{array[i]:X2} ");
+            return sb.ToString();
+        }
+
+        public static string ToHexString(this byte[] array)
+        {
+            return ToHexString(array, 0, array.Length);
+        }
+
+        public static byte[] Slice(this byte[] array, int startIndex, int count)
+        {
+            byte[] ret = new byte[count];
+            Buffer.BlockCopy(array, startIndex, ret, 0, count);
+            return ret;
+        }
+
+        public static byte[] Slice(this byte[] array, int startIndex)
+        {
+            return array.Slice(startIndex, array.Length - startIndex);
+        }
+        #endregion
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Shared.MVVM.Core;
 using Shared.MVVM.Model.Cryptography;
 using System.Numerics;
 
