@@ -594,7 +594,7 @@ namespace Server.MVVM.Model.Networking
             }
         }
 
-        public void StartServerUIRequest(StartServer request)
+        private void StartServerUIRequest(StartServer request)
         {
             // Wątek UI
             _guid = request.Guid;
