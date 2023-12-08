@@ -593,11 +593,14 @@ namespace Client.MVVM.ViewModel
         private void OnReceivedConversationsAndUsersList(RemoteServer server,
             Conversation[] conversations)
         {
-            ConversationVM.Conversation = null;
-            Conversations.Clear();
-            
-            foreach (var c in conversations)
-                Conversations.Add(c);
+            UIInvoke(() =>
+            {
+                ConversationVM.Conversation = null;
+                Conversations.Clear();
+
+                foreach (var c in conversations)
+                    Conversations.Add(c);
+            });
         }
 
         private void OnServerEndedConnection(RemoteServer server, string statusMsg)
