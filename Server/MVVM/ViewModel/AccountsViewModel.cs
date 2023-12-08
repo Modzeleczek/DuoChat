@@ -102,8 +102,9 @@ namespace Server.MVVM.ViewModel
             _ = statusMsg;
 
             // Wątek Server.Process
-            var accountObs = Accounts.Single(a => a.Login.Equals(client.Login));
-            // if (accountObs is null) nieprawdopodobne
+            var accountObs = Accounts.SingleOrDefault(a => a.Login.Equals(client.Login));
+            if (accountObs is null)
+                return;
 
             UIInvoke(() => accountObs.IsConnected = false);
         }
