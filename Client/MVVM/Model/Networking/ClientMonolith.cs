@@ -421,7 +421,7 @@ namespace Client.MVVM.Model.Networking
                         // Nieprawdopodobne: serwer wysłał id uczestnika, ale nie wysłał jego szczegółów.
                         throw new Error(
                             "|Server sent participant's id but did not send their details|.");
-                    conversations[cp].Participations.Add(new ConversationParticipation
+                    conversation.Participations.Add(new ConversationParticipation
                     {
                         ConversationId = conversation.Id,
                         Conversation = conversation,
