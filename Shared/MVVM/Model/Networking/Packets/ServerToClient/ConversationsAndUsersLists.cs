@@ -95,6 +95,7 @@ namespace Shared.MVVM.Model.Networking.Packets.ServerToClient
             byte[] loginBytes = Encoding.UTF8.GetBytes(account.Login);
             // if (loginBytes.Length > 255) throw
             pb.Append((ulong)loginBytes.Length, 1);
+            pb.Append(loginBytes);
             pb.Append(account.PublicKey.ToBytes());
             pb.Append(account.IsBlocked, 1);
         }
