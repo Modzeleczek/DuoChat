@@ -250,14 +250,16 @@ namespace Server.MVVM.Model.Networking
                 ++client.ContiguousKeepAlivesCounter;
                 
                 // Oczekujemy keep alive lub żądania od klienta.
-                if ((expectedPacket == ReceivePacketOrder.ExpectedPackets.KeepAlive
+                if (expectedPacket == ReceivePacketOrder.ExpectedPackets.KeepAlive
                     || expectedPacket == ReceivePacketOrder.ExpectedPackets.Request)
+                {
                     /* Resetujemy timeout oczekiwanego keep alive lub żądania
                     i ponawiamy oczekiwanie. */
-                    // Jeżeli false, to wystąpił timeout.
-                    && !client.SetExpectedPacket(expectedPacket))
+                    // Jeżeli false, to wystąpił timeout - zdarzenie o nim jest już w kolejce.
+                    client.SetExpectedPacket(expectedPacket);
                     return;
-                
+                }
+
                 // Oczekujemy pakietu innego niż keep alive lub żądanie.
                 if (client.ContiguousKeepAlivesCounter >= Client.CONTIGUOUS_KEEP_ALIVES_LIMIT)
                 {

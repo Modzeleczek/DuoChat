@@ -197,14 +197,16 @@ namespace Client.MVVM.Model.Networking
                 ++server.ContiguousKeepAlivesCounter;
 
                 // Oczekujemy keep alive lub powiadomienia od serwera.
-                if ((expectedPacket == ReceivePacketOrder.ExpectedPackets.KeepAlive
+                if (expectedPacket == ReceivePacketOrder.ExpectedPackets.KeepAlive
                     || expectedPacket == ReceivePacketOrder.ExpectedPackets.Notification)
+                {
                     /* Resetujemy timeout oczekiwanego keep alive lub powiadomienia
                     i ponawiamy oczekiwanie. */
-                    // Jeżeli false, to wystąpił timeout.
-                    && !server.SetExpectedPacket(expectedPacket))
+                    // Jeżeli false, to wystąpił timeout - zdarzenie o nim jest już w kolejce.
+                    server.SetExpectedPacket(expectedPacket);
                     return;
-                
+                }
+
                 // Oczekujemy pakietu innego niż keep alive lub powiadomienie.
                 if (server.ContiguousKeepAlivesCounter >= RemoteServer.CONTIGUOUS_KEEP_ALIVES_LIMIT)
                 {
