@@ -381,7 +381,11 @@ namespace Server.MVVM.Model.Networking
             Client client, PacketReader pr)
         {
             pr.Decrypt(_privateKey!);
-            pr.VerifySignature(client.PublicKey!);
+            if (!pr.VerifySignature(client.PublicKey!))
+            {
+                DisconnectThenNotify(client, "|sent| |invalid packet signature|.");
+                return null;
+            }
 
             var operationCode = (Packet.Codes)pr.ReadUInt8();
 

@@ -330,7 +330,11 @@ namespace Client.MVVM.Model.Networking
             RemoteServer server, PacketReader pr)
         {
             pr.Decrypt(_privateKey!);
-            pr.VerifySignature(server.PublicKey!);
+            if (!pr.VerifySignature(server.PublicKey!))
+            {
+                DisconnectThenNotify(server, "|sent| |invalid packet signature|.");
+                return null;
+            }
 
             var operationCode = (Packet.Codes)pr.ReadUInt8();
 
