@@ -1,4 +1,5 @@
 ﻿using Shared.MVVM.Model.Cryptography;
+using Shared.MVVM.Model.Networking.Transfer.Reception;
 
 namespace Shared.MVVM.Model.Networking.Packets.ServerToClient
 {

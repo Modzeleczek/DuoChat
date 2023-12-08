@@ -3,9 +3,9 @@ using System;
 using System.Security.Cryptography;
 using Shared.MVVM.Core;
 using System.Net;
-using Shared.MVVM.Model.Networking;
 using System.Collections.Generic;
 using System.Data.SQLite;
+using Shared.MVVM.Model.Networking.Transfer.Reception;
 
 namespace Shared.MVVM.Model.Cryptography
 {

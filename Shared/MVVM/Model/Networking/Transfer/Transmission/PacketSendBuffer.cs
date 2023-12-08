@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using System;
 using System.Threading;
 
-namespace Shared.MVVM.Model.Networking
+namespace Shared.MVVM.Model.Networking.Transfer.Transmission
 {
     public class PacketSendBuffer
     {
@@ -16,10 +16,10 @@ namespace Shared.MVVM.Model.Networking
         #endregion
 
         #region Fields
-        public const int PACKET_PREFIX_SIZE = sizeof(int);
+        public const int PREFIX_SIZE = SocketWrapper.PACKET_PREFIX_SIZE;
         /* Bufora _prefix używamy tylko do wysyłania prefiksu
         albo całego pakietu keep alive (bo on jest samym prefiksem). */
-        private readonly byte[] _prefix = new byte[PACKET_PREFIX_SIZE];
+        private readonly byte[] _prefix = new byte[PREFIX_SIZE];
         private byte[]? _packetNoPrefix = null;
         private int _sentBytes = 0;
         #endregion

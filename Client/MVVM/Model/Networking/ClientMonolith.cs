@@ -1,5 +1,4 @@
 using Shared.MVVM.Model.Cryptography;
-using Shared.MVVM.Model.Networking;
 using System;
 using System.Net.Sockets;
 using System.Threading.Tasks;
@@ -14,6 +13,7 @@ using Shared.MVVM.Model.Networking.Packets.ServerToClient;
 using Shared.MVVM.Model.Networking.Packets.ClientToServer;
 using Shared.MVVM.Model;
 using Client.MVVM.Model.Networking.UIRequests;
+using Shared.MVVM.Model.Networking.Transfer.Reception;
 
 namespace Client.MVVM.Model.Networking
 {

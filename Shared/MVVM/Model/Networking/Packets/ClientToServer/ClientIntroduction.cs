@@ -1,4 +1,6 @@
 ﻿using Shared.MVVM.Model.Cryptography;
+using Shared.MVVM.Model.Networking.Transfer.Reception;
+using Shared.MVVM.Model.Networking.Transfer.Transmission;
 using System;
 using System.Text;
 

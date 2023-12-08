@@ -18,6 +18,7 @@ using Shared.MVVM.Model.Networking.Packets;
 using Shared.MVVM.Model.Networking.Packets.ClientToServer;
 using Server.MVVM.Model.Networking.UIRequests;
 using Shared.MVVM.Model;
+using Shared.MVVM.Model.Networking.Transfer.Reception;
 
 namespace Server.MVVM.Model.Networking
 {

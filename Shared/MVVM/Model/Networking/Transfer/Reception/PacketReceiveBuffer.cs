@@ -5,7 +5,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Shared.MVVM.Model.Networking
+namespace Shared.MVVM.Model.Networking.Transfer.Reception
 {
     public class PacketReceiveBuffer
     {
@@ -14,7 +14,7 @@ namespace Shared.MVVM.Model.Networking
         #endregion
 
         #region Fields
-        private const uint PREFIX_SIZE = PacketSendBuffer.PACKET_PREFIX_SIZE;
+        private const uint PREFIX_SIZE = SocketWrapper.PACKET_PREFIX_SIZE;
         private const uint MAX_PACKET_SIZE = (1 << 20);
 
         private State _state = State.Prefix;

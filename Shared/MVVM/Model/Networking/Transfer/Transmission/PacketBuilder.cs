@@ -3,7 +3,7 @@ using Shared.MVVM.Model.Cryptography;
 using System;
 using System.Collections.Generic;
 
-namespace Shared.MVVM.Model.Networking
+namespace Shared.MVVM.Model.Networking.Transfer.Transmission
 {
     /* Klasa do pakowania (enkapsulacji) pakietu - budujemy go od danych,
     wychodząc coraz wyżej aż do nagłówka, czyli od dołu do góry. */

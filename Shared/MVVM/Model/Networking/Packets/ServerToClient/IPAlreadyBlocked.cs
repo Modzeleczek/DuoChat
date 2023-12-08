@@ -1,4 +1,6 @@
-﻿namespace Shared.MVVM.Model.Networking.Packets.ServerToClient
+﻿using Shared.MVVM.Model.Networking.Transfer.Transmission;
+
+namespace Shared.MVVM.Model.Networking.Packets.ServerToClient
 {
     public class IPAlreadyBlocked : Packet
     {

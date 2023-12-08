@@ -3,7 +3,7 @@ using System;
 using System.Net;
 using System.Text;
 
-namespace Shared.MVVM.Model.Networking
+namespace Shared.MVVM.Model.Networking.Transfer.Reception
 {
     /* Klasa do odpakowywania (dekapsulacji) pakietu - odczytujemy go od nagłówka,
     schodząc coraz niżej aż do danych, czyli od góry do dołu. */

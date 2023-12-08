@@ -19,11 +19,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Cryptography\RandomGenerator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Cryptography\Rsa.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\IPv4Address.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Reception\IReceiveSocket.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\PacketBuilder.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Reception\PacketReader.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Reception\PacketReceiveBuffer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\PacketSendBuffer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Transfer\Reception\IReceiveSocket.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Transfer\Transmission\PacketBuilder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Transfer\Reception\PacketReader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Transfer\Reception\PacketReceiveBuffer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Transfer\Transmission\PacketSendBuffer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ClientToServer\AddConversation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ClientToServer\ClientIntroduction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ClientToServer\GetConversationsAndUsers.cs" />
@@ -38,7 +38,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ServerToClient\RequestError.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ServerToClient\ServerIntroduction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Port.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Reception\SocketWrapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Transfer\SocketWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\SQLiteStorage\DTO\IDto.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\SQLiteStorage\ISQLiteConnector.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\SQLiteStorage\Repositories\Repository.cs" />

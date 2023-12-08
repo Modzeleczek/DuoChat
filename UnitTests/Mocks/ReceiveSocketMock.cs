@@ -1,4 +1,4 @@
-﻿using Shared.MVVM.Model.Networking;
+﻿using Shared.MVVM.Model.Networking.Transfer.Reception;
 using System.Net.Sockets;
 
 namespace UnitTests.Mocks
