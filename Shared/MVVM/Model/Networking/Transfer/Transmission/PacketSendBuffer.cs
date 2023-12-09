@@ -32,6 +32,15 @@ namespace Shared.MVVM.Model.Networking.Transfer.Transmission
         public void SendUntilCompletedOrInterrupted(ISendSocket socket,
             CancellationToken cancellationToken, byte[] packetNoPrefix)
         {
+            /* Kod kliencki, wywołujący tę metodę, po zwróceniu sterowania przez tę metodę musi
+            koniecznie stworzyć nowy obiekt packetNoPrefix, nawet jeżeli chce wysłać drugi raz
+            taki sam pakiet. Jeżeli tego nie zrobi, to packetNoPrefix == _packetNoPrefix, czyli
+            nie zostanie rozpoczęte wysyłanie nowego pakietu i Completed == true, czyli wysyłanie
+            starego pakietu zostało już zakończone i pętla while (!Completed) się nie wykonuje.
+            Taka logika ma na celu umożliwienie przerwania wysyłania danego packetNoPrefix poprzez
+            zcancellowanie CTS i później wznowienie wysyłania tego samego packetNoPrefix poprzez
+            wywołanie SendUntilCompletedOrInterrupted z tym samym packetNoPrefix. */
+
             if (packetNoPrefix != _packetNoPrefix)
             {
                 /* Wysyłaliśmy już jakiś pakiet i chcemy rozpocząć wysyłanie

@@ -107,7 +107,10 @@ namespace Server.MVVM.Model
             /* Jeżeli u Sendera wystąpi błąd, to wrzuca event o tym do serverEventQueue
             i serwer informuje Receivera lub odwrotnie. Serwer jest mediatorem. */
 
+            /* Mamy 2 pakiety keep alive, bo musimy je wymieniać co kaźde zwrócenie sterowania
+            z metody SendUntilCompletedOrInterrupted. */
             byte[] keepAlivePacket = new byte[0];
+            byte[] spareKeepAlivePacket = new byte[0];
             SendPacketOrder? order = null;
             try
             {
@@ -132,6 +135,12 @@ namespace Server.MVVM.Model
                         o rozmiarze 0 B. */
                         _sendBuffer.SendUntilCompletedOrInterrupted(
                             new SocketWrapper(_tcpClient.Client), _cts.Token, keepAlivePacket);
+
+                        /* Zamieniamy pakiety keep alive, żeby nie "zaciąć" kolejnego wywołania
+                        SendUntilCompletedOrInterrupted z tą samą referencją packetNoPrefix. */
+                        byte[] temp = keepAlivePacket;
+                        keepAlivePacket = spareKeepAlivePacket;
+                        spareKeepAlivePacket = temp;
                     }
                 }
             }
