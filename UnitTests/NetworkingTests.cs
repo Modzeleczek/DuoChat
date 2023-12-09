@@ -1,6 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model.Cryptography;
+using Shared.MVVM.Model.Networking.Transfer;
 using Shared.MVVM.Model.Networking.Transfer.Reception;
 using Shared.MVVM.Model.Networking.Transfer.Transmission;
 using System.Net;
@@ -292,31 +293,34 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void PacketSendBuffer_SendUntilCompletedOrInterrupted_WhenGiven2Packets_ShouldConsumeThem()
+        public void PacketSendBuffer_SendUntilCompletedOrInterrupted_WhenGivenPackets_ShouldConsumeThem()
         {
             // Arrange
             var packetSendBuffer = new PacketSendBuffer();
 
             /* PacketSendBuffer dodaje prefiksy do pakietów.
-                                                   ^     ^ */
-            int[] returnedByteCounts = new int[] { 4, 4, 4, 2 };
-            byte[][] packetsNoPrefix = new byte[][]
+                                                   ^     ^     ^     ^     ^ */
+            int[] returnedByteCounts = new int[] { 4, 4, 4, 2, 4, 0, 4, 0, 4, 0 };
+            byte[][] expectedPackets = new byte[][]
             {
                 new byte[] { 1, 2, 3, 4 }, // Pierwszy pakiet
-                new byte[] { 5, 6 } // Drugi pakiet
+                new byte[] { 5, 6 }, // Drugi pakiet
+                new byte[] { }, // Keep alive
+                new byte[] { }, // Keep alive
+                new byte[] { } // Keep alive
             };
             var socketMock = new SendSocketMock(returnedByteCounts);
 
             // Act
-            foreach (var packet in packetsNoPrefix)
+            foreach (var expectedPacket in expectedPackets)
                 packetSendBuffer.SendUntilCompletedOrInterrupted(
-                    socketMock, CancellationToken.None, packet);
+                    socketMock, CancellationToken.None, expectedPacket);
 
             // Assert
             int packetStartIndex = 0;
-            foreach (var expectedPacket in packetsNoPrefix)
+            foreach (var expectedPacket in expectedPackets)
             {
-                packetStartIndex += PacketSendBuffer.PREFIX_SIZE;
+                packetStartIndex += SocketWrapper.PACKET_PREFIX_SIZE;
 
                 byte[] actualPacket = socketMock.ByteStream.Slice(packetStartIndex,
                     expectedPacket.Length);
