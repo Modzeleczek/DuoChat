@@ -3,7 +3,7 @@ using System.Net.Sockets;
 
 namespace UnitTests.Mocks
 {
-    class ReceiveSocketMock : IReceiveSocket
+    public class ReceiveSocketMock : IReceiveSocket
     {
         #region Fields
         private readonly int[] _returnedByteCounts;
@@ -19,10 +19,11 @@ namespace UnitTests.Mocks
 
             if (_returnedByteCounts.Sum() != _byteStream.Length)
                 throw new ArgumentException("returnedByteCounts sum must be " +
-                    "equal to byteStream.Length");
+                    "equal to byteStream.Length", nameof(returnedByteCounts));
         }
 
-        public ValueTask<int> ReceiveAsync(Memory<byte> buffer, SocketFlags socketFlags, CancellationToken cancellationToken)
+        public ValueTask<int> ReceiveAsync(Memory<byte> buffer, SocketFlags socketFlags,
+            CancellationToken cancellationToken)
         {
             if (_returnedByteCountIndex >= _returnedByteCounts.Length)
                 return new ValueTask<int>(0);
