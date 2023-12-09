@@ -1,4 +1,4 @@
-﻿using System.Net.Sockets;
+using System.Net.Sockets;
 using System.Net;
 using System.Threading.Tasks;
 using System;
@@ -16,10 +16,9 @@ namespace Shared.MVVM.Model.Networking.Transfer.Transmission
         #endregion
 
         #region Fields
-        public const int PREFIX_SIZE = SocketWrapper.PACKET_PREFIX_SIZE;
         /* Bufora _prefix używamy tylko do wysyłania prefiksu
         albo całego pakietu keep alive (bo on jest samym prefiksem). */
-        private readonly byte[] _prefix = new byte[PREFIX_SIZE];
+        private readonly byte[] _prefix = new byte[SocketWrapper.PACKET_PREFIX_SIZE];
         private byte[]? _packetNoPrefix = null;
         private int _sentBytes = 0;
         #endregion
