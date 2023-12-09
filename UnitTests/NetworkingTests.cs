@@ -331,5 +331,28 @@ namespace UnitTests
                 packetStartIndex += expectedPacket.Length;
             }
         }
+
+        [TestMethod]
+        public void PacketSendBuffer_SendUntilCompletedOrInterrupted_WhenSocketReturnsPacketInFragments_ShouldMergeThem()
+        {
+            // Arrange
+            var packetSendBuffer = new PacketSendBuffer();
+
+            // Muszą sumować się do długości prefiksu + długości pakietu.
+            int[] returnedByteCounts = new int[] { 1, 2, 1, 3, 1, 2 };
+            byte[] expectedPacket = new byte[] { 1, 2, 3, 4, 5, 6 };
+            var socketMock = new SendSocketMock(returnedByteCounts);
+
+            // Act
+            packetSendBuffer.SendUntilCompletedOrInterrupted(
+                socketMock, CancellationToken.None, expectedPacket);
+
+            // Assert
+            byte[] actualPacket = socketMock.ByteStream.Slice(SocketWrapper.PACKET_PREFIX_SIZE,
+                expectedPacket.Length);
+
+            Console.WriteLine(actualPacket.ToHexString());
+            expectedPacket.BytesEqual(actualPacket);
+        }
     }
 }
