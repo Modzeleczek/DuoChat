@@ -335,6 +335,7 @@ namespace Client.MVVM.Model.Networking
                     case Packet.Codes.Authentication:
                         ulong remoteSeed = pr.ReadUInt64();
                         server.Authenticate(remoteSeed);
+                        server.IsRequestable = true;
                         ServerHandshaken?.Invoke(server);
                         server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Notification);
                         break;
