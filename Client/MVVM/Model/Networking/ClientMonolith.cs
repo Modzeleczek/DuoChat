@@ -218,6 +218,7 @@ namespace Client.MVVM.Model.Networking
             }
 
             // Odebraliśmy pakiet nie keep alive.
+            // Musimy zresetować timeout gdzieś w (bez)pośrednio wywołanej tu metodzie.
             if (expectedPacket == ReceivePacketOrder.ExpectedPackets.Notification)
             {
                 // Oczekujemy powiadomienia od serwera.
@@ -437,6 +438,7 @@ namespace Client.MVVM.Model.Networking
             }
 
             ReceivedConversationsAndUsersList?.Invoke(server, conversations);
+            server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Notification);
         }
 
         private void HandleReceivedRequestError(RemoteServer server, PacketReader pr)
@@ -456,6 +458,7 @@ namespace Client.MVVM.Model.Networking
                     }
                     break;
             }
+            // Zawsze w tej metodzie musi zostać wykonane server.SetExpectedPacket.
         }
         #endregion
 

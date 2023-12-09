@@ -271,6 +271,7 @@ namespace Server.MVVM.Model.Networking
             }
 
             // Odebraliśmy pakiet nie keep alive.
+            // Musimy zresetować timeout gdzieś w (bez)pośrednio wywołanej tu metodzie.
             if (expectedPacket == ReceivePacketOrder.ExpectedPackets.Request)
             {
                 // Oczekujemy żądania od klienta.
@@ -373,6 +374,7 @@ namespace Server.MVVM.Model.Networking
         {
             // Wciąż client.IsNotifiable == false, więc nie ustawiamy tego.
 
+            client.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.KeepAlive);
             client.EnqueueToSend(NoAuthentication.Serialize(_privateKey!,
                 client.PublicKey!, client.GenerateToken()), NoAuthentication.CODE,
                 $"{client} {errorMsg}");
@@ -523,6 +525,9 @@ namespace Server.MVVM.Model.Networking
             }
 
             _storage.Database.Conversations.Add(new ConversationDto { OwnerId = ownerId, Name = name });
+
+            // Po (lub przed) obsłużeniu pakietu trzeba anulować jego timeout za pomocą SetExpectedPacket.
+            client.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Request);
         }
 
         private void OnReceiveTimeout(ClientEvent @event)
