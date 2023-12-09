@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text;
 
 namespace Shared.MVVM.Core
@@ -45,6 +45,27 @@ namespace Shared.MVVM.Core
         public static byte[] Slice(this byte[] array, int startIndex)
         {
             return array.Slice(startIndex, array.Length - startIndex);
+        }
+
+        public static byte[] ToBytes(this string hex)
+        {
+            if (hex.Length % 3 != 0)
+                throw new ArgumentException("hex must be a sequence of groups consisting " +
+                    "of 2 hex digits delimited with space.", nameof(hex));
+
+            byte[] bytes = new byte[hex.Length / 3];
+            for (int i = 0; i < bytes.Length; ++i)
+                bytes[i] = (byte)((HexValue(hex[i * 3]) << 4) + (HexValue(hex[(i * 3) + 1])));
+            return bytes;
+        }
+
+        private static int HexValue(char hex)
+        {
+            // Tylko dla cyfr 0-9 i dużych liter A-F.
+            if (hex <= '0' + 9)
+                return hex - '0';
+            else
+                return hex - 'A' + 10;
         }
         #endregion
     }
