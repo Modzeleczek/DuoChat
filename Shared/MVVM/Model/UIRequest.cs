@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Diagnostics;
 
 namespace Shared.MVVM.Model
 {
@@ -25,8 +26,12 @@ namespace Shared.MVVM.Model
                     Task.Delay(millisecondsTimeout, GetCancellationToken()).Wait();
 
                     if (TryMarkAsTimedOut())
+                    {
+                        Debug.WriteLine($"{nameof(UIRequest)}.{nameof(StartTimeoutTaskIfNeeded)}, ReceivePacketOrder, \n{new StackTrace()}");
+
                         // Wystąpił timeout.
                         OnTimeout();
+                    }
                     /* Jeżeli TryMarkAsTimedOut zwróci false, to znaczy, że TryMarkAsDone
                     zostało wywołane przed timeoutem, ale już po zwróceniu sterowania
                     z Wait. Wówczas pomijamy timeout. */

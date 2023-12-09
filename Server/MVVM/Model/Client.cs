@@ -1,5 +1,6 @@
 using Server.MVVM.Model.Networking;
 using Server.MVVM.Model.Networking.PacketOrders;
+using Shared.MVVM.Core;
 using Shared.MVVM.Model;
 using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking;
@@ -9,8 +10,10 @@ using Shared.MVVM.Model.Networking.Transfer.Reception;
 using Shared.MVVM.Model.Networking.Transfer.Transmission;
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -131,6 +134,8 @@ namespace Server.MVVM.Model
                     }
                     else
                     {
+                        Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, sending keep alive to {ToString()}");
+
                         /* Timeout pobrania rozkazu z kolejki, więc wysyłamy pakiet keep alive
                         o rozmiarze 0 B. */
                         _sendBuffer.SendUntilCompletedOrInterrupted(
@@ -146,6 +151,8 @@ namespace Server.MVVM.Model
             }
             catch (OperationCanceledException)
             {
+                Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {ToString()}, {nameof(OperationCanceledException)}");
+
                 // Cancel przed lub podczas wywołania TryTake
                 /* Poprzedni rozkaz (order) został zakończony,
                 a następnego jeszcze nie wyjęliśmy z kolejki. */
@@ -157,6 +164,8 @@ namespace Server.MVVM.Model
                     // Cancel podczas wywołania Socket.SendAsync
                     || ae.InnerException is OperationCanceledException))
             {
+                Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {ToString()}, {nameof(AggregateException)}, {nameof(TaskCanceledException)} or {nameof(OperationCanceledException)}");
+
                 // Server.Process lub wątek timeoutujący zcancelował CTS.
                 /* Tylko anulujemy timeout (lub nie, jeżeli już wątek timeoutujący
                 wykonał TryMarkAsTimedOut, ale przynajmniej próbujemy). Jeżeli
@@ -166,6 +175,8 @@ namespace Server.MVVM.Model
             }
             catch (Exception e)
             {
+                Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {ToString()}, {nameof(Exception)}");
+
                 // Inny błąd
                 if (order!.TryMarkAsDone())
                     _eventProcessor.Enqueue(new ClientEvent(ClientEvent.Types.SendError, this, e));
@@ -227,10 +238,14 @@ namespace Server.MVVM.Model
                     // Cancel podczas wywołania Socket.ReceiveAsync
                     || ae.InnerException is OperationCanceledException))
             {
+                Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {ToString()}, {nameof(AggregateException)}, {nameof(TaskCanceledException)} or {nameof(OperationCanceledException)}");
+
                 // Server.Process lub wątek timeoutujący zcancelował CTS.
             }
             catch (Exception e)
             {
+                Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {ToString()}, {nameof(Exception)}");
+
                 // Inny błąd
                 _eventProcessor.Enqueue(new ClientEvent(ClientEvent.Types.ReceiveError, this, e));
             }
@@ -278,6 +293,12 @@ namespace Server.MVVM.Model
 
                     if (order.TryMarkAsTimedOut())
                     {
+                        if (data is ReceivePacketOrder rpo)
+                            Debug.WriteLine($"{nameof(Client)}.{nameof(StartTimeoutTaskIfNeeded)}, ReceivePacketOrder, {rpo.ExpectedPacket}, \n{new StackTrace()}");
+                        else if (data is SendPacketOrder spo)
+                            Debug.WriteLine($"{nameof(Client)}.{nameof(StartTimeoutTaskIfNeeded)}, SendPacketOrder, {spo.Code}, {spo.Packet.Length}, " +
+                                $"{spo.Packet.ToHexString()}, \n{new StackTrace()}");
+
                         // Wystąpił timeout.
                         // Cancelujemy Sender i Receiver.
                         _cts.Cancel();

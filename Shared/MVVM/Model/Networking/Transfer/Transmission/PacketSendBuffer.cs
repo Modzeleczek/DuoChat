@@ -1,8 +1,11 @@
-using System.Net.Sockets;
+﻿using System.Net.Sockets;
 using System.Net;
 using System.Threading.Tasks;
 using System;
 using System.Threading;
+using System.Diagnostics;
+using System.Reflection;
+using Shared.MVVM.Core;
 
 namespace Shared.MVVM.Model.Networking.Transfer.Transmission
 {
@@ -106,6 +109,8 @@ namespace Shared.MVVM.Model.Networking.Transfer.Transmission
         private int SocketSend(ISendSocket socket, CancellationToken cancellationToken,
             byte[] buffer, int offset, int byteCount)
         {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {buffer.ToHexString((uint)offset, (uint)byteCount)}");
+
             ValueTask<int> valueTask = socket.SendAsync(
                 new ReadOnlyMemory<byte>(buffer, offset, byteCount),
                 SocketFlags.None, cancellationToken);

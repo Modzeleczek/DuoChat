@@ -1,4 +1,4 @@
-using Shared.MVVM.Model.Cryptography;
+﻿using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking;
 using System;
 using System.Collections.Generic;
@@ -19,6 +19,8 @@ using Shared.MVVM.Model.Networking.Packets.ClientToServer;
 using Server.MVVM.Model.Networking.UIRequests;
 using Shared.MVVM.Model;
 using Shared.MVVM.Model.Networking.Transfer.Reception;
+using System.Reflection;
+using System.Diagnostics;
 
 namespace Server.MVVM.Model.Networking
 {
@@ -109,6 +111,8 @@ namespace Server.MVVM.Model.Networking
 
         public void Enqueue(ClientEvent @event)
         {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {@event.ToDebugString()}");
+
             _eventQueue.Add(@event);
         }
 
@@ -121,6 +125,8 @@ namespace Server.MVVM.Model.Networking
             // Akceptujemy nowego klienta.
             var client = new Client(_listener.AcceptTcpClient(), this);
             client.StartSenderAndReceiver();
+
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {client}");
 
             /* Do klienta jeszcze lub już nie możemy wysyłać powiadomień, bo jest
             w trakcie uścisku dłoni, rozłączania lub już został rozłączony. */
@@ -162,6 +168,8 @@ namespace Server.MVVM.Model.Networking
         private void HandleClientEvent(ClientEvent @event)
         {
             Client client = @event.Sender;
+            Debug.WriteLine($"{nameof(HandleClientEvent)}, {@event.ToDebugString()}");
+
             if (client.IgnoreEvents)
                 return;
 
@@ -196,6 +204,8 @@ namespace Server.MVVM.Model.Networking
 
         private void DisconnectThenNotify(Client client, string errorMsg)
         {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {client}, {errorMsg}");
+
             // DisconnectThenRemoveClient
             client.IsNotifiable = false;
             client.IgnoreEvents = true;
@@ -216,6 +226,8 @@ namespace Server.MVVM.Model.Networking
             var (code, reason) = ((Packet.Codes, string))@event.Data!;
             // Log($"Sent {operation} to client {clientKey}.")
 
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {@event.ToDebugString()}, {code}, {reason}");
+
             switch (code)
             {
                 case Packet.Codes.NoSlots:
@@ -235,6 +247,8 @@ namespace Server.MVVM.Model.Networking
             Client client = @event.Sender;
             byte[] packet = (byte[])@event.Data!;
 
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {@event.ToDebugString()}, {packet.ToHexString()}");
+
             var receiveOrder = client.ReceiveOrder;
             if (receiveOrder is null)
             {
@@ -244,6 +258,9 @@ namespace Server.MVVM.Model.Networking
             }
 
             var expectedPacket = receiveOrder.ExpectedPacket;
+
+            Debug.WriteLine($"{expectedPacket}, {packet.Length}, {packet.ToHexString()}");
+
             if (packet.Length == 0)
             {
                 // Odebraliśmy pakiet keep alive.
@@ -256,6 +273,7 @@ namespace Server.MVVM.Model.Networking
                     /* Resetujemy timeout oczekiwanego keep alive lub żądania
                     i ponawiamy oczekiwanie. */
                     // Jeżeli false, to wystąpił timeout - zdarzenie o nim jest już w kolejce.
+                    Debug.WriteLine($"{nameof(OnReceiveSuccess)}, received keep alive and keep alive or request expected");
                     client.SetExpectedPacket(expectedPacket);
                     return;
                 }
@@ -296,6 +314,8 @@ namespace Server.MVVM.Model.Networking
         #region Strict packets
         private void HandleExpectedClientIntroduction(Client client, byte[] packet)
         {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {client}, {packet.ToHexString()}");
+
             // Pakiet już bez prefiksu, bo PacketReceiveBuffer go ucina.
             var pr = new PacketReader(packet);
             if ((Packet.Codes)pr.ReadUInt8() != ClientIntroduction.CODE)
@@ -372,6 +392,8 @@ namespace Server.MVVM.Model.Networking
 
         private void InterruptHandshake(Client client, string errorMsg)
         {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {client}, {errorMsg}");
+
             // Wciąż client.IsNotifiable == false, więc nie ustawiamy tego.
 
             client.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.KeepAlive);
@@ -384,6 +406,8 @@ namespace Server.MVVM.Model.Networking
         private Packet.Codes? ReadOperationCodeFromSignedEncryptedPacket(
             Client client, PacketReader pr)
         {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {client}");
+
             pr.Decrypt(_privateKey!);
             if (!pr.VerifySignature(client.PublicKey!))
             {
@@ -403,6 +427,8 @@ namespace Server.MVVM.Model.Networking
         #region Random requests
         private void HandleExpectedRequest(Client client, byte[] packet)
         {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {client}, {packet.ToHexString()}");
+
             var pr = new PacketReader(packet);
             try
             {
@@ -429,6 +455,8 @@ namespace Server.MVVM.Model.Networking
         private readonly Random _rng = new Random(123);
         private void HandleReceivedGetConversationsAndUsers(Client client)
         {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {client}");
+
             int conversationsCount = _rng.Next(2, 5);
             // _storage.Database.Conversations
             var conversationParticipants = new ConversationsAndUsersLists
@@ -512,6 +540,8 @@ namespace Server.MVVM.Model.Networking
 
         private void HandleReceivedAddConversation(Client client, PacketReader pr)
         {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {client}");
+
             AddConversation.Deserialize(pr, out ulong ownerId, out string name);
             
             if (!_storage.Database.AccountsById.Exists(ownerId))
@@ -532,6 +562,8 @@ namespace Server.MVVM.Model.Networking
 
         private void OnReceiveTimeout(ClientEvent @event)
         {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {@event.ToDebugString()}");
+
             Client client = @event.Sender;
             var order = (ReceivePacketOrder)@event.Data!;
 
@@ -543,6 +575,8 @@ namespace Server.MVVM.Model.Networking
         #region UI requests
         public void Request(UIRequest uiRequest)
         {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {uiRequest.GetType().Name}");
+
             // Wątek UI
             _uiRequest = uiRequest;
             _eventQueueWaitBreaker.Cancel(false);
@@ -550,6 +584,8 @@ namespace Server.MVVM.Model.Networking
 
         private void HandleUIRequest()
         {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {_uiRequest?.GetType().Name ?? "null UIRequest"}");
+
             // Wątek Server.Process
             /* Nie używamy monitor locka do uzyskiwania wyłącznego dostępu do
             _uiRequest, bo HandleUIRequest jest wykonywane tylko po wywołaniu
@@ -603,6 +639,9 @@ namespace Server.MVVM.Model.Networking
 
         private void StartServerUIRequest(StartServer request)
         {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {request.Guid}," +
+                $"{request.PrivateKey}, {request.IpAddress}, {request.Port}, {request.Capacity}");
+
             // Wątek UI
             _guid = request.Guid;
             _privateKey = request.PrivateKey;
@@ -628,6 +667,8 @@ namespace Server.MVVM.Model.Networking
 
         private void StopServerUIRequest(StopServer request)
         {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}");
+
             _isAcceptingClients = false;
             // Rozłączamy wszystkich klientów.
             var clients = _clients.Select(c => c.Value).ToArray();
@@ -640,6 +681,8 @@ namespace Server.MVVM.Model.Networking
 
         private void DisconnectClientUIRequest(DisconnectClient request)
         {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {request.ClientKey}");
+
             // Wątek Server.Process
             ClientPrimaryKey clientKey = request.ClientKey;
 
@@ -654,6 +697,8 @@ namespace Server.MVVM.Model.Networking
 
         private void DisconnectAccountUIRequest(DisconnectAccount request)
         {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {request.Login}");
+
             // Wątek Server.Process
             string login = request.Login;
 
@@ -667,6 +712,8 @@ namespace Server.MVVM.Model.Networking
 
         private void BlockClientIPUIRequest(BlockClientIP request)
         {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {request.IpAddress}");
+
             // Wątek Server.Process
             IPv4Address ipAddress = request.IpAddress;
 
@@ -693,6 +740,8 @@ namespace Server.MVVM.Model.Networking
 
         private void UnblockClientIPUIRequest(UnblockClientIP request)
         {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {request.IpAddress}");
+
             // Wątek Server.Process
             IPv4Address ipAddress = request.IpAddress;
 
@@ -705,6 +754,8 @@ namespace Server.MVVM.Model.Networking
 
         private void BlockAccountUIRequest(BlockAccount request)
         {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {request.Login}");
+
             // Wątek Server.Process
             SetAccountBlock(request.Login, 1);
 
@@ -724,6 +775,8 @@ namespace Server.MVVM.Model.Networking
 
         private void UnblockAccountUIRequest(UnblockAccount request)
         {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {request.Login}");
+
             // Wątek Server.Process
             SetAccountBlock(request.Login, 0);
 
@@ -732,6 +785,8 @@ namespace Server.MVVM.Model.Networking
 
         private void StopProcessUIRequest(StopProcess request)
         {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}");
+
             // Wątek Server.Process
             /* Pętla w Process zakończy się natychmiast po ustawieniu
             tego i powrocie ze StopProcessUIRequest. */

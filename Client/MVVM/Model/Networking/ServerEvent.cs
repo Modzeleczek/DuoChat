@@ -22,5 +22,10 @@
             Sender = sender;
             Data = data;
         }
+
+        public string ToDebugString()
+        {
+            return $"{Type} {Sender} {Data}";
+        }
     }
 }

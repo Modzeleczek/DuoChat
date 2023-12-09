@@ -1,7 +1,9 @@
-using Shared.MVVM.Core;
+﻿using Shared.MVVM.Core;
 using System;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -112,6 +114,8 @@ namespace Shared.MVVM.Model.Networking.Transfer.Reception
             _bufferIndex zawsze jest mniejsze lub równe MAX_PACKET_SIZE.
             Przesuwamy _bufferIndex i _receivedBytes o liczbę odebranych bajtów. */
             uint receivedBytes = (uint)task.Result;
+
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {_buffer.ToHexString(_bufferIndex, receivedBytes)}");
 
             _bufferIndex += receivedBytes;
             _receivedBytes += receivedBytes;

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Text;
 
 namespace Shared.MVVM.Core
@@ -22,17 +22,17 @@ namespace Shared.MVVM.Core
         }
 
         #region Byte array
-        public static string ToHexString(this byte[] array, int startIndex, int count)
+        public static string ToHexString(this byte[] array, uint startIndex, uint count)
         {
             var sb = new StringBuilder();
-            for (int i = startIndex; i < startIndex + count; ++i)
+            for (uint i = startIndex; i < startIndex + count; ++i)
                 sb.Append($"{array[i]:X2} ");
             return sb.ToString();
         }
 
         public static string ToHexString(this byte[] array)
         {
-            return ToHexString(array, 0, array.Length);
+            return ToHexString(array, 0, (uint)array.Length);
         }
 
         public static byte[] Slice(this byte[] array, int startIndex, int count)
