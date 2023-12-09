@@ -116,8 +116,8 @@ namespace Server.MVVM.Model
                     if (_sendQueue.TryTake(out order, 500, _cts.Token))
                     {
                         // Pobraliśmy rozkaz z kolejki.
-                        _sendBuffer.SendUntilCompletedOrInterrupted(_tcpClient.Client,
-                            _cts.Token, order.Packet);
+                        _sendBuffer.SendUntilCompletedOrInterrupted(
+                            new SocketWrapper(_tcpClient.Client), _cts.Token, order.Packet);
 
                         // Jeżeli TryMarkAsDone zwróci true, to znaczy, że wysyłanie zakończyło się przed timeoutem.
                         if (order.TryMarkAsDone())
@@ -130,8 +130,8 @@ namespace Server.MVVM.Model
                     {
                         /* Timeout pobrania rozkazu z kolejki, więc wysyłamy pakiet keep alive
                         o rozmiarze 0 B. */
-                        _sendBuffer.SendUntilCompletedOrInterrupted(_tcpClient.Client,
-                            _cts.Token, keepAlivePacket);
+                        _sendBuffer.SendUntilCompletedOrInterrupted(
+                            new SocketWrapper(_tcpClient.Client), _cts.Token, keepAlivePacket);
                     }
                 }
             }

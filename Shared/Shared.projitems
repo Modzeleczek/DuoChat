@@ -20,6 +20,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Cryptography\Rsa.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\IPv4Address.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Transfer\Reception\IReceiveSocket.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Transfer\Transmission\ISendSocket.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Transfer\Transmission\PacketBuilder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Transfer\Reception\PacketReader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Transfer\Reception\PacketReceiveBuffer.cs" />

@@ -290,5 +290,42 @@ namespace UnitTests
             // Assert
             Assert.IsNull(actualPacket);
         }
+
+        [TestMethod]
+        public void PacketSendBuffer_SendUntilCompletedOrInterrupted_WhenGiven2Packets_ShouldConsumeThem()
+        {
+            // Arrange
+            var packetSendBuffer = new PacketSendBuffer();
+
+            /* PacketSendBuffer dodaje prefiksy do pakietów.
+                                                   ^     ^ */
+            int[] returnedByteCounts = new int[] { 4, 4, 4, 2 };
+            byte[][] packetsNoPrefix = new byte[][]
+            {
+                new byte[] { 1, 2, 3, 4 }, // Pierwszy pakiet
+                new byte[] { 5, 6 } // Drugi pakiet
+            };
+            var socketMock = new SendSocketMock(returnedByteCounts);
+
+            // Act
+            foreach (var packet in packetsNoPrefix)
+                packetSendBuffer.SendUntilCompletedOrInterrupted(
+                    socketMock, CancellationToken.None, packet);
+
+            // Assert
+            int packetStartIndex = 0;
+            foreach (var expectedPacket in packetsNoPrefix)
+            {
+                packetStartIndex += PacketSendBuffer.PREFIX_SIZE;
+
+                byte[] actualPacket = socketMock.ByteStream.Slice(packetStartIndex,
+                    expectedPacket.Length);
+
+                Console.WriteLine(actualPacket.ToHexString());
+                expectedPacket.BytesEqual(actualPacket);
+
+                packetStartIndex += expectedPacket.Length;
+            }
+        }
     }
 }

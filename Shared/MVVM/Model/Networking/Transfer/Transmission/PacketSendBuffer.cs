@@ -30,7 +30,7 @@ namespace Shared.MVVM.Model.Networking.Transfer.Transmission
             _sentBytes = 0;
         }
 
-        public void SendUntilCompletedOrInterrupted(Socket socket,
+        public void SendUntilCompletedOrInterrupted(ISendSocket socket,
             CancellationToken cancellationToken, byte[] packetNoPrefix)
         {
             if (packetNoPrefix != _packetNoPrefix)
@@ -76,7 +76,7 @@ namespace Shared.MVVM.Model.Networking.Transfer.Transmission
             nie trzeba używać IPAddress.HostToNetworkOrder. */
         }
 
-        private void SendChunk(Socket socket, CancellationToken cancellationToken)
+        private void SendChunk(ISendSocket socket, CancellationToken cancellationToken)
         {
             int currentlySent;
             if (_sentBytes < _prefix.Length)
@@ -95,7 +95,7 @@ namespace Shared.MVVM.Model.Networking.Transfer.Transmission
             _sentBytes += currentlySent;
         }
 
-        private int SocketSend(Socket socket, CancellationToken cancellationToken,
+        private int SocketSend(ISendSocket socket, CancellationToken cancellationToken,
             byte[] buffer, int offset, int byteCount)
         {
             ValueTask<int> valueTask = socket.SendAsync(
