@@ -1,4 +1,4 @@
-﻿using Shared.MVVM.Core;
+using Shared.MVVM.Core;
 using System;
 using System.Net;
 using System.Net.Sockets;
@@ -21,6 +21,9 @@ namespace Shared.MVVM.Model.Networking.Transfer.Reception
 
         // Bufor cykliczny.
         private readonly byte[] _buffer = new byte[MAX_PACKET_SIZE];
+        // Cykliczny indeks
+        private uint _bufferIndex = 0;
+        // Całkowita liczba odebranych bajtów
         private uint _receivedBytes = 0;
         private uint _nowInterpretedByteIndex = 0;
         private uint _packetBeginIndexInclusive;
@@ -38,6 +41,7 @@ namespace Shared.MVVM.Model.Networking.Transfer.Reception
 
         public void Reset()
         {
+            _bufferIndex = 0;
             _receivedBytes = 0;
             _nowInterpretedByteIndex = 0;
             StartNewPacket();
@@ -93,18 +97,24 @@ namespace Shared.MVVM.Model.Networking.Transfer.Reception
 
         private void SocketReceive(IReceiveSocket socket, CancellationToken cancellationToken)
         {
-            uint remainingBufferCapacity = MAX_PACKET_SIZE - _receivedBytes;
+            // Jeżeli doszliśmy do końca bufora, to wracamy na jego początek.
+            if (_bufferIndex == MAX_PACKET_SIZE)
+                _bufferIndex = 0;
+            uint remainingBufferCapacity = MAX_PACKET_SIZE - _bufferIndex;
 
             ValueTask<int> valueTask = socket.ReceiveAsync(
-                new Memory<byte>(_buffer, (int)_receivedBytes, (int)remainingBufferCapacity),
+                new Memory<byte>(_buffer, (int)_bufferIndex, (int)remainingBufferCapacity),
                 SocketFlags.None, cancellationToken);
             Task<int> task = valueTask.AsTask();
             task.Wait();
 
             /* Dzięki ostatniemu parametrowi Memory i remainingBufferCapacity,
-            _receivedBytes zawsze jest mniejsze lub równe MAX_PACKET_SIZE.
-            Przesuwamy _receivedBytes o liczbę odebranych bajtów. */
-            _receivedBytes += (uint)task.Result;
+            _bufferIndex zawsze jest mniejsze lub równe MAX_PACKET_SIZE.
+            Przesuwamy _bufferIndex i _receivedBytes o liczbę odebranych bajtów. */
+            uint receivedBytes = (uint)task.Result;
+
+            _bufferIndex += receivedBytes;
+            _receivedBytes += receivedBytes;
         }
 
         private void InterpretByte()

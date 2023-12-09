@@ -1,4 +1,4 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking.Transfer;
@@ -290,6 +290,34 @@ namespace UnitTests
 
             // Assert
             Assert.IsNull(actualPacket);
+        }
+
+        [TestMethod]
+        public void PacketReceiveBuffer_ReceiveUntilCompletedOrInterrupted_WhenBufferFull_ShouldReturnToBufferStart()
+        {
+            // Arrange
+            var packetReceiveBuffer = new PacketReceiveBuffer();
+
+            const int numberOfKeepAlives = 1 << 22;
+            int[] returnedByteCounts = new int[numberOfKeepAlives];
+            byte[] byteStream = new byte[SocketWrapper.PACKET_PREFIX_SIZE * numberOfKeepAlives];
+            for (int i = 0; i < numberOfKeepAlives; ++i)
+            {
+                returnedByteCounts[i] = SocketWrapper.PACKET_PREFIX_SIZE;
+                for (int j = i * 4; j < i * 4 + 4; ++j)
+                    byteStream[j] = 0; // Keep alive
+            }
+            var socketMock = new ReceiveSocketMock(returnedByteCounts, byteStream);
+
+            for (int i = 0; i < numberOfKeepAlives; ++i)
+            {
+                // Act
+                byte[]? actualPacket = packetReceiveBuffer.ReceiveUntilCompletedOrInterrupted(
+                    socketMock, CancellationToken.None);
+
+                // Assert
+                Assert.AreEqual(0, actualPacket!.Length);
+            }
         }
 
         [TestMethod]
