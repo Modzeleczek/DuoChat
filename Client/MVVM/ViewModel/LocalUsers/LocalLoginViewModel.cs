@@ -1,5 +1,4 @@
 ﻿using Client.MVVM.Model;
-using Client.MVVM.View.Windows;
 using Shared.MVVM.Core;
 using System.Windows;
 using System.Windows.Controls;
@@ -7,6 +6,7 @@ using System.Collections.Generic;
 using System.Security;
 using Shared.MVVM.ViewModel.Results;
 using Shared.MVVM.ViewModel;
+using Shared.MVVM.View.Windows;
 
 namespace Client.MVVM.ViewModel.LocalUsers
 {

@@ -1,8 +1,8 @@
 ﻿using Client.MVVM.Model;
 using Client.MVVM.Model.BsonStorages;
-using Client.MVVM.View.Windows;
 using Client.MVVM.ViewModel.Observables;
 using Shared.MVVM.Core;
+using Shared.MVVM.View.Windows;
 using Shared.MVVM.ViewModel;
 using Shared.MVVM.ViewModel.LongBlockingOperation;
 using Shared.MVVM.ViewModel.Results;

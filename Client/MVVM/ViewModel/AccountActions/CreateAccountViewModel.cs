@@ -1,9 +1,9 @@
 ﻿using Client.MVVM.Model;
 using Client.MVVM.Model.SQLiteStorage.Repositories;
-using Client.MVVM.View.Windows;
 using Client.MVVM.ViewModel.Observables;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model.Cryptography;
+using Shared.MVVM.View.Windows;
 using Shared.MVVM.ViewModel.Results;
 using System.Collections.Generic;
 using System.Windows.Controls;

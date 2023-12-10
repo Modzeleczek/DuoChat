@@ -4,10 +4,10 @@ using System.Windows.Controls;
 using System;
 using Shared.MVVM.Model.Networking;
 using System.Collections.Generic;
-using Client.MVVM.View.Windows;
 using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.ViewModel.Results;
 using Client.MVVM.Model.BsonStorages;
+using Shared.MVVM.View.Windows;
 
 namespace Client.MVVM.ViewModel.ServerActions
 {

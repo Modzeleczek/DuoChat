@@ -1,5 +1,4 @@
 ﻿using Shared.MVVM.View.Localization;
-using Shared.MVVM.View.Windows;
 using Shared.MVVM.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -7,7 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 
-namespace Client.MVVM.View.Windows
+namespace Shared.MVVM.View.Windows
 {
     public partial class FormWindow : DialogWindow
     {

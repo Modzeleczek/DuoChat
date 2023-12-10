@@ -70,6 +70,9 @@
       <DependentUpon>ConfirmationWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\View\Windows\DialogWindow.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\View\Windows\FormWindow.xaml.cs">
+      <DependentUpon>FormWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\View\Windows\ProgressBarWindow.xaml.cs">
       <DependentUpon>ProgressBarWindow.xaml</DependentUpon>
     </Compile>
@@ -108,6 +111,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)MVVM\View\Windows\ConfirmationWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)MVVM\View\Windows\FormWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

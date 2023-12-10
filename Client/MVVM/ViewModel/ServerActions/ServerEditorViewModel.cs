@@ -1,7 +1,7 @@
 ﻿using Client.MVVM.Model;
-using Client.MVVM.View.Windows;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model.Networking;
+using Shared.MVVM.View.Windows;
 using Shared.MVVM.ViewModel;
 
 namespace Client.MVVM.ViewModel.ServerActions
