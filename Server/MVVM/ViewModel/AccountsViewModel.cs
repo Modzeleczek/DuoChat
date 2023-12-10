@@ -108,14 +108,5 @@ namespace Server.MVVM.ViewModel
 
             UIInvoke(() => accountObs.IsConnected = false);
         }
-
-        /* private void AccountToggledBlock(string login)
-        {
-            // Wątek Client.ProcessProtocol; write lock
-            var accountObs = Accounts.SingleOrDefault(x => x.Login.Equals(login));
-            // if (accountObs is null) nieprawdopodobne
-
-            UIInvoke(() => accountObs.IsBlocked = !accountObs.IsBlocked);
-        } */
     }
 }
