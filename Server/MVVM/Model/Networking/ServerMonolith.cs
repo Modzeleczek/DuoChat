@@ -133,6 +133,9 @@ namespace Server.MVVM.Model.Networking
             client.IsNotifiable = false;
             client.IgnoreEvents = false;
 
+            _clients.Add(client.GetPrimaryKey(), client);
+            ClientConnected?.Invoke(client);
+
             if (_clients.Count >= _capacity)
             {
                 // Nie ma wolnych miejsc.
@@ -152,8 +155,6 @@ namespace Server.MVVM.Model.Networking
             }
 
             // Są wolne miejsca.
-            _clients.Add(client.GetPrimaryKey(), client);
-            ClientConnected?.Invoke(client);
             client.VerificationToken = RandomUInt64();
             client.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.ClientIntroduction, 10000);
             client.EnqueueToSend(ServerIntroduction.Serialize(_guid, _publicKeyBytes!,
