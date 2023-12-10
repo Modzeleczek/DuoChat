@@ -158,9 +158,10 @@ namespace Client.MVVM.ViewModel
                         // Chcemy się połączyć.
                         DisconnectAndConnectWithAccount(value);
                     else
-                        /* Nie chcemy się połączyć. Disconnect bez callbacka, bo
-                        obsługujemy rozłączenie w OnServerEndedConnection. */
-                        _client.Request(new Disconnect(SelectedServer!.GetPrimaryKey(), null));
+                        /* Nie chcemy się połączyć. Obsługujemy rozłączenie w OnServerEndedConnection,
+                        a następnie w callbacku UIRequesta przywracamy interakcje. */
+                        _client.Request(new Disconnect(SelectedServer!.GetPrimaryKey(),
+                            () => UIInvoke(() => window.SetEnabled(true))));
                 }
                 else
                 {
@@ -168,7 +169,9 @@ namespace Client.MVVM.ViewModel
                     if (!(value is null))
                         // Chcemy się połączyć.
                         DisconnectAndConnectWithAccount(value);
-                    // Nie chcemy się połączyć.
+
+                    // else (nieprawdopodobne): nie chcemy się połączyć.
+                    window.SetEnabled(true);
                 }
             }
         }
