@@ -19,8 +19,6 @@
       <RowDefinition Height="*"/>
       <RowDefinition Height="*"/>
       <RowDefinition Height="auto"/>
-      <RowDefinition Height="auto"/>
-      <RowDefinition Height="auto"/>
     </Grid.RowDefinitions>
 
     <Label Grid.Column="0" Grid.Row="0"
@@ -86,38 +84,40 @@
       IsEnabled="{Binding ServerStopped, Mode=OneWay}"
       Text="{Binding Capacity}"/>
 
-    <Button Grid.Column="0"
-      Grid.ColumnSpan="2"
-      Grid.Row="5"
-      IsEnabled="{Binding ServerStopped, Mode=OneWay}"
-      Command="{Binding Load}"
-      Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Load}"
-      Style="{StaticResource CornerRadiusButtonStyle}"/>
+    <Grid Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="5">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="*"/>
+      </Grid.ColumnDefinitions>
+      
+      <Button Grid.Column="0"
+        IsEnabled="{Binding ServerStopped, Mode=OneWay}"
+        Command="{Binding Load}"
+        Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Load}"
+        Style="{StaticResource CornerRadiusButtonStyle}"/>
 
-    <Button Grid.Column="0"
-      Grid.ColumnSpan="2"
-      Grid.Row="6"
-      IsEnabled="{Binding ServerStopped, Mode=OneWay}"
-      Command="{Binding Save}"
-      Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Save}"
-      Style="{StaticResource CornerRadiusButtonStyle}"/>
+      <Button Grid.Column="1"
+        IsEnabled="{Binding ServerStopped, Mode=OneWay}"
+        Command="{Binding Save}"
+        Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Save}"
+        Style="{StaticResource CornerRadiusButtonStyle}"/>
 
-    <Button Grid.Column="0"
-      Grid.ColumnSpan="2"
-      Grid.Row="7"
-      Command="{Binding ToggleServer}">
-      <Button.Style>
-        <Style TargetType="Button" BasedOn="{StaticResource CornerRadiusButtonStyle}">
-          <Setter Property="Content"
-            Value="{Binding Source={x:Static l:Translator.Instance}, Path=D.Start}"/>
-          <Style.Triggers>
-            <DataTrigger Binding="{Binding ServerStopped}" Value="False">
-              <Setter Property="Content"
-                Value="{Binding Source={x:Static l:Translator.Instance}, Path=D.Stop}"/>
-            </DataTrigger>
-          </Style.Triggers>
-        </Style>
-      </Button.Style>
-    </Button>
+      <Button Grid.Column="2"
+        Command="{Binding ToggleServer}">
+        <Button.Style>
+          <Style TargetType="Button" BasedOn="{StaticResource CornerRadiusButtonStyle}">
+            <Setter Property="Content"
+              Value="{Binding Source={x:Static l:Translator.Instance}, Path=D.Start}"/>
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding ServerStopped}" Value="False">
+                <Setter Property="Content"
+                  Value="{Binding Source={x:Static l:Translator.Instance}, Path=D.Stop}"/>
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </Button.Style>
+      </Button>
+    </Grid>
   </Grid>
 </UserControl>
