@@ -325,7 +325,7 @@ namespace Server.MVVM.Model
         public override string ToString()
         {
             string keyString = GetPrimaryKey().ToString();
-            return keyString + (!(Login is null) ? $" ({Login})" : string.Empty);
+            return keyString + (Login is null ? string.Empty : $" ({Login})");
         }
         
         public ulong GenerateToken()

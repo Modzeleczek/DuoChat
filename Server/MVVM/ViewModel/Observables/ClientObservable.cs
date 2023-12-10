@@ -17,7 +17,7 @@ namespace Server.MVVM.ViewModel.Observables
             get
             {
                 string keyString = GetPrimaryKey().ToString();
-                return keyString + (Login is null ? string.Empty : $" {_login}");
+                return keyString + (Login is null ? string.Empty : $" ({_login})");
             }
         }
 
