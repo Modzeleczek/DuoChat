@@ -11,9 +11,9 @@
         <!-- Słownik z dynamicznymi zasobami. Resources.MergedDictionaries[0] -->
         <ResourceDictionary>
           <!-- Podmienialny zasób z definicjami kolorów. -->
-            <ResourceDictionary.MergedDictionaries>
-              <ResourceDictionary Source="/MVVM/View/Resources/Dynamic/Themes/Dark.xaml" />
-            </ResourceDictionary.MergedDictionaries>
+          <ResourceDictionary.MergedDictionaries>
+            <ResourceDictionary Source="/MVVM/View/Resources/Dynamic/Themes/Dark.xaml" />
+          </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
 
         <!-- Statyczne zasoby stylów. -->
