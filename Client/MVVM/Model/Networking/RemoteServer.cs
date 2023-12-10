@@ -1,4 +1,4 @@
-﻿using Client.MVVM.Model.Networking.PacketOrders;
+using Client.MVVM.Model.Networking.PacketOrders;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model;
 using Shared.MVVM.Model.Cryptography;
@@ -187,7 +187,7 @@ namespace Client.MVVM.Model.Networking
                 Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {ToString()}, {nameof(Exception)}");
 
                 // Inny błąd
-                if (order!.TryMarkAsDone())
+                if (order is null || order.TryMarkAsDone())
                     _eventProcessor.Enqueue(new ServerEvent(ServerEvent.Types.SendError, this, e));
             }
             /* Na koniec wątku Sendera zamykamy kolejkę i discardujemy

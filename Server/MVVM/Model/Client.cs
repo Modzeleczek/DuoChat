@@ -178,7 +178,7 @@ namespace Server.MVVM.Model
                 Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {ToString()}, {nameof(Exception)}");
 
                 // Inny błąd
-                if (order!.TryMarkAsDone())
+                if (order is null || order.TryMarkAsDone())
                     _eventProcessor.Enqueue(new ClientEvent(ClientEvent.Types.SendError, this, e));
             }
             /* Na koniec wątku Sendera zamykamy kolejkę i discardujemy
