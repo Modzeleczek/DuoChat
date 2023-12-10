@@ -8,89 +8,80 @@
   mc:Ignorable="d" 
   d:DesignHeight="450" d:DesignWidth="800">
   <Grid>
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="auto"/>
-      <ColumnDefinition Width="*"/>
-    </Grid.ColumnDefinitions>
     <Grid.RowDefinitions>
-      <RowDefinition Height="*"/>
-      <RowDefinition Height="*"/>
-      <RowDefinition Height="*"/>
-      <RowDefinition Height="*"/>
-      <RowDefinition Height="*"/>
-      <RowDefinition Height="auto"/>
+      <RowDefinition Height="*" />
+      <RowDefinition Height="auto" />
     </Grid.RowDefinitions>
+    
+    <ScrollViewer Grid.Row="0">
+      <StackPanel>
+        <StackPanel.Resources>
+          <Style BasedOn="{StaticResource StylishedLabel}" TargetType="Label" />
+          <Style BasedOn="{StaticResource FormTextBox}" TargetType="TextBox" />
+        </StackPanel.Resources>
 
-    <Label Grid.Column="0" Grid.Row="0"
-      Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.GUID}"/>
-    <Grid Grid.Column="1" Grid.Row="0"
-      IsEnabled="{Binding ServerStopped, Mode=OneWay}">
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="*" />
-      </Grid.ColumnDefinitions>
-      <TextBox Grid.Column="0"
-        Text="{Binding Guid}"/>
-      <StackPanel
-        Grid.Column="0"
-        HorizontalAlignment="Right"
-        Orientation="Horizontal"
-        Style="{StaticResource HoverPanelStyle}">
-        <Button
-          Margin="5,0,0,0"
-          Command="{Binding Path=GenerateGuid}"
-          Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Generate}"
-          Style="{StaticResource CornerRadiusButtonStyle}" />
+        <Label Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.GUID}"/>
+        <Grid IsEnabled="{Binding ServerStopped, Mode=OneWay}">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+          </Grid.ColumnDefinitions>
+          <TextBox Grid.Column="0"
+            Text="{Binding Guid}"/>
+          <StackPanel
+            Grid.Column="0"
+            HorizontalAlignment="Right"
+            Orientation="Horizontal"
+            Style="{StaticResource HoverPanelStyle}">
+            <Button
+              Margin="5,0,0,0"
+              Command="{Binding Path=GenerateGuid}"
+              Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Generate}"
+              Style="{StaticResource CornerRadiusButtonStyle}" />
+          </StackPanel>
+        </Grid>
+
+        <Label Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Private_key}"/>
+        <Grid IsEnabled="{Binding ServerStopped, Mode=OneWay}">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+          </Grid.ColumnDefinitions>
+          <TextBox Grid.Column="0"
+            Text="{Binding PrivateKey}"/>
+          <StackPanel
+            Grid.Column="0"
+            HorizontalAlignment="Right"
+            Orientation="Horizontal"
+            Style="{StaticResource HoverPanelStyle}">
+            <Button
+              Margin="5,0,0,0"
+              Command="{Binding Path=GeneratePrivateKey}"
+              Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Generate}"
+              IsEnabled="{Binding ServerStopped, Mode=OneWay}"
+              Style="{StaticResource CornerRadiusButtonStyle}" />
+          </StackPanel>
+        </Grid>
+
+        <Label Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.IP_address}"/>
+        <TextBox IsEnabled="{Binding ServerStopped, Mode=OneWay}"
+          Text="{Binding IpAddress}"/>
+
+        <Label Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Port}"/>
+        <TextBox IsEnabled="{Binding ServerStopped, Mode=OneWay}"
+          Text="{Binding Port}"/>
+
+        <Label Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Capacity}"/>
+        <TextBox IsEnabled="{Binding ServerStopped, Mode=OneWay}"
+          Text="{Binding Capacity}"/>
       </StackPanel>
-    </Grid>
+    </ScrollViewer>
 
-    <Label Grid.Column="0" Grid.Row="1"
-      Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Private_key}"/>
-    <Grid Grid.Column="1" Grid.Row="1"
-      IsEnabled="{Binding ServerStopped, Mode=OneWay}">
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="*" />
-      </Grid.ColumnDefinitions>
-      <TextBox Grid.Column="0"
-        Text="{Binding PrivateKey}"/>
-      <StackPanel
-        Grid.Column="0"
-        HorizontalAlignment="Right"
-        Orientation="Horizontal"
-        Style="{StaticResource HoverPanelStyle}">
-        <Button
-          Margin="5,0,0,0"
-          Command="{Binding Path=GeneratePrivateKey}"
-          Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Generate}"
-          IsEnabled="{Binding ServerStopped, Mode=OneWay}"
-          Style="{StaticResource CornerRadiusButtonStyle}" />
-      </StackPanel>
-    </Grid>
-
-    <Label Grid.Column="0" Grid.Row="2"
-      Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.IP_address}"/>
-    <TextBox Grid.Column="1" Grid.Row="2"
-      IsEnabled="{Binding ServerStopped, Mode=OneWay}"
-      Text="{Binding IpAddress}"/>
-
-    <Label Grid.Column="0" Grid.Row="3"
-      Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Port}"/>
-    <TextBox Grid.Column="1" Grid.Row="3"
-      IsEnabled="{Binding ServerStopped, Mode=OneWay}"
-      Text="{Binding Port}"/>
-
-    <Label Grid.Column="0" Grid.Row="4"
-      Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Capacity}"/>
-    <TextBox Grid.Column="1" Grid.Row="4"
-      IsEnabled="{Binding ServerStopped, Mode=OneWay}"
-      Text="{Binding Capacity}"/>
-
-    <Grid Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="5">
+    <Grid Grid.Row="1">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="*"/>
         <ColumnDefinition Width="*"/>
         <ColumnDefinition Width="*"/>
       </Grid.ColumnDefinitions>
-      
+
       <Button Grid.Column="0"
         IsEnabled="{Binding ServerStopped, Mode=OneWay}"
         Command="{Binding Load}"
