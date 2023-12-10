@@ -18,7 +18,7 @@
         <ItemsControl.ItemTemplate>
           <DataTemplate>
             <Border BorderBrush="{DynamicResource FirstForegroundColor}"
-              BorderThickness="0,1,0,1">
+              BorderThickness="0,1,0,0">
               <Grid>
                 <!-- Grid z tylko 1 kolumną jest potrzebny do HoverPanelStyle. -->
                 <Grid.ColumnDefinitions>
