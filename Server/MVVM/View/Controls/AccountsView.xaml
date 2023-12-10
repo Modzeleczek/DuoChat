@@ -55,7 +55,9 @@
                   <Button
                     Command="{Binding Path=DataContext.Disconnect,
                       ElementName=AccountsViewName}"
-                    CommandParameter="{Binding}">
+                    CommandParameter="{Binding}"
+                    Content="{Binding
+                      Source={x:Static l:Translator.Instance}, Path=D.Disconnect}">
                     <Button.Style>
                       <Style TargetType="Button" BasedOn="{StaticResource CornerRadiusButtonStyle}">
                         <Setter Property="Visibility" Value="Collapsed" />
