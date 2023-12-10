@@ -1,4 +1,4 @@
-﻿using Shared.MVVM.Model.Cryptography;
+using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking;
 using System;
 using System.Collections.Generic;
@@ -694,14 +694,17 @@ namespace Server.MVVM.Model.Networking
             Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {request.Login}");
 
             // Wątek Server.Process
-            string login = request.Login;
+            DisconnectClientsWithLogin(request.Login);
 
+            request.Callback?.Invoke();
+        }
+
+        private void DisconnectClientsWithLogin(string login)
+        {
             var clientsWithLogin = _clients.Values.Where(c => login.Equals(c.Login));
             // Jeżeli nie znaleźliśmy żadnych klientów, to zakładamy, że żądanie zostało wykonane.
             foreach (var client in clientsWithLogin)
                 DisconnectThenNotify(client, "|was disconnected|.");
-
-            request.Callback?.Invoke();
         }
 
         private void BlockClientIPUIRequest(BlockClientIP request)
@@ -752,6 +755,8 @@ namespace Server.MVVM.Model.Networking
 
             // Wątek Server.Process
             SetAccountBlock(request.Login, 1);
+
+            DisconnectClientsWithLogin(request.Login);
 
             request.Callback?.Invoke();
         }
