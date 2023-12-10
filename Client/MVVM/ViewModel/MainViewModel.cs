@@ -523,7 +523,7 @@ namespace Client.MVVM.ViewModel
             }
         }
 
-        #region Zdarzenia klienta
+        #region Client events
         private void OnServerIntroduced(RemoteServer server)
         {
             // Wątek Client.Process
