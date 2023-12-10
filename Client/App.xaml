@@ -20,6 +20,7 @@
         <!-- Wspólne klienta i serwera -->
         <ResourceDictionary Source="/MVVM/View/Resources/Dynamic/Styles/Buttons.xaml" />
         <ResourceDictionary Source="/MVVM/View/Resources/Dynamic/Styles/HoverPanel.xaml" />
+        <ResourceDictionary Source="/MVVM/View/Resources/Dynamic/Styles/ScrollBar.xaml" />
         <ResourceDictionary Source="/MVVM/View/Resources/Dynamic/Styles/TextFields.xaml" />
 
         <!-- Indywidualne klienta -->
@@ -31,7 +32,6 @@
         <ResourceDictionary Source="/MVVM/View/DynamicResources/Styles/AccountCard.xaml" />
         <ResourceDictionary Source="/MVVM/View/DynamicResources/Styles/ChatItem.xaml" />
         <ResourceDictionary Source="/MVVM/View/DynamicResources/Styles/MessageBox.xaml" />
-        <ResourceDictionary Source="/MVVM/View/DynamicResources/Styles/ScrollBar.xaml" />
         <ResourceDictionary Source="/MVVM/View/DynamicResources/Styles/ResizableWindow.xaml" />
         <ResourceDictionary Source="/MVVM/View/DynamicResources/Styles/TextFields.xaml" />
         <ResourceDictionary Source="/MVVM/View/DynamicResources/Styles/Border.xaml" />

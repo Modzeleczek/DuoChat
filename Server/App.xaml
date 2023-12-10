@@ -20,6 +20,7 @@
         <!-- Wspólne klienta i serwera -->
         <ResourceDictionary Source="/MVVM/View/Resources/Dynamic/Styles/Buttons.xaml" />
         <ResourceDictionary Source="/MVVM/View/Resources/Dynamic/Styles/HoverPanel.xaml" />
+        <ResourceDictionary Source="/MVVM/View/Resources/Dynamic/Styles/ScrollBar.xaml" />
         <ResourceDictionary Source="/MVVM/View/Resources/Dynamic/Styles/TextFields.xaml" />
 
         <!-- Indywidualne serwera -->
