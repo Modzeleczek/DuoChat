@@ -1,4 +1,4 @@
-using Shared.MVVM.Model.Cryptography;
+﻿using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking;
 using System;
 using System.Collections.Generic;
@@ -150,7 +150,8 @@ namespace Server.MVVM.Model.Networking
                 client.GetPrimaryKey().IpAddress.BinaryRepresentation))
             {
                 // Klient ma zablokowany adres IP.
-                client.EnqueueToSend(IPAlreadyBlocked.Serialize(), IPAlreadyBlocked.CODE);
+                client.EnqueueToSend(IPAlreadyBlocked.Serialize(), IPAlreadyBlocked.CODE,
+                    "|tried to connect from blocked IP address|.");
                 return;
             }
 
