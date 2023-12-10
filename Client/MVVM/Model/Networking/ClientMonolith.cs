@@ -311,10 +311,14 @@ namespace Client.MVVM.Model.Networking
             ulong localSeed = RandomUInt64();
             server.Introduce(guid, publicKey, localSeed);
 
-            ServerIntroduced?.Invoke(server);
             /* Jeżeli zwróci false, to zdarzenie o timeoucie już jest w kolejce.
-            Sygnalizujemy, że obsłużyliśmy pakiet. */
-            server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.KeepAlive);
+            Sygnalizujemy, że obsłużyliśmy pakiet. Serwer ma timeout 10 sekund, kiedy czeka na
+            ClientIntroduction. */
+            server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.KeepAlive, Timeout.Infinite);
+            /* Blokujemy bieżący wątek (Client.Process) w handlerze MainViewModel.OnServerIntroduced
+            -> AskIfServerTrusted, więc SetExpectedPacket(KeepAlive) musi być przed eventem
+            ServerIntroduced. */
+            ServerIntroduced?.Invoke(server);
             return true;
         }
 
