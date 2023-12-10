@@ -1,4 +1,4 @@
-using Client.MVVM.Model.Networking.PacketOrders;
+﻿using Client.MVVM.Model.Networking.PacketOrders;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model;
 using Shared.MVVM.Model.Cryptography;
@@ -22,7 +22,6 @@ namespace Client.MVVM.Model.Networking
     {
         #region Fields and properties
         // Do użytku przez serwer
-        public const int CONTIGUOUS_KEEP_ALIVES_LIMIT = 3;
         private const int SEND_TIMEOUT_MILLISECONDS = 1000;
         private const int RECEIVE_TIMEOUT_MILLISECONDS = 1000;
 
@@ -32,7 +31,6 @@ namespace Client.MVVM.Model.Networking
         public bool IsRequestable { get; set; }
         // Jeżeli true, to wątek Client.Process ma ignorować zdarzenia od serwera.
         public bool IgnoreEvents { get; set; }
-        public int ContiguousKeepAlivesCounter { get; set; } = 0;
 
         // Dane zdalnego hosta ustawiane jednorazowo w metodzie Introduce.
         public Guid? Guid { get; private set; } = null;
@@ -276,7 +274,6 @@ namespace Client.MVVM.Model.Networking
             się odwołać timeout (kolejne wywołanie SetExpectedPacket wystąpiło przed timeoutem). */
 
             ReceiveOrder = new ReceivePacketOrder(expectedPacket);
-            ContiguousKeepAlivesCounter = 0;
 
             StartTimeoutTaskIfNeeded(ReceiveOrder, millisecondsTimeout,
                 ServerEvent.Types.ReceiveTimeout, ReceiveOrder);

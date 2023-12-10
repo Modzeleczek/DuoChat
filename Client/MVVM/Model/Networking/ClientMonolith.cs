@@ -212,7 +212,6 @@ namespace Client.MVVM.Model.Networking
             if (packet.Length == 0)
             {
                 // Odebraliśmy pakiet keep alive.
-                ++server.ContiguousKeepAlivesCounter;
 
                 // Oczekujemy keep alive lub powiadomienia od serwera.
                 if (expectedPacket == ReceivePacketOrder.ExpectedPackets.KeepAlive
@@ -227,11 +226,6 @@ namespace Client.MVVM.Model.Networking
                 }
 
                 // Oczekujemy pakietu innego niż keep alive lub powiadomienie.
-                if (server.ContiguousKeepAlivesCounter >= RemoteServer.CONTIGUOUS_KEEP_ALIVES_LIMIT)
-                {
-                    DisconnectThenNotify(server, $"|sent| {server.ContiguousKeepAlivesCounter} " +
-                        "|'keep alive' packets in a row|.");
-                }
                 // Nie resetujemy timeoutu.
                 return;
             }

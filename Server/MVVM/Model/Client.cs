@@ -23,7 +23,6 @@ namespace Server.MVVM.Model
     {
         #region Fields and properties
         // Do użytku przez serwer
-        public const int CONTIGUOUS_KEEP_ALIVES_LIMIT = 3;
         private const int SEND_TIMEOUT_MILLISECONDS = 1000;
         private const int RECEIVE_TIMEOUT_MILLISECONDS = 1000;
 
@@ -33,7 +32,6 @@ namespace Server.MVVM.Model
         public bool IsNotifiable { get; set; }
         // Jeżeli true, to wątek Server.Process ma ignorować zdarzenia od klienta.
         public bool IgnoreEvents { get; set; }
-        public int ContiguousKeepAlivesCounter { get; set; } = 0;
 
         // Dane zdalnego hosta ustawiane jednorazowo w metodzie Introduce.
         public string? Login { get; private set; } = null;
@@ -267,7 +265,6 @@ namespace Server.MVVM.Model
             się odwołać timeout (kolejne wywołanie SetExpectedPacket wystąpiło przed timeoutem). */
 
             ReceiveOrder = new ReceivePacketOrder(expectedPacket);
-            ContiguousKeepAlivesCounter = 0;
 
             StartTimeoutTaskIfNeeded(ReceiveOrder, millisecondsTimeout,
                 ClientEvent.Types.ReceiveTimeout, ReceiveOrder);
