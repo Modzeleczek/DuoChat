@@ -121,7 +121,6 @@
   <l:Entry x:Key="Alert" PL="Alert"/>
   <l:Entry x:Key="IP address" PL="Adres IP"/>
   <l:Entry x:Key="Port" PL="Port"/>
-  <l:Entry x:Key="Add" PL="Dodaj"/>
   <l:Entry x:Key="Enter your password" PL="Podaj hasło"/>
   <l:Entry x:Key="Delete server" PL="Usuń serwer"/>
   <l:Entry x:Key="Do you want to delete" PL="Czy chcesz usunąć"/>
@@ -257,6 +256,7 @@
   <l:Entry x:Key="Block_IP" EN="Block IP" PL="Zablokuj IP"/>
   <l:Entry x:Key="Block" PL="Zablokuj"/>
   <l:Entry x:Key="Unblock" PL="Odblokuj"/>
+  <l:Entry x:Key="Client_IP_blocks" EN="Client IP blocks" PL="Blokady IP klientów"/>
 
   <!-- klucze używane w plikach .cs - nie muszą być prawidłowymi nazwami zmiennych -->
   <l:Entry x:Key="Invalid capacity format."
@@ -328,6 +328,11 @@
   <l:Entry x:Key="conversation" PL="konwersacja"/>
   <l:Entry x:Key="id;M" PL="id"/>
   <l:Entry x:Key="Server is stopping" PL="Serwer się zatrzymuje"/>
+  <l:Entry x:Key="tried to connect from blocked IP address"
+    PL="próbował się połączyć z zablokowanego adresu IP"/>
+  <l:Entry x:Key="Client IP block with IP address"
+    PL="Blokada IP klienta z adresem IP"/>
+  <l:Entry x:Key="Add client IP block" PL="Dodaj blokadę IP klienta"/>
 
   <!-- do klienta i serwera -->
   <!-- klucze używane w plikach .xaml - muszą być prawidłowymi nazwami zmiennych -->
@@ -418,5 +423,6 @@
     PL="rozłączył się (zamknął swoje gniazdo)"/>
   <l:Entry x:Key="reception error" PL="błąd odbierania"/>
   <l:Entry x:Key="was disconnected" PL="został rozłączony"/>
+  <l:Entry x:Key="Add" PL="Dodaj"/>
 
 </ResourceDictionary>

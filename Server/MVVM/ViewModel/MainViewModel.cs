@@ -1,9 +1,11 @@
 using Server.MVVM.Model.Networking;
 using Server.MVVM.Model.Networking.UIRequests;
 using Server.MVVM.Model.Persistence;
+using Server.MVVM.Model.Persistence.DTO;
 using Shared.MVVM.Core;
 using Shared.MVVM.View.Windows;
 using Shared.MVVM.ViewModel;
+using System.Collections.Generic;
 
 namespace Server.MVVM.ViewModel
 {
@@ -40,9 +42,14 @@ namespace Server.MVVM.ViewModel
                 var logVM = new LogViewModel(window);
                 Storage storage;
                 ServerMonolith server;
+                List<AccountDto> allAccounts = null!;
+                List<ClientIPBlockDto> allClientIPBlocks = null!;
+
                 try
                 {
                     storage = new Storage();
+                    allAccounts = storage.Database.AccountsById.GetAll();
+                    allClientIPBlocks = storage.Database.ClientIPBlocks.GetAll();
                     server = new ServerMonolith(storage);
                 }
                 catch (Error e)
@@ -73,9 +80,9 @@ namespace Server.MVVM.ViewModel
 
                 var setVM = new SettingsViewModel(window, server, logVM);
                 var conCliVM = new ConnectedClientsViewModel(window, server, logVM);
-                var accVM = new AccountsViewModel(window,
-                    storage.Database.AccountsById.GetAll(), server);
-                var tabs = new UserControlViewModel[] { setVM, conCliVM, logVM, accVM };
+                var accVM = new AccountsViewModel(window, allAccounts, server);
+                var clIpBlVM = new ClientIPBlocksViewModel(window, allClientIPBlocks, server);
+                var tabs = new UserControlViewModel[] { setVM, conCliVM, logVM, accVM, clIpBlVM };
                 SelectTab = new RelayCommand(e =>
                 {
                     int index = int.Parse((string)e!);

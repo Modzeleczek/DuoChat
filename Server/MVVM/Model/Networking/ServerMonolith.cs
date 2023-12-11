@@ -717,8 +717,13 @@ namespace Server.MVVM.Model.Networking
             IPv4Address ipAddress = request.IpAddress;
 
             var repo = _storage.Database.ClientIPBlocks;
-            if (!repo.Exists(ipAddress.BinaryRepresentation))
-                repo.Add(new ClientIPBlockDto { IpAddress = ipAddress.BinaryRepresentation });
+            if (repo.Exists(ipAddress.BinaryRepresentation))
+            {
+                request.Callback($"|Client IP block with IP address| {ipAddress} " +
+                    $"|already exists.|");
+                return;
+            }
+            repo.Add(new ClientIPBlockDto { IpAddress = ipAddress.BinaryRepresentation });
 
             // Może być wielu klientów z tym samym IP, ale różnymi portami.
             var foundClients = _clients.Values.Where(
@@ -734,7 +739,7 @@ namespace Server.MVVM.Model.Networking
                     client.GenerateToken()), IPNowBlocked.CODE);
             }
 
-            request.Callback?.Invoke();
+            request.Callback(null);
         }
 
         private void UnblockClientIPUIRequest(UnblockClientIP request)

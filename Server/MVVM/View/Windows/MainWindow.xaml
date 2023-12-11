@@ -69,6 +69,7 @@
           <ColumnDefinition Width="*" />
           <ColumnDefinition Width="*" />
           <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         
         <Grid.Resources>
@@ -113,6 +114,11 @@
           Command="{Binding SelectTab}"
           CommandParameter="3"
           Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Accounts}"
+          GroupName="Tabs" />
+        <RadioButton Grid.Column="4"
+          Command="{Binding SelectTab}"
+          CommandParameter="4"
+          Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Client_IP_blocks}"
           GroupName="Tabs" />
       </Grid>
 

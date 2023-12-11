@@ -8,10 +8,10 @@ namespace Server.MVVM.Model.Networking.UIRequests
     {
         #region Properties
         public IPv4Address IpAddress { get; }
-        public Action Callback { get; }
+        public Action<string?> Callback { get; }
         #endregion
 
-        public BlockClientIP(IPv4Address ipAddress, Action callback)
+        public BlockClientIP(IPv4Address ipAddress, Action<string?> callback)
         {
             IpAddress = ipAddress;
             Callback = callback;

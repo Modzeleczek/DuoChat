@@ -41,6 +41,10 @@
       <DataTemplate DataType="{x:Type vm:AccountsViewModel}">
         <ctrl:AccountsView />
       </DataTemplate>
+      
+      <DataTemplate DataType="{x:Type vm:ClientIPBlocksViewModel}">
+        <ctrl:ClientIPBlocksView />
+      </DataTemplate>
     </ResourceDictionary>
   </Application.Resources>
 </shared:ThemedApplication>

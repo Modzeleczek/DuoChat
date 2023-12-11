@@ -61,8 +61,13 @@ namespace Server.MVVM.ViewModel
                 client.DisableInteraction();
 
                 window!.SetEnabled(false);
-                _server.Request(new BlockClientIP(clientKey.IpAddress, () => UIInvoke(() =>
+                _server.Request(new BlockClientIP(clientKey.IpAddress, (errorMsg) => UIInvoke(() =>
                 {
+                    if (!(errorMsg is null))
+                    {
+                        Alert(errorMsg);
+                        return;
+                    }
                     Clients.Remove(client);
                     window.SetEnabled(true);
                 })));
