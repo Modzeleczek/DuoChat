@@ -10,6 +10,7 @@ using Shared.MVVM.ViewModel;
 using Shared.MVVM.ViewModel.Results;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace Server.MVVM.ViewModel
 {
@@ -53,12 +54,7 @@ namespace Server.MVVM.ViewModel
                 {
                     // Wątek UI na zlecenie wątku Server.Process
                     if (!(errorMsg is null))
-                    {
                         Alert(errorMsg);
-                        return;
-                    }
-
-                    ClientIPBlocks.Add(new ClientIPBlockObservable { IpAddress = ipAddress });
                 })));
             });
 
@@ -67,8 +63,7 @@ namespace Server.MVVM.ViewModel
                 // Wątek UI
                 var clientIPBlockObs = (ClientIPBlockObservable)obj!;
 
-                server.Request(new UnblockClientIP(clientIPBlockObs.IpAddress,
-                    () => UIInvoke(() => ClientIPBlocks.Remove(clientIPBlockObs))));
+                server.Request(new UnblockClientIP(clientIPBlockObs.IpAddress));
             });
 
             // Inicjujemy listę zablokowanych adresów IP.
@@ -77,6 +72,24 @@ namespace Server.MVVM.ViewModel
                 {
                     IpAddress = new IPv4Address(b.IpAddress)
                 });
+
+            server.IPBlocked += OnIPBlocked;
+            server.IPUnblocked += OnIPUnblocked;
+        }
+
+        private void OnIPBlocked(IPv4Address ipAddress)
+        {
+            // Wątek Server.Process
+            UIInvoke(() => ClientIPBlocks.Add(
+                new ClientIPBlockObservable { IpAddress = ipAddress }));
+        }
+
+        private void OnIPUnblocked(IPv4Address ipAddress)
+        {
+            // Wątek Server.Process
+            var ipBlock = ClientIPBlocks.Single(b => b.IpAddress.Equals(ipAddress));
+
+            UIInvoke(() => ClientIPBlocks.Remove(ipBlock));
         }
     }
 }

@@ -57,6 +57,8 @@ namespace Server.MVVM.Model.Networking
         public event Action<Client>? ClientConnected;
         public event Action<Client>? ClientHandshaken;
         public event Action<Client, string>? ClientEndedConnection;
+        public event Action<IPv4Address>? IPBlocked;
+        public event Action<IPv4Address>? IPUnblocked;
         #endregion
 
         public ServerMonolith(Storage storage)
@@ -739,6 +741,8 @@ namespace Server.MVVM.Model.Networking
                     client.GenerateToken()), IPNowBlocked.CODE);
             }
 
+            IPBlocked?.Invoke(ipAddress);
+
             request.Callback(null);
         }
 
@@ -753,7 +757,7 @@ namespace Server.MVVM.Model.Networking
             if (repo.Exists(ipAddress.BinaryRepresentation))
                 repo.Delete(ipAddress.BinaryRepresentation);
 
-            request.Callback?.Invoke();
+            IPUnblocked?.Invoke(ipAddress);
         }
 
         private void BlockAccountUIRequest(BlockAccount request)

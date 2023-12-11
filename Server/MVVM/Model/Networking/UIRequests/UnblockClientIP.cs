@@ -8,13 +8,11 @@ namespace Server.MVVM.Model.Networking.UIRequests
     {
         #region Properties
         public IPv4Address IpAddress { get; }
-        public Action Callback { get; }
         #endregion
 
-        public UnblockClientIP(IPv4Address ipAddress, Action callback)
+        public UnblockClientIP(IPv4Address ipAddress)
         {
             IpAddress = ipAddress;
-            Callback = callback;
         }
     }
 }
