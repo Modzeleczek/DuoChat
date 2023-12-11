@@ -62,10 +62,7 @@ namespace Server.MVVM.ViewModel
                 _server.Request(new BlockClientIP(clientKey.IpAddress, (errorMsg) => UIInvoke(() =>
                 {
                     if (!(errorMsg is null))
-                    {
                         Alert(errorMsg);
-                        return;
-                    }
 
                     // Klient zostanie usunięty z Clients w OnClientEndedConnection.
                     window.SetEnabled(true);
