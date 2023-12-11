@@ -1,4 +1,4 @@
-﻿using Server.MVVM.Model;
+using Server.MVVM.Model;
 using Server.MVVM.Model.Networking;
 using Server.MVVM.Model.Networking.UIRequests;
 using Server.MVVM.Model.Persistence.DTO;
@@ -57,11 +57,8 @@ namespace Server.MVVM.ViewModel
                 var accountObs = (AccountObservable)obj!;
 
                 window!.SetEnabled(false);
-                server.Request(new DisconnectAccount(accountObs.Login, () => UIInvoke(() =>
-                {
-                    accountObs.IsConnected = false;
-                    window.SetEnabled(true);
-                })));
+                server.Request(new DisconnectAccount(accountObs.Login,
+                    () => UIInvoke(() => window.SetEnabled(true))));
             });
 
             server.ClientHandshaken += OnClientHandshaken;
