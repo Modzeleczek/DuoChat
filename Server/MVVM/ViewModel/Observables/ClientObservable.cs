@@ -23,8 +23,6 @@ namespace Server.MVVM.ViewModel.Observables
 
         private string? _login = null;
         public string? Login { get => _login; }
-
-        public bool HasEnabledInteraction { get; private set; } = true;
         #endregion
 
         public ClientObservable(ClientPrimaryKey key)
@@ -45,15 +43,6 @@ namespace Server.MVVM.ViewModel.Observables
 
             _login = login;
             OnPropertyChanged(nameof(DisplayedName));
-        }
-
-        public void DisableInteraction()
-        {
-            if (!HasEnabledInteraction)
-                throw new InvalidCastException("Observable client has disabled interaction.");
-
-            HasEnabledInteraction = false;
-            OnPropertyChanged(nameof(HasEnabledInteraction));
         }
     }
 }

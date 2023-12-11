@@ -43,7 +43,6 @@ namespace Server.MVVM.ViewModel
                 // Wykonywane przez wątek UI
                 var client = (ClientObservable)obj!;
                 var clientKey = client.GetPrimaryKey();
-                client.DisableInteraction();
 
                 _server.Request(new DisconnectClient(clientKey));
                 // Klient zostanie usunięty z Clients w OnClientEndedConnection.
@@ -54,7 +53,6 @@ namespace Server.MVVM.ViewModel
                 // Wątek UI
                 var client = (ClientObservable)obj!;
                 var clientKey = client.GetPrimaryKey();
-                client.DisableInteraction();
 
                 _server.Request(new BlockClientIP(clientKey.IpAddress, (errorMsg) => UIInvoke(() =>
                 {
