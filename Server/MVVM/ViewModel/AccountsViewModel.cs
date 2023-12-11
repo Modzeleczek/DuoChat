@@ -96,6 +96,8 @@ namespace Server.MVVM.ViewModel
             // Wątek Server.Process
             var accountObs = Accounts.SingleOrDefault(a => a.Login.Equals(client.Login));
             if (accountObs is null)
+                /* Wystąpi, kiedy nieautentykowany klient przerwie uścisk dłoni poprzez
+                zamknięcie swojego socketa. Wówczas taki klient ma Login == null. */
                 return;
 
             UIInvoke(() => accountObs.IsConnected = false);
