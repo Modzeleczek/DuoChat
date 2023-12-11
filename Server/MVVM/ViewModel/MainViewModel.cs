@@ -63,7 +63,6 @@ namespace Server.MVVM.ViewModel
                 Close = new RelayCommand(_ =>
                 {
                     // Wątek UI
-                    window.SetEnabled(false);
                     // Asynchroniczne zatrzymanie.
                     server.Request(new StopServer(() =>
                     {

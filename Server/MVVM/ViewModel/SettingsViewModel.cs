@@ -93,12 +93,10 @@ namespace Server.MVVM.ViewModel
             {
                 if (!ServerStopped)
                 {
-                    window!.SetEnabled(false);
                     server.Request(new StopServer(() => UIInvoke(() =>
                     {
                         ServerStopped = true;
                         logger.Log("|Server was stopped|.");
-                        window!.SetEnabled(true);
                     })));
                     return;
                 }

@@ -45,10 +45,8 @@ namespace Server.MVVM.ViewModel
                 var clientKey = client.GetPrimaryKey();
                 client.DisableInteraction();
 
-                window!.SetEnabled(false);
-                _server.Request(new DisconnectClient(clientKey, () => UIInvoke(() =>
-                    // Klient zostanie usunięty z Clients w OnClientEndedConnection.
-                    window.SetEnabled(true))));
+                _server.Request(new DisconnectClient(clientKey));
+                // Klient zostanie usunięty z Clients w OnClientEndedConnection.
             });
 
             BlockIP = new RelayCommand(obj =>
@@ -58,14 +56,12 @@ namespace Server.MVVM.ViewModel
                 var clientKey = client.GetPrimaryKey();
                 client.DisableInteraction();
 
-                window!.SetEnabled(false);
                 _server.Request(new BlockClientIP(clientKey.IpAddress, (errorMsg) => UIInvoke(() =>
                 {
                     if (!(errorMsg is null))
                         Alert(errorMsg);
 
                     // Klient zostanie usunięty z Clients w OnClientEndedConnection.
-                    window.SetEnabled(true);
                 })));
             });
 

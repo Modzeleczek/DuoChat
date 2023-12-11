@@ -7,13 +7,11 @@ namespace Server.MVVM.Model.Networking.UIRequests
     {
         #region Properties
         public ClientPrimaryKey ClientKey { get; }
-        public Action Callback { get; }
         #endregion
 
-        public DisconnectClient(ClientPrimaryKey clientKey, Action callback)
+        public DisconnectClient(ClientPrimaryKey clientKey)
         {
             ClientKey = clientKey;
-            Callback = callback;
         }
     }
 }

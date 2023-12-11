@@ -689,8 +689,6 @@ namespace Server.MVVM.Model.Networking
                 return;
 
             DisconnectThenNotify(client, "|was disconnected|.");
-
-            request.Callback?.Invoke();
         }
 
         private void DisconnectAccountUIRequest(DisconnectAccount request)
