@@ -45,8 +45,7 @@ namespace Server.MVVM.Model.Persistence.Repositories
         {
             return new ClientIPBlockDto
             {
-                // (uint)(long)
-                IpAddress = (uint)reader[F_ip_address]
+                IpAddress = (uint)(long)reader[F_ip_address]
             };
         }
 
