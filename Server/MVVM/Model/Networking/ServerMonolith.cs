@@ -699,8 +699,6 @@ namespace Server.MVVM.Model.Networking
 
             // Wątek Server.Process
             DisconnectClientsWithLogin(request.Login);
-
-            request.Callback?.Invoke();
         }
 
         private void DisconnectClientsWithLogin(string login)

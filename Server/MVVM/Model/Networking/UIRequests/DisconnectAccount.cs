@@ -1,5 +1,4 @@
 ﻿using Shared.MVVM.Model;
-using System;
 
 namespace Server.MVVM.Model.Networking.UIRequests
 {
@@ -7,13 +6,11 @@ namespace Server.MVVM.Model.Networking.UIRequests
     {
         #region Properties
         public string Login { get; }
-        public Action Callback { get; }
         #endregion
 
-        public DisconnectAccount(string login, Action callback)
+        public DisconnectAccount(string login)
         {
             Login = login;
-            Callback = callback;
         }
     }
 }

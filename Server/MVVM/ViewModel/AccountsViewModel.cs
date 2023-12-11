@@ -37,17 +37,14 @@ namespace Server.MVVM.ViewModel
                 // Wątek UI
                 var accountObs = (AccountObservable)obj!;
 
-                window!.SetEnabled(false);
                 server.Request(accountObs.IsBlocked ?
                     new UnblockAccount(accountObs.Login, () => UIInvoke(() =>
                     {
                         accountObs.IsBlocked = false;
-                        window!.SetEnabled(true);
                     })) :
                     new BlockAccount(accountObs.Login, () => UIInvoke(() =>
                     {
                         accountObs.IsBlocked = true;
-                        window!.SetEnabled(true);
                     })));
             });
 
@@ -56,9 +53,7 @@ namespace Server.MVVM.ViewModel
                 // Wątek UI
                 var accountObs = (AccountObservable)obj!;
 
-                window!.SetEnabled(false);
-                server.Request(new DisconnectAccount(accountObs.Login,
-                    () => UIInvoke(() => window.SetEnabled(true))));
+                server.Request(new DisconnectAccount(accountObs.Login));
             });
 
             server.ClientHandshaken += OnClientHandshaken;
