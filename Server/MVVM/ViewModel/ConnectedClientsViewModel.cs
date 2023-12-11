@@ -47,10 +47,8 @@ namespace Server.MVVM.ViewModel
 
                 window!.SetEnabled(false);
                 _server.Request(new DisconnectClient(clientKey, () => UIInvoke(() =>
-                {
-                    Clients.Remove(client);
-                    window.SetEnabled(true);
-                })));
+                    // Klient zostanie usunięty z Clients w OnClientEndedConnection.
+                    window.SetEnabled(true))));
             });
 
             BlockIP = new RelayCommand(obj =>
@@ -68,7 +66,8 @@ namespace Server.MVVM.ViewModel
                         Alert(errorMsg);
                         return;
                     }
-                    Clients.Remove(client);
+
+                    // Klient zostanie usunięty z Clients w OnClientEndedConnection.
                     window.SetEnabled(true);
                 })));
             });
