@@ -16,10 +16,14 @@ namespace Shared
             get => _activeTheme;
             set
             {
-                var uri = $"/MVVM/View/DynamicResources/Themes/{value}.xaml";
+                string sharedThemeUri = $"/MVVM/View/SharedResources/Dynamic/Themes/{value}.xaml";
+                string individualThemeUri = $"/MVVM/View/Resources/Dynamic/Themes/{value}.xaml";
+
                 ThemeDictionary.MergedDictionaries.Clear();
                 ThemeDictionary.MergedDictionaries.Add(
-                    new ResourceDictionary() { Source = new Uri(uri, UriKind.Relative) });
+                    new ResourceDictionary { Source = new Uri(sharedThemeUri, UriKind.Relative) });
+                ThemeDictionary.MergedDictionaries.Add(
+                    new ResourceDictionary { Source = new Uri(individualThemeUri, UriKind.Relative) });
                 _activeTheme = value;
             }
         }

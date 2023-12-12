@@ -27,11 +27,11 @@
               Margin="5,0,0,0"
               CanHorizontallyScroll="False"
               Orientation="Horizontal">
-              <Ellipse Width="45" Height="45">
+              <!-- <Ellipse Width="45" Height="45">
                 <Ellipse.Fill>
-                  <ImageBrush ImageSource="{Binding Owner.Image}" />
+                  <ImageBrush ImageSource="" />
                 </Ellipse.Fill>
-              </Ellipse>
+              </Ellipse> -->
 
               <StackPanel
                 VerticalAlignment="Center"

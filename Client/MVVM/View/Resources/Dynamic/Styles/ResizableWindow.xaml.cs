@@ -1,10 +1,9 @@
-using Shared.MVVM.Core;
 using System;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Shapes;
 
-namespace Client.MVVM.View.Themes
+namespace Client.MVVM.View.Resources.Dynamic.Styles
 {
     public partial class ResizableWindow : ResourceDictionary
     {

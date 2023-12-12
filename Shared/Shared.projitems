@@ -83,26 +83,26 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="$(MSBuildThisFileDirectory)MVVM\View\Resources\Dynamic\Styles\Buttons.xaml">
+    <Page Include="$(MSBuildThisFileDirectory)MVVM\View\SharedResources\Dynamic\Styles\Buttons.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="$(MSBuildThisFileDirectory)MVVM\View\Resources\Dynamic\Styles\HoverPanel.xaml">
+    <Page Include="$(MSBuildThisFileDirectory)MVVM\View\SharedResources\Dynamic\Styles\HoverPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="$(MSBuildThisFileDirectory)MVVM\View\Resources\Dynamic\Styles\ScrollBar.xaml">
+    <Page Include="$(MSBuildThisFileDirectory)MVVM\View\SharedResources\Dynamic\Styles\ScrollBar.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="$(MSBuildThisFileDirectory)MVVM\View\Resources\Dynamic\Styles\TextFields.xaml">
+    <Page Include="$(MSBuildThisFileDirectory)MVVM\View\SharedResources\Dynamic\Styles\TextFields.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="$(MSBuildThisFileDirectory)MVVM\View\Resources\Dynamic\Themes\Dark.xaml">
+    <Page Include="$(MSBuildThisFileDirectory)MVVM\View\SharedResources\Dynamic\Themes\Dark.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="$(MSBuildThisFileDirectory)MVVM\View\Resources\Dynamic\Themes\Light.xaml">
+    <Page Include="$(MSBuildThisFileDirectory)MVVM\View\SharedResources\Dynamic\Themes\Light.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

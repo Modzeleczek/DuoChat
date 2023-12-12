@@ -13,9 +13,9 @@
               Width="30"
               Height="30"
               Margin="10,0,0,-5">
-              <Ellipse.Fill>
+              <!-- <Ellipse.Fill>
                 <ImageBrush ImageSource="{Binding Sender.Image}" RenderOptions.BitmapScalingMode="Fant" />
-              </Ellipse.Fill>
+              </Ellipse.Fill> -->
 
             </Ellipse>
             <StackPanel>

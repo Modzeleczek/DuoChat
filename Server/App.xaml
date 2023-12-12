@@ -12,16 +12,16 @@
         <ResourceDictionary>
           <!-- Podmienialny zasób z definicjami kolorów. -->
           <ResourceDictionary.MergedDictionaries>
-            <ResourceDictionary Source="/MVVM/View/Resources/Dynamic/Themes/Dark.xaml" />
+            <ResourceDictionary Source="/MVVM/View/SharedResources/Dynamic/Themes/Dark.xaml" />
           </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
 
         <!-- Statyczne zasoby stylów. -->
         <!-- Wspólne klienta i serwera -->
-        <ResourceDictionary Source="/MVVM/View/Resources/Dynamic/Styles/Buttons.xaml" />
-        <ResourceDictionary Source="/MVVM/View/Resources/Dynamic/Styles/HoverPanel.xaml" />
-        <ResourceDictionary Source="/MVVM/View/Resources/Dynamic/Styles/ScrollBar.xaml" />
-        <ResourceDictionary Source="/MVVM/View/Resources/Dynamic/Styles/TextFields.xaml" />
+        <ResourceDictionary Source="/MVVM/View/SharedResources/Dynamic/Styles/Buttons.xaml" />
+        <ResourceDictionary Source="/MVVM/View/SharedResources/Dynamic/Styles/HoverPanel.xaml" />
+        <ResourceDictionary Source="/MVVM/View/SharedResources/Dynamic/Styles/ScrollBar.xaml" />
+        <ResourceDictionary Source="/MVVM/View/SharedResources/Dynamic/Styles/TextFields.xaml" />
 
         <!-- Indywidualne serwera -->
       </ResourceDictionary.MergedDictionaries>

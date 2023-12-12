@@ -8,33 +8,36 @@
   <Application.Resources>
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
-        <!-- Słownik z dynamicznymi zasobami. Resources.MergedDictionaries[0] -->
+        <!-- Słownik z dynamicznymi zasobami. Poniższe wskazania ResourceDictionary są
+        nieużywane, bo nadpisujemy je programowo w ThemedApplication, setterze ActiveTheme.
+        Resources.MergedDictionaries[0] -->
         <ResourceDictionary>
           <!-- Podmienialny zasób z definicjami kolorów. -->
           <ResourceDictionary.MergedDictionaries>
-            <ResourceDictionary Source="/MVVM/View/DynamicResources/Themes/Dark.xaml" />
+            <ResourceDictionary Source="/MVVM/View/SharedResources/Dynamic/Themes/Dark.xaml" />
+            <ResourceDictionary Source="/MVVM/View/Resources/Dynamic/Themes/Dark.xaml" />
           </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
 
         <!-- Statyczne zasoby stylów. -->
         <!-- Wspólne klienta i serwera -->
-        <ResourceDictionary Source="/MVVM/View/Resources/Dynamic/Styles/Buttons.xaml" />
-        <ResourceDictionary Source="/MVVM/View/Resources/Dynamic/Styles/HoverPanel.xaml" />
-        <ResourceDictionary Source="/MVVM/View/Resources/Dynamic/Styles/ScrollBar.xaml" />
-        <ResourceDictionary Source="/MVVM/View/Resources/Dynamic/Styles/TextFields.xaml" />
+        <ResourceDictionary Source="/MVVM/View/SharedResources/Dynamic/Styles/Buttons.xaml" />
+        <ResourceDictionary Source="/MVVM/View/SharedResources/Dynamic/Styles/HoverPanel.xaml" />
+        <ResourceDictionary Source="/MVVM/View/SharedResources/Dynamic/Styles/ScrollBar.xaml" />
+        <ResourceDictionary Source="/MVVM/View/SharedResources/Dynamic/Styles/TextFields.xaml" />
 
         <!-- Indywidualne klienta -->
-        <ResourceDictionary Source="/MVVM/View/DynamicResources/Styles/Buttons.xaml" />
-        <ResourceDictionary Source="/MVVM/View/DynamicResources/Styles/ToggleButtons.xaml" />
+        <ResourceDictionary Source="/MVVM/View/Resources/Dynamic/Styles/Buttons.xaml" />
+        <ResourceDictionary Source="/MVVM/View/Resources/Dynamic/Styles/ToggleButtons.xaml" />
         <!-- ServerCard musi być po Shared/Buttons, bo go używa. -->
-        <ResourceDictionary Source="/MVVM/View/DynamicResources/Styles/ServerCard.xaml" />
-        <ResourceDictionary Source="/MVVM/View/DynamicResources/Styles/ConversationCard.xaml" />
-        <ResourceDictionary Source="/MVVM/View/DynamicResources/Styles/AccountCard.xaml" />
-        <ResourceDictionary Source="/MVVM/View/DynamicResources/Styles/ChatItem.xaml" />
-        <ResourceDictionary Source="/MVVM/View/DynamicResources/Styles/MessageBox.xaml" />
-        <ResourceDictionary Source="/MVVM/View/DynamicResources/Styles/ResizableWindow.xaml" />
-        <ResourceDictionary Source="/MVVM/View/DynamicResources/Styles/TextFields.xaml" />
-        <ResourceDictionary Source="/MVVM/View/DynamicResources/Styles/Border.xaml" />
+        <ResourceDictionary Source="/MVVM/View/Resources/Dynamic/Styles/ServerCard.xaml" />
+        <ResourceDictionary Source="/MVVM/View/Resources/Dynamic/Styles/ConversationCard.xaml" />
+        <ResourceDictionary Source="/MVVM/View/Resources/Dynamic/Styles/AccountCard.xaml" />
+        <ResourceDictionary Source="/MVVM/View/Resources/Dynamic/Styles/ChatItem.xaml" />
+        <ResourceDictionary Source="/MVVM/View/Resources/Dynamic/Styles/MessageBox.xaml" />
+        <ResourceDictionary Source="/MVVM/View/Resources/Dynamic/Styles/ResizableWindow.xaml" />
+        <ResourceDictionary Source="/MVVM/View/Resources/Dynamic/Styles/TextFields.xaml" />
+        <ResourceDictionary Source="/MVVM/View/Resources/Dynamic/Styles/Border.xaml" />
       </ResourceDictionary.MergedDictionaries>
 
       <DataTemplate DataType="{x:Type vm:ConversationViewModel}">
