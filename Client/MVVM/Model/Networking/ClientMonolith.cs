@@ -477,7 +477,8 @@ namespace Client.MVVM.Model.Networking
         {
             Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {server}");
 
-            RequestError.Deserialize(pr, out ulong token, out Packet.Codes faultyOperationCode, out byte errorCode);
+            RequestError.Deserialize(pr, out Packet.Codes faultyOperationCode, out byte errorCode);
+
             switch (faultyOperationCode)
             {
                 case AddConversation.CODE:

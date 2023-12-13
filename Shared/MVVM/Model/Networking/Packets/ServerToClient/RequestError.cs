@@ -26,11 +26,9 @@ namespace Shared.MVVM.Model.Networking.Packets.ServerToClient
         }
 
         public static void Deserialize(PacketReader pr,
-            out ulong token,
             out Codes faultyOperationCode,
             out byte errorCode)
         {
-            token = pr.ReadUInt64();
             faultyOperationCode = (Codes)pr.ReadUInt8();
             errorCode = pr.ReadUInt8();
         }
