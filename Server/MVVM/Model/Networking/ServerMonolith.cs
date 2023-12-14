@@ -1,4 +1,4 @@
-﻿using Shared.MVVM.Model.Cryptography;
+using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking;
 using System;
 using System.Collections.Generic;
@@ -346,10 +346,9 @@ namespace Server.MVVM.Model.Networking
                 return;
             }
             
-            var repo = _storage.Database.AccountsByLogin;
-            if (repo.Exists(login))
+            if (_storage.Database.AccountsByLogin.Exists(login))
             {
-                var existingAccount = repo.Get(login);
+                var existingAccount = _storage.Database.AccountsByLogin.Get(login);
                 // Login już istnieje.
 
                 if (!publicKey.Equals(existingAccount.PublicKey))
@@ -372,7 +371,8 @@ namespace Server.MVVM.Model.Networking
             else
             {
                 // Login jeszcze nie istnieje, więc zapisujemy konto w bazie.
-                repo.Add(new AccountDto { Login = login, PublicKey = publicKey, IsBlocked = 0 });
+                _storage.Database.AccountsByLogin.Add(
+                    new AccountDto { Login = login, PublicKey = publicKey, IsBlocked = 0 });
             }
 
             /* Login jeszcze nie istniał i został dodany lub już istniał i klient
