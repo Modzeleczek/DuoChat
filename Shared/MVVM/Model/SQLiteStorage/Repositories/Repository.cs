@@ -18,7 +18,7 @@ namespace Shared.MVVM.Model.SQLiteStorage.Repositories
         protected SQLiteConnection CreateConnection() => _sqliteConnector.CreateConnection();
 
         #region CRUD
-        public void Add(EntityDtoT dto)
+        public KeyT Add(EntityDtoT dto)
         {
             EnsureEntityExists(dto.GetRepositoryKey(), false);
 
@@ -32,12 +32,14 @@ namespace Shared.MVVM.Model.SQLiteStorage.Repositories
                     con.Open();
                     if (cmd.ExecuteNonQuery() != 1)
                         throw NotExactly1RowError();
+                    return GetInsertedKey(con, dto);
                 }
             }
             catch (Exception e) { throw QueryError(e); }
         }
         protected abstract string AddQuery();
         protected abstract void SetAddParameters(SQLiteParameterCollection parColl, EntityDtoT dto);
+        protected abstract KeyT GetInsertedKey(SQLiteConnection con, EntityDtoT dto);
 
         protected Error NotExactly1RowError() =>
             new Error("|Number of rows affected by the query is other than 1.|");

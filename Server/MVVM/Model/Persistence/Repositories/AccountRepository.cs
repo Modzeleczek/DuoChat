@@ -37,6 +37,11 @@ namespace Server.MVVM.Model.Persistence.Repositories
             parColl.AddWithValue($"@{F_is_blocked}", dto.IsBlocked);
         }
 
+        protected override (ulong id, string login) GetInsertedKey(SQLiteConnection con, AccountDto dto)
+        {
+            return ((ulong)con.LastInsertRowId, dto.Login);
+        }
+
         protected override string EntityName()
         {
             return "|account|";

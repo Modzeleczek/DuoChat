@@ -39,6 +39,12 @@ namespace Client.MVVM.Model.SQLiteStorage.Repositories
             parColl.Add($"@{F_private_key}", DbType.Binary, bytes.Length).Value = bytes;
         }
 
+        protected override string GetInsertedKey(SQLiteConnection con, Account dto)
+        {
+            _ = con;
+            return dto.Login;
+        }
+
         protected override string EntityName()
         {
             return "|account|";

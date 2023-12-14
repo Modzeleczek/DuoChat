@@ -26,6 +26,12 @@ namespace Server.MVVM.Model.Persistence.Repositories
             parColl.AddWithValue($"@{F_ip_address}", dto.IpAddress);
         }
 
+        protected override uint GetInsertedKey(SQLiteConnection con, ClientIPBlockDto dto)
+        {
+            _ = con;
+            return dto.IpAddress;
+        }
+
         protected override string EntityName()
         {
             return "|client IP block|";

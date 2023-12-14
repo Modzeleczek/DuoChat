@@ -29,6 +29,12 @@ namespace Server.MVVM.Model.Persistence.Repositories
             parColl.AddWithValue($"@{F_name}", dto.Name);
         }
 
+        protected override ulong GetInsertedKey(SQLiteConnection con, ConversationDto dto)
+        {
+            _ = dto;
+            return (ulong)con.LastInsertRowId;
+        }
+
         protected override string EntityName()
         {
             return "|conversation|";
