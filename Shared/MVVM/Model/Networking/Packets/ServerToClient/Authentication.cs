@@ -24,10 +24,10 @@ namespace Shared.MVVM.Model.Networking.Packets.ServerToClient
             return pb.Build();
         }
 
-        public void Deserialize(PacketReader pr,
-            out ulong token)
+        public static void Deserialize(PacketReader pr,
+            out ulong remoteSeed)
         {
-            token = pr.ReadUInt64();
+            remoteSeed = pr.ReadUInt64();
         }
     }
 }

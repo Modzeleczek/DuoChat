@@ -465,7 +465,6 @@ namespace Client.MVVM.ViewModel
             });
 
             _client.ServerIntroduced += OnServerIntroduced;
-            _client.ServerHandshaken += OnServerHandshaken;
             _client.ReceivedConversationsAndUsersList += OnReceivedConversationsAndUsersList;
             _client.ServerEndedConnection += OnServerEndedConnection;
         }
@@ -583,14 +582,6 @@ namespace Client.MVVM.ViewModel
                     "|Connect|", "|No|", "|Yes|");
                 return confirmRes is Success;
             });
-        }
-
-        private void OnServerHandshaken(RemoteServer server)
-        {
-            // Wątek Client.Process
-            // Jesteśmy po uścisku dłoni, więc pobieramy konwersacje z serwera.
-            _client.Request(new GetConversations(server.GetPrimaryKey()));
-            // Odpowiedź zamierzamy dostać w OnReceivedConversationsAndUsersList.
         }
 
         private void OnReceivedConversationsAndUsersList(RemoteServer server,

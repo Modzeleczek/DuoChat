@@ -45,7 +45,6 @@ namespace Client.MVVM.Model.Networking
 
         #region Events
         public event Action<RemoteServer>? ServerIntroduced;
-        public event Action<RemoteServer>? ServerHandshaken;
         public event Action<RemoteServer, Conversation[]>? ReceivedConversationsAndUsersList;
         public event Action<RemoteServer, string>? ReceivedRequestError;
         public event Action<RemoteServer, string>? ServerEndedConnection;
@@ -331,11 +330,7 @@ namespace Client.MVVM.Model.Networking
                 switch (operationCode)
                 {
                     case Packet.Codes.Authentication:
-                        ulong remoteSeed = pr.ReadUInt64();
-                        server.Authenticate(remoteSeed);
-                        server.IsRequestable = true;
-                        ServerHandshaken?.Invoke(server);
-                        server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Notification);
+                        HandleExpectedAuthentication(server, pr);
                         break;
                     case Packet.Codes.NoAuthentication:
                         DisconnectThenNotify(server, "|refused to authenticate client|.");
@@ -349,6 +344,22 @@ namespace Client.MVVM.Model.Networking
                 }
             }
             catch (Error e) { DisconnectThenNotify(server, e.Message); }
+        }
+
+        private void HandleExpectedAuthentication(RemoteServer server, PacketReader pr)
+        {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {server}");
+
+            Authentication.Deserialize(pr, out ulong remoteSeed);
+
+            server.Authenticate(remoteSeed);
+            server.IsRequestable = true;
+
+            /* Jesteśmy po uścisku dłoni, więc pobieramy konwersacje z serwera.
+            Odpowiedź zamierzamy dostać w HandleReceivedConversationsAndUsersList. */
+            server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Notification);
+            server.EnqueueToSend(GetConversationsAndUsers.Serialize(_privateKey!, server.PublicKey!,
+                server.GenerateToken()), GetConversationsAndUsers.CODE);
         }
         #endregion
 
@@ -542,9 +553,6 @@ namespace Client.MVVM.Model.Networking
                 case Disconnect disconnect:
                     DisconnectUIRequest(disconnect);
                     break;
-                case GetConversations getConversations:
-                    GetConversationsUIRequest(getConversations);
-                    break;
                 case StopProcess stopProcess:
                     StopProcessUIRequest(stopProcess);
                     break;
@@ -656,20 +664,6 @@ namespace Client.MVVM.Model.Networking
             DisconnectThenNotify(remoteServer, "|was disconnected|.");
 
             request.Callback?.Invoke();
-        }
-
-        private void GetConversationsUIRequest(GetConversations request)
-        {
-            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {request.ServerKey}");
-
-            ServerPrimaryKey serverKey = request.ServerKey;
-            if (_remoteServer is null || !serverKey.Equals(_remoteServer.GetPrimaryKey()))
-                return;
-            RemoteServer server = _remoteServer;
-
-            server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Notification);
-            server.EnqueueToSend(GetConversationsAndUsers.Serialize(_privateKey!, server.PublicKey!,
-                server.GenerateToken()), GetConversationsAndUsers.CODE);
         }
 
         private void StopProcessUIRequest(StopProcess request)
