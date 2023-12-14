@@ -417,8 +417,8 @@ namespace Client.MVVM.ViewModel
                     _client.Request(new Disconnect(SelectedServer!.GetPrimaryKey(),
                         // Wątek Client.Process
                         () => _client.Request(stopProcessRequest)));
-
-                _client.Request(stopProcessRequest);
+                else
+                    _client.Request(stopProcessRequest);
             });
 
             OpenSettings = new RelayCommand(_ =>
