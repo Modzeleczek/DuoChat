@@ -39,6 +39,9 @@ namespace Server.MVVM.Model
         private ulong _remoteSeed = 0;
         private ulong _localSeed = 0;
 
+        // Ustawiane jednorazowo w metodzie Authenticate.
+        public ulong Id { get; private set; } = 0;
+
         private readonly BlockingCollection<SendPacketOrder> _sendQueue =
             new BlockingCollection<SendPacketOrder>();
         private readonly object _sendQueueCompleteAddingLock = new object();
@@ -85,6 +88,15 @@ namespace Server.MVVM.Model
             PublicKey = publicKey;
             _remoteSeed = remoteSeed;
             _localSeed = localSeed;
+        }
+
+        public void Authenticate(ulong id)
+        {
+            if (Id != 0)
+                // Nieprawdopodobne
+                throw new InvalidOperationException("Server has already authenticated client.");
+
+            Id = id;
         }
 
         public void StartSenderAndReceiver()

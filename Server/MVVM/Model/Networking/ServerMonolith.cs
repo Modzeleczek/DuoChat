@@ -345,11 +345,13 @@ namespace Server.MVVM.Model.Networking
                 InterruptHandshake(client, "|does not own the public key sent by it|.");
                 return;
             }
-            
+
+            ulong accountId;
             if (_storage.Database.AccountsByLogin.Exists(login))
             {
                 var existingAccount = _storage.Database.AccountsByLogin.Get(login);
                 // Login już istnieje.
+                accountId = existingAccount.Id;
 
                 if (!publicKey.Equals(existingAccount.PublicKey))
                 {
@@ -371,7 +373,7 @@ namespace Server.MVVM.Model.Networking
             else
             {
                 // Login jeszcze nie istnieje, więc zapisujemy konto w bazie.
-                _storage.Database.AccountsByLogin.Add(
+                (accountId, _) = _storage.Database.AccountsByLogin.Add(
                     new AccountDto { Login = login, PublicKey = publicKey, IsBlocked = 0 });
             }
 
@@ -379,6 +381,7 @@ namespace Server.MVVM.Model.Networking
             podpisał token swoim kluczem prywatnym powiązanym z kluczem publicznym
             publicKey. */
 
+            client.Authenticate(accountId);
             ClientHandshaken?.Invoke(client);
             client.IsNotifiable = true;
 
