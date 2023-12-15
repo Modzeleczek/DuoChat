@@ -1,4 +1,4 @@
-﻿<w:DialogWindow
+<w:DialogWindow
   x:Class="Client.MVVM.View.Windows.MainWindow"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -318,18 +318,10 @@
               <Button
                 Width="32"
                 Height="32"
-                Margin="0,0,7,0"
-                HorizontalAlignment="Right"
                 Command="{Binding OpenSettings}"
                 DockPanel.Dock="Right"
-                FontSize="15"
-                Foreground="{DynamicResource FirstForegroundColor}"
                 Style="{DynamicResource MenuButtonStyle}">
-                <Border CornerRadius="20">
-                  <Image Margin="4" Source="{DynamicResource SettingsButtonImage}" />
-                  <Border.Resources />
-                </Border>
-
+                <Image Margin="4" Source="{DynamicResource SettingsButtonImage}" />
               </Button>
             </DockPanel>
           </Border>
