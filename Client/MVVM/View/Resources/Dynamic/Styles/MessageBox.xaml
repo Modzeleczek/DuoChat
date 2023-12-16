@@ -5,16 +5,13 @@
 
   <Style x:Key="MessageBoxStyle" TargetType="TextBox">
     <Setter Property="Foreground" Value="{DynamicResource ThirdForegroundColor}" />
-
     <Setter Property="FontWeight" Value="Medium" />
-
     <Setter Property="Margin" Value="12,8,12,8" />
 
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="TextBox">
-          <Border Background="{DynamicResource SecondBackgroundColor}" CornerRadius="8">
-
+          <Border Background="{DynamicResource ThirdBackgroundColor}" CornerRadius="8">
             <Grid>
               <TextBox
                 x:Name="MessageTextBox"
@@ -34,8 +31,8 @@
                 <TextBox.InputBindings>
                   <KeyBinding Key="Return" Command="{Binding Send}" />
                 </TextBox.InputBindings>
-
               </TextBox>
+              
               <TextBlock
                 Margin="10,0,0,0"
                 HorizontalAlignment="Left"
@@ -49,21 +46,16 @@
                     <Style.Triggers>
                       <DataTrigger Binding="{Binding Text, ElementName=MessageTextBox}" Value="">
                         <Setter Property="Visibility" Value="Visible" />
-
                       </DataTrigger>
                     </Style.Triggers>
-
                   </Style>
                 </TextBlock.Style>
-
               </TextBlock>
             </Grid>
-
           </Border>
         </ControlTemplate>
       </Setter.Value>
     </Setter>
-
   </Style>
 
 </ResourceDictionary>
