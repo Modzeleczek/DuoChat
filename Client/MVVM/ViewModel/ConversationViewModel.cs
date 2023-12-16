@@ -1,7 +1,9 @@
+using Client.MVVM.Model.Networking;
 using Client.MVVM.ViewModel.Observables;
 using Shared.MVVM.Core;
 using Shared.MVVM.View.Windows;
 using Shared.MVVM.ViewModel;
+using Shared.MVVM.ViewModel.Results;
 using System;
 using System.Collections.Generic;
 
@@ -11,6 +13,7 @@ namespace Client.MVVM.ViewModel
     {
         #region Commands
         public RelayCommand Send { get; }
+        public RelayCommand AddParticipant { get; }
         #endregion
 
         #region Properties
@@ -29,9 +32,17 @@ namespace Client.MVVM.ViewModel
         }
         #endregion
 
-        public ConversationViewModel(DialogWindow owner)
+        public ConversationViewModel(DialogWindow owner, ClientMonolith client)
             : base(owner)
         {
+            AddParticipant = new RelayCommand(_ =>
+            {
+                var result = AddParticipantViewModel.ShowDialog(window!, client);
+                if (!(result is Success))
+                    // Anulowanie
+                    return;
+            });
+
             Send = new RelayCommand(_ =>
             {
                 /* Konwersacja nie może być null, bo wtedy

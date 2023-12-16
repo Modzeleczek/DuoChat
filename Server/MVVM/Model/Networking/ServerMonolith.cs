@@ -445,6 +445,9 @@ namespace Server.MVVM.Model.Networking
                     case Packet.Codes.AddConversation:
                         HandleReceivedAddConversation(client, pr);
                         break;
+                    case Packet.Codes.SearchUsers:
+                        HandleReceivedSearchUsers(client, pr);
+                        break;
                     default:
                         DisconnectThenNotify(client, UnexpectedPacketErrorMsg);
                         break;
@@ -570,6 +573,24 @@ namespace Server.MVVM.Model.Networking
 
             DisconnectThenNotify(client, "|timed out receiving packet| " +
                 $"{order.ExpectedPacket}.");
+        }
+
+        private void HandleReceivedSearchUsers(Client client, PacketReader pr)
+        {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {client}");
+
+            SearchUsers.Deserialize(pr, out string loginFragment);
+
+            // TODO: https://www.nuget.org/packages/Fastenshtein
+            var users = _storage.Database.AccountsById.GetAll()
+                .Where(u => u.Login.Contains(loginFragment))
+                .Select(u => new FoundUsersList.User { Id = u.Id, Login = u.Login })
+                .ToArray();
+
+            client.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Request);
+            if (client.IsNotifiable)
+                client.EnqueueToSend(FoundUsersList.Serialize(_privateKey!, client.PublicKey!,
+                    client.GenerateToken(), users), FoundUsersList.CODE);
         }
         #endregion
 

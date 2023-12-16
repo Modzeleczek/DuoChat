@@ -1,4 +1,4 @@
-using Shared.MVVM.Model.Cryptography;
+﻿using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking.Transfer.Transmission;
 
 namespace Shared.MVVM.Model.Networking.Packets
@@ -11,9 +11,10 @@ namespace Shared.MVVM.Model.Networking.Packets
             NoSlots = 0, IPAlreadyBlocked = 1, ServerIntroduction = 2,
             Authentication = 3, NoAuthentication = 4,
             AccountAlreadyBlocked = 5, IPNowBlocked = 6, ConversationsAndUsersList = 7,
-            RequestError = 8,
+            RequestError = 8, FoundUsersList = 9,
 
-            ClientIntroduction = 255, GetConversationsAndUsers = 254, AddConversation = 253
+            ClientIntroduction = 255, GetConversationsAndUsers = 254, AddConversation = 253,
+            SearchUsers = 252
         }
         #endregion
 

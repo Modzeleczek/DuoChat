@@ -30,7 +30,8 @@
           <ColumnDefinition Width="auto" />
         </Grid.ColumnDefinitions>
 
-        <Button Grid.Column="0">
+        <Button Grid.Column="0"
+          Command="{Binding AddParticipant}">
           <Image Margin="4" Source="{DynamicResource AddButtonImage}" />
         </Button>
 

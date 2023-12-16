@@ -252,7 +252,7 @@ namespace Client.MVVM.ViewModel
                 // zapobiega ALT + F4 w głównym oknie
                 window.Closable = false;
 
-                ConversationVM = new ConversationViewModel(window);
+                ConversationVM = new ConversationViewModel(window, _client);
 
                 try { d.ActiveLanguage = (Translator.Language)_storage.GetActiveLanguage(); }
                 catch (Error e)

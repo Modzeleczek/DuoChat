@@ -5,11 +5,6 @@ namespace Shared.MVVM.Core
 {
     public static class ExtensionMethods
     {
-        public static bool Contains(this string source, string toCheck, StringComparison comp)
-        {
-            return source?.IndexOf(toCheck, comp) >= 0;
-        }
-
         // iterowanie po wartościach enuma (https://stackoverflow.com/a/643438)
         public static T Next<T>(this T src) where T : struct
         {

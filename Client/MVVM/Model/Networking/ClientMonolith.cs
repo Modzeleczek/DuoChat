@@ -16,6 +16,7 @@ using Client.MVVM.Model.Networking.UIRequests;
 using Shared.MVVM.Model.Networking.Transfer.Reception;
 using System.Reflection;
 using System.Diagnostics;
+using System.Linq;
 
 namespace Client.MVVM.Model.Networking
 {
@@ -48,6 +49,7 @@ namespace Client.MVVM.Model.Networking
         public event Action<RemoteServer, Conversation[]>? ReceivedConversationsAndUsersList;
         public event Action<RemoteServer, string>? ReceivedRequestError;
         public event Action<RemoteServer, string>? ServerEndedConnection;
+        public event Action<RemoteServer, User[]> ReceivedUsersList;
         #endregion
 
         public ClientMonolith()
@@ -407,6 +409,9 @@ namespace Client.MVVM.Model.Networking
                     case Packet.Codes.RequestError:
                         HandleReceivedRequestError(server, pr);
                         break;
+                    case Packet.Codes.FoundUsersList:
+                        HandleReceiveFoundUsersList(server, pr);
+                        break;
                     default:
                         DisconnectThenNotify(server, UnexpectedPacketErrorMsg);
                         break;
@@ -506,6 +511,19 @@ namespace Client.MVVM.Model.Networking
             }
             // Zawsze w tej metodzie musi zostać wykonane server.SetExpectedPacket.
         }
+
+        private void HandleReceiveFoundUsersList(RemoteServer server, PacketReader pr)
+        {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {server}");
+
+            FoundUsersList.Deserialize(pr, out var users);
+
+            var userObservables = users.Where(u => u.Id != server.AccountId)
+                .Select(u => new User { Id = u.Id, Login = u.Login }).ToArray();
+
+            ReceivedUsersList?.Invoke(server, userObservables);
+            server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Notification);
+        }
         #endregion
 
         #region UI requests
@@ -555,6 +573,9 @@ namespace Client.MVVM.Model.Networking
                     break;
                 case StopProcess stopProcess:
                     StopProcessUIRequest(stopProcess);
+                    break;
+                case SearchUsersUIRequest searchUsers:
+                    SearchUsersUIRequest(searchUsers);
                     break;
             }
         }
@@ -676,6 +697,19 @@ namespace Client.MVVM.Model.Networking
             _stopRequested = true;
 
             request.Callback?.Invoke();
+        }
+
+        private void SearchUsersUIRequest(SearchUsersUIRequest request)
+        {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {request.LoginFragment}");
+
+            if (_remoteServer is null)
+                return;
+            RemoteServer server = _remoteServer;
+
+            server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Notification);
+            server.EnqueueToSend(SearchUsers.Serialize(_privateKey!, server.PublicKey!,
+                server.GenerateToken(), request.LoginFragment), SearchUsers.CODE);
         }
         #endregion
     }
