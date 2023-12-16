@@ -154,7 +154,7 @@
           Grid.Column="0"
           Background="{DynamicResource SecondBackgroundColor}">
           <Grid.RowDefinitions>
-            <RowDefinition Height="50" />
+            <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="60" />
           </Grid.RowDefinitions>
@@ -192,7 +192,7 @@
           Grid.Column="1"
           Background="{DynamicResource SecondBackgroundColor}">
           <Grid.RowDefinitions>
-            <RowDefinition Height="50" />
+            <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="60" />
           </Grid.RowDefinitions>
@@ -239,9 +239,9 @@
         <Grid
           Grid.Row="1"
           Grid.Column="2"
-          Background="Transparent">
+          Background="{DynamicResource SecondBackgroundColor}">
           <Grid.RowDefinitions>
-            <RowDefinition Height="40" />
+            <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="60" />
           </Grid.RowDefinitions>
