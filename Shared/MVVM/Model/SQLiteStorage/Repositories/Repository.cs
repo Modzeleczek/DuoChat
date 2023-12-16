@@ -1,4 +1,4 @@
-﻿using Shared.MVVM.Core;
+using Shared.MVVM.Core;
 using System;
 using System.Collections.Generic;
 using Shared.MVVM.Model.SQLiteStorage.DTO;
@@ -41,10 +41,10 @@ namespace Shared.MVVM.Model.SQLiteStorage.Repositories
         protected abstract void SetAddParameters(SQLiteParameterCollection parColl, EntityDtoT dto);
         protected abstract KeyT GetInsertedKey(SQLiteConnection con, EntityDtoT dto);
 
-        protected Error NotExactly1RowError() =>
+        private Error NotExactly1RowError() =>
             new Error("|Number of rows affected by the query is other than 1.|");
 
-        protected Error QueryError(Exception? inner = null) =>
+        private Error QueryError(Exception? inner = null) =>
             new Error(inner, "|Error occured while| |executing query.|");
 
         private void EnsureEntityExists(KeyT key, bool shouldExist)
