@@ -1,4 +1,4 @@
-﻿using Server.MVVM.Model.Persistence.DTO;
+using Server.MVVM.Model.Persistence.DTO;
 using Shared.MVVM.Model.SQLiteStorage;
 using Shared.MVVM.Model.SQLiteStorage.Repositories;
 using System.Data.SQLite;
@@ -77,7 +77,7 @@ namespace Server.MVVM.Model.Persistence.Repositories
 
         protected override string UpdateQuery()
         {
-            return $"UPDATE {TABLE} SET {F_owner_id} = @{F_owner_id}, name = @{F_name} " +
+            return $"UPDATE {TABLE} SET {F_owner_id} = @{F_owner_id}, {F_name} = @{F_name} " +
                 $"WHERE {F_id} = @{F_id};";
         }
 
