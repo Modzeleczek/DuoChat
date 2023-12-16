@@ -8,27 +8,27 @@ namespace Shared.MVVM.Model.Networking.Packets.ServerToClient
     public class ConversationsAndUsersLists : Packet
     {
         #region Classes
-        public class ConversationModel
+        public class Conversation
         {
             public ulong Id { get; set; }
             public ulong OwnerId { get; set; }
             public string Name { get; set; } = null!;
         }
 
-        public class ParticipantModel
+        public class Participant
         {
             public ulong ParticipantId { get; set; }
             public long JoinTime { get; set; }
             public byte IsAdministrator { get; set; }
         }
 
-        public class ConversationParticipationModel
+        public class ConversationParticipation
         {
-            public ConversationModel Conversation { get; set; } = null!;
-            public ParticipantModel[] Participants { get; set; } = null!;
+            public Conversation Conversation { get; set; } = null!;
+            public Participant[] Participants { get; set; } = null!;
         }
 
-        public class AccountModel
+        public class Account
         {
             public ulong Id { get; set; }
             public string Login { get; set; } = null!;
@@ -36,10 +36,10 @@ namespace Shared.MVVM.Model.Networking.Packets.ServerToClient
             public byte IsBlocked { get; set; }
         }
 
-        public class ConversationsAndUsersListModel
+        public class Lists
         {
-            public ConversationParticipationModel[] ConversationParticipants { get; set; } = null!;
-            public AccountModel[] Accounts { get; set; } = null!;
+            public ConversationParticipation[] ConversationParticipants { get; set; } = null!;
+            public Account[] Accounts { get; set; } = null!;
         }
         #endregion
 
@@ -49,14 +49,14 @@ namespace Shared.MVVM.Model.Networking.Packets.ServerToClient
 
         public static byte[] Serialize(PrivateKey senderPrivateKey, PublicKey receiverPublicKey,
             ulong tokenFromRemoteSeed,
-            ConversationsAndUsersListModel model)
+            Lists lists)
         {
             var pb = new PacketBuilder();
             pb.Append((byte)CODE, 1);
             pb.Append(tokenFromRemoteSeed, TOKEN_SIZE);
 
-            pb.Append((ulong)model.ConversationParticipants.Length, 1);
-            foreach (var cp in model.ConversationParticipants)
+            pb.Append((ulong)lists.ConversationParticipants.Length, 1);
+            foreach (var cp in lists.ConversationParticipants)
             {
                 SerializeConversationTo(ref pb, cp.Conversation);
 
@@ -65,8 +65,8 @@ namespace Shared.MVVM.Model.Networking.Packets.ServerToClient
                     SerializeParticipationTo(ref pb, p);
             }
 
-            pb.Append((ulong)model.Accounts.Length, 1);
-            foreach (var a in model.Accounts)
+            pb.Append((ulong)lists.Accounts.Length, 1);
+            foreach (var a in lists.Accounts)
                 SerializeAccountTo(ref pb, a);
 
             pb.Sign(senderPrivateKey);
@@ -74,7 +74,7 @@ namespace Shared.MVVM.Model.Networking.Packets.ServerToClient
             return pb.Build();
         }
 
-        private static void SerializeConversationTo(ref PacketBuilder pb, ConversationModel conversation)
+        private static void SerializeConversationTo(ref PacketBuilder pb, Conversation conversation)
         {
             pb.Append(conversation.Id, 8);
             pb.Append(conversation.OwnerId, 8);
@@ -84,14 +84,14 @@ namespace Shared.MVVM.Model.Networking.Packets.ServerToClient
             pb.Append(nameBytes);
         }
 
-        private static void SerializeParticipationTo(ref PacketBuilder pb,  ParticipantModel participant)
+        private static void SerializeParticipationTo(ref PacketBuilder pb,  Participant participant)
         {
             pb.Append(participant.ParticipantId, 8);
             pb.Append((ulong)participant.JoinTime, 8);
             pb.Append(participant.IsAdministrator, 1);
         }
 
-        private static void SerializeAccountTo(ref PacketBuilder pb, AccountModel account)
+        private static void SerializeAccountTo(ref PacketBuilder pb, Account account)
         {
             pb.Append(account.Id, 8);
             byte[] loginBytes = Encoding.UTF8.GetBytes(account.Login);
@@ -103,21 +103,21 @@ namespace Shared.MVVM.Model.Networking.Packets.ServerToClient
         }
 
         public static void Deserialize(PacketReader pr,
-            out ConversationsAndUsersListModel model)
+            out Lists lists)
         {
             byte conversationsParticipationsCount = pr.ReadUInt8();
             var conversationParticipations =
-                new ConversationParticipationModel[conversationsParticipationsCount];
+                new ConversationParticipation[conversationsParticipationsCount];
             for (int cp = 0; cp < conversationsParticipationsCount; ++cp)
             {
                 var conversation = DeserializeConversation(pr);
 
                 byte participantsCount = pr.ReadUInt8();
-                var participants = new ParticipantModel[participantsCount];
+                var participants = new Participant[participantsCount];
                 for (int p = 0; p < participantsCount; ++p)
                     participants[p] = DeserializeParticipant(pr);
 
-                conversationParticipations[cp] = new ConversationParticipationModel
+                conversationParticipations[cp] = new ConversationParticipation
                 {
                     Conversation = conversation,
                     Participants = participants
@@ -125,20 +125,20 @@ namespace Shared.MVVM.Model.Networking.Packets.ServerToClient
             }
 
             byte accountsCount = pr.ReadUInt8();
-            var accounts = new AccountModel[accountsCount];
+            var accounts = new Account[accountsCount];
             for (int a = 0; a < accountsCount; ++a)
                 accounts[a] = DeserializeAccount(pr);
 
-            model = new ConversationsAndUsersListModel
+            lists = new Lists
             {
                 ConversationParticipants = conversationParticipations,
                 Accounts = accounts
             };
         }
 
-        private static ConversationModel DeserializeConversation(PacketReader pr)
+        private static Conversation DeserializeConversation(PacketReader pr)
         {
-            return new ConversationModel()
+            return new Conversation()
             {
                 Id = pr.ReadUInt64(),
                 OwnerId = pr.ReadUInt64(),
@@ -146,9 +146,9 @@ namespace Shared.MVVM.Model.Networking.Packets.ServerToClient
             };
         }
 
-        private static ParticipantModel DeserializeParticipant(PacketReader pr)
+        private static Participant DeserializeParticipant(PacketReader pr)
         {
-            return new ParticipantModel
+            return new Participant
             {
                 ParticipantId = pr.ReadUInt64(),
                 // Jeszcze nie ustawiamy referencji do uczestnika.
@@ -157,9 +157,9 @@ namespace Shared.MVVM.Model.Networking.Packets.ServerToClient
             };
         }
 
-        private static AccountModel DeserializeAccount(PacketReader pr)
+        private static Account DeserializeAccount(PacketReader pr)
         {
-            return new AccountModel()
+            return new Account()
             {
                 Id = pr.ReadUInt64(),
                 Login = pr.ReadUtf8String(pr.ReadUInt8()),

@@ -464,12 +464,12 @@ namespace Server.MVVM.Model.Networking
             int conversationsCount = _rng.Next(2, 5);
             // _storage.Database.Conversations
             var conversationParticipants = new ConversationsAndUsersLists
-                .ConversationParticipationModel[conversationsCount];
+                .ConversationParticipation[conversationsCount];
 
-            var accounts = new Dictionary<ulong, ConversationsAndUsersLists.AccountModel>();
+            var accounts = new Dictionary<ulong, ConversationsAndUsersLists.Account>();
             for (int c = 0; c < conversationsCount; ++c)
             {
-                var conversation = new ConversationsAndUsersLists.ConversationModel
+                var conversation = new ConversationsAndUsersLists.Conversation
                 {
                     Id = (ulong)_rng.Next(),
                     OwnerId = (ulong)_rng.Next(),
@@ -477,7 +477,7 @@ namespace Server.MVVM.Model.Networking
                 };
 
                 if (!accounts.ContainsKey(conversation.OwnerId))
-                    accounts.Add(conversation.OwnerId, new ConversationsAndUsersLists.AccountModel
+                    accounts.Add(conversation.OwnerId, new ConversationsAndUsersLists.Account
                     {
                         Id = conversation.OwnerId,
                         Login = RandomString(_rng.Next(15)),
@@ -487,11 +487,11 @@ namespace Server.MVVM.Model.Networking
 
                 int participantsCount = _rng.Next(1, 4);
                 var participants = new ConversationsAndUsersLists
-                    .ParticipantModel[participantsCount];
+                    .Participant[participantsCount];
                 for (int p = 0; p < participantsCount; ++p)
                 {
                     ulong id = (ulong)_rng.NextInt64(10);
-                    participants[p] = new ConversationsAndUsersLists.ParticipantModel
+                    participants[p] = new ConversationsAndUsersLists.Participant
                     {
                         ParticipantId = id,
                         /* DateTimeOffset.FromUnixTimeMilliseconds(p.JoinTime).UtcDateTime
@@ -503,7 +503,7 @@ namespace Server.MVVM.Model.Networking
                     new DateTimeOffset().ToUnixTimeMilliseconds();
 
                     if (!accounts.ContainsKey(id))
-                        accounts.Add(id, new ConversationsAndUsersLists.AccountModel
+                        accounts.Add(id, new ConversationsAndUsersLists.Account
                         {
                             Id = id,
                             Login = RandomString(_rng.Next(15)),
@@ -512,15 +512,14 @@ namespace Server.MVVM.Model.Networking
                         });
                 }
 
-                conversationParticipants[c] = new ConversationsAndUsersLists
-                    .ConversationParticipationModel
+                conversationParticipants[c] = new ConversationsAndUsersLists.ConversationParticipation
                 {
                     Conversation = conversation,
                     Participants = participants
                 };
             }
 
-            var model = new ConversationsAndUsersLists.ConversationsAndUsersListModel
+            var model = new ConversationsAndUsersLists.Lists
             {
                 ConversationParticipants = conversationParticipants,
                 Accounts = accounts.Select(x => x.Value).ToArray()

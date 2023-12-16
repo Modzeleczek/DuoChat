@@ -435,11 +435,11 @@ namespace Client.MVVM.Model.Networking
         {
             Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {server}");
 
-            ConversationsAndUsersLists.Deserialize(pr, out var model);
+            ConversationsAndUsersLists.Deserialize(pr, out var lists);
 
             // Przypisujemy użytkowników jako właścicieli i uczestników konwersacji.
             var users = new Dictionary<ulong, User>();
-            foreach (var user in model.Accounts)
+            foreach (var user in lists.Accounts)
             {
                 // Nieprawdopodobne, że serwer wysłał zduplikowane Id użytkownika.
                 users[user.Id] = new User
@@ -451,10 +451,10 @@ namespace Client.MVVM.Model.Networking
                 };
             }
 
-            var conversations = new Conversation[model.ConversationParticipants.Length];
-            for (int cp = 0; cp < model.ConversationParticipants.Length; ++cp)
+            var conversations = new Conversation[lists.ConversationParticipants.Length];
+            for (int cp = 0; cp < lists.ConversationParticipants.Length; ++cp)
             {
-                var conversationParticipantModel = model.ConversationParticipants[cp];
+                var conversationParticipantModel = lists.ConversationParticipants[cp];
                 var conversationModel = conversationParticipantModel.Conversation;
                 /* Nawet jeżeli właściciel nie znajduje się w żadnej konwersacji wysłanej przez serwer,
                 to i tak powinien zostać przesłany. */
