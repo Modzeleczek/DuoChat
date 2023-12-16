@@ -350,9 +350,9 @@ namespace Client.MVVM.Model.Networking
         {
             Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {server}");
 
-            Authentication.Deserialize(pr, out ulong remoteSeed);
+            Authentication.Deserialize(pr, out ulong remoteSeed, out ulong accountId);
 
-            server.Authenticate(remoteSeed);
+            server.Authenticate(remoteSeed, accountId);
             server.IsRequestable = true;
 
             /* Jesteśmy po uścisku dłoni, więc pobieramy konwersacje z serwera.

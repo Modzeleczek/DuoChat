@@ -12,12 +12,14 @@ namespace Shared.MVVM.Model.Networking.Packets.ServerToClient
 
         public static byte[] Serialize(PrivateKey senderPrivateKey, PublicKey receiverPublicKey,
             ulong tokenFromRemoteSeed,
-            ulong localSeed)
+            ulong localSeed,
+            ulong userId)
         {
             var pb = new PacketBuilder();
             pb.Append((byte)CODE, 1);
             pb.Append(tokenFromRemoteSeed, TOKEN_SIZE);
             pb.Append(localSeed, TOKEN_SIZE);
+            pb.Append(userId, ID_SIZE);
             // Pakiet szyfrowany i autentykowany
             pb.Sign(senderPrivateKey);
             pb.Encrypt(receiverPublicKey);
@@ -25,9 +27,11 @@ namespace Shared.MVVM.Model.Networking.Packets.ServerToClient
         }
 
         public static void Deserialize(PacketReader pr,
-            out ulong remoteSeed)
+            out ulong remoteSeed,
+            out ulong accountId)
         {
             remoteSeed = pr.ReadUInt64();
+            accountId = pr.ReadUInt64();
         }
     }
 }

@@ -388,7 +388,7 @@ namespace Server.MVVM.Model.Networking
             client.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Request);
             // Wątek receiver klienta zaczyna nasłuchiwać żądań.
             client.EnqueueToSend(Authentication.Serialize(_privateKey!, client.PublicKey!,
-                client.GenerateToken(), localSeed), Authentication.CODE);
+                client.GenerateToken(), localSeed, accountId), Authentication.CODE);
         }
 
         private void InterruptHandshake(Client client, string errorMsg)

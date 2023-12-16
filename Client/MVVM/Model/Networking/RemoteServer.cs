@@ -38,7 +38,8 @@ namespace Client.MVVM.Model.Networking
         public ulong LocalSeed { get; private set; } = 0;
 
         // Ustawiane jednorazowo w metodzie Authenticate.
-        private ulong? _remoteSeed = null;
+        public ulong AccountId { get; private set; } = 0;
+        private ulong _remoteSeed = 0;
 
         private readonly BlockingCollection<SendPacketOrder> _sendQueue =
             new BlockingCollection<SendPacketOrder>();
@@ -88,13 +89,14 @@ namespace Client.MVVM.Model.Networking
             LocalSeed = localSeed;
         }
 
-        public void Authenticate(ulong remoteSeed)
+        public void Authenticate(ulong remoteSeed, ulong accountId)
         {
-            if (!(_remoteSeed is null))
+            if (AccountId != 0)
                 // Nieprawdopodobne
                 throw new InvalidOperationException("Server has already authenticated client.");
 
             _remoteSeed = remoteSeed;
+            AccountId = accountId;
         }
 
         public void StartSenderAndReceiver()
@@ -340,7 +342,7 @@ namespace Client.MVVM.Model.Networking
         
         public ulong GenerateToken()
         {
-            return _remoteSeed!++.Value;
+            return _remoteSeed++;
         }
 
         public bool VerifyReceivedToken(ulong token)
