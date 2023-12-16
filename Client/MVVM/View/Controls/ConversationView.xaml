@@ -13,6 +13,13 @@
       <RowDefinition Height="*" />
       <RowDefinition Height="60" />
     </Grid.RowDefinitions>
+    
+    <Grid.Resources>
+      <Style BasedOn="{StaticResource MenuButtonStyle}" TargetType="Button">
+        <Setter Property="Width" Value="32" />
+        <Setter Property="Height" Value="32" />
+      </Style>
+    </Grid.Resources>
 
     <Border Grid.Row="0" Background="{DynamicResource SecondBackgroundColor}">
       <Grid>
@@ -23,12 +30,9 @@
           <ColumnDefinition Width="auto" />
         </Grid.ColumnDefinitions>
 
-        <Image Grid.Column="0"
-          Width="25"
-          Height="25"
-          Margin="10,0,5,0"
-          RenderOptions.BitmapScalingMode="Fant"
-          Source="/MVVM/View/Icons/add.png" />
+        <Button Grid.Column="0">
+          <Image Margin="4" Source="{DynamicResource AddButtonImage}" />
+        </Button>
 
         <Label Grid.Column="1"
           Margin="5,0,5,0"
@@ -47,19 +51,13 @@
           </Label.Content>
         </Label>
 
-        <Image Grid.Column="2"
-          Width="25"
-          Height="25"
-          Margin="5,0,5,0"
-          RenderOptions.BitmapScalingMode="Fant"
-          Source="/MVVM/View/Icons/phone.png" />
+        <Button Grid.Column="2">
+          <Image Margin="4" Source="{DynamicResource CallButtonImage}" />
+        </Button>
 
-        <Image Grid.Column="3"
-          Width="25"
-          Height="25"
-          Margin="5,0,5,0"
-          RenderOptions.BitmapScalingMode="Fant"
-          Source="{DynamicResource SettingsButtonImage}" />
+        <Button Grid.Column="3">
+          <Image Margin="4" Source="{DynamicResource SettingsButtonImage}" />
+        </Button>
       </Grid>
     </Border>
 
@@ -78,11 +76,9 @@
       <TextBox Grid.Column="0"
         Style="{DynamicResource MessageBoxStyle}" />
 
-      <Image Grid.Column="1"
-        Width="25"
-        Margin="0,0,10,0"
-        RenderOptions.BitmapScalingMode="Fant"
-        Source="/MVVM/View/Icons/send.png" />
+      <Button Grid.Column="1">
+        <Image Margin="4" Source="{DynamicResource SendButtonImage}" />
+      </Button>
     </Grid>
   </Grid>
 </UserControl>
