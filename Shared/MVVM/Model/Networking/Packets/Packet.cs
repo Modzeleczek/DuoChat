@@ -1,4 +1,4 @@
-﻿using Shared.MVVM.Model.Cryptography;
+using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking.Transfer.Transmission;
 
 namespace Shared.MVVM.Model.Networking.Packets
@@ -19,6 +19,7 @@ namespace Shared.MVVM.Model.Networking.Packets
 
         #region Fields
         public const int TOKEN_SIZE = sizeof(ulong);
+        protected const int ID_SIZE = sizeof(ulong);
         #endregion
 
         protected static byte[] SerializeSignedEncryptedWithOnlyOperationCode(Codes operation,
