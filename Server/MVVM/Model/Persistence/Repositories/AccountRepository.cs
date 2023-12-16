@@ -39,7 +39,8 @@ namespace Server.MVVM.Model.Persistence.Repositories
 
         protected override (ulong id, string login) GetInsertedKey(SQLiteConnection con, AccountDto dto)
         {
-            return ((ulong)con.LastInsertRowId, dto.Login);
+            dto.Id = (ulong)con.LastInsertRowId;
+            return dto.GetRepositoryKey();
         }
 
         protected override string EntityName()

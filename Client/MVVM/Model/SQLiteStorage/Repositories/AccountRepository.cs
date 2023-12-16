@@ -42,7 +42,7 @@ namespace Client.MVVM.Model.SQLiteStorage.Repositories
         protected override string GetInsertedKey(SQLiteConnection con, Account dto)
         {
             _ = con;
-            return dto.Login;
+            return dto.GetRepositoryKey();
         }
 
         protected override string EntityName()

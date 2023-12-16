@@ -29,7 +29,7 @@ namespace Server.MVVM.Model.Persistence.Repositories
         protected override uint GetInsertedKey(SQLiteConnection con, ClientIPBlockDto dto)
         {
             _ = con;
-            return dto.IpAddress;
+            return dto.GetRepositoryKey();
         }
 
         protected override string EntityName()
