@@ -51,12 +51,10 @@
             FontSize="14"
             FontWeight="SemiBold"
             Foreground="{DynamicResource FirstForegroundColor}" />
-          <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-          <Button
+          <Button HorizontalAlignment="Right"
             Command="{Binding Path=Close}"
             Content="✕"
             Style="{DynamicResource TitleBarButtonStyle}" />
-          </StackPanel>
         </Grid>
       </Border>
 
