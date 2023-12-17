@@ -18,7 +18,6 @@
   Background="Transparent"
   FontFamily="/MVVM/View/Fonts/RedHatDisplay"
   Icon="/MVVM/View/Icons/logo.png"
-  MouseLeftButtonDown="Window_MouseLeftButtonDown"
   ResizeMode="NoResize"
   WindowStartupLocation="CenterOwner"
   WindowStyle="None"
