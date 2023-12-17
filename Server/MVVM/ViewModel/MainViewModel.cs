@@ -12,15 +12,7 @@ namespace Server.MVVM.ViewModel
     public class MainViewModel : WindowViewModel
     {
         #region Commands
-        /* setujemy te właściwości w callbacku (RelayCommandzie) zdarzenia
-        WindowLoaded, a nie w konstruktorze MainViewModel, więc potrzebne
-        są settery z wywołaniami OnPropertyChanged */
-        private RelayCommand? _selectTab = null;
-        public RelayCommand? SelectTab
-        {
-            get => _selectTab;
-            private set { _selectTab = value; OnPropertyChanged(); }
-        }
+        public RelayCommand SelectTab { get; }
         #endregion
 
         #region Properties
@@ -34,6 +26,8 @@ namespace Server.MVVM.ViewModel
 
         public MainViewModel()
         {
+            UserControlViewModel[] tabs = null!;
+
             WindowLoaded = new RelayCommand(windowLoadedE =>
             {
                 window = (DialogWindow)windowLoadedE!;
@@ -81,15 +75,15 @@ namespace Server.MVVM.ViewModel
                 var conCliVM = new ConnectedClientsViewModel(window, server, logVM);
                 var accVM = new AccountsViewModel(window, allAccounts, server);
                 var clIpBlVM = new ClientIPBlocksViewModel(window, allClientIPBlocks, server);
-                var tabs = new UserControlViewModel[] { setVM, conCliVM, logVM, accVM, clIpBlVM };
-                SelectTab = new RelayCommand(e =>
-                {
-                    int index = int.Parse((string)e!);
-                    if (SelectedTab == tabs[index]) return;
-                    SelectedTab = tabs[index];
-                });
+                tabs = new UserControlViewModel[] { setVM, conCliVM, logVM, accVM, clIpBlVM };
+                SelectTab!.Execute(0.ToString());
+            });
 
-                SelectTab.Execute("0");
+            SelectTab = new RelayCommand(e =>
+            {
+                int index = int.Parse((string)e!);
+                if (SelectedTab == tabs[index]) return;
+                SelectedTab = tabs[index];
             });
         }
     }

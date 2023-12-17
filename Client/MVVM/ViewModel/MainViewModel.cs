@@ -24,54 +24,13 @@ namespace Client.MVVM.ViewModel
     public class MainViewModel : WindowViewModel
     {
         #region Commands
-        private RelayCommand _openSettings = null!;
-        public RelayCommand OpenSettings
-        {
-            get => _openSettings;
-            private set { _openSettings = value; OnPropertyChanged(); }
-        }
-
-        private RelayCommand _addServer = null!;
-        public RelayCommand AddServer
-        {
-            get => _addServer;
-            private set { _addServer = value; OnPropertyChanged(); }
-        }
-
-        private RelayCommand _editServer = null!;
-        public RelayCommand EditServer
-        {
-            get => _editServer;
-            private set { _editServer = value; OnPropertyChanged(); }
-        }
-
-        private RelayCommand _deleteServer = null!;
-        public RelayCommand DeleteServer
-        {
-            get => _deleteServer;
-            private set { _deleteServer = value; OnPropertyChanged(); }
-        }
-
-        private RelayCommand _addAccount = null!;
-        public RelayCommand AddAccount
-        {
-            get => _addAccount;
-            private set { _addAccount = value; OnPropertyChanged(); }
-        }
-
-        private RelayCommand _editAccount = null!;
-        public RelayCommand EditAccount
-        {
-            get => _editAccount;
-            private set { _editAccount = value; OnPropertyChanged(); }
-        }
-
-        private RelayCommand _deleteAccount = null!;
-        public RelayCommand DeleteAccount
-        {
-            get => _deleteAccount;
-            private set { _deleteAccount = value; OnPropertyChanged(); }
-        }
+        public RelayCommand OpenSettings { get; }
+        public RelayCommand AddServer { get; }
+        public RelayCommand EditServer { get; }
+        public RelayCommand DeleteServer { get; }
+        public RelayCommand AddAccount { get; }
+        public RelayCommand EditAccount { get; }
+        public RelayCommand DeleteAccount { get; }
         #endregion
 
         #region Properties

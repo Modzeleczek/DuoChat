@@ -13,8 +13,8 @@ namespace Client.MVVM.ViewModel.AccountActions
 {
     public class AccountEditorViewModel : FormViewModel
     {
-        #region Properties
-        public RelayCommand GeneratePrivateKey { get; private set; }
+        #region Commands
+        public RelayCommand GeneratePrivateKey { get; }
         #endregion
 
         #region Fields
