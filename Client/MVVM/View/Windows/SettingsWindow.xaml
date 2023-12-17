@@ -39,16 +39,15 @@
               h:EnableDragHelper.EnableDrag="True"
               Background="{DynamicResource FirstBackgroundColor}"
               CornerRadius="10,10,0,0">
-              <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
+              <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                Margin="15,0,15,0">
                 <Label
-                  Margin="15,0,0,0"
                   Content="{Binding ElementName=SettingsWindowName, Path=Title}"
                   FontSize="14"
                   FontWeight="SemiBold"
                   Foreground="{DynamicResource FirstForegroundColor}" />
                 <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
                 <Button
-                  Margin="4,1,16,0"
                   Command="{Binding Path=Close}"
                   Content="✕"
                   Style="{DynamicResource TitleBarButtonStyle}" />
