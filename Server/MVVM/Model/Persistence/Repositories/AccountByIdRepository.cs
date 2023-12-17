@@ -1,5 +1,8 @@
-﻿using Shared.MVVM.Model.SQLiteStorage;
+﻿using Server.MVVM.Model.Persistence.DTO;
+using Shared.MVVM.Model.SQLiteStorage;
+using System.Collections.Generic;
 using System.Data.SQLite;
+using System.Linq;
 
 namespace Server.MVVM.Model.Persistence.Repositories
 {
@@ -30,6 +33,15 @@ namespace Server.MVVM.Model.Persistence.Repositories
         {
             // AccountsById zwraca uwagę tylko na Id, a ignoruje Login.
             return Exists((id, string.Empty));
+        }
+
+        public IEnumerable<AccountDto> GetByIds(IEnumerable<ulong> ids)
+        {
+            if (!ids.Any())
+                return Enumerable.Empty<AccountDto>();
+
+            var query = $"SELECT * FROM {TABLE} WHERE ${F_id} IN ({string.Join(',', ids)});";
+            return ExecuteReader(query);
         }
     }
 }

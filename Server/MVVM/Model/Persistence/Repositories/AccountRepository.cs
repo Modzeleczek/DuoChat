@@ -12,7 +12,7 @@ namespace Server.MVVM.Model.Persistence.Repositories
     public abstract class AccountRepository : Repository<AccountDto, (ulong id, string login)>
     {
         #region Fields
-        private const string TABLE = "Account";
+        protected const string TABLE = "Account";
         protected const string F_id = "id";
         protected const string F_login = "login";
         private const string F_public_key = "public_key";

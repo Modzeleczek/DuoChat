@@ -9,7 +9,6 @@ using Shared.MVVM.Core;
 using Server.MVVM.Model.Persistence;
 using System.Threading;
 using Server.MVVM.Model.Persistence.DTO;
-using System.Text;
 using System.Linq;
 using System.Collections.Concurrent;
 using Server.MVVM.Model.Networking.PacketOrders;
@@ -456,89 +455,97 @@ namespace Server.MVVM.Model.Networking
             catch (Error e) { DisconnectThenNotify(client, e.Message); }
         }
 
-        private readonly Random _rng = new Random(123);
         private void HandleReceivedGetConversationsAndUsers(Client client)
         {
             Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {client}");
 
-            int conversationsCount = _rng.Next(2, 5);
-            // _storage.Database.Conversations
-            var conversationParticipants = new ConversationsAndUsersLists
-                .ConversationParticipation[conversationsCount];
+            var dbClientParticipations = _storage.Database.ConversationParticipations
+                .GetByParticipantId(client.Id);
+            var dbClientConversations = _storage.Database.Conversations
+                .GetByIds(dbClientParticipations.Select(cp => cp.ConversationId));
+            var dbParticipations = _storage.Database.ConversationParticipations
+                .GetByConversationIds(dbClientConversations.Select(c => c.Id));
+            var dbParticipantAccounts = _storage.Database.AccountsById
+                .GetByIds(dbParticipations.Select(p => p.ParticipantId).Distinct());
 
-            var accounts = new Dictionary<ulong, ConversationsAndUsersLists.Account>();
-            for (int c = 0; c < conversationsCount; ++c)
+            /* Pobieramy oddzielnie konta właścicieli konwersacji, bo
+            właściciel konwersacji może nie być jej uczestnikiem. */
+            var dbConversationOwnerAccounts = _storage.Database.AccountsById
+                .GetByIds(dbClientConversations.Select(c => c.OwnerId));
+
+            // Grupujemy uczestnictwa według id konwersacji.
+            var dbParticsByConvId = GroupBy(dbParticipations, p => p.ConversationId);
+
+            var conversationParticipants = new ConversationsAndUsersLists
+                .ConversationParticipation[dbClientConversations.Count()];
+            int c = 0;
+            foreach (var dbConversation in dbClientConversations)
             {
                 var conversation = new ConversationsAndUsersLists.Conversation
                 {
-                    Id = (ulong)_rng.Next(),
-                    OwnerId = (ulong)_rng.Next(),
-                    Name = _rng.Next().ToString()
+                    Id = dbConversation.Id,
+                    OwnerId = dbConversation.OwnerId,
+                    Name = dbConversation.Name
                 };
 
-                if (!accounts.ContainsKey(conversation.OwnerId))
-                    accounts.Add(conversation.OwnerId, new ConversationsAndUsersLists.Account
-                    {
-                        Id = conversation.OwnerId,
-                        Login = RandomString(_rng.Next(15)),
-                        PublicKey = new PublicKey(new byte[] { 0xAB }),
-                        IsBlocked = (byte)_rng.Next(2)
-                    });
-
-                int participantsCount = _rng.Next(1, 4);
-                var participants = new ConversationsAndUsersLists
-                    .Participant[participantsCount];
-                for (int p = 0; p < participantsCount; ++p)
+                var dbParticipants = dbParticsByConvId[conversation.Id];
+                var participants = new ConversationsAndUsersLists.Participant[dbParticipants.Count];
+                int p = 0;
+                foreach (var dbParticipant in dbParticipants)
                 {
-                    ulong id = (ulong)_rng.NextInt64(10);
-                    participants[p] = new ConversationsAndUsersLists.Participant
+                    participants[p++] = new ConversationsAndUsersLists.Participant
                     {
-                        ParticipantId = id,
+                        ParticipantId = dbParticipant.ParticipantId,
                         /* DateTimeOffset.FromUnixTimeMilliseconds(p.JoinTime).UtcDateTime
                         "Valid values are between -62135596800000 and 253402300799999, inclusive. */
-                        JoinTime = new DateTimeOffset(DateTime.UtcNow)
-                            .AddMilliseconds(_rng.Next(1 << 20)).ToUnixTimeMilliseconds(),
-                        IsAdministrator = (byte)_rng.Next(2)
+                        JoinTime = dbParticipant.JoinTime,
+                        IsAdministrator = dbParticipant.IsAdministrator
                     };
-                    new DateTimeOffset().ToUnixTimeMilliseconds();
-
-                    if (!accounts.ContainsKey(id))
-                        accounts.Add(id, new ConversationsAndUsersLists.Account
-                        {
-                            Id = id,
-                            Login = RandomString(_rng.Next(15)),
-                            PublicKey = new PublicKey(new byte[] { 0xAB }),
-                            IsBlocked = (byte)_rng.Next(2)
-                        });
                 }
 
-                conversationParticipants[c] = new ConversationsAndUsersLists.ConversationParticipation
+                conversationParticipants[c++] = new ConversationsAndUsersLists.ConversationParticipation
                 {
                     Conversation = conversation,
                     Participants = participants
                 };
             }
 
-            var model = new ConversationsAndUsersLists.Lists
+            var accounts = new Dictionary<ulong, ConversationsAndUsersLists.Account>();
+            var concatenated = dbParticipantAccounts.Concat(dbConversationOwnerAccounts);
+            foreach (var account in concatenated)
+                if (!accounts.ContainsKey(account.Id))
+                    accounts.Add(account.Id, new ConversationsAndUsersLists.Account
+                    {
+                        Id = account.Id,
+                        Login = account.Login,
+                        PublicKey = account.PublicKey,
+                        IsBlocked = account.IsBlocked
+                    });
+
+            var lists = new ConversationsAndUsersLists.Lists
             {
                 ConversationParticipants = conversationParticipants,
-                Accounts = accounts.Select(x => x.Value).ToArray()
+                Accounts = accounts.Values.ToArray()
             };
 
             client.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Request);
-            client.EnqueueToSend(ConversationsAndUsersLists.Serialize(_privateKey!, client.PublicKey!,
-                client.GenerateToken(), model), ConversationsAndUsersLists.CODE);
+            if (client.IsNotifiable)
+                client.EnqueueToSend(ConversationsAndUsersLists.Serialize(_privateKey!,
+                    client.PublicKey!, client.GenerateToken(), lists), ConversationsAndUsersLists.CODE);
         }
 
-        private string RandomString(int length)
+        private Dictionary<K, LinkedList<V>> GroupBy<K, V>(IEnumerable<V> list, Func<V, K> keySelector)
+            where K : struct
         {
-            var sb = new StringBuilder(length);
-            for (int i = 0; i < length; ++i)
+            var dict = new Dictionary<K, LinkedList<V>>();
+            foreach (var elem in list)
             {
-                int random = _rng.Next(26);
-                sb.Append((char)('a' + random));
+                var key = keySelector(elem);
+                if (!dict.ContainsKey(key))
+                    dict.Add(key, new LinkedList<V>());
+                dict[key].AddLast(elem);
             }
-            return sb.ToString();
+            return dict;
         }
 
         private void HandleReceivedAddConversation(Client client, PacketReader pr)
