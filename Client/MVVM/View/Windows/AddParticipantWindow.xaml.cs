@@ -7,8 +7,9 @@ namespace Client.MVVM.View.Windows
     public partial class AddParticipantWindow : DialogWindow
     {
         public AddParticipantWindow(Window owner, AddParticipantViewModel dataContext)
-            : base(owner, dataContext) { }
-
-        protected override void Initialize() => InitializeComponent();
+            : base(owner, dataContext)
+        {
+            InitializeComponent();
+        }
     }
 }

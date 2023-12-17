@@ -14,9 +14,7 @@ namespace Client.MVVM.View.Windows
         private bool serversAccountsVisible = false;
 
         public MainWindow(Window owner, MainViewModel dataContext)
-            : base(owner, dataContext) { }
-
-        protected override void Initialize()
+            : base(owner, dataContext)
         {
             InitializeComponent();
             InitializeColumns();

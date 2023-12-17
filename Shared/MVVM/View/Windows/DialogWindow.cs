@@ -15,15 +15,11 @@ namespace Shared.MVVM.View.Windows
 
         protected DialogWindow(Window? owner, object dataContext)
         {
-            // TODO: usunąć Initialize, bo i tak wykonuje się jego nienadpisana wersja.
-            Initialize();
             DataContext = dataContext;
             Owner = owner;
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
             AddFadeAnimations();
         }
-
-        protected virtual void Initialize() { }
 
         private void AddFadeAnimations()
         {

@@ -15,12 +15,12 @@ namespace Shared.MVVM.View.Windows
 
         public FormWindow(Window owner, FormViewModel dataContext) : base(owner, dataContext)
         {
+            InitializeComponent();
+
             ConfirmButton.CommandParameter = _fields;
             // cancel też ma dostawać pola, aby zdisposować potencjalne hasła
             CancelButton.CommandParameter = _fields;
         }
-
-        protected override void Initialize() => InitializeComponent();
 
         public void AddTextField(string label, string initialValue = "")
         {
