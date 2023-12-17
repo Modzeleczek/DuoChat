@@ -12,6 +12,7 @@ namespace Server.MVVM.Model.Persistence
         public AccountByLoginRepository AccountsByLogin { get; }
         public ClientIPBlockRepository ClientIPBlocks { get; }
         public ConversationRepository Conversations { get; }
+        public ConversationParticipationRepository ConversationParticipations { get; }
         #endregion
 
         public Database(string path) : base(path)
@@ -20,6 +21,7 @@ namespace Server.MVVM.Model.Persistence
             AccountsByLogin = new AccountByLoginRepository(this);
             ClientIPBlocks = new ClientIPBlockRepository(this);
             Conversations = new ConversationRepository(this);
+            ConversationParticipations = new ConversationParticipationRepository(this);
         }
 
         protected override string DDLEmbeddedResource()
