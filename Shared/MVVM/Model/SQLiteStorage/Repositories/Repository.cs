@@ -1,4 +1,4 @@
-﻿using Shared.MVVM.Core;
+using Shared.MVVM.Core;
 using System;
 using System.Collections.Generic;
 using Shared.MVVM.Model.SQLiteStorage.DTO;
@@ -123,7 +123,8 @@ namespace Shared.MVVM.Model.SQLiteStorage.Repositories
                     // Nie da się zrzutować na int (chyba).
                     var count = (long)result;
                     if (count > 1)
-                        throw MoreThan1EntityExistsError(key);
+                        throw new Error($"|More than 1| {EntityName()} " +
+                            $"|with| {KeyName()} '{key}' |exists|.");
                     // Powinno być możliwe tylko 0 lub 1, bo key to klucz kandydujący tabeli.
                     if (count == 1)
                         return true;
@@ -135,21 +136,27 @@ namespace Shared.MVVM.Model.SQLiteStorage.Repositories
         protected abstract string ExistsQuery();
         protected abstract void SetKeyParameter(SQLiteParameterCollection parColl, KeyT key);
 
-        private Error MoreThan1EntityExistsError(KeyT key) =>
-            new Error($"|More than 1| {EntityName()} |with| {KeyName()} '{key}' |exists|.");
-
         public EntityDtoT Get(KeyT key)
         {
             EnsureEntityExists(key, true);
 
-            var list = ExecuteReader(GetQuery());
-            if (list.Count == 0)
-                throw EntityDoesNotExistError(key);
-
-            if (list.Count > 1)
-                throw MoreThan1EntityExistsError(key);
-
-            return list[0];
+            try
+            {
+                var query = GetQuery();
+                using (var con = CreateConnection())
+                using (var cmd = new SQLiteCommand(query, con))
+                {
+                    SetKeyParameter(cmd.Parameters, key);
+                    con.Open();
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        if (!reader.Read())
+                            throw EntityDoesNotExistError(key);
+                        return ReadOneEntity(reader);
+                    }
+                }
+            }
+            catch (Exception e) { throw QueryError(e); }
         }
         protected abstract string GetQuery();
 
