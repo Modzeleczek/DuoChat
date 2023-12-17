@@ -3,7 +3,6 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
   <!-- Ustawiamy jako Source w Image wewnątrz przycisku ustawień. -->
-  <BitmapImage x:Key="SettingsButtonImage" UriSource="/MVVM/View/Icons/settings_dark.png"/>
   <BitmapImage x:Key="AddButtonImage" UriSource="/MVVM/View/Icons/add.png" />
   <BitmapImage x:Key="CallButtonImage" UriSource="/MVVM/View/Icons/phone.png" />
   <BitmapImage x:Key="SendButtonImage" UriSource="/MVVM/View/Icons/send.png" />

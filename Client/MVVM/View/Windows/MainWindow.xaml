@@ -132,6 +132,11 @@
             <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
               <Button
                 Margin="4,1,0,2"
+                Command="{Binding OpenSettings}"
+                Content="⚙"
+                Style="{DynamicResource TitleBarButtonStyle}" />
+              <Button
+                Margin="4,1,0,2"
                 Click="Button_Minimize_Click"
                 Content="🗕"
                 Style="{DynamicResource TitleBarButtonStyle}" />
@@ -315,14 +320,6 @@
                   Text="{Binding Path=SelectedAccount.Login}"
                   TextTrimming="CharacterEllipsis" />
               </StackPanel>
-              <Button
-                Width="32"
-                Height="32"
-                Command="{Binding OpenSettings}"
-                DockPanel.Dock="Right"
-                Style="{DynamicResource MenuButtonStyle}">
-                <Image Margin="4" Source="{DynamicResource SettingsButtonImage}" />
-              </Button>
             </DockPanel>
           </Border>
         </Grid>

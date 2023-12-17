@@ -44,8 +44,6 @@
     <None Remove="MVVM\View\Icons\logo.png" />
     <None Remove="MVVM\View\Icons\phone.png" />
     <None Remove="MVVM\View\Icons\send.png" />
-    <None Remove="MVVM\View\Icons\settings_dark.png" />
-    <None Remove="MVVM\View\Icons\settings_light.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -68,8 +66,6 @@
     <Resource Include="MVVM\View\Icons\logo.png" />
     <Resource Include="MVVM\View\Icons\phone.png" />
     <Resource Include="MVVM\View\Icons\send.png" />
-    <Resource Include="MVVM\View\Icons\settings_dark.png" />
-    <Resource Include="MVVM\View\Icons\settings_light.png" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
