@@ -31,7 +31,7 @@ namespace Server.MVVM.ViewModel
         }
         #endregion
 
-        public ClientIPBlocksViewModel(DialogWindow owner, List<ClientIPBlockDto> clientIPBlocks,
+        public ClientIPBlocksViewModel(DialogWindow owner, IEnumerable<ClientIPBlockDto> clientIPBlocks,
             ServerMonolith server)
             : base(owner)
         {

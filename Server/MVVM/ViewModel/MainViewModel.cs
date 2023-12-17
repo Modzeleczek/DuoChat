@@ -42,8 +42,8 @@ namespace Server.MVVM.ViewModel
                 var logVM = new LogViewModel(window);
                 Storage storage;
                 ServerMonolith server;
-                List<AccountDto> allAccounts = null!;
-                List<ClientIPBlockDto> allClientIPBlocks = null!;
+                IEnumerable<AccountDto> allAccounts = null!;
+                IEnumerable<ClientIPBlockDto> allClientIPBlocks = null!;
 
                 try
                 {

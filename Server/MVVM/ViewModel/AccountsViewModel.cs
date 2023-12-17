@@ -29,7 +29,8 @@ namespace Server.MVVM.ViewModel
         }
         #endregion
 
-        public AccountsViewModel(DialogWindow owner, List<AccountDto> accounts, ServerMonolith server)
+        public AccountsViewModel(DialogWindow owner, IEnumerable<AccountDto> accounts,
+            ServerMonolith server)
             : base(owner)
         {
             ToggleBlock = new RelayCommand(obj =>

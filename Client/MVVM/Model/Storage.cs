@@ -385,7 +385,8 @@ namespace Client.MVVM.Model
             GetServerDatabase(localUserKey, serverKey).Accounts.Add(account);
         }
 
-        public List<Account> GetAllAccounts(LocalUserPrimaryKey localUserKey, ServerPrimaryKey serverKey)
+        public IEnumerable<Account> GetAllAccounts(LocalUserPrimaryKey localUserKey,
+            ServerPrimaryKey serverKey)
         {
             return GetServerDatabase(localUserKey, serverKey).Accounts.GetAll();
         }

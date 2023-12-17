@@ -1,4 +1,4 @@
-using Shared.MVVM.Core;
+﻿using Shared.MVVM.Core;
 using System;
 using System.Collections.Generic;
 using Shared.MVVM.Model.SQLiteStorage.DTO;
@@ -78,13 +78,13 @@ namespace Shared.MVVM.Model.SQLiteStorage.Repositories
         private Error EntityDoesNotExistError(KeyT key) =>
             new Error($"{EntityName()} |with| {KeyName()} {key} |does not exist.|");
 
-        public List<EntityDtoT> GetAll()
+        public IEnumerable<EntityDtoT> GetAll()
         {
             return ExecuteReader(GetAllQuery());
         }
         protected abstract string GetAllQuery();
 
-        protected List<EntityDtoT> ExecuteReader(string query)
+        protected IEnumerable<EntityDtoT> ExecuteReader(string query)
         {
             try
             {
@@ -94,9 +94,9 @@ namespace Shared.MVVM.Model.SQLiteStorage.Repositories
                     con.Open();
                     using (var reader = cmd.ExecuteReader())
                     {
-                        var list = new List<EntityDtoT>();
+                        var list = new LinkedList<EntityDtoT>();
                         while (reader.Read())
-                            list.Add(ReadOneEntity(reader));
+                            list.AddLast(ReadOneEntity(reader));
                         return list;
                     }
                 }
