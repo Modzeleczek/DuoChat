@@ -22,7 +22,7 @@ namespace Server.MVVM.Model.Persistence.Repositories
 
         protected override string AddQuery()
         {
-            return $"INSERT INTO {TABLE}({F_owner_id}, name) VALUES(@{F_owner_id}, @{F_name});";
+            return $"INSERT INTO {TABLE}({F_owner_id}, {F_name}) VALUES(@{F_owner_id}, @{F_name});";
         }
 
         protected override void SetAddParameters(SQLiteParameterCollection parColl, ConversationDto dto)
