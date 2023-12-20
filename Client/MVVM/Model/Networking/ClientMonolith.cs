@@ -410,7 +410,7 @@ namespace Client.MVVM.Model.Networking
                         HandleReceivedRequestError(server, pr);
                         break;
                     case Packet.Codes.FoundUsersList:
-                        HandleReceiveFoundUsersList(server, pr);
+                        HandleReceivedFoundUsersList(server, pr);
                         break;
                     default:
                         DisconnectThenNotify(server, UnexpectedPacketErrorMsg);
@@ -512,7 +512,7 @@ namespace Client.MVVM.Model.Networking
             // Zawsze w tej metodzie musi zostać wykonane server.SetExpectedPacket.
         }
 
-        private void HandleReceiveFoundUsersList(RemoteServer server, PacketReader pr)
+        private void HandleReceivedFoundUsersList(RemoteServer server, PacketReader pr)
         {
             Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {server}");
 
