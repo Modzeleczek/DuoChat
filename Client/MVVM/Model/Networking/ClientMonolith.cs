@@ -419,17 +419,6 @@ namespace Client.MVVM.Model.Networking
             }
             catch (Error e) { DisconnectThenNotify(server, e.Message); }
         }
-
-        private void OnReceiveTimeout(ServerEvent @event)
-        {
-            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {@event.ToDebugString()}");
-
-            RemoteServer server = @event.Sender;
-            var order = (ReceivePacketOrder)@event.Data!;
-
-            DisconnectThenNotify(server, "|timed out receiving packet| " +
-                $"{order.ExpectedPacket}.");
-        }
         
         private void HandleReceivedConversationsAndUsersList(RemoteServer server, PacketReader pr)
         {
@@ -525,6 +514,17 @@ namespace Client.MVVM.Model.Networking
             server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Notification);
         }
         #endregion
+
+        private void OnReceiveTimeout(ServerEvent @event)
+        {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {@event.ToDebugString()}");
+
+            RemoteServer server = @event.Sender;
+            var order = (ReceivePacketOrder)@event.Data!;
+
+            DisconnectThenNotify(server, "|timed out receiving packet| " +
+                $"{order.ExpectedPacket}.");
+        }
 
         #region UI requests
         public void Request(UIRequest uiRequest)

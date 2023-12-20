@@ -570,17 +570,6 @@ namespace Server.MVVM.Model.Networking
             client.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Request);
         }
 
-        private void OnReceiveTimeout(ClientEvent @event)
-        {
-            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {@event.ToDebugString()}");
-
-            Client client = @event.Sender;
-            var order = (ReceivePacketOrder)@event.Data!;
-
-            DisconnectThenNotify(client, "|timed out receiving packet| " +
-                $"{order.ExpectedPacket}.");
-        }
-
         private void HandleReceivedSearchUsers(Client client, PacketReader pr)
         {
             Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {client}");
@@ -599,6 +588,17 @@ namespace Server.MVVM.Model.Networking
                     client.GenerateToken(), users), FoundUsersList.CODE);
         }
         #endregion
+
+        private void OnReceiveTimeout(ClientEvent @event)
+        {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {@event.ToDebugString()}");
+
+            Client client = @event.Sender;
+            var order = (ReceivePacketOrder)@event.Data!;
+
+            DisconnectThenNotify(client, "|timed out receiving packet| " +
+                $"{order.ExpectedPacket}.");
+        }
 
         #region UI requests
         public void Request(UIRequest uiRequest)
