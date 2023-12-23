@@ -1,4 +1,4 @@
-﻿using Server.MVVM.Model.Persistence.DTO;
+using Server.MVVM.Model.Persistence.DTO;
 using Shared.MVVM.Model.SQLiteStorage;
 using Shared.MVVM.Model.SQLiteStorage.Repositories;
 using System.Collections.Generic;
@@ -57,7 +57,7 @@ namespace Server.MVVM.Model.Persistence.Repositories
             return new ConversationDto
             {
                 Id = (ulong)(long)reader[F_id],
-                OwnerId = (ulong)reader[F_owner_id],
+                OwnerId = (ulong)(long)reader[F_owner_id],
                 Name = (string)reader[F_name]
             };
         }
