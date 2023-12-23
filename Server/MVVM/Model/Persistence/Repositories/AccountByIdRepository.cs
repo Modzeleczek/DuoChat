@@ -1,4 +1,4 @@
-﻿using Server.MVVM.Model.Persistence.DTO;
+using Server.MVVM.Model.Persistence.DTO;
 using Shared.MVVM.Model.SQLiteStorage;
 using System.Collections.Generic;
 using System.Data.SQLite;
@@ -40,7 +40,7 @@ namespace Server.MVVM.Model.Persistence.Repositories
             if (!ids.Any())
                 return Enumerable.Empty<AccountDto>();
 
-            var query = $"SELECT * FROM {TABLE} WHERE ${F_id} IN ({string.Join(',', ids)});";
+            var query = $"SELECT * FROM {TABLE} WHERE {F_id} IN ({string.Join(',', ids)});";
             return ExecuteReader(query);
         }
     }

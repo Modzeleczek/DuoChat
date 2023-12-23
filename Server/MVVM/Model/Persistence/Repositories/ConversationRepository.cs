@@ -100,7 +100,7 @@ namespace Server.MVVM.Model.Persistence.Repositories
             if (!ids.Any())
                 return Enumerable.Empty<ConversationDto>();
 
-            var query = $"SELECT * FROM {TABLE} WHERE ${F_id} IN ({string.Join(',', ids)});";
+            var query = $"SELECT * FROM {TABLE} WHERE {F_id} IN ({string.Join(',', ids)});";
             return ExecuteReader(query);
         }
     }

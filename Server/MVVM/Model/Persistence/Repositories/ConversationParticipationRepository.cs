@@ -1,4 +1,4 @@
-﻿using Server.MVVM.Model.Persistence.DTO;
+using Server.MVVM.Model.Persistence.DTO;
 using Shared.MVVM.Model.SQLiteStorage;
 using Shared.MVVM.Model.SQLiteStorage.Repositories;
 using System.Collections.Generic;
@@ -128,7 +128,7 @@ namespace Server.MVVM.Model.Persistence.Repositories
             if (!conversationIds.Any())
                 return Enumerable.Empty<ConversationParticipationDto>();
 
-            var query = $"SELECT * FROM {TABLE} WHERE ${F_conversation_id} IN " +
+            var query = $"SELECT * FROM {TABLE} WHERE {F_conversation_id} IN " +
                 $"({string.Join(',', conversationIds)});";
             return ExecuteReader(query);
         }
