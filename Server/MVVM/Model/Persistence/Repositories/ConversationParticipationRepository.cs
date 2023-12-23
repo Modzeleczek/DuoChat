@@ -75,7 +75,7 @@ namespace Server.MVVM.Model.Persistence.Repositories
 
         protected override string ExistsQuery()
         {
-            return $"SELECT COUNT(DISTINCT {F_conversation_id}, {F_participant_id}) FROM {TABLE} " +
+            return $"SELECT COUNT(1) FROM {TABLE} " +
                 $"WHERE {F_conversation_id} = @{F_conversation_id} AND " +
                 $"{F_participant_id} = @{F_participant_id};";
         }
