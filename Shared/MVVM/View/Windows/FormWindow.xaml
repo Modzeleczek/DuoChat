@@ -58,21 +58,16 @@
         </Grid>
       </Border>
 
-      <ScrollViewer
-        Grid.Row="1"
-        Grid.Column="0"
-        Grid.ColumnSpan="2">
+      <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" VerticalScrollBarVisibility="Auto">
         <StackPanel x:Name="FieldsStackPanel">
           <StackPanel.Resources>
             <Style BasedOn="{StaticResource StylishedLabel}" TargetType="Label" />
-
             <Style BasedOn="{StaticResource FormTextBox}" TargetType="TextBox" />
-
             <Style BasedOn="{StaticResource FormPasswordBox}" TargetType="PasswordBox" />
-
           </StackPanel.Resources>
         </StackPanel>
       </ScrollViewer>
+      
       <Button
         x:Name="CancelButton"
         Grid.Row="2"

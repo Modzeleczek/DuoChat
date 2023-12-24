@@ -20,18 +20,15 @@
     <Setter Property="Background" Value="Transparent" />
     <Setter Property="BorderThickness" Value="0" />
   </Style>
-  
+
   <Style x:Key="FormTextBox" TargetType="TextBox">
-    <Setter Property="Margin" Value="10" />
     <Setter Property="FontFamily" Value="/MVVM/View/Fonts/RedHatDisplay" />
     <Setter Property="FontWeight" Value="SemiBold" />
     <Setter Property="FontSize" Value="18" />
     <Setter Property="KeyboardNavigation.TabNavigation" Value="None" />
     <Setter Property="Foreground" Value="{DynamicResource SecondForegroundColor}" />
     <Setter Property="VerticalContentAlignment" Value="Center" />
-    <Setter Property="HorizontalContentAlignment" Value="Left" />
     <Setter Property="Padding" Value="5" />
-    <Setter Property="Margin" Value="15,3,15,3" />
     <Setter Property="BorderBrush" Value="{DynamicResource SecondForegroundColor}" />
     <Setter Property="HorizontalScrollBarVisibility" Value="Hidden" />
     <Setter Property="VerticalScrollBarVisibility" Value="Hidden" />
@@ -55,8 +52,8 @@
           </Border>
           <ControlTemplate.Triggers>
             <Trigger Property="IsEnabled" Value="false">
-              <Setter TargetName="Bd" Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" />
-              <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+              <Setter Property="Background" Value="{DynamicResource ThirdBackgroundColor}" />
+              <Setter Property="Foreground" Value="{DynamicResource FirstForegroundColor}" />
             </Trigger>
             <Trigger Property="IsFocused" Value="True">
               <Setter Property="Background" Value="{DynamicResource FirstBackgroundColor}" />

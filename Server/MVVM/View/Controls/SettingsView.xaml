@@ -13,7 +13,7 @@
       <RowDefinition Height="auto" />
     </Grid.RowDefinitions>
     
-    <ScrollViewer Grid.Row="0">
+    <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
       <StackPanel>
         <StackPanel.Resources>
           <Style BasedOn="{StaticResource StylishedLabel}" TargetType="Label" />
