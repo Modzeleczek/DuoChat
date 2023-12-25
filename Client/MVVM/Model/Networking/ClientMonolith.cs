@@ -47,22 +47,23 @@ namespace Client.MVVM.Model.Networking
         private UIRequest? _uiRequest = null;
         #endregion
 
-        // public delegate void ClientEvent<ParT>(RemoteServer server, ParT parameter);
-
         #region Events
-        public event Action<RemoteServer>? ServerIntroduced;
-        public event Action<RemoteServer, ulong>? ServerHandshaken;
-        public event Action<RemoteServer, Conversation[]>? ReceivedConversationsAndUsersList;
-        public event Action<RemoteServer, string>? ReceivedRequestError;
-        public event Action<RemoteServer, string>? ServerEndedConnection;
-        public event Action<RemoteServer, AddedConversation.Conversation>? ReceivedAddedConversation;
-        public event Action<RemoteServer, EditedConversation.Conversation>? ReceivedEditedConversation;
-        public event Action<RemoteServer, ulong>? ReceivedDeletedConversation;
-        public event Action<RemoteServer, FoundUsersList.User[]>? ReceivedUsersList;
-        public event Action<RemoteServer, AddedParticipation.Participation>? ReceivedAddedParticipation;
-        public event Action<RemoteServer, AddedYouAsParticipant.YourParticipation>? ReceivedAddedYouAsParticipant;
-        public event Action<RemoteServer, EditedParticipation.Participation>? ReceivedEditedParticipation;
-        public event Action<RemoteServer, DeletedParticipation.Participation>? ReceivedDeletedParticipation;
+        public delegate void Event(RemoteServer server);
+        public delegate void Event<in ParT>(RemoteServer server, ParT parameter);
+
+        public event Event? ServerIntroduced;
+        public event Event<ulong>? ServerHandshaken;
+        public event Event<Conversation[]>? ReceivedConversationsAndUsersList;
+        public event Event<string>? ReceivedRequestError;
+        public event Event<string>? ServerEndedConnection;
+        public event Event<AddedConversation.Conversation>? ReceivedAddedConversation;
+        public event Event<EditedConversation.Conversation>? ReceivedEditedConversation;
+        public event Event<ulong>? ReceivedDeletedConversation;
+        public event Event<FoundUsersList.User[]>? ReceivedUsersList;
+        public event Event<AddedParticipation.Participation>? ReceivedAddedParticipation;
+        public event Event<AddedYouAsParticipant.YourParticipation>? ReceivedAddedYouAsParticipant;
+        public event Event<EditedParticipation.Participation>? ReceivedEditedParticipation;
+        public event Event<DeletedParticipation.Participation>? ReceivedDeletedParticipation;
         #endregion
 
         public ClientMonolith()

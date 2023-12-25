@@ -57,9 +57,12 @@ namespace Server.MVVM.Model.Networking
         #endregion
 
         #region Events
-        public event Action<Client>? ClientConnected;
-        public event Action<Client>? ClientHandshaken;
-        public event Action<Client, string>? ClientEndedConnection;
+        public delegate void Event(Client client);
+        public delegate void Event<in ParT>(Client client, ParT parameter);
+
+        public event Event? ClientConnected;
+        public event Event? ClientHandshaken;
+        public event Event<string>? ClientEndedConnection;
         public event Action<IPv4Address>? IPBlocked;
         public event Action<IPv4Address>? IPUnblocked;
         #endregion
