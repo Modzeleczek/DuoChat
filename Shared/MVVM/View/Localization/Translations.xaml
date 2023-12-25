@@ -29,7 +29,19 @@
   <l:Entry x:Key="Edit" PL="Edytuj"/>
   <l:Entry x:Key="Toggle_theme" EN="Toggle theme" PL="Przełącz motyw"/>
   <l:Entry x:Key="Search" PL="Szukaj"/>
+  <l:Entry x:Key="Add_conversation" EN="Add conversation"
+    PL="Dodaj konwersację"/>
   <l:Entry x:Key="Add_participant" EN="Add participant" PL="Dodaj uczestnika"/>
+  <l:Entry x:Key="Conversation_details" EN="Conversation details"
+    PL="Szczegóły konwersacji"/>
+  <l:Entry x:Key="Remove" PL="Usuń"/>
+  <l:Entry x:Key="Promote" PL="Awansuj"/>
+  <l:Entry x:Key="Demote" PL="Degraduj"/>
+  <l:Entry x:Key="Apply" EN="Apply" PL="Zastosuj"/>
+  <l:Entry x:Key="Name_" EN="Name:" PL="Nazwa:"/>
+  <l:Entry x:Key="Owner_" EN="Owner:" PL="Właściciel:"/>
+  <l:Entry x:Key="Details" PL="Szczegóły"/>
+  <l:Entry x:Key="Leave" PL="Opuść"/>
 
   <!-- klucze używane w plikach .cs - nie muszą być prawidłowymi nazwami zmiennych -->
   <l:Entry x:Key="Users" PL="Użytkownicy"/>
@@ -240,10 +252,15 @@
   <l:Entry x:Key="now blocks" PL="od teraz blokuje"/>
   <l:Entry x:Key="Server sent participant's id but did not send their details"
     PL="Serwer przesłał id uczestnika, ale nie przesłał jego szczegółów"/>
-  <l:Entry x:Key="Server does not know your account"
-    PL="Serwer nie zna twojego konta"/>
   <l:Entry x:Key="already belongs to conversation"
     PL="już należy do konwersacji"/>
+  <l:Entry x:Key="joined" PL="dołączył"/>
+  <l:Entry x:Key="administrator" PL="administrator"/>
+  <l:Entry x:Key="blocked" PL="zablokowany"/>
+  <l:Entry x:Key="Conversation name cannot be empty"
+    PL="Nazwa konwersacji nie może być pusta"/>
+  <l:Entry x:Key="UTF-8 encoded conversation name must be at most 255 bytes long"
+    PL="Nazwa konwersacji zakodowana w UTF-8 może mieć co najwyżej 255 bajtów"/>
 
   <!-- tylko do serwera -->
   <!-- klucze używane w plikach .xaml - muszą być prawidłowymi nazwami zmiennych -->
@@ -256,7 +273,6 @@
   <l:Entry x:Key="Generate" PL="Wygeneruj"/>
   <l:Entry x:Key="Load" PL="Wczytaj"/>
   <l:Entry x:Key="Log" PL="Log"/>
-  <l:Entry x:Key="Disconnect" PL="Rozłącz"/>
   <l:Entry x:Key="Block_IP" EN="Block IP" PL="Zablokuj IP"/>
   <l:Entry x:Key="Block" PL="Zablokuj"/>
   <l:Entry x:Key="Unblock" PL="Odblokuj"/>
@@ -346,6 +362,7 @@
   <l:Entry x:Key="Settings" PL="Ustawienia"/>
   <l:Entry x:Key="Name" PL="Nazwa"/>
   <l:Entry x:Key="GUID" PL="GUID"/>
+  <l:Entry x:Key="Disconnect" PL="Rozłącz"/>
 
   <!-- klucze używane w plikach .cs - nie muszą być prawidłowymi nazwami zmiennych -->
   <l:Entry x:Key="No translation:" EN="" PL="Brak tłumaczenia:"/>

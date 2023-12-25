@@ -1,4 +1,4 @@
-using Server.MVVM.Model.Persistence.DTO;
+﻿using Server.MVVM.Model.Persistence.DTO;
 using Shared.MVVM.Model.SQLiteStorage;
 using Shared.MVVM.Model.SQLiteStorage.Repositories;
 using System.Collections.Generic;
@@ -101,6 +101,12 @@ namespace Server.MVVM.Model.Persistence.Repositories
                 return Enumerable.Empty<ConversationDto>();
 
             var query = $"SELECT * FROM {TABLE} WHERE {F_id} IN ({string.Join(',', ids)});";
+            return ExecuteReader(query);
+        }
+
+        public IEnumerable<ConversationDto> GetByOwnerId(ulong ownerId)
+        {
+            var query = $"SELECT * FROM {TABLE} WHERE {F_owner_id} = {ownerId};";
             return ExecuteReader(query);
         }
     }

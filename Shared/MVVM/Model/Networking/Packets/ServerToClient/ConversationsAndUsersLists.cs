@@ -33,7 +33,7 @@ namespace Shared.MVVM.Model.Networking.Packets.ServerToClient
             public ulong Id { get; set; }
             public string Login { get; set; } = null!;
             public PublicKey PublicKey { get; set; } = null!;
-            public byte IsBlocked { get; set; }
+            // public byte IsBlocked { get; set; }
         }
 
         public class Lists
@@ -99,7 +99,7 @@ namespace Shared.MVVM.Model.Networking.Packets.ServerToClient
             pb.Append((ulong)loginBytes.Length, 1);
             pb.Append(loginBytes);
             pb.Append(account.PublicKey.ToBytes());
-            pb.Append(account.IsBlocked, 1);
+            // pb.Append(account.IsBlocked, 1);
         }
 
         public static void Deserialize(PacketReader pr,
@@ -164,7 +164,7 @@ namespace Shared.MVVM.Model.Networking.Packets.ServerToClient
                 Id = pr.ReadUInt64(),
                 Login = pr.ReadUtf8String(pr.ReadUInt8()),
                 PublicKey = PublicKey.FromPacketReader(pr),
-                IsBlocked = pr.ReadUInt8()
+                // IsBlocked = pr.ReadUInt8()
             };
         }
     }

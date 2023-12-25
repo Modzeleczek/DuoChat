@@ -3,18 +3,23 @@ using Client.MVVM.Model.Networking;
 using Client.MVVM.Model.Networking.UIRequests;
 using Client.MVVM.View.Windows;
 using Client.MVVM.ViewModel.AccountActions;
+using Client.MVVM.ViewModel.Conversations;
 using Client.MVVM.ViewModel.LocalUsers;
 using Client.MVVM.ViewModel.Observables;
 using Client.MVVM.ViewModel.ServerActions;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model.Cryptography;
+using Shared.MVVM.Model.Networking.Packets.ServerToClient.Conversation;
+using Shared.MVVM.Model.Networking.Packets.ServerToClient.Participation;
 using Shared.MVVM.View.Localization;
 using Shared.MVVM.View.Windows;
 using Shared.MVVM.ViewModel;
 using Shared.MVVM.ViewModel.LongBlockingOperation;
 using Shared.MVVM.ViewModel.Results;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Security;
 using System.Text;
 using System.Windows;
@@ -31,6 +36,9 @@ namespace Client.MVVM.ViewModel
         public RelayCommand AddAccount { get; }
         public RelayCommand EditAccount { get; }
         public RelayCommand DeleteAccount { get; }
+        public RelayCommand AddConversation { get; }
+        public RelayCommand OpenConversationDetails { get; }
+        public RelayCommand Disconnect { get; }
         #endregion
 
         #region Properties
@@ -423,9 +431,68 @@ namespace Client.MVVM.ViewModel
                 }
             });
 
+            AddConversation = new RelayCommand(_ =>
+            {
+                var vm = new CreateConversationViewModel()
+                {
+                    Title = "|Add_conversation|",
+                    ConfirmButtonText = "|Add|"
+                };
+                new FormWindow(window!, vm).ShowDialog();
+                if (!(vm.Result is Success success))
+                    // Anulowanie
+                    return;
+
+                _client.Request(new AddConversationUIRequest((string)success.Data!));
+            });
+
+            OpenConversationDetails = new RelayCommand(obj =>
+            {
+                var conversationObs = (Conversation)obj!;
+                var knownUsers = ListKnownUsers();
+
+                if (SelectedAccount!.RemoteId == conversationObs.Owner.Id)
+                {
+                    // Aktualny użytkownik jest właścicielem konwersacji.
+                    OwnerConversationDetailsViewModel.ShowDialog(window!, _client, knownUsers,
+                        SelectedAccount, conversationObs);
+                    return;
+                }
+
+                // Pętla do przełączania trybu okna z Regular na Admin.
+                Result result;
+                do
+                {
+                    var userAdminParticipation = conversationObs.Participations.SingleOrDefault(
+                    p => p.ParticipantId == SelectedAccount.RemoteId && p.IsAdministrator);
+                    result = userAdminParticipation is null ?
+                        // Aktualny użytkownik nie jest administratorem konwersacji.
+                        RegularConversationDetailsViewModel.ShowDialog(window!, _client, knownUsers,
+                            SelectedAccount, conversationObs) :
+                        // Aktualny użytkownik jest administratorem konwersacji.
+                        AdminConversationDetailsViewModel.ShowDialog(window!, _client, knownUsers,
+                            SelectedAccount, conversationObs);
+                } while (!(result is Cancellation));
+            });
+
+            Disconnect = new RelayCommand(_ =>
+            {
+                /* Przycisk jest niewidoczny, kiedy SelectedAccount jest
+                nullem, więc SelectedServer nie jest tutaj nullem. */
+                _client.Request(new Disconnect(SelectedServer!.GetPrimaryKey(), null));
+            });
+
             _client.ServerIntroduced += OnServerIntroduced;
+            _client.ServerHandshaken += OnServerHandshaken;
             _client.ReceivedConversationsAndUsersList += OnReceivedConversationsAndUsersList;
             _client.ServerEndedConnection += OnServerEndedConnection;
+            _client.ReceivedAddedConversation += OnReceivedAddedConversation;
+            _client.ReceivedEditedConversation += OnReceivedEditedConversation;
+            _client.ReceivedDeletedConversation += OnReceivedDeletedConversation;
+            _client.ReceivedAddedParticipation += OnReceivedAddedParticipation;
+            _client.ReceivedAddedYouAsParticipant += OnReceivedAddedYouAsParticipant;
+            _client.ReceivedEditedParticipation += OnReceivedEditedParticipation;
+            _client.ReceivedDeletedParticipation += OnReceivedDeletedParticipation;
         }
 
         private void ShowLocalUsersDialog()
@@ -543,6 +610,12 @@ namespace Client.MVVM.ViewModel
             });
         }
 
+        private void OnServerHandshaken(RemoteServer server, ulong accountId)
+        {
+            // Bez UIInvoke, bo GUI nie obserwuje RemoteId.
+            SelectedAccount!.RemoteId = accountId;
+        }
+
         private void OnReceivedConversationsAndUsersList(RemoteServer server,
             Conversation[] conversations)
         {
@@ -568,6 +641,176 @@ namespace Client.MVVM.ViewModel
                 Conversations.Clear();
 
                 Alert($"{server} {statusMsg}");
+            });
+        }
+
+        private void OnReceivedAddedConversation(RemoteServer server,
+            AddedConversation.Conversation inConversation)
+        {
+            // Wątek Client.Process
+            /* Zakładamy, że autorytatywny serwer wykonał walidację i nie
+            wysłał nam już istniejącej konwersacji jako nowo dodanej. */
+            User? owner = null;
+            foreach (var c in Conversations)
+            {
+                if (c.Owner.Id == SelectedAccount!.RemoteId)
+                {
+                    owner = c.Owner;
+                    break;
+                }
+
+                owner = c.Participations.SingleOrDefault(
+                    p => p.ParticipantId == SelectedAccount.RemoteId)?.Participant;
+                if (!(owner is null))
+                    break;
+            }
+            // Jeszcze nie mamy nigdzie zapisanego aktualnego użytkownika.
+            if (owner is null)
+                owner = new User
+                {
+                    Id = SelectedAccount!.RemoteId,
+                    Login = SelectedAccount.Login,
+                    PublicKey = SelectedAccount.PrivateKey.ToPublicKey(),
+                    // Aktualny użytkownik nie jest zablokowany, skoro używa konta.
+                    IsBlocked = false
+                };
+
+            UIInvoke(() =>
+            {
+                // Aktualny użytkownik dodał konwersację.
+                Conversations.Add(new Conversation
+                {
+                    Id = inConversation.Id,
+                    Owner = owner,
+                    Name = inConversation.Name,
+                    // Participations i Messages pozostają puste.
+                });
+            });
+        }
+
+        private void OnReceivedEditedConversation(RemoteServer server,
+            EditedConversation.Conversation inConversation)
+        {
+            // Wątek Client.Process
+            var conversationObs = Conversations.Single(c => c.Id == inConversation.Id);
+            // Aktualny użytkownik zmodyfikował konwersację.
+            UIInvoke(() => conversationObs.Name = inConversation.Name);
+        }
+
+        private void OnReceivedDeletedConversation(RemoteServer server, ulong inConversationId)
+        {
+            // Wątek Client.Process
+            var conversationObs = Conversations.Single(c => c.Id == inConversationId);
+            UIInvoke(() => Conversations.Remove(conversationObs));
+        }
+
+        private void OnReceivedAddedParticipation(RemoteServer server,
+            AddedParticipation.Participation inParticipation)
+        {
+            // Wątek Client.Process
+            var inParticipant = inParticipation.Participant;
+            var knownUsers = ListKnownUsers();
+            if (!knownUsers.ContainsKey(inParticipant.Id))
+                /* Jeszcze nie mamy obiektu użytkownika (z którejś z
+                istniejących konwersacji), więc go dodajemy. */
+                knownUsers.Add(inParticipant.Id, new User
+                {
+                    Id = inParticipant.Id,
+                    Login = inParticipant.Login,
+                    PublicKey = inParticipant.PublicKey,
+                    IsBlocked = false
+                });
+
+            var conversationObs = Conversations.Single(c => c.Id == inParticipation.ConversationId);
+            var cpObs = new ConversationParticipation()
+            {
+                ConversationId = conversationObs.Id,
+                Conversation = conversationObs,
+                ParticipantId = inParticipation.Participant.Id,
+                Participant = knownUsers[inParticipant.Id],
+                JoinTime = DateTimeOffset.FromUnixTimeMilliseconds(inParticipation.JoinTime).UtcDateTime,
+                IsAdministrator = inParticipation.IsAdministrator != 0
+            };
+
+            UIInvoke(() => conversationObs.Participations.Add(cpObs));
+        }
+
+        private void OnReceivedAddedYouAsParticipant(RemoteServer server,
+            AddedYouAsParticipant.YourParticipation yourParticipation)
+        {
+            // Wątek Client.Process
+            var knownUsers = ListKnownUsers();
+            // Dołączamy właściciela konwersacji do jej uczestników
+            foreach (var u in yourParticipation.Conversation.Participations.Select(p => p.Participant)
+                .Append(yourParticipation.Conversation.Owner))
+                if (!knownUsers.ContainsKey(u.Id))
+                    knownUsers.Add(u.Id, new User
+                    {
+                        Id = u.Id,
+                        Login = u.Login,
+                        PublicKey = u.PublicKey,
+                        IsBlocked = false // Do usunięcia
+                    });
+
+            var conversationObs = new Conversation
+            {
+                Id = yourParticipation.Conversation.Id,
+                Owner = knownUsers[yourParticipation.Conversation.Owner.Id],
+                Name = yourParticipation.Conversation.Name
+            };
+
+            foreach (var p in yourParticipation.Conversation.Participations)
+                conversationObs.Participations.Add(new ConversationParticipation
+                {
+                    ConversationId = yourParticipation.Conversation.Id,
+                    Conversation = conversationObs,
+                    ParticipantId = p.Participant.Id,
+                    Participant = knownUsers[p.Participant.Id],
+                    JoinTime = DateTimeOffset.FromUnixTimeMilliseconds(p.JoinTime).UtcDateTime,
+                    IsAdministrator = p.IsAdministrator != 0
+                });
+
+            UIInvoke(() => Conversations.Add(conversationObs));
+        }
+
+        private Dictionary<ulong, User> ListKnownUsers()
+        {
+            var knownUsers = new Dictionary<ulong, User>();
+            foreach (var c in Conversations)
+            {
+                if (!knownUsers.ContainsKey(c.Owner.Id))
+                    knownUsers.Add(c.Owner.Id, c.Owner);
+
+                foreach (var p in c.Participations)
+                    if (!knownUsers.ContainsKey(p.ParticipantId))
+                        knownUsers.Add(p.ParticipantId, p.Participant);
+            }
+            return knownUsers;
+        }
+
+        private void OnReceivedEditedParticipation(RemoteServer server,
+            EditedParticipation.Participation inParticipation)
+        {
+            // Wątek Client.Process
+            var conversationObs = Conversations.Single(c => c.Id == inParticipation.ConversationId);
+            // Wszystko z conversationObs.Participations ma to samo ConversationId.
+            var cpObs = conversationObs.Participations.Single(
+                p => p.ParticipantId == inParticipation.ParticipantId);
+            UIInvoke(() => cpObs.IsAdministrator = inParticipation.IsAdministrator != 0);
+        }
+
+        private void OnReceivedDeletedParticipation(RemoteServer server,
+            DeletedParticipation.Participation inParticipation)
+        {
+            // Wątek Client.Process
+            var conversationObs = Conversations.Single(c => c.Id == inParticipation.ConversationId);
+            var cpObs = conversationObs.Participations.Single(
+                p => p.ParticipantId == inParticipation.ParticipantId);
+            UIInvoke(() =>
+            {
+                conversationObs.Participations.Remove(cpObs);
+                if (inParticipation.ParticipantId == SelectedAccount!.RemoteId)
+                    Conversations.Remove(conversationObs);
             });
         }
         #endregion

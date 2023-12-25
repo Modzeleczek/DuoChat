@@ -11,10 +11,13 @@ namespace Shared.MVVM.Model.Networking.Packets
             NoSlots = 0, IPAlreadyBlocked = 1, ServerIntroduction = 2,
             Authentication = 3, NoAuthentication = 4,
             AccountAlreadyBlocked = 5, IPNowBlocked = 6, ConversationsAndUsersList = 7,
-            RequestError = 8, FoundUsersList = 9,
+            RequestError = 8, AddedConversation = 9, EditedConversation = 10,
+            DeletedConversation = 11, FoundUsersList = 12, AddedParticipation = 13,
+            AddedYouAsParticipant = 14, EditedParticipation = 15, DeletedParticipation = 16,
 
             ClientIntroduction = 255, GetConversationsAndUsers = 254, AddConversation = 253,
-            SearchUsers = 252
+            EditConversation = 252, DeleteConversation = 251, SearchUsers = 250,
+            AddParticipation = 249, EditParticipation = 248, DeleteParticipation = 247
         }
         #endregion
 

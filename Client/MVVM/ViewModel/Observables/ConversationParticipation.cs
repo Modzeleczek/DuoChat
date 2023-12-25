@@ -5,6 +5,7 @@ namespace Client.MVVM.ViewModel.Observables
 {
     public class ConversationParticipation : ObservableObject
     {
+        #region Properties
         public ulong ConversationId { get; set; } = 0;
         public Conversation Conversation { get; set; } = null!;
 
@@ -19,5 +20,6 @@ namespace Client.MVVM.ViewModel.Observables
             get => _isAdministrator;
             set { _isAdministrator = value; OnPropertyChanged(); }
         }
+        #endregion
     }
 }

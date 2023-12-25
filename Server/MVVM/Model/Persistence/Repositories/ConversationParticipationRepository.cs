@@ -1,4 +1,4 @@
-using Server.MVVM.Model.Persistence.DTO;
+﻿using Server.MVVM.Model.Persistence.DTO;
 using Shared.MVVM.Model.SQLiteStorage;
 using Shared.MVVM.Model.SQLiteStorage.Repositories;
 using System.Collections.Generic;
@@ -130,6 +130,12 @@ namespace Server.MVVM.Model.Persistence.Repositories
 
             var query = $"SELECT * FROM {TABLE} WHERE {F_conversation_id} IN " +
                 $"({string.Join(',', conversationIds)});";
+            return ExecuteReader(query);
+        }
+
+        public IEnumerable<ConversationParticipationDto> GetByConversationId(ulong conversationId)
+        {
+            var query = $"SELECT * FROM {TABLE} WHERE {F_conversation_id} = {conversationId};";
             return ExecuteReader(query);
         }
     }

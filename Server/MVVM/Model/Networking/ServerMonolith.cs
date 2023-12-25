@@ -1,4 +1,4 @@
-using Shared.MVVM.Model.Cryptography;
+﻿using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking;
 using System;
 using System.Collections.Generic;
@@ -20,6 +20,10 @@ using Shared.MVVM.Model;
 using Shared.MVVM.Model.Networking.Transfer.Reception;
 using System.Reflection;
 using System.Diagnostics;
+using Shared.MVVM.Model.Networking.Packets.ClientToServer.Conversation;
+using Shared.MVVM.Model.Networking.Packets.ServerToClient.Conversation;
+using Shared.MVVM.Model.Networking.Packets.ClientToServer.Participation;
+using Shared.MVVM.Model.Networking.Packets.ServerToClient.Participation;
 
 namespace Server.MVVM.Model.Networking
 {
@@ -444,8 +448,23 @@ namespace Server.MVVM.Model.Networking
                     case Packet.Codes.AddConversation:
                         HandleReceivedAddConversation(client, pr);
                         break;
+                    case Packet.Codes.EditConversation:
+                        HandleReceivedEditConversation(client, pr);
+                        break;
+                    case Packet.Codes.DeleteConversation:
+                        HandleReceivedDeleteConversation(client, pr);
+                        break;
                     case Packet.Codes.SearchUsers:
                         HandleReceivedSearchUsers(client, pr);
+                        break;
+                    case Packet.Codes.AddParticipation:
+                        HandleReceivedAddParticipation(client, pr);
+                        break;
+                    case Packet.Codes.EditParticipation:
+                        HandleReceivedEditParticipation(client, pr);
+                        break;
+                    case Packet.Codes.DeleteParticipation:
+                        HandleReceivedDeleteParticipation(client, pr);
                         break;
                     default:
                         DisconnectThenNotify(client, UnexpectedPacketErrorMsg);
@@ -461,15 +480,21 @@ namespace Server.MVVM.Model.Networking
 
             var dbClientParticipations = _storage.Database.ConversationParticipations
                 .GetByParticipantId(client.Id);
-            var dbClientConversations = _storage.Database.Conversations
-                .GetByIds(dbClientParticipations.Select(cp => cp.ConversationId));
+            var dbClientOwnedConversations = _storage.Database.Conversations.GetByOwnerId(client.Id);
+            /* Zbieramy wszystkie konwersacje, do których należy klient i których jest właścicielem
+            (są to zbiory rozłączne) i porządkujemy je według Id, czyli będą w kolejności od
+            najstarszej do najnowszej. */
+            var conversationIds = dbClientParticipations.Select(cp => cp.ConversationId)
+                .Concat(dbClientOwnedConversations.Select(coc => coc.Id)).Order();
+
+            var dbClientConversations = _storage.Database.Conversations.GetByIds(conversationIds);
             var dbParticipations = _storage.Database.ConversationParticipations
                 .GetByConversationIds(dbClientConversations.Select(c => c.Id));
             var dbParticipantAccounts = _storage.Database.AccountsById
                 .GetByIds(dbParticipations.Select(p => p.ParticipantId).Distinct());
 
-            /* Pobieramy oddzielnie konta właścicieli konwersacji, bo
-            właściciel konwersacji może nie być jej uczestnikiem. */
+            /* Pobieramy oddzielnie konta właścicieli konwersacji, bo właściciel konwersacji
+            nie jest jej zwyczajnym uczestnikiem (nie ma go w tabeli ConversationParticipation). */
             var dbConversationOwnerAccounts = _storage.Database.AccountsById
                 .GetByIds(dbClientConversations.Select(c => c.OwnerId));
 
@@ -488,20 +513,20 @@ namespace Server.MVVM.Model.Networking
                     Name = dbConversation.Name
                 };
 
-                var dbParticipants = dbParticsByConvId[conversation.Id];
+                if (!dbParticsByConvId.TryGetValue(conversation.Id, out var dbParticipants))
+                    dbParticipants = new LinkedList<ConversationParticipationDto>();
+
+                /* Jeżeli konwersacja nie zawiera żadnych uczestników (tylko
+                właściciela, który nie jest zwykłym uczestnikiem). */
                 var participants = new ConversationsAndUsersLists.Participant[dbParticipants.Count];
                 int p = 0;
                 foreach (var dbParticipant in dbParticipants)
-                {
                     participants[p++] = new ConversationsAndUsersLists.Participant
                     {
                         ParticipantId = dbParticipant.ParticipantId,
-                        /* DateTimeOffset.FromUnixTimeMilliseconds(p.JoinTime).UtcDateTime
-                        "Valid values are between -62135596800000 and 253402300799999, inclusive. */
                         JoinTime = dbParticipant.JoinTime,
                         IsAdministrator = dbParticipant.IsAdministrator
                     };
-                }
 
                 conversationParticipants[c++] = new ConversationsAndUsersLists.ConversationParticipation
                 {
@@ -519,7 +544,7 @@ namespace Server.MVVM.Model.Networking
                         Id = account.Id,
                         Login = account.Login,
                         PublicKey = account.PublicKey,
-                        IsBlocked = account.IsBlocked
+                        // IsBlocked = account.IsBlocked
                     });
 
             var lists = new ConversationsAndUsersLists.Lists
@@ -552,22 +577,135 @@ namespace Server.MVVM.Model.Networking
         {
             Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {client}");
 
-            AddConversation.Deserialize(pr, out ulong ownerId, out string name);
-            
-            if (!_storage.Database.AccountsById.Exists(ownerId))
-            {
-                client.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Request);
-                client.EnqueueToSend(RequestError.Serialize(_privateKey!, client.PublicKey!,
-                    client.GenerateToken(), AddConversation.CODE,
-                    (byte)AddConversation.Errors.AccountDoesNotExist), RequestError.CODE);
-                // Nie rozłączamy, bo nie jest to błąd protokołu, tylko błąd "biznesowy".
-                return;
-            }
+            AddConversation.Deserialize(pr, out var conversationName);
 
-            _storage.Database.Conversations.Add(new ConversationDto { OwnerId = ownerId, Name = name });
+            // Repository.Add ignoruje Id.
+            var dto = new ConversationDto { OwnerId = client.Id, Name = conversationName };
+
+            // Dodajemy konwersację. Repository.Add samo powinno ustawić dto.Id.
+            dto.Id = _storage.Database.Conversations.Add(dto);
+
+            var outConversation = new AddedConversation.Conversation { Id = dto.Id, Name = dto.Name };
 
             // Po (lub przed) obsłużeniu pakietu trzeba anulować jego timeout za pomocą SetExpectedPacket.
             client.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Request);
+            // Powiadamiamy tylko samego autora konwersacji, o ile nie ma zablokowanego powiadamiania.
+            if (client.IsNotifiable)
+                client.EnqueueToSend(AddedConversation.Serialize(_privateKey!, client.PublicKey!,
+                    client.GenerateToken(), outConversation), AddedConversation.CODE);
+        }
+
+        private void HandleReceivedEditConversation(Client client, PacketReader pr)
+        {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {client}");
+
+            EditConversation.Deserialize(pr, out var inConversation);
+
+            if (!_storage.Database.Conversations.Exists(inConversation.Id))
+            {
+                EnqueueRequestError(client, EditConversation.CODE,
+                    (byte)EditConversation.Errors.ConversationNotExists);
+                return;
+            }
+            var oldConversation = _storage.Database.Conversations.Get(inConversation.Id);
+
+            var participations = _storage.Database.ConversationParticipations
+                .GetByConversationId(oldConversation.Id);
+            if (client.Id != oldConversation.OwnerId)
+            {
+                // Użytkownik nie jest właścicielem konwersacji.
+                EnqueueRequestError(client, EditConversation.CODE,
+                    (byte)EditConversation.Errors.RequesterNotConversationOwner);
+                return;
+            }
+
+            var newConversation = new ConversationDto
+            { Id = oldConversation.Id, OwnerId = oldConversation.OwnerId, Name = inConversation.Name };
+
+            // Edytujemy konwersację.
+            _storage.Database.Conversations.Update(oldConversation.Id, newConversation);
+
+            var outConversation = new EditedConversation.Conversation
+            { Id = oldConversation.Id, Name = newConversation.Name };
+
+            client.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Request);
+
+            /* Powiadamiamy wszystkich uczestników konwersacji i właściciela, który wywołał
+            edycję konwersacji. */
+            var clientsById = GroupBy(_clients.Values, c => c.Id);
+            foreach (var p in participations)
+            {
+                if (!clientsById.TryGetValue(p.ParticipantId, out var list))
+                    // Uczestnik nie jest połączony z serwerem.
+                    continue;
+
+                // Każde Id powinno mieć dokładnie jednego klienta na liście.
+                var c = list.First!.Value;
+                if (c.IsNotifiable)
+                    c.EnqueueToSend(EditedConversation.Serialize(_privateKey!, c.PublicKey!,
+                        c.GenerateToken(), outConversation), EditedConversation.CODE);
+            }
+
+            if (client.IsNotifiable)
+                client.EnqueueToSend(EditedConversation.Serialize(_privateKey!, client.PublicKey!,
+                    client.GenerateToken(), outConversation), EditedConversation.CODE);
+        }
+
+        private void EnqueueRequestError(Client client, Packet.Codes faultyOperationCode, byte errorCode)
+        {
+            client.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Request);
+            if (client.IsNotifiable)
+                client.EnqueueToSend(RequestError.Serialize(_privateKey!, client.PublicKey!,
+                    client.GenerateToken(), faultyOperationCode, errorCode), RequestError.CODE);
+            // Nie rozłączamy, bo nie jest to błąd protokołu, tylko błąd "biznesowy".
+        }
+
+        private void HandleReceivedDeleteConversation(Client client, PacketReader pr)
+        {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {client}");
+
+            DeleteConversation.Deserialize(pr, out ulong conversationId);
+
+            if (!_storage.Database.Conversations.Exists(conversationId))
+            {
+                EnqueueRequestError(client, DeleteConversation.CODE,
+                    (byte)DeleteConversation.Errors.ConversationNotExists);
+                return;
+            }
+
+            var participations = _storage.Database.ConversationParticipations
+                .GetByConversationId(conversationId);
+
+            var conversation = _storage.Database.Conversations.Get(conversationId);
+            if (client.Id != conversation.OwnerId)
+            {
+                EnqueueRequestError(client, DeleteConversation.CODE,
+                    (byte)DeleteConversation.Errors.AccountNotConversationOwner);
+                return;
+            }
+
+            // Usuwamy konwersację.
+            _storage.Database.Conversations.Delete(conversationId);
+
+            var outConversationId = conversationId;
+
+            client.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Request);
+
+            var clientsById = GroupBy(_clients.Values, c => c.Id);
+            foreach (var p in participations)
+            {
+                if (!clientsById.TryGetValue(p.ParticipantId, out var list))
+                    continue;
+
+                var c = list.First!.Value;
+                if (c.IsNotifiable)
+                    c.EnqueueToSend(DeletedConversation.Serialize(_privateKey!, c.PublicKey!,
+                        c.GenerateToken(), outConversationId), DeletedConversation.CODE);
+            }
+
+            if (client.IsNotifiable)
+                client.EnqueueToSend(DeletedConversation.Serialize(_privateKey!, client.PublicKey!,
+                    client.GenerateToken(), outConversationId), DeletedConversation.CODE);
         }
 
         private void HandleReceivedSearchUsers(Client client, PacketReader pr)
@@ -586,6 +724,277 @@ namespace Server.MVVM.Model.Networking
             if (client.IsNotifiable)
                 client.EnqueueToSend(FoundUsersList.Serialize(_privateKey!, client.PublicKey!,
                     client.GenerateToken(), users), FoundUsersList.CODE);
+        }
+
+        private void HandleReceivedAddParticipation(Client client, PacketReader pr)
+        {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {client}");
+
+            AddParticipation.Deserialize(pr, out var inParticipation);
+
+            var conversation = _storage.Database.Conversations.Get(inParticipation.ConversationId);
+            var participations = _storage.Database.ConversationParticipations
+                .GetByConversationId(inParticipation.ConversationId);
+            if (client.Id != conversation.OwnerId &&
+                !participations.Any(p => p.ParticipantId == client.Id && p.IsAdministrator != 0))
+            {
+                // Użytkownik nie jest właścicielem ani administratorem konwersacji.
+                EnqueueRequestError(client, AddParticipation.CODE,
+                    (byte)AddParticipation.Errors.YouNeitherConversationOwnerNorAdmin);
+                return;
+            }
+
+            if (!_storage.Database.AccountsById.Exists(inParticipation.ParticipantId))
+            {
+                EnqueueRequestError(client, AddParticipation.CODE,
+                    (byte)AddParticipation.Errors.AccountNotExists);
+                return;
+            }
+
+            if (participations.Any(p => p.ParticipantId == inParticipation.ParticipantId))
+            {
+                EnqueueRequestError(client, AddParticipation.CODE,
+                    (byte)AddParticipation.Errors.ParticipationAlreadyExists);
+                return;
+            }
+
+            // Dodajemy uczestnictwo w konwersacji.
+            var dto = new ConversationParticipationDto
+            {
+                ConversationId = inParticipation.ConversationId,
+                ParticipantId = inParticipation.ParticipantId,
+                /* Odwrotnie: DateTimeOffset.FromUnixTimeMilliseconds(p.JoinTime).UtcDateTime
+                "Valid values are between -62135596800000 and 253402300799999, inclusive. */
+                JoinTime = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeMilliseconds(),
+                /* Na początku nowy członek nie jest administratorem.
+                Można go awansować poprzez pakiet EditParticipation. */
+                IsAdministrator = 0
+            };
+            _storage.Database.ConversationParticipations.Add(dto);
+
+            var participant = _storage.Database.AccountsById.GetById(dto.ParticipantId);
+            var outParticipation = new AddedParticipation.Participation
+            {
+                ConversationId = dto.ConversationId,
+                JoinTime = dto.JoinTime,
+                IsAdministrator = dto.IsAdministrator,
+                Participant = new AddedParticipation.Participant
+                {
+                    Id = participant.Id,
+                    Login = participant.Login,
+                    PublicKey = participant.PublicKey,
+                    // IsBlocked = participant.IsBlocked
+                }
+            };
+
+            client.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Request);
+
+            var clientsById = GroupBy(_clients.Values, c => c.Id);
+            foreach (var p in participations)
+            {
+                if (!clientsById.TryGetValue(p.ParticipantId, out var clientList))
+                    continue;
+
+                var c = clientList.First!.Value;
+                if (c.IsNotifiable)
+                    c.EnqueueToSend(AddedParticipation.Serialize(_privateKey!, c.PublicKey!,
+                        c.GenerateToken(), outParticipation), AddedParticipation.CODE);
+            }
+
+            // Powiadamiamy właściciela konwersacji.
+            if (clientsById.TryGetValue(conversation.OwnerId, out var ownerClientList))
+            {
+                var c = ownerClientList.First!.Value;
+                if (c.IsNotifiable)
+                    c.EnqueueToSend(AddedParticipation.Serialize(_privateKey!, c.PublicKey!,
+                        c.GenerateToken(), outParticipation), AddedParticipation.CODE);
+            }
+
+            // Powiadamiamy użytkownika dodanego do konwersacji.
+            if (clientsById.TryGetValue(participant.Id, out var addedParticipantClientList))
+            {
+                // Dodany użytkownik jest połączony.
+                var dbOwner = _storage.Database.AccountsById.GetById(conversation.OwnerId);
+                // Wysyłamy go razem z już istniejącymi uczestnikami.
+                participations = participations.Append(dto);
+                var dbParticipantAccounts = _storage.Database.AccountsById
+                    .GetByIds(participations.Select(p => p.ParticipantId));
+                var dictParticipantAccounts = GroupBy(dbParticipantAccounts, a => a.Id);
+
+                var outParticipations = new AddedYouAsParticipant.Participation[participations.Count()];
+                int i = 0;
+                foreach (var p in participations)
+                {
+                    var account = dictParticipantAccounts[p.ParticipantId].First!.Value;
+                    outParticipations[i++] = new AddedYouAsParticipant.Participation
+                    {
+                        JoinTime = p.JoinTime,
+                        IsAdministrator = p.IsAdministrator,
+                        Participant = new AddedYouAsParticipant.User
+                        {
+                            Id = account.Id,
+                            Login = account.Login,
+                            PublicKey = account.PublicKey
+                            // IsBlocked = account.IsBlocked
+                        }
+                    };
+                }
+
+                var outYourParticipation = new AddedYouAsParticipant.YourParticipation
+                {
+                    JoinTime = dto.JoinTime,
+                    IsAdministrator = dto.IsAdministrator,
+                    Conversation = new AddedYouAsParticipant.Conversation
+                    {
+                        Id = conversation.Id,
+                        Name = conversation.Name,
+                        Owner = new AddedYouAsParticipant.User
+                        {
+                            Id = dbOwner.Id,
+                            Login = dbOwner.Login,
+                            PublicKey = dbOwner.PublicKey
+                        },
+                        Participations = outParticipations
+                    }
+                };
+
+                var c = addedParticipantClientList.First!.Value;
+                if (c.IsNotifiable)
+                    c.EnqueueToSend(AddedYouAsParticipant.Serialize(_privateKey!, c.PublicKey!,
+                        c.GenerateToken(), outYourParticipation), AddedYouAsParticipant.CODE);
+            }
+        }
+
+        private void HandleReceivedEditParticipation(Client client, PacketReader pr)
+        {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {client}");
+
+            EditParticipation.Deserialize(pr, out var inParticipation);
+
+            var conversation = _storage.Database.Conversations.Get(inParticipation.ConversationId);
+            if (client.Id != conversation.OwnerId)
+            {
+                // Użytkownik nie jest właścicielem konwersacji.
+                EnqueueRequestError(client, EditParticipation.CODE,
+                    (byte)EditParticipation.Errors.YouNotConversationOwner);
+                return;
+            }
+
+            var participations = _storage.Database.ConversationParticipations
+                .GetByConversationId(inParticipation.ConversationId);
+            var oldParticipation = participations.SingleOrDefault(
+                p => p.ParticipantId == inParticipation.ParticipantId);
+            if (oldParticipation is null)
+            {
+                EnqueueRequestError(client, EditParticipation.CODE,
+                    (byte)EditParticipation.Errors.ParticipationNotExists);
+                return;
+            }
+
+            // Edytujemy uczestnictwo w konwersacji.
+            var newParticipation = new ConversationParticipationDto
+            {
+                ConversationId = oldParticipation.ConversationId,
+                ParticipantId = oldParticipation.ParticipantId,
+                IsAdministrator = inParticipation.IsAdministrator,
+                JoinTime = oldParticipation.JoinTime
+            };
+            _storage.Database.ConversationParticipations.Update(
+                (oldParticipation.ConversationId, oldParticipation.ParticipantId), newParticipation);
+
+            var outParticipation = new EditedParticipation.Participation
+            {
+                ConversationId = newParticipation.ConversationId,
+                ParticipantId = newParticipation.ParticipantId,
+                IsAdministrator = newParticipation.IsAdministrator
+            };
+
+            client.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Request);
+
+            var clientsById = GroupBy(_clients.Values, c => c.Id);
+            foreach (var p in participations)
+            {
+                if (!clientsById.TryGetValue(p.ParticipantId, out var list))
+                    continue;
+
+                var c = list.First!.Value;
+                if (c.IsNotifiable)
+                    c.EnqueueToSend(EditedParticipation.Serialize(_privateKey!, c.PublicKey!,
+                        c.GenerateToken(), outParticipation), EditedParticipation.CODE);
+            }
+
+            // Powiadamiamy właściciela konwersacji.
+            if (clientsById.TryGetValue(conversation.OwnerId, out var ownerClientList))
+            {
+                var c = ownerClientList.First!.Value;
+                if (c.IsNotifiable)
+                    c.EnqueueToSend(EditedParticipation.Serialize(_privateKey!, c.PublicKey!,
+                        c.GenerateToken(), outParticipation), EditedParticipation.CODE);
+            }
+        }
+
+        private void HandleReceivedDeleteParticipation(Client client, PacketReader pr)
+        {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {client}");
+
+            DeleteParticipation.Deserialize(pr, out var inParticipation);
+
+            var conversation = _storage.Database.Conversations.Get(inParticipation.ConversationId);
+            var participations = _storage.Database.ConversationParticipations
+                .GetByConversationId(inParticipation.ConversationId);
+            // Czy użytkownik nie chce opuścić konwersacji, czyli usunąć z niej samego siebie?
+            if (inParticipation.ParticipantId != client.Id
+                // Czy użytkownik nie jest właścicielem konwersacji?
+                && client.Id != conversation.OwnerId
+                // Czy użytkownik nie jest administratorem konwersacji?
+                && !participations.Any(p => p.ParticipantId == client.Id && p.IsAdministrator != 0))
+            {
+                EnqueueRequestError(client, DeleteParticipation.CODE,
+                    (byte)DeleteParticipation.Errors.YouNeitherConversationOwnerNorAdmin);
+                return;
+            }
+
+            var oldParticipation = participations.SingleOrDefault(
+                p => p.ParticipantId == inParticipation.ParticipantId);
+            if (oldParticipation is null)
+            {
+                EnqueueRequestError(client, DeleteParticipation.CODE,
+                    (byte)DeleteParticipation.Errors.ParticipationNotExists);
+                return;
+            }
+
+            // Usuwamy uczestnictwo w konwersacji.
+            _storage.Database.ConversationParticipations.Delete(
+                (oldParticipation.ConversationId, oldParticipation.ParticipantId));
+
+            var outParticipation = new DeletedParticipation.Participation
+            {
+                ConversationId = oldParticipation.ConversationId,
+                ParticipantId = oldParticipation.ParticipantId,
+            };
+
+            client.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Request);
+
+            var clientsById = GroupBy(_clients.Values, c => c.Id);
+            foreach (var p in participations)
+            {
+                if (!clientsById.TryGetValue(p.ParticipantId, out var list))
+                    continue;
+
+                var c = list.First!.Value;
+                if (c.IsNotifiable)
+                    c.EnqueueToSend(DeletedParticipation.Serialize(_privateKey!, c.PublicKey!,
+                        c.GenerateToken(), outParticipation), DeletedParticipation.CODE);
+            }
+
+            // Powiadamiamy właściciela konwersacji.
+            if (clientsById.TryGetValue(conversation.OwnerId, out var ownerClientList))
+            {
+                var c = ownerClientList.First!.Value;
+                if (c.IsNotifiable)
+                    c.EnqueueToSend(DeletedParticipation.Serialize(_privateKey!, c.PublicKey!,
+                        c.GenerateToken(), outParticipation), DeletedParticipation.CODE);
+            }
         }
         #endregion
 

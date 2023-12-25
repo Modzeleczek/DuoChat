@@ -2,7 +2,7 @@
 using Shared.MVVM.View.Windows;
 using System.Windows;
 
-namespace Client.MVVM.View.Windows
+namespace Client.MVVM.View.Windows.Conversations
 {
     public partial class AddParticipantWindow : DialogWindow
     {

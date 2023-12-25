@@ -16,6 +16,11 @@ namespace Client.MVVM.ViewModel.Observables
 
         public PublicKey PublicKey { get; set; } = null!;
 
-        public bool IsBlocked { get; set; } = false;
+        private bool _isBlocked = false;
+        public bool IsBlocked
+        {
+            get => _isBlocked;
+            set { _isBlocked = value; OnPropertyChanged(); }
+        }
     }
 }

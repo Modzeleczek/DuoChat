@@ -16,7 +16,10 @@ using Client.MVVM.Model.Networking.UIRequests;
 using Shared.MVVM.Model.Networking.Transfer.Reception;
 using System.Reflection;
 using System.Diagnostics;
-using System.Linq;
+using Shared.MVVM.Model.Networking.Packets.ClientToServer.Conversation;
+using Shared.MVVM.Model.Networking.Packets.ServerToClient.Conversation;
+using Shared.MVVM.Model.Networking.Packets.ServerToClient.Participation;
+using Shared.MVVM.Model.Networking.Packets.ClientToServer.Participation;
 
 namespace Client.MVVM.Model.Networking
 {
@@ -44,12 +47,22 @@ namespace Client.MVVM.Model.Networking
         private UIRequest? _uiRequest = null;
         #endregion
 
+        // public delegate void ClientEvent<ParT>(RemoteServer server, ParT parameter);
+
         #region Events
         public event Action<RemoteServer>? ServerIntroduced;
+        public event Action<RemoteServer, ulong>? ServerHandshaken;
         public event Action<RemoteServer, Conversation[]>? ReceivedConversationsAndUsersList;
         public event Action<RemoteServer, string>? ReceivedRequestError;
         public event Action<RemoteServer, string>? ServerEndedConnection;
-        public event Action<RemoteServer, User[]> ReceivedUsersList;
+        public event Action<RemoteServer, AddedConversation.Conversation>? ReceivedAddedConversation;
+        public event Action<RemoteServer, EditedConversation.Conversation>? ReceivedEditedConversation;
+        public event Action<RemoteServer, ulong>? ReceivedDeletedConversation;
+        public event Action<RemoteServer, FoundUsersList.User[]>? ReceivedUsersList;
+        public event Action<RemoteServer, AddedParticipation.Participation>? ReceivedAddedParticipation;
+        public event Action<RemoteServer, AddedYouAsParticipant.YourParticipation>? ReceivedAddedYouAsParticipant;
+        public event Action<RemoteServer, EditedParticipation.Participation>? ReceivedEditedParticipation;
+        public event Action<RemoteServer, DeletedParticipation.Participation>? ReceivedDeletedParticipation;
         #endregion
 
         public ClientMonolith()
@@ -354,9 +367,10 @@ namespace Client.MVVM.Model.Networking
 
             Authentication.Deserialize(pr, out ulong remoteSeed, out ulong accountId);
 
-            server.Authenticate(remoteSeed, accountId);
+            server.Authenticate(remoteSeed);
             server.IsRequestable = true;
 
+            ServerHandshaken?.Invoke(server, accountId);
             /* Jesteśmy po uścisku dłoni, więc pobieramy konwersacje z serwera.
             Odpowiedź zamierzamy dostać w HandleReceivedConversationsAndUsersList. */
             server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Notification);
@@ -398,6 +412,7 @@ namespace Client.MVVM.Model.Networking
                 if (operationCode is null)
                     return;
 
+                // TODO: klasyfikator powiadomień od serwera (coś jak dispatcher)
                 switch (operationCode)
                 {
                     case Packet.Codes.IPNowBlocked:
@@ -409,8 +424,29 @@ namespace Client.MVVM.Model.Networking
                     case Packet.Codes.RequestError:
                         HandleReceivedRequestError(server, pr);
                         break;
+                    case Packet.Codes.AddedConversation:
+                        HandleReceivedAddedConversation(server, pr);
+                        break;
+                    case Packet.Codes.EditedConversation:
+                        HandleReceivedEditedConversation(server, pr);
+                        break;
+                    case Packet.Codes.DeletedConversation:
+                        HandleReceivedDeletedConversation(server, pr);
+                        break;
                     case Packet.Codes.FoundUsersList:
                         HandleReceivedFoundUsersList(server, pr);
+                        break;
+                    case Packet.Codes.AddedParticipation:
+                        HandleReceivedAddedParticipation(server, pr);
+                        break;
+                    case Packet.Codes.AddedYouAsParticipant:
+                        HandleReceivedAddedYouAsParticipant(server, pr);
+                        break;
+                    case Packet.Codes.EditedParticipation:
+                        HandleReceivedEditedParticipation(server, pr);
+                        break;
+                    case Packet.Codes.DeletedParticipation:
+                        HandleReceivedDeletedParticipation(server, pr);
                         break;
                     default:
                         DisconnectThenNotify(server, UnexpectedPacketErrorMsg);
@@ -436,7 +472,7 @@ namespace Client.MVVM.Model.Networking
                     Id = user.Id,
                     Login = user.Login,
                     PublicKey = user.PublicKey,
-                    IsBlocked = user.IsBlocked != 0
+                    IsBlocked = false
                 };
             }
 
@@ -484,21 +520,53 @@ namespace Client.MVVM.Model.Networking
 
             RequestError.Deserialize(pr, out Packet.Codes faultyOperationCode, out byte errorCode);
 
+            string? errorMsg = null;
             switch (faultyOperationCode)
             {
-                case AddConversation.CODE:
-                    {
-                        var err = (AddConversation.Errors)errorCode;
-                        if (err != AddConversation.Errors.AccountDoesNotExist)
-                            throw new Error(UnexpectedPacketErrorMsg);
-
-                        ReceivedRequestError?.Invoke(server, "|Server does not know your account|.");
-                        // Nie przerywamy, bo błąd jest "biznesowy", a nie protokołu.
-                        server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Notification);
-                    }
+                case EditConversation.CODE:
+                    errorMsg = ((EditConversation.Errors)errorCode).ToString();
+                    break;
+                case AddParticipation.CODE:
+                    errorMsg = ((AddParticipation.Errors)errorCode).ToString();
                     break;
             }
-            // Zawsze w tej metodzie musi zostać wykonane server.SetExpectedPacket.
+
+            if (errorMsg is null)
+                // Był jakiś błąd, ale klient go nie rozpoznał.
+                throw new Error(UnexpectedPacketErrorMsg);
+
+            ReceivedRequestError?.Invoke(server, ((EditConversation.Errors)errorCode).ToString());
+            // Nie przerywamy, bo błąd jest "biznesowy", a nie protokołu.
+            /* Zawsze (o ile nie został rzucony Error) w tej metodzie
+            musi zostać wykonane server.SetExpectedPacket. */
+            server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Notification);
+        }
+
+        private void HandleReceivedAddedConversation(RemoteServer server, PacketReader pr)
+        {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {server}");
+
+            AddedConversation.Deserialize(pr, out var conversation);
+            ReceivedAddedConversation?.Invoke(server, conversation);
+            server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Notification);
+        }
+
+        private void HandleReceivedEditedConversation(RemoteServer server, PacketReader pr)
+        {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {server}");
+
+            EditedConversation.Deserialize(pr, out var conversation);
+            ReceivedEditedConversation?.Invoke(server, conversation);
+            server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Notification);
+        }
+
+        private void HandleReceivedDeletedConversation(RemoteServer server, PacketReader pr)
+        {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {server}");
+
+            DeletedConversation.Deserialize(pr, out var conversationId);
+            ReceivedDeletedConversation?.Invoke(server, conversationId);
+            server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Notification);
         }
 
         private void HandleReceivedFoundUsersList(RemoteServer server, PacketReader pr)
@@ -506,11 +574,43 @@ namespace Client.MVVM.Model.Networking
             Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {server}");
 
             FoundUsersList.Deserialize(pr, out var users);
+            ReceivedUsersList?.Invoke(server, users);
+            server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Notification);
+        }
 
-            var userObservables = users.Where(u => u.Id != server.AccountId)
-                .Select(u => new User { Id = u.Id, Login = u.Login }).ToArray();
+        private void HandleReceivedAddedParticipation(RemoteServer server, PacketReader pr)
+        {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {server}");
 
-            ReceivedUsersList?.Invoke(server, userObservables);
+            AddedParticipation.Deserialize(pr, out var participation);
+            ReceivedAddedParticipation?.Invoke(server, participation);
+            server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Notification);
+        }
+
+        private void HandleReceivedAddedYouAsParticipant(RemoteServer server, PacketReader pr)
+        {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {server}");
+
+            AddedYouAsParticipant.Deserialize(pr, out var participation);
+            ReceivedAddedYouAsParticipant?.Invoke(server, participation);
+            server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Notification);
+        }
+
+        private void HandleReceivedEditedParticipation(RemoteServer server, PacketReader pr)
+        {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {server}");
+
+            EditedParticipation.Deserialize(pr, out var participation);
+            ReceivedEditedParticipation?.Invoke(server, participation);
+            server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Notification);
+        }
+
+        private void HandleReceivedDeletedParticipation(RemoteServer server, PacketReader pr)
+        {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {server}");
+
+            DeletedParticipation.Deserialize(pr, out var participation);
+            ReceivedDeletedParticipation?.Invoke(server, participation);
             server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Notification);
         }
         #endregion
@@ -576,6 +676,24 @@ namespace Client.MVVM.Model.Networking
                     break;
                 case SearchUsersUIRequest searchUsers:
                     SearchUsersUIRequest(searchUsers);
+                    break;
+                case AddConversationUIRequest addConversation:
+                    AddConversationUIRequest(addConversation);
+                    break;
+                case EditConversationUIRequest editConversation:
+                    EditConversationUIRequest(editConversation);
+                    break;
+                case DeleteConversationUIRequest deleteConversation:
+                    DeleteConversationUIRequest(deleteConversation);
+                    break;
+                case AddParticipationUIRequest addParticipation:
+                    AddParticipationUIRequest(addParticipation);
+                    break;
+                case EditParticipationUIRequest editParticipation:
+                    EditParticipationUIRequest(editParticipation);
+                    break;
+                case DeleteParticipationUIRequest deleteParticipation:
+                    DeleteParticipationUIRequest(deleteParticipation);
                     break;
             }
         }
@@ -710,6 +828,116 @@ namespace Client.MVVM.Model.Networking
             server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Notification);
             server.EnqueueToSend(SearchUsers.Serialize(_privateKey!, server.PublicKey!,
                 server.GenerateToken(), request.LoginFragment), SearchUsers.CODE);
+        }
+
+        private void AddConversationUIRequest(AddConversationUIRequest request)
+        {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {request.Name}");
+
+            if (_remoteServer is null)
+                return;
+            RemoteServer server = _remoteServer;
+
+            var outConversationName = request.Name;
+
+            server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Notification);
+            server.EnqueueToSend(AddConversation.Serialize(_privateKey!, server.PublicKey!,
+                server.GenerateToken(), outConversationName), AddConversation.CODE);
+        }
+
+        private void EditConversationUIRequest(EditConversationUIRequest request)
+        {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {request.Id}, {request.Name}");
+
+            if (_remoteServer is null)
+                return;
+            RemoteServer server = _remoteServer;
+
+            var outConversation = new EditConversation.Conversation
+            {
+                Id = request.Id,
+                Name = request.Name
+            };
+
+            server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Notification);
+            server.EnqueueToSend(EditConversation.Serialize(_privateKey!, server.PublicKey!,
+                server.GenerateToken(), outConversation), EditConversation.CODE);
+        }
+
+        private void DeleteConversationUIRequest(DeleteConversationUIRequest request)
+        {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {request.ConversationId}");
+
+            if (_remoteServer is null)
+                return;
+            RemoteServer server = _remoteServer;
+
+            var outConversationId = request.ConversationId;
+
+            server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Notification);
+            server.EnqueueToSend(DeleteConversation.Serialize(_privateKey!, server.PublicKey!,
+                server.GenerateToken(), outConversationId), DeleteConversation.CODE);
+        }
+
+        private void AddParticipationUIRequest(AddParticipationUIRequest request)
+        {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {request.ConversationId}, " +
+                $"{request.ParticipantId}");
+
+            if (_remoteServer is null)
+                return;
+            RemoteServer server = _remoteServer;
+
+            var outParticipation = new AddParticipation.Participation
+            {
+                ConversationId = request.ConversationId,
+                ParticipantId = request.ParticipantId
+            };
+
+            server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Notification);
+            server.EnqueueToSend(AddParticipation.Serialize(_privateKey!, server.PublicKey!,
+                server.GenerateToken(), outParticipation), AddParticipation.CODE);
+        }
+
+        private void EditParticipationUIRequest(EditParticipationUIRequest request)
+        {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {request.ConversationId}, " +
+                $"{request.ParticipantId}, {request.IsAdministrator}");
+
+            if (_remoteServer is null)
+                return;
+            RemoteServer server = _remoteServer;
+
+            var outParticipation = new EditParticipation.Participation
+            {
+                ConversationId = request.ConversationId,
+                ParticipantId = request.ParticipantId,
+                IsAdministrator = request.IsAdministrator
+            };
+
+            server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Notification);
+            server.EnqueueToSend(EditParticipation.Serialize(_privateKey!, server.PublicKey!,
+                server.GenerateToken(), outParticipation), EditParticipation.CODE);
+        }
+
+        private void DeleteParticipationUIRequest(DeleteParticipationUIRequest request)
+        {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {request.ConversationId}, " +
+                $"{request.ParticipantId}");
+
+            if (_remoteServer is null)
+                return;
+            RemoteServer server = _remoteServer;
+
+            var outParticipation = new DeleteParticipation.Participation
+            {
+                ConversationId = request.ConversationId,
+                ParticipantId = request.ParticipantId
+            };
+
+            server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Notification);
+            server.EnqueueToSend(DeleteParticipation.Serialize(_privateKey!, server.PublicKey!,
+                server.GenerateToken(), outParticipation), DeleteParticipation.CODE);
         }
         #endregion
     }

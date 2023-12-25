@@ -4,11 +4,9 @@
 
   <Style x:Key="FormPasswordBox" TargetType="PasswordBox">
     <Setter Property="KeyboardNavigation.TabNavigation" Value="None" />
-
     <Setter Property="BorderThickness" Value="1" />
     <Setter Property="HorizontalContentAlignment" Value="Left" />
     <Setter Property="Padding" Value="5" />
-    <Setter Property="Margin" Value="15,3,15,3" />
     <Setter Property="FontSize" Value="18" />
     <Setter Property="FontWeight" Value="SemiBold" />
     <Setter Property="Foreground" Value="{DynamicResource SecondForegroundColor}" />
