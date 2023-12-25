@@ -6,8 +6,6 @@ using Shared.MVVM.Core;
 using System.Threading;
 using System.Collections.Concurrent;
 using Client.MVVM.Model.Networking.PacketOrders;
-using Client.MVVM.ViewModel.Observables;
-using System.Collections.Generic;
 using Shared.MVVM.Model.Networking.Packets;
 using Shared.MVVM.Model.Networking.Packets.ServerToClient;
 using Shared.MVVM.Model.Networking.Packets.ClientToServer;
@@ -53,7 +51,7 @@ namespace Client.MVVM.Model.Networking
 
         public event Event? ServerIntroduced;
         public event Event<ulong>? ServerHandshaken;
-        public event Event<Conversation[]>? ReceivedConversationsAndUsersLists;
+        public event Event<ConversationsAndUsersLists.Lists>? ReceivedConversationsAndUsersLists;
         public event Event<string>? ReceivedRequestError;
         public event Event<string>? ServerEndedConnection;
         public event Event<AddedConversation.Conversation>? ReceivedAddedConversation;
@@ -462,56 +460,7 @@ namespace Client.MVVM.Model.Networking
             Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {server}");
 
             ConversationsAndUsersLists.Deserialize(pr, out var lists);
-
-            // Przypisujemy użytkowników jako właścicieli i uczestników konwersacji.
-            var users = new Dictionary<ulong, User>();
-            foreach (var user in lists.Accounts)
-            {
-                // Nieprawdopodobne, że serwer wysłał zduplikowane Id użytkownika.
-                users[user.Id] = new User
-                {
-                    Id = user.Id,
-                    Login = user.Login,
-                    PublicKey = user.PublicKey,
-                    IsBlocked = false
-                };
-            }
-
-            var conversations = new Conversation[lists.ConversationParticipants.Length];
-            for (int cp = 0; cp < lists.ConversationParticipants.Length; ++cp)
-            {
-                var conversationParticipantModel = lists.ConversationParticipants[cp];
-                var conversationModel = conversationParticipantModel.Conversation;
-                /* Nawet jeżeli właściciel nie znajduje się w żadnej konwersacji wysłanej przez serwer,
-                to i tak powinien zostać przesłany. */
-                var conversation = new Conversation
-                {
-                    Id = conversationModel.Id,
-                    Owner = users[conversationModel.OwnerId],
-                    Name = conversationModel.Name
-                };
-                
-                foreach (var p in conversationParticipantModel.Participants)
-                {
-                    if (!users.ContainsKey(p.ParticipantId))
-                        // Nieprawdopodobne: serwer wysłał id uczestnika, ale nie wysłał jego szczegółów.
-                        throw new Error(
-                            "|Server sent participant's id but did not send their details|.");
-                    conversation.Participations.Add(new ConversationParticipation
-                    {
-                        ConversationId = conversation.Id,
-                        Conversation = conversation,
-                        ParticipantId = p.ParticipantId,
-                        Participant = users[p.ParticipantId],
-                        JoinTime = DateTimeOffset.FromUnixTimeMilliseconds(p.JoinTime).UtcDateTime,
-                        IsAdministrator = p.IsAdministrator != 0
-                    });
-                }
-
-                conversations[cp] = conversation;
-            }
-
-            ReceivedConversationsAndUsersLists?.Invoke(server, conversations);
+            ReceivedConversationsAndUsersLists?.Invoke(server, lists);
             server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Notification);
         }
 

@@ -9,6 +9,7 @@ using Client.MVVM.ViewModel.Observables;
 using Client.MVVM.ViewModel.ServerActions;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model.Cryptography;
+using Shared.MVVM.Model.Networking.Packets.ServerToClient;
 using Shared.MVVM.Model.Networking.Packets.ServerToClient.Conversation;
 using Shared.MVVM.Model.Networking.Packets.ServerToClient.Participation;
 using Shared.MVVM.View.Localization;
@@ -617,8 +618,53 @@ namespace Client.MVVM.ViewModel
         }
 
         private void OnReceivedConversationsAndUsersList(RemoteServer server,
-            Conversation[] conversations)
+            ConversationsAndUsersLists.Lists inLists)
         {
+            // Przypisujemy użytkowników jako właścicieli i uczestników konwersacji.
+            var users = new Dictionary<ulong, User>();
+            foreach (var user in inLists.Accounts)
+                // Nieprawdopodobne, że serwer wysłał zduplikowane Id użytkownika.
+                users[user.Id] = new User
+                {
+                    Id = user.Id,
+                    Login = user.Login,
+                    PublicKey = user.PublicKey,
+                    IsBlocked = false
+                };
+
+            var conversations = new Conversation[inLists.ConversationParticipants.Length];
+            for (int cp = 0; cp < inLists.ConversationParticipants.Length; ++cp)
+            {
+                var conversationParticipantModel = inLists.ConversationParticipants[cp];
+                var conversationModel = conversationParticipantModel.Conversation;
+                /* Nawet jeżeli właściciel nie znajduje się w żadnej konwersacji wysłanej przez serwer,
+                to i tak powinien zostać przesłany. */
+                var conversation = new Conversation
+                {
+                    Id = conversationModel.Id,
+                    Owner = users[conversationModel.OwnerId],
+                    Name = conversationModel.Name
+                };
+                
+                foreach (var p in conversationParticipantModel.Participants)
+                {
+                    if (!users.ContainsKey(p.ParticipantId))
+                        // Nieprawdopodobne: serwer wysłał id uczestnika, ale nie wysłał jego szczegółów.
+                        throw new Error("|Server sent participant's id but did not send their details|.");
+                    conversation.Participations.Add(new ConversationParticipation
+                    {
+                        ConversationId = conversation.Id,
+                        Conversation = conversation,
+                        ParticipantId = p.ParticipantId,
+                        Participant = users[p.ParticipantId],
+                        JoinTime = DateTimeOffset.FromUnixTimeMilliseconds(p.JoinTime).UtcDateTime,
+                        IsAdministrator = p.IsAdministrator != 0
+                    });
+                }
+
+                conversations[cp] = conversation;
+            }
+
             UIInvoke(() =>
             {
                 ConversationVM.Conversation = null;
