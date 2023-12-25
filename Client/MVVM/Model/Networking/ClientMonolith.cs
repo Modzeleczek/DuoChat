@@ -53,7 +53,7 @@ namespace Client.MVVM.Model.Networking
 
         public event Event? ServerIntroduced;
         public event Event<ulong>? ServerHandshaken;
-        public event Event<Conversation[]>? ReceivedConversationsAndUsersList;
+        public event Event<Conversation[]>? ReceivedConversationsAndUsersLists;
         public event Event<string>? ReceivedRequestError;
         public event Event<string>? ServerEndedConnection;
         public event Event<AddedConversation.Conversation>? ReceivedAddedConversation;
@@ -419,8 +419,8 @@ namespace Client.MVVM.Model.Networking
                     case Packet.Codes.IPNowBlocked:
                         DisconnectThenNotify(server, "|now blocks| |client's current IP address|.");
                         break;
-                    case Packet.Codes.ConversationsAndUsersList:
-                        HandleReceivedConversationsAndUsersList(server, pr);
+                    case Packet.Codes.ConversationsAndUsersLists:
+                        HandleReceivedConversationsAndUsersLists(server, pr);
                         break;
                     case Packet.Codes.RequestError:
                         HandleReceivedRequestError(server, pr);
@@ -457,7 +457,7 @@ namespace Client.MVVM.Model.Networking
             catch (Error e) { DisconnectThenNotify(server, e.Message); }
         }
         
-        private void HandleReceivedConversationsAndUsersList(RemoteServer server, PacketReader pr)
+        private void HandleReceivedConversationsAndUsersLists(RemoteServer server, PacketReader pr)
         {
             Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {server}");
 
@@ -511,7 +511,7 @@ namespace Client.MVVM.Model.Networking
                 conversations[cp] = conversation;
             }
 
-            ReceivedConversationsAndUsersList?.Invoke(server, conversations);
+            ReceivedConversationsAndUsersLists?.Invoke(server, conversations);
             server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Notification);
         }
 

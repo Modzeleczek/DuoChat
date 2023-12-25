@@ -484,7 +484,7 @@ namespace Client.MVVM.ViewModel
 
             _client.ServerIntroduced += OnServerIntroduced;
             _client.ServerHandshaken += OnServerHandshaken;
-            _client.ReceivedConversationsAndUsersList += OnReceivedConversationsAndUsersList;
+            _client.ReceivedConversationsAndUsersLists += OnReceivedConversationsAndUsersList;
             _client.ServerEndedConnection += OnServerEndedConnection;
             _client.ReceivedAddedConversation += OnReceivedAddedConversation;
             _client.ReceivedEditedConversation += OnReceivedEditedConversation;

@@ -44,7 +44,7 @@ namespace Shared.MVVM.Model.Networking.Packets.ServerToClient
         #endregion
 
         #region Fields
-        public const Codes CODE = Codes.ConversationsAndUsersList;
+        public const Codes CODE = Codes.ConversationsAndUsersLists;
         #endregion
 
         public static byte[] Serialize(PrivateKey senderPrivateKey, PublicKey receiverPublicKey,

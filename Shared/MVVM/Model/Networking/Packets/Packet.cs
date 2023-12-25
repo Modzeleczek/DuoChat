@@ -10,7 +10,7 @@ namespace Shared.MVVM.Model.Networking.Packets
         {
             NoSlots = 0, IPAlreadyBlocked = 1, ServerIntroduction = 2,
             Authentication = 3, NoAuthentication = 4,
-            AccountAlreadyBlocked = 5, IPNowBlocked = 6, ConversationsAndUsersList = 7,
+            AccountAlreadyBlocked = 5, IPNowBlocked = 6, ConversationsAndUsersLists = 7,
             RequestError = 8, AddedConversation = 9, EditedConversation = 10,
             DeletedConversation = 11, FoundUsersList = 12, AddedParticipation = 13,
             AddedYouAsParticipant = 14, EditedParticipation = 15, DeletedParticipation = 16,
