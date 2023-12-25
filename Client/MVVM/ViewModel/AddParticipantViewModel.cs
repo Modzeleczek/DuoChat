@@ -66,9 +66,9 @@ namespace Client.MVVM.ViewModel
             });
         }
 
-        public static Result ShowDialog(Window owner, ClientMonolith client, Account selectedAccount)
+        public static Result ShowDialog(Window owner, ClientMonolith client, Account activeAccount)
         {
-            var vm = new AddParticipantViewModel(client, selectedAccount);
+            var vm = new AddParticipantViewModel(client, activeAccount);
             var win = new AddParticipantWindow(owner, vm);
             vm.RequestClose += () => win.Close();
             win.ShowDialog();
