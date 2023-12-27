@@ -63,5 +63,18 @@ namespace Shared.MVVM.Core
                 return hex - 'A' + 10;
         }
         #endregion
+
+        #region Unix timestamp
+        public static long ToUnixTimestamp(this DateTime unixDateTime)
+        {
+            return new DateTimeOffset(unixDateTime).ToUnixTimeMilliseconds();
+        }
+
+        public static DateTime ToUnixDateTime(this long unixTimestamp)
+        {
+            // "Valid values are between -62135596800000 and 253402300799999, inclusive."
+            return DateTimeOffset.FromUnixTimeMilliseconds(unixTimestamp).UtcDateTime;
+        }
+        #endregion
     }
 }

@@ -657,7 +657,7 @@ namespace Client.MVVM.ViewModel
                         Conversation = conversation,
                         ParticipantId = p.ParticipantId,
                         Participant = users[p.ParticipantId],
-                        JoinTime = DateTimeOffset.FromUnixTimeMilliseconds(p.JoinTime).UtcDateTime,
+                        JoinTime = p.JoinTime.ToUnixDateTime(),
                         IsAdministrator = p.IsAdministrator != 0
                     });
                 }
@@ -774,7 +774,7 @@ namespace Client.MVVM.ViewModel
                 Conversation = conversationObs,
                 ParticipantId = inParticipation.Participant.Id,
                 Participant = knownUsers[inParticipant.Id],
-                JoinTime = DateTimeOffset.FromUnixTimeMilliseconds(inParticipation.JoinTime).UtcDateTime,
+                JoinTime = inParticipation.JoinTime.ToUnixDateTime(),
                 IsAdministrator = inParticipation.IsAdministrator != 0
             };
 
@@ -812,7 +812,7 @@ namespace Client.MVVM.ViewModel
                     Conversation = conversationObs,
                     ParticipantId = p.Participant.Id,
                     Participant = knownUsers[p.Participant.Id],
-                    JoinTime = DateTimeOffset.FromUnixTimeMilliseconds(p.JoinTime).UtcDateTime,
+                    JoinTime = p.JoinTime.ToUnixDateTime(),
                     IsAdministrator = p.IsAdministrator != 0
                 });
 

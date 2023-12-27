@@ -1,4 +1,4 @@
-﻿using Shared.MVVM.Model.Cryptography;
+using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking;
 using System;
 using System.Collections.Generic;
@@ -766,9 +766,7 @@ namespace Server.MVVM.Model.Networking
             {
                 ConversationId = inParticipation.ConversationId,
                 ParticipantId = inParticipation.ParticipantId,
-                /* Odwrotnie: DateTimeOffset.FromUnixTimeMilliseconds(p.JoinTime).UtcDateTime
-                "Valid values are between -62135596800000 and 253402300799999, inclusive. */
-                JoinTime = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeMilliseconds(),
+                JoinTime = DateTime.UtcNow.ToUnixTimestamp(),
                 /* Na początku nowy członek nie jest administratorem.
                 Można go awansować poprzez pakiet EditParticipation. */
                 IsAdministrator = 0
