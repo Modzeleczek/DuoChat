@@ -29,15 +29,15 @@
               <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
               </Grid.ColumnDefinitions>
+              
               <StackPanel
                 Grid.Column="0"
-                Margin="5,0,0,0"
+                Margin="5,10,0,10"
                 VerticalAlignment="Center"
                 CanHorizontallyScroll="False"
                 Orientation="Vertical">
+                
                 <TextBlock
-                  Margin="5,10,0,0"
-                  Padding="2"
                   FontFamily="/MVVM/View/Fonts/RedHatDisplay"
                   FontSize="15"
                   FontWeight="SemiBold"
@@ -53,9 +53,8 @@
                     </Style>
                   </TextBlock.Style>
                 </TextBlock>
+                
                 <TextBlock
-                  Margin="5,0,0,10"
-                  Padding="0"
                   FontFamily="/MVVM/View/Fonts/RedHatDisplay"
                   FontSize="12"
                   FontWeight="Normal"
@@ -71,6 +70,7 @@
                       Converter={StaticResource PortConv}}" />
                 </TextBlock>
               </StackPanel>
+
               <StackPanel
                 Grid.Column="0"
                 HorizontalAlignment="Right"
