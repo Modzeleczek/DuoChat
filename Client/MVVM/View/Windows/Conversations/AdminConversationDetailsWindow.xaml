@@ -37,6 +37,7 @@
         <RowDefinition Height="auto" />
         <RowDefinition Height="auto" />
         <RowDefinition Height="auto" />
+        <RowDefinition Height="auto" />
         <RowDefinition Height="*" />
       </Grid.RowDefinitions>
 
@@ -89,12 +90,17 @@
           Style="{DynamicResource StylishedTextBlock}" />
       </Grid>
       
-      <ctrl:SearchTextBox Grid.Row="3"
+      <Button Grid.Row="3"
+        Command="{Binding Path=AddParticipant}"
+        Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Add_participant}"
+        Style="{DynamicResource CornerRadiusButtonStyle}" />
+      
+      <ctrl:SearchTextBox Grid.Row="4"
         VerticalContentAlignment="Center"
         Text="{Binding Path=SearchText, Mode=TwoWay,
           UpdateSourceTrigger=PropertyChanged}"/>
 
-      <ScrollViewer Grid.Row="4" VerticalScrollBarVisibility="Auto">
+      <ScrollViewer Grid.Row="5" VerticalScrollBarVisibility="Auto">
         <!-- https://stackoverflow.com/a/33765748/14357934 -->
         <ItemsControl ItemsSource="{Binding Path=FilteredParticipations}">
           <ItemsControl.ItemTemplate>
