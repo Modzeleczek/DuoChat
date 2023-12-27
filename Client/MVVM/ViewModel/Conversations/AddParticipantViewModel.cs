@@ -6,11 +6,12 @@ using Shared.MVVM.Core;
 using Shared.MVVM.Model.Networking.Packets.ServerToClient;
 using Shared.MVVM.ViewModel;
 using Shared.MVVM.ViewModel.Results;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 
-namespace Client.MVVM.ViewModel
+namespace Client.MVVM.ViewModel.Conversations
 {
     public class AddParticipantViewModel : WindowViewModel
     {
@@ -38,13 +39,13 @@ namespace Client.MVVM.ViewModel
 
         #region Fields
         private readonly ClientMonolith _client;
-        private readonly Account _activeAccount;
+        private readonly Conversation _conversation;
         #endregion
 
-        private AddParticipantViewModel(ClientMonolith client, Account activeAccount)
+        private AddParticipantViewModel(ClientMonolith client, Conversation conversation)
         {
             _client = client;
-            _activeAccount = activeAccount;
+            _conversation = conversation;
 
             SelectUser = new RelayCommand(obj =>
                 OnRequestClose(new Success((User)obj!)));
@@ -55,8 +56,11 @@ namespace Client.MVVM.ViewModel
         private void OnReceivedUsersLists(RemoteServer server, FoundUsersList.User[] users)
         {
             // Wątek Client.Process
-            var userObservables = users.Where(u => u.Id != _activeAccount.RemoteId)
-                .Select(u => new User { Id = u.Id, Login = u.Login });
+            /* Jeżeli weszliśmy do tego widoku, to znaczy, że jesteśmy właścicielem albo
+            administratorem konwersacji i nasze id (Account.RemoteId) zostanie odfiltrowane. */
+            var participantIds = _conversation.Participations.Select(p => p.ParticipantId).ToHashSet();
+            var userObservables = users.Where(u => u.Id != _conversation.Owner.Id
+                && !participantIds.Contains(u.Id)).Select(u => new User { Id = u.Id, Login = u.Login });
 
             UIInvoke(() =>
             {
@@ -66,9 +70,10 @@ namespace Client.MVVM.ViewModel
             });
         }
 
-        public static Result ShowDialog(Window owner, ClientMonolith client, Account activeAccount)
+        public static Result ShowDialog(Window owner, ClientMonolith client, Account activeAccount,
+            Conversation conversation)
         {
-            var vm = new AddParticipantViewModel(client, activeAccount);
+            var vm = new AddParticipantViewModel(client, conversation);
             var win = new AddParticipantWindow(owner, vm);
             vm.RequestClose += () => win.Close();
             win.ShowDialog();

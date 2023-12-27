@@ -11,6 +11,7 @@ using Shared.MVVM.Core;
 using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking.Packets.ServerToClient;
 using Shared.MVVM.Model.Networking.Packets.ServerToClient.Conversation;
+using Shared.MVVM.Model.Networking.Packets.ServerToClient.Message;
 using Shared.MVVM.Model.Networking.Packets.ServerToClient.Participation;
 using Shared.MVVM.View.Localization;
 using Shared.MVVM.View.Windows;
@@ -494,6 +495,7 @@ namespace Client.MVVM.ViewModel
             _client.ReceivedAddedYouAsParticipant += OnReceivedAddedYouAsParticipant;
             _client.ReceivedEditedParticipation += OnReceivedEditedParticipation;
             _client.ReceivedDeletedParticipation += OnReceivedDeletedParticipation;
+            _client.ReceivedSentMessage += OnReceivedSentMessage;
         }
 
         private void ShowLocalUsersDialog()
@@ -643,7 +645,8 @@ namespace Client.MVVM.ViewModel
                 {
                     Id = conversationModel.Id,
                     Owner = users[conversationModel.OwnerId],
-                    Name = conversationModel.Name
+                    Name = conversationModel.Name,
+                    UnreceivedMessagesCount = conversationModel.UnreceivedMessagesCount
                 };
                 
                 foreach (var p in conversationParticipantModel.Participants)
@@ -858,6 +861,13 @@ namespace Client.MVVM.ViewModel
                 if (inParticipation.ParticipantId == SelectedAccount!.RemoteId)
                     Conversations.Remove(conversationObs);
             });
+        }
+        
+        private void OnReceivedSentMessage(RemoteServer server, SentMessage.MessageMetadata inMessageMetadata)
+        {
+            // Wątek Client.Process
+            var conversationObs = Conversations.Single(c => c.Id == inMessageMetadata.ConversationId);
+            UIInvoke(() => conversationObs.UnreceivedMessagesCount += 1);
         }
         #endregion
     }

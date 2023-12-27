@@ -2,9 +2,11 @@
   x:ClassModifier="public"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:l="clr-namespace:Shared.MVVM.View.Localization"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  x:Name="ConversationViewName"
   mc:Ignorable="d"
   d:DesignHeight="450" d:DesignWidth="800">
   <Grid>
@@ -53,11 +55,119 @@
       </Grid>
     </Border>
 
-    <ListView Grid.Row="1"
-      Background="Transparent"
-      BorderThickness="0"
-      ItemContainerStyle="{DynamicResource ChatItemStyle}"
-      ItemsSource="{Binding Conversation.Messages}" />
+    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+      <!-- https://stackoverflow.com/a/33765748/14357934 -->
+      <ItemsControl ItemsSource="{Binding Path=Conversation.Messages}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate>
+            <Border BorderBrush="{DynamicResource FirstForegroundColor}" BorderThickness="0,1,0,0">
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                
+                <Grid Grid.Column="{Binding ReceivedOrSent}">
+                  <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="*" />
+                  </Grid.RowDefinitions>
+
+                  <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                      <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    
+                    <Grid Grid.Column="0">
+                      <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                      </Grid.ColumnDefinitions>
+                      
+                      <Label Grid.Column="0"
+                        VerticalAlignment="Center"
+                        HorizontalContentAlignment="Right"
+                        FontWeight="SemiBold"
+                        Content="{Binding Sender.Login}" />
+                      <Label Grid.Column="1"
+                        VerticalAlignment="Center"
+                        HorizontalContentAlignment="Left"
+                        FontWeight="Normal"
+                        Foreground="{DynamicResource FirstForegroundColor}"
+                        Content="{Binding SendTime}" />
+                    </Grid>
+                    
+                    <StackPanel Grid.Column="0"
+                      HorizontalAlignment="Right"
+                      Orientation="Horizontal"
+                      Style="{StaticResource HoverPanelStyle}">
+                      <Button
+                        Margin="5,0,0,0"
+                        Command="{Binding Path=DataContext.OpenMessageRecipients,
+                          ElementName=ConversationViewName}"
+                        CommandParameter="{Binding}"
+                        Content="{Binding Source={x:Static l:Translator.Instance}, Path=D.Recipients}"
+                        Style="{StaticResource CornerRadiusButtonStyle}" />
+                    </StackPanel>
+                  </Grid>
+                  
+                  <TextBox Grid.Row="1"
+                    TextWrapping="Wrap"
+                    IsReadOnly="True"
+                    VerticalAlignment="Center"
+                    FontSize="12"
+                    FontWeight="Normal"
+                    Foreground="{DynamicResource ThirdForegroundColor}"
+                    Style="{DynamicResource FormTextBox}"
+                    Text="{Binding PlainContent}" />
+                  
+                  <ItemsControl Grid.Row="2" ItemsSource="{Binding Path=Attachments}">
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate>
+                        <Border BorderBrush="{DynamicResource FirstForegroundColor}"
+                          BorderThickness="0,1,0,0">
+                          <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="MouseLeftButtonDown">
+                              <i:InvokeCommandAction Command="{Binding Path=DataContext.DownloadAttachment,
+                                ElementName=ConversationViewName}" CommandParameter="{Binding}" />
+                            </i:EventTrigger>
+                          </i:Interaction.Triggers>
+
+                          <Border.Style>
+                            <Style TargetType="Border">
+                              <Setter Property="Background" Value="Transparent" />
+                              <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                  <Setter Property="Background"
+                                    Value="{DynamicResource FirstBackgroundColor}" />
+                                </Trigger>
+                              </Style.Triggers>
+                            </Style>
+                          </Border.Style>
+                                  
+                          <TextBlock
+                            VerticalAlignment="Center"
+                            FontSize="15"
+                            FontWeight="SemiBold"
+                            Foreground="{DynamicResource SecondForegroundColor}">
+                            <Run Text="{Binding Name}" />
+                            <Run Text=", " />
+                            <Run Text="{Binding Type}" />
+                            <Run Text=", " />
+                            <Run Text="{Binding Path=PlainContent.Length, Mode=OneWay}" />
+                          </TextBlock>
+                        </Border>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                </Grid>
+              </Grid>
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </ScrollViewer>
 
     <Grid Grid.Row="2" Background="{DynamicResource SecondBackgroundColor}">
       <Grid.ColumnDefinitions>
@@ -68,7 +178,8 @@
       <TextBox Grid.Column="0"
         Style="{DynamicResource MessageBoxStyle}" />
 
-      <Button Grid.Column="1">
+      <Button Grid.Column="1"
+        Command="{Binding SendDraft}">
         <Image Margin="4" Source="{DynamicResource SendButtonImage}" />
       </Button>
     </Grid>

@@ -13,6 +13,7 @@ namespace Shared.MVVM.Model.Networking.Packets.ServerToClient
             public ulong Id { get; set; }
             public ulong OwnerId { get; set; }
             public string Name { get; set; } = null!;
+            public uint UnreceivedMessagesCount { get; set; }
         }
 
         public class Participant
@@ -82,6 +83,7 @@ namespace Shared.MVVM.Model.Networking.Packets.ServerToClient
             // if (nameBytes.Length > 255) throw
             pb.Append((ulong)nameBytes.Length, 1);
             pb.Append(nameBytes);
+            pb.Append(conversation.UnreceivedMessagesCount, 4);
         }
 
         private static void SerializeParticipationTo(ref PacketBuilder pb,  Participant participant)
@@ -142,7 +144,8 @@ namespace Shared.MVVM.Model.Networking.Packets.ServerToClient
             {
                 Id = pr.ReadUInt64(),
                 OwnerId = pr.ReadUInt64(),
-                Name = pr.ReadUtf8String(pr.ReadUInt8())
+                Name = pr.ReadUtf8String(pr.ReadUInt8()),
+                UnreceivedMessagesCount = pr.ReadUInt32()
             };
         }
 

@@ -22,6 +22,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ClientToServer\Conversation\AddConversation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ClientToServer\Conversation\DeleteConversation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ClientToServer\Conversation\EditConversation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ClientToServer\Message\SendMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ClientToServer\Participation\AddParticipation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ClientToServer\Participation\DeleteParticipation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ClientToServer\Participation\EditParticipation.cs" />
@@ -30,6 +31,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ServerToClient\Conversation\DeletedConversation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ServerToClient\Conversation\EditedConversation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ServerToClient\FoundUsersList.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ServerToClient\Message\SentMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ServerToClient\Participation\AddedParticipation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ServerToClient\Participation\AddedYouAsParticipant.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ServerToClient\Participation\DeletedParticipation.cs" />

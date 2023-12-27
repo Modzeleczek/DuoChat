@@ -1,4 +1,5 @@
-﻿using Shared.MVVM.Core;
+﻿using Client.MVVM.ViewModel.Observables.Messages;
+using Shared.MVVM.Core;
 using System.Collections.ObjectModel;
 
 namespace Client.MVVM.ViewModel.Observables
@@ -14,6 +15,15 @@ namespace Client.MVVM.ViewModel.Observables
         {
             get => _name;
             set { _name = value; OnPropertyChanged(); }
+        }
+
+        public Draft Draft { get; } = new Draft();
+
+        private uint _unreceivedMessagesCount = 0;
+        public uint UnreceivedMessagesCount
+        {
+            get => _unreceivedMessagesCount;
+            set { _unreceivedMessagesCount = value; OnPropertyChanged(); }
         }
 
         public ObservableCollection<ConversationParticipation> Participations { get; } =

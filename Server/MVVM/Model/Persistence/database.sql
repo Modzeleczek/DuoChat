@@ -71,10 +71,10 @@ CREATE TABLE "Message" (
   FOREIGN KEY("sender_id") REFERENCES "Account"("id") ON DELETE SET NULL
 );
 
-DROP TABLE IF EXISTS "EncryptedMessageContent";
-CREATE TABLE "EncryptedMessageContent" (
+DROP TABLE IF EXISTS "EncryptedMessageCopy";
+CREATE TABLE "EncryptedMessageCopy" (
   "message_id" INTEGER NOT NULL,
-  "receiver_id" INTEGER NOT NULL,
+  "recipient_id" INTEGER NOT NULL,
 
   -- NULL, gdy odbiorca jest offline i jeszcze nie odebrał wiadomości.
   "receive_time" INTEGER,
@@ -82,9 +82,9 @@ CREATE TABLE "EncryptedMessageContent" (
   
   /* Jeżeli będzie wyświetlanie czasu wyświetlenia wiadomości.
   "display_time" INTEGER NOT NULL, */
-  PRIMARY KEY("message_id","receiver_id"),
+  PRIMARY KEY("message_id","recipient_id"),
   FOREIGN KEY("message_id") REFERENCES "Message"("id") ON DELETE CASCADE,
-  FOREIGN KEY("receiver_id") REFERENCES "Account"("id") ON DELETE CASCADE
+  FOREIGN KEY("recipient_id") REFERENCES "Account"("id") ON DELETE CASCADE
 ) WITHOUT ROWID;
 
 DROP TABLE IF EXISTS "Attachment";
@@ -92,21 +92,22 @@ CREATE TABLE "Attachment" (
   "id" INTEGER PRIMARY KEY AUTOINCREMENT,
   "message_id" INTEGER NOT NULL,
   "name" TEXT NOT NULL,
-  "type" TEXT NOT NULL,
+  -- "type" TEXT NOT NULL,
   FOREIGN KEY("message_id") REFERENCES "Message"("id") ON DELETE CASCADE
 );
 
-DROP TABLE IF EXISTS "EcryptedAttachmentContent";
-CREATE TABLE "EcryptedAttachmentContent" (
+DROP TABLE IF EXISTS "EncryptedAttachmentCopy";
+CREATE TABLE "EncryptedAttachmentCopy" (
   "attachment_id" INTEGER NOT NULL,
-  "receiver_id" INTEGER NOT NULL,
+  "recipient_id" INTEGER NOT NULL,
 
   /* Treść można przechowywać w poniższym blobie lub w systemie plików serwera
-  w katalogu np. database/attachments/<id załącznika>/<id odbiorcy>.
-  "content" BLOB, */
-  PRIMARY KEY("attachment_id","receiver_id"),
+  w katalogu np. database/attachments/<id załącznika>/<id odbiorcy>. */
+  "content" BLOB,
+
+  PRIMARY KEY("attachment_id","recipient_id"),
   FOREIGN KEY("attachment_id") REFERENCES "Attachment"("id") ON DELETE CASCADE,
-  FOREIGN KEY("receiver_id") REFERENCES "Account"("id") ON DELETE CASCADE
+  FOREIGN KEY("recipient_id") REFERENCES "Account"("id") ON DELETE CASCADE
 ) WITHOUT ROWID;
 
 DROP TABLE IF EXISTS "ClientIPBlock";

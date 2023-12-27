@@ -109,11 +109,11 @@ namespace Shared.MVVM.Model.Networking.Transfer.Reception
             return ret;
         }
 
-        public int ReadInt32()
+        public uint ReadUInt32()
         {
-            int ret = IPAddress.NetworkToHostOrder(
+            uint ret = (uint)IPAddress.NetworkToHostOrder(
                 BitConverter.ToInt32(_packet, _byteIndex));
-            Proceed(sizeof(int));
+            Proceed(sizeof(uint));
             return ret;
         }
 

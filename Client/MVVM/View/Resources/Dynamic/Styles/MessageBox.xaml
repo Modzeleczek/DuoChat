@@ -26,10 +26,11 @@
                 FontSize="15"
                 FontWeight="SemiBold"
                 Foreground="{DynamicResource ThirdForegroundColor}"
-                Text="{Binding WrittenMessage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                Text="{Binding Path=Conversation.Draft.Content, Mode=TwoWay,
+                  UpdateSourceTrigger=PropertyChanged}"
                 TextWrapping="NoWrap">
                 <TextBox.InputBindings>
-                  <KeyBinding Key="Return" Command="{Binding Send}" />
+                  <KeyBinding Key="Return" Command="{Binding SendDraft}" />
                 </TextBox.InputBindings>
               </TextBox>
               

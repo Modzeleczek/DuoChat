@@ -1,4 +1,4 @@
-using Shared.MVVM.Model.Cryptography;
+﻿using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking;
 using System;
 using System.Collections.Generic;
@@ -24,6 +24,8 @@ using Shared.MVVM.Model.Networking.Packets.ClientToServer.Conversation;
 using Shared.MVVM.Model.Networking.Packets.ServerToClient.Conversation;
 using Shared.MVVM.Model.Networking.Packets.ClientToServer.Participation;
 using Shared.MVVM.Model.Networking.Packets.ServerToClient.Participation;
+using Shared.MVVM.Model.Networking.Packets.ClientToServer.Message;
+using Shared.MVVM.Model.Networking.Packets.ServerToClient.Message;
 
 namespace Server.MVVM.Model.Networking
 {
@@ -469,6 +471,9 @@ namespace Server.MVVM.Model.Networking
                     case Packet.Codes.DeleteParticipation:
                         HandleReceivedDeleteParticipation(client, pr);
                         break;
+                    case Packet.Codes.SendMessage:
+                        HandleReceivedSendMessage(client, pr);
+                        break;
                     default:
                         DisconnectThenNotify(client, UnexpectedPacketErrorMsg);
                         break;
@@ -509,11 +514,16 @@ namespace Server.MVVM.Model.Networking
             int c = 0;
             foreach (var dbConversation in dbClientConversations)
             {
+                var dbMessages = _storage.Database.Messages.GetByConversationId(dbConversation.Id);
                 var conversation = new ConversationsAndUsersLists.Conversation
                 {
                     Id = dbConversation.Id,
                     OwnerId = dbConversation.OwnerId,
-                    Name = dbConversation.Name
+                    Name = dbConversation.Name,
+                    /* TODO: zoptymalizować, żeby nie pobierać wiadomości i ich
+                    zaszyfrowanych kopii, tylko robić request z COUNT do SQLite */
+                    UnreceivedMessagesCount = (uint)_storage.Database.EncryptedMessageCopies
+                        .GetUnreceived(client.Id, dbMessages.Select(m => m.Id)).Count()
                 };
 
                 if (!dbParticsByConvId.TryGetValue(conversation.Id, out var dbParticipants))
@@ -751,6 +761,13 @@ namespace Server.MVVM.Model.Networking
             {
                 EnqueueRequestError(client, AddParticipation.CODE,
                     (byte)AddParticipation.Errors.AccountNotExists);
+                return;
+            }
+
+            if (conversation.OwnerId == inParticipation.ParticipantId)
+            {
+                EnqueueRequestError(client, AddParticipation.CODE,
+                    (byte)AddParticipation.Errors.AccountIsConversationOwner);
                 return;
             }
 
@@ -996,6 +1013,102 @@ namespace Server.MVVM.Model.Networking
                     c.EnqueueToSend(DeletedParticipation.Serialize(_privateKey!, c.PublicKey!,
                         c.GenerateToken(), outParticipation), DeletedParticipation.CODE);
             }
+        }
+
+        private void HandleReceivedSendMessage(Client client, PacketReader pr)
+        {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {client}");
+
+            SendMessage.Deserialize(pr, out var inMessage);
+
+            if (!_storage.Database.Conversations.Exists(inMessage.ConversationId))
+            {
+                EnqueueRequestError(client, SendMessage.CODE,
+                    (byte)SendMessage.Errors.ConversationNotExists);
+                return;
+            }
+
+            var dbConversation = _storage.Database.Conversations.Get(inMessage.ConversationId);
+            var dbParticipations = _storage.Database.ConversationParticipations
+                .GetByConversationId(inMessage.ConversationId);
+            if (!dbParticipations.Any(p => p.ParticipantId == client.Id)
+                && dbConversation.OwnerId != client.Id)
+            {
+                EnqueueRequestError(client, SendMessage.CODE,
+                    (byte)SendMessage.Errors.YouNotBelongToConversation);
+                return;
+            }
+
+            // Zapisujemy wiadomość.
+            var messageDto = new MessageDto
+            {
+                ConversationId = inMessage.ConversationId,
+                SenderId = client.Id,
+                SendTime = DateTime.UtcNow.ToUnixTimestamp()
+            };
+            messageDto.Id = _storage.Database.Messages.Add(messageDto);
+
+            // Zapisujemy załączniki.
+            var attachmentDtos = new AttachmentDto[inMessage.AttachmentMetadatas.Length];
+            int a = 0;
+            foreach (var attachmentMetadata in inMessage.AttachmentMetadatas)
+            {
+                var attachmentDto = new AttachmentDto
+                {
+                    MessageId = messageDto.Id,
+                    Name = attachmentMetadata.Name
+                };
+                attachmentDto.Id = _storage.Database.Attachments.Add(attachmentDto);
+
+                attachmentDtos[a++] = attachmentDto;
+            }
+
+            // Zapisujemy zaszyfrowane kopie wiadomości.
+            foreach (var recipient in inMessage.Recipients)
+            {
+                var encryptedMessageCopyDto = new EncryptedMessageCopyDto
+                {
+                    MessageId = messageDto.Id,
+                    RecipientId = recipient.ParticipantId,
+                    Content = recipient.EncryptedContent,
+                    ReceiveTime = null
+                };
+                _storage.Database.EncryptedMessageCopies.Add(encryptedMessageCopyDto);
+
+                // Zapisujemy zaszyfrowane kopie załączników.
+                a = 0;
+                foreach (var attachment in recipient.Attachments)
+                {
+                    var encryptedAttachmentCopyDto = new EncryptedAttachmentCopyDto
+                    {
+                        AttachmentId = attachmentDtos[a].Id,
+                        RecipientId = recipient.ParticipantId,
+                        Content = attachment.EncryptedContent
+                    };
+                    _storage.Database.EncryptedAttachmentCopies.Add(encryptedAttachmentCopyDto);
+                }
+            }
+
+            var outMessageMetadata = new SentMessage.MessageMetadata
+            { ConversationId = messageDto.ConversationId, MessageId = messageDto.Id };
+
+            client.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Request);
+
+            // Powiadamiamy uczestników i właściciela konwersacji.
+            var clientsById = GroupBy(_clients.Values, c => c.Id);
+            foreach (var recipientId in dbParticipations.Select(p => p.ParticipantId)
+                .Append(dbConversation.OwnerId))
+            {
+                if (!clientsById.TryGetValue(recipientId, out var list))
+                    continue;
+
+                var c = list.First!.Value;
+                if (c.IsNotifiable)
+                    c.EnqueueToSend(SentMessage.Serialize(_privateKey!, c.PublicKey!,
+                        c.GenerateToken(), outMessageMetadata), SentMessage.CODE);
+            }
+            // w odpowiedzi na request getmessage wysylamy wiadomosc i metadane zalacznikow (id, nazwa, rozmiar)
+            // w odpowiedzi na request getattachment wysylamy dane zalacznika
         }
         #endregion
 

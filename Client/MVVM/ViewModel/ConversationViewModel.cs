@@ -1,17 +1,26 @@
 using Client.MVVM.Model.Networking;
+using Client.MVVM.Model.Networking.UIRequests;
 using Client.MVVM.ViewModel.Observables;
+using Client.MVVM.ViewModel.Observables.Messages;
 using Shared.MVVM.Core;
+using Shared.MVVM.Model.Cryptography;
+using Shared.MVVM.Model.Networking.Packets.ClientToServer.Message;
+using Shared.MVVM.Model.Networking.Transfer.Transmission;
 using Shared.MVVM.View.Windows;
 using Shared.MVVM.ViewModel;
 using System;
-using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace Client.MVVM.ViewModel
 {
     public class ConversationViewModel : UserControlViewModel
     {
         #region Commands
-        public RelayCommand Send { get; }
+        public RelayCommand SendDraft { get; }
+        public RelayCommand OpenMessageRecipients { get; }
+        public RelayCommand DownloadAttachment { get; }
         #endregion
 
         #region Properties
@@ -21,39 +30,98 @@ namespace Client.MVVM.ViewModel
             get => _conversation;
             set { _conversation = value; OnPropertyChanged(); }
         }
-
-        private string _writtenMessage = string.Empty;
-        public string WrittenMessage
-        {
-            get => _writtenMessage;
-            set { _writtenMessage = value; OnPropertyChanged(); }
-        }
         #endregion
 
         public ConversationViewModel(DialogWindow owner, ClientMonolith client)
             : base(owner)
         {
-            Send = new RelayCommand(_ =>
+            SendDraft = new RelayCommand(_ =>
             {
                 /* Konwersacja nie może być null, bo wtedy
                 ConversationView jest ukryte w MainWindow. */
-                if (string.IsNullOrEmpty(WrittenMessage))
+                if (string.IsNullOrEmpty(Conversation!.Draft.Content))
                     return;
-                DateTime now = DateTime.Now;
-                var message = new Message
+
+                byte[] contentBytes = Encoding.UTF8.GetBytes(Conversation.Draft.Content);
+                var plainAttachmentsContents = ListPlainAttachments();
+                if (plainAttachmentsContents is null)
+                    return;
+
+                // Wysyłamy do wszystkich uczestników i do właściciela konwersacji (do nas samych też).
+                var outRecipients = new SendMessage.Recipient[Conversation.Participations.Count + 1];
+                int r = 0;
+                foreach (var recipientObs in Conversation.Participations.Select(p => p.Participant)
+                    .Append(Conversation.Owner))
                 {
-                    PlainContent = WrittenMessage,
-                    SendTime = now,
-                    ReceiveTime = now.AddMilliseconds(100),
-                    DisplayTime = now.AddSeconds(10),
-                    IsDeleted = false,
-                    Attachments = new List<Attachment>()
+                    var outAttachments = new SendMessage.Attachment[Conversation.Draft.AttachmentPaths.Count];
+                    int a = 0;
+                    foreach (var plainAttachment in plainAttachmentsContents)
+                        outAttachments[a++] = new SendMessage.Attachment
+                        { EncryptedContent = Encrypt(plainAttachment, recipientObs.PublicKey) };
+
+                    outRecipients[r++] = new SendMessage.Recipient
+                    {
+                        ParticipantId = recipientObs.Id,
+                        EncryptedContent = Encrypt(contentBytes, recipientObs.PublicKey),
+                        Attachments = outAttachments
+                    };
+                }
+
+                var outMessage = new SendMessage.Message
+                {
+                    ConversationId = Conversation.Id,
+                    AttachmentMetadatas = Conversation.Draft.AttachmentPaths.Select(ap =>
+                        new SendMessage.AttachmentMetadata { Name = Path.GetFileName(ap) }).ToArray(),
+                    Recipients = outRecipients
                 };
-                _conversation!.Messages.Add(message);
-                WrittenMessage = string.Empty;
-                /* TODO: pisanie do wybranej konwersacji
-                na wybranym koncie na wybranym serwerze */
+
+                client.Request(new SendMessageUIRequest(outMessage));
             });
+
+            OpenMessageRecipients = new RelayCommand(obj =>
+            {
+                var messageObs = (Message)obj!;
+                MessageRecipientsViewModel.ShowDialog(window!, client, messageObs);
+            });
+
+            DownloadAttachment = new RelayCommand(obj =>
+            {
+                var attachmentObs = (Attachment)obj!;
+            });
+        }
+
+        private byte[] Encrypt(byte[] contentBytes, PublicKey publicKey)
+        {
+            var encryptingPb = new PacketBuilder();
+            encryptingPb.Append(contentBytes);
+            encryptingPb.Encrypt(publicKey);
+            return encryptingPb.Build();
+        }
+
+        private byte[][]? ListPlainAttachments()
+        {
+            byte[][] attachments = new byte[Conversation!.Draft.AttachmentPaths.Count][];
+            int i = 0;
+            foreach (var path in Conversation.Draft.AttachmentPaths)
+            {
+                try
+                {
+                    // Jeżeli załącznik jest większy niż 2^16 = 65536 bajtów.
+                    if (new FileInfo(path).Length > (1 << 16))
+                    {
+                        Alert($"|Attachment must be smaller than| {1 << 16} |bytes|.");
+                        return null;
+                    }
+
+                    attachments[i++] = File.ReadAllBytes(path);
+                }
+                catch (Exception)
+                {
+                    Alert($"|Error occured while| |reading| |attachment| {path}");
+                    return null;
+                }
+            }
+            return attachments;
         }
     }
 }

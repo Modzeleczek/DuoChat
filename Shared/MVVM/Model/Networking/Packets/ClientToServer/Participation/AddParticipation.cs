@@ -11,7 +11,8 @@ namespace Shared.MVVM.Model.Networking.Packets.ClientToServer.Participation
         {
             YouNeitherConversationOwnerNorAdmin = 0,
             AccountNotExists = 1,
-            ParticipationAlreadyExists = 2
+            AccountIsConversationOwner = 2,
+            ParticipationAlreadyExists = 3
         }
 
         public class Participation

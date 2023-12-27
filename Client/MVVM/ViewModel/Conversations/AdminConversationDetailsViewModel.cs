@@ -23,18 +23,12 @@ namespace Client.MVVM.ViewModel.Conversations
         {
             AddParticipant = new RelayCommand(_ =>
             {
-                var result = AddParticipantViewModel.ShowDialog(window!, client, activeAccount);
+                var result = AddParticipantViewModel.ShowDialog(window!, client, activeAccount, conversation);
                 if (!(result is Success success))
                     // Anulowanie
                     return;
 
                 var user = (User)success.Data!;
-                if (Conversation.Participations.Any(p => p.ParticipantId == user.Id))
-                {
-                    Alert($"{user.Login} |already belongs to conversation|.");
-                    return;
-                }
-
                 client.Request(new AddParticipationUIRequest(conversation.Id, user.Id));
             });
 

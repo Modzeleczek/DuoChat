@@ -1,12 +1,12 @@
-﻿using Client.MVVM.ViewModel.Conversations;
+﻿using Client.MVVM.ViewModel;
 using Shared.MVVM.View.Windows;
 using System.Windows;
 
 namespace Client.MVVM.View.Windows.Conversations
 {
-    public partial class AddParticipantWindow : DialogWindow
+    public partial class MessageRecipientsWindow : DialogWindow
     {
-        public AddParticipantWindow(Window owner, AddParticipantViewModel dataContext)
+        public MessageRecipientsWindow(Window owner, MessageRecipientsViewModel dataContext)
             : base(owner, dataContext)
         {
             InitializeComponent();

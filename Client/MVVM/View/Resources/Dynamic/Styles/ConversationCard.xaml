@@ -29,14 +29,40 @@
                 <ColumnDefinition Width="*" />
               </Grid.ColumnDefinitions>
 
-              <TextBlock Grid.Column="0"
-                Margin="5,10,0,0"
-                Padding="2"
-                Text="{Binding Name}"
-                FontFamily="/MVVM/View/Fonts/RedHatDisplay"
-                FontSize="15"
-                FontWeight="SemiBold"
-                Foreground="{DynamicResource SecondForegroundColor}" />
+              <StackPanel
+                Grid.Column="0"
+                Margin="5,10,0,10"
+                VerticalAlignment="Center"
+                CanHorizontallyScroll="False"
+                Orientation="Vertical">
+                
+                <TextBlock Grid.Column="0"
+                  Text="{Binding Name}"
+                  FontFamily="/MVVM/View/Fonts/RedHatDisplay"
+                  FontSize="15"
+                  FontWeight="SemiBold"
+                  Foreground="{DynamicResource SecondForegroundColor}" />
+                
+                <TextBlock
+                  FontFamily="/MVVM/View/Fonts/RedHatDisplay"
+                  FontSize="12"
+                  FontWeight="Normal"
+                  Foreground="{DynamicResource ThirdForegroundColor}">
+                  <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                      <Setter Property="Visibility" Value="Visible" />
+                      <Style.Triggers>
+                        <DataTrigger Binding="{Binding UnreceivedMessagesCount}" Value="0">
+                          <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                      </Style.Triggers>
+                    </Style>
+                  </TextBlock.Style>
+                  <Run Text="{Binding Source={x:Static l:Translator.Instance}, Path=D.Unread_messages}" />
+                  <Run Text=": " />
+                  <Run Text="{Binding UnreceivedMessagesCount}" />
+                </TextBlock>
+              </StackPanel>
               
               <StackPanel
                 Grid.Column="0"

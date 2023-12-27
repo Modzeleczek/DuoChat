@@ -42,6 +42,13 @@
   <l:Entry x:Key="Owner_" EN="Owner:" PL="Właściciel:"/>
   <l:Entry x:Key="Details" PL="Szczegóły"/>
   <l:Entry x:Key="Leave" PL="Opuść"/>
+  <l:Entry x:Key="Message_recipients" EN="Message recipients"
+    PL="Odbiorcy wiadomości"/>
+  <l:Entry x:Key="Recipients" PL="Odbiorcy"/>
+  <l:Entry x:Key="received__" EN="received: " PL="odebrano: "/>
+  <l:Entry x:Key="no" PL="nie"/>
+  <l:Entry x:Key="Unread_messages" EN="Unread messages"
+    PL="Nieprzeczytane wiadomości"/>
 
   <!-- klucze używane w plikach .cs - nie muszą być prawidłowymi nazwami zmiennych -->
   <l:Entry x:Key="Users" PL="Użytkownicy"/>
@@ -252,8 +259,6 @@
   <l:Entry x:Key="now blocks" PL="od teraz blokuje"/>
   <l:Entry x:Key="Server sent participant's id but did not send their details"
     PL="Serwer przesłał id uczestnika, ale nie przesłał jego szczegółów"/>
-  <l:Entry x:Key="already belongs to conversation"
-    PL="już należy do konwersacji"/>
   <l:Entry x:Key="joined" PL="dołączył"/>
   <l:Entry x:Key="administrator" PL="administrator"/>
   <l:Entry x:Key="blocked" PL="zablokowany"/>
@@ -261,6 +266,10 @@
     PL="Nazwa konwersacji nie może być pusta"/>
   <l:Entry x:Key="UTF-8 encoded conversation name must be at most 255 bytes long"
     PL="Nazwa konwersacji zakodowana w UTF-8 może mieć co najwyżej 255 bajtów"/>
+  <l:Entry x:Key="Attachment must be smaller than"
+    PL="Załącznik musi być mniejszy niż"/>
+  <l:Entry x:Key="bytes" PL="bajtów"/>
+  <l:Entry x:Key="reading" PL="odczytywania"/>
 
   <!-- tylko do serwera -->
   <!-- klucze używane w plikach .xaml - muszą być prawidłowymi nazwami zmiennych -->
@@ -320,7 +329,6 @@
   <l:Entry x:Key="IP address is now blocked"
     PL="adres IP jest od teraz zablokowany"/>
 
-  <l:Entry x:Key="reading" PL="odczytywania"/>
   <l:Entry x:Key="public key length" PL="długości klucza publicznego"/>
   <l:Entry x:Key="public key value" PL="wartości klucza publicznego"/>
   <l:Entry x:Key="from SQLiteDataReader" PL="z SQLiteDataReader"/>
@@ -356,6 +364,15 @@
   <l:Entry x:Key="conversation participation" PL="uczestnictwo w konwersacji"/>
   <l:Entry x:Key="conversation id and participant id;N"
     PL="id konwersacji i id uczestnika"/>
+  <l:Entry x:Key="message" PL="wiadomość"/>
+  <l:Entry x:Key="encrypted message copy" PL="zaszyfrowana kopia wiadomości"/>
+  <l:Entry x:Key="message id and recipient id;M"
+    PL="id wiadomości i id odbiorcy"/>
+  <l:Entry x:Key="encrypted attachment copy"
+    PL="zaszyfrowana kopia załącznika"/>
+  <l:Entry x:Key="attachment id and recipient id;M"
+    PL="id załącznika i id odbiorcy"/>
+  <l:Entry x:Key="attachment" PL="załącznik"/>
 
   <!-- do klienta i serwera -->
   <!-- klucze używane w plikach .xaml - muszą być prawidłowymi nazwami zmiennych -->

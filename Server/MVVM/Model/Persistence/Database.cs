@@ -13,6 +13,10 @@ namespace Server.MVVM.Model.Persistence
         public ClientIPBlockRepository ClientIPBlocks { get; }
         public ConversationRepository Conversations { get; }
         public ConversationParticipationRepository ConversationParticipations { get; }
+        public MessageRepository Messages { get; }
+        public EncryptedMessageCopyRepository EncryptedMessageCopies { get; }
+        public AttachmentRepository Attachments { get; }
+        public EncryptedAttachmentCopyRepository EncryptedAttachmentCopies { get; }
         #endregion
 
         public Database(string path) : base(path)
@@ -22,6 +26,10 @@ namespace Server.MVVM.Model.Persistence
             ClientIPBlocks = new ClientIPBlockRepository(this);
             Conversations = new ConversationRepository(this);
             ConversationParticipations = new ConversationParticipationRepository(this);
+            Messages = new MessageRepository(this);
+            EncryptedMessageCopies = new EncryptedMessageCopyRepository(this);
+            Attachments = new AttachmentRepository(this);
+            EncryptedAttachmentCopies = new EncryptedAttachmentCopyRepository(this);
         }
 
         protected override string DDLEmbeddedResource()
