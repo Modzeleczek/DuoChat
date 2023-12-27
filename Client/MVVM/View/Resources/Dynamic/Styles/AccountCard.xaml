@@ -28,15 +28,14 @@
               <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
               </Grid.ColumnDefinitions>
+              
               <StackPanel
                 Grid.Column="0"
-                Margin="5,0,0,0"
+                Margin="5,10,0,10"
                 VerticalAlignment="Center"
                 CanHorizontallyScroll="False"
                 Orientation="Vertical">
                 <TextBlock
-                  Margin="5,10,0,0"
-                  Padding="2"
                   Text="{Binding Login}"
                   FontFamily="/MVVM/View/Fonts/RedHatDisplay"
                   FontSize="15"
