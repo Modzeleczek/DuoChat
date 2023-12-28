@@ -31,6 +31,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ServerToClient\Conversation\DeletedConversation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ServerToClient\Conversation\EditedConversation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ServerToClient\FoundUsersList.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ServerToClient\GotConversationsAndUsersLists.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ServerToClient\Message\SentMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ServerToClient\Participation\AddedParticipation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ServerToClient\Participation\AddedYouAsParticipant.cs" />
@@ -47,7 +48,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\Packet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ServerToClient\AccountAlreadyBlocked.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ServerToClient\Authentication.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ServerToClient\ConversationsAndUsersLists.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ServerToClient\IPAlreadyBlocked.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ServerToClient\IPNowBlocked.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ServerToClient\NoAuthentication.cs" />

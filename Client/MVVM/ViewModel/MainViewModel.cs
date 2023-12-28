@@ -486,7 +486,7 @@ namespace Client.MVVM.ViewModel
 
             _client.ServerIntroduced += OnServerIntroduced;
             _client.ServerHandshaken += OnServerHandshaken;
-            _client.ReceivedConversationsAndUsersLists += OnReceivedConversationsAndUsersList;
+            _client.ReceivedGotConversationsAndUsersLists += OnReceivedGotConversationsAndUsersList;
             _client.ServerEndedConnection += OnServerEndedConnection;
             _client.ReceivedAddedConversation += OnReceivedAddedConversation;
             _client.ReceivedEditedConversation += OnReceivedEditedConversation;
@@ -619,8 +619,8 @@ namespace Client.MVVM.ViewModel
             SelectedAccount!.RemoteId = accountId;
         }
 
-        private void OnReceivedConversationsAndUsersList(RemoteServer server,
-            ConversationsAndUsersLists.Lists inLists)
+        private void OnReceivedGotConversationsAndUsersList(RemoteServer server,
+            GotConversationsAndUsersLists.Lists inLists)
         {
             // Przypisujemy użytkowników jako właścicieli i uczestników konwersacji.
             var users = new Dictionary<ulong, User>();

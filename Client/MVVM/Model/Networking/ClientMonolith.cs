@@ -53,7 +53,7 @@ namespace Client.MVVM.Model.Networking
 
         public event Event? ServerIntroduced;
         public event Event<ulong>? ServerHandshaken;
-        public event Event<ConversationsAndUsersLists.Lists>? ReceivedConversationsAndUsersLists;
+        public event Event<GotConversationsAndUsersLists.Lists>? ReceivedGotConversationsAndUsersLists;
         public event Event<string>? ReceivedRequestError;
         public event Event<string>? ServerEndedConnection;
         public event Event<AddedConversation.Conversation>? ReceivedAddedConversation;
@@ -466,8 +466,8 @@ namespace Client.MVVM.Model.Networking
         {
             Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {server}");
 
-            ConversationsAndUsersLists.Deserialize(pr, out var lists);
-            ReceivedConversationsAndUsersLists?.Invoke(server, lists);
+            GotConversationsAndUsersLists.Deserialize(pr, out var lists);
+            ReceivedGotConversationsAndUsersLists?.Invoke(server, lists);
             server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Notification);
         }
 

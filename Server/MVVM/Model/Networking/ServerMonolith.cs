@@ -509,13 +509,13 @@ namespace Server.MVVM.Model.Networking
             // Grupujemy uczestnictwa według id konwersacji.
             var dbParticsByConvId = GroupBy(dbParticipations, p => p.ConversationId);
 
-            var conversationParticipants = new ConversationsAndUsersLists
+            var conversationParticipants = new GotConversationsAndUsersLists
                 .ConversationParticipation[dbClientConversations.Count()];
             int c = 0;
             foreach (var dbConversation in dbClientConversations)
             {
                 var dbMessages = _storage.Database.Messages.GetByConversationId(dbConversation.Id);
-                var conversation = new ConversationsAndUsersLists.Conversation
+                var conversation = new GotConversationsAndUsersLists.Conversation
                 {
                     Id = dbConversation.Id,
                     OwnerId = dbConversation.OwnerId,
@@ -531,28 +531,28 @@ namespace Server.MVVM.Model.Networking
 
                 /* Jeżeli konwersacja nie zawiera żadnych uczestników (tylko
                 właściciela, który nie jest zwykłym uczestnikiem). */
-                var participants = new ConversationsAndUsersLists.Participant[dbParticipants.Count];
+                var participants = new GotConversationsAndUsersLists.Participant[dbParticipants.Count];
                 int p = 0;
                 foreach (var dbParticipant in dbParticipants)
-                    participants[p++] = new ConversationsAndUsersLists.Participant
+                    participants[p++] = new GotConversationsAndUsersLists.Participant
                     {
                         ParticipantId = dbParticipant.ParticipantId,
                         JoinTime = dbParticipant.JoinTime,
                         IsAdministrator = dbParticipant.IsAdministrator
                     };
 
-                conversationParticipants[c++] = new ConversationsAndUsersLists.ConversationParticipation
+                conversationParticipants[c++] = new GotConversationsAndUsersLists.ConversationParticipation
                 {
                     Conversation = conversation,
                     Participants = participants
                 };
             }
 
-            var accounts = new Dictionary<ulong, ConversationsAndUsersLists.Account>();
+            var accounts = new Dictionary<ulong, GotConversationsAndUsersLists.Account>();
             var concatenated = dbParticipantAccounts.Concat(dbConversationOwnerAccounts);
             foreach (var account in concatenated)
                 if (!accounts.ContainsKey(account.Id))
-                    accounts.Add(account.Id, new ConversationsAndUsersLists.Account
+                    accounts.Add(account.Id, new GotConversationsAndUsersLists.Account
                     {
                         Id = account.Id,
                         Login = account.Login,
@@ -560,7 +560,7 @@ namespace Server.MVVM.Model.Networking
                         // IsBlocked = account.IsBlocked
                     });
 
-            var lists = new ConversationsAndUsersLists.Lists
+            var lists = new GotConversationsAndUsersLists.Lists
             {
                 ConversationParticipants = conversationParticipants,
                 Accounts = accounts.Values.ToArray()
@@ -568,8 +568,8 @@ namespace Server.MVVM.Model.Networking
 
             client.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Request);
             if (client.IsNotifiable)
-                client.EnqueueToSend(ConversationsAndUsersLists.Serialize(_privateKey!,
-                    client.PublicKey!, client.GenerateToken(), lists), ConversationsAndUsersLists.CODE);
+                client.EnqueueToSend(GotConversationsAndUsersLists.Serialize(_privateKey!,
+                    client.PublicKey!, client.GenerateToken(), lists), GotConversationsAndUsersLists.CODE);
         }
 
         private Dictionary<K, LinkedList<V>> GroupBy<K, V>(IEnumerable<V> list, Func<V, K> keySelector)

@@ -1,11 +1,11 @@
-using Shared.MVVM.Model.Cryptography;
+﻿using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking.Transfer.Reception;
 using Shared.MVVM.Model.Networking.Transfer.Transmission;
 using System.Text;
 
 namespace Shared.MVVM.Model.Networking.Packets.ServerToClient
 {
-    public class ConversationsAndUsersLists : Packet
+    public class GotConversationsAndUsersLists : Packet
     {
         #region Classes
         public class Conversation
@@ -91,7 +91,7 @@ namespace Shared.MVVM.Model.Networking.Packets.ServerToClient
             pb.Append(conversation.UnreceivedMessagesCount, 4);
         }
 
-        private static void SerializeParticipation(ref PacketBuilder pb,  Participant participant)
+        private static void SerializeParticipation(ref PacketBuilder pb, Participant participant)
         {
             pb.Append(participant.ParticipantId, 8);
             pb.Append((ulong)participant.JoinTime, 8);
