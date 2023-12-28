@@ -56,26 +56,31 @@ namespace Shared.MVVM.Model.Networking.Packets.ServerToClient
             pb.Append((byte)CODE, 1);
             pb.Append(tokenFromRemoteSeed, TOKEN_SIZE);
 
-            pb.Append((ulong)lists.ConversationParticipants.Length, 1);
-            foreach (var cp in lists.ConversationParticipants)
-            {
-                SerializeConversationTo(ref pb, cp.Conversation);
-
-                pb.Append((ulong)cp.Participants.Length, 1);
-                foreach (var p in cp.Participants)
-                    SerializeParticipationTo(ref pb, p);
-            }
-
-            pb.Append((ulong)lists.Accounts.Length, 1);
-            foreach (var a in lists.Accounts)
-                SerializeAccountTo(ref pb, a);
+            SerializeLists(ref pb, lists);
 
             pb.Sign(senderPrivateKey);
             pb.Encrypt(receiverPublicKey);
             return pb.Build();
         }
 
-        private static void SerializeConversationTo(ref PacketBuilder pb, Conversation conversation)
+        private static void SerializeLists(ref PacketBuilder pb, Lists lists)
+        {
+            pb.Append((ulong)lists.ConversationParticipants.Length, 1);
+            foreach (var cp in lists.ConversationParticipants)
+            {
+                SerializeConversation(ref pb, cp.Conversation);
+
+                pb.Append((ulong)cp.Participants.Length, 1);
+                foreach (var p in cp.Participants)
+                    SerializeParticipation(ref pb, p);
+            }
+
+            pb.Append((ulong)lists.Accounts.Length, 1);
+            foreach (var a in lists.Accounts)
+                SerializeAccount(ref pb, a);
+        }
+
+        private static void SerializeConversation(ref PacketBuilder pb, Conversation conversation)
         {
             pb.Append(conversation.Id, 8);
             pb.Append(conversation.OwnerId, 8);
@@ -86,14 +91,14 @@ namespace Shared.MVVM.Model.Networking.Packets.ServerToClient
             pb.Append(conversation.UnreceivedMessagesCount, 4);
         }
 
-        private static void SerializeParticipationTo(ref PacketBuilder pb,  Participant participant)
+        private static void SerializeParticipation(ref PacketBuilder pb,  Participant participant)
         {
             pb.Append(participant.ParticipantId, 8);
             pb.Append((ulong)participant.JoinTime, 8);
             pb.Append(participant.IsAdministrator, 1);
         }
 
-        private static void SerializeAccountTo(ref PacketBuilder pb, Account account)
+        private static void SerializeAccount(ref PacketBuilder pb, Account account)
         {
             pb.Append(account.Id, 8);
             byte[] loginBytes = Encoding.UTF8.GetBytes(account.Login);
@@ -107,35 +112,34 @@ namespace Shared.MVVM.Model.Networking.Packets.ServerToClient
         public static void Deserialize(PacketReader pr,
             out Lists lists)
         {
-            byte conversationsParticipationsCount = pr.ReadUInt8();
-            var conversationParticipations =
-                new ConversationParticipation[conversationsParticipationsCount];
-            for (int cp = 0; cp < conversationsParticipationsCount; ++cp)
+            lists = DeserializeLists(pr);
+        }
+
+        private static Lists DeserializeLists(PacketReader pr)
+        {
+            var lists = new Lists();
+
+            lists.ConversationParticipants = new ConversationParticipation[pr.ReadUInt8()];
+            for (int cp = 0; cp < lists.ConversationParticipants.Length; ++cp)
             {
                 var conversation = DeserializeConversation(pr);
 
-                byte participantsCount = pr.ReadUInt8();
-                var participants = new Participant[participantsCount];
-                for (int p = 0; p < participantsCount; ++p)
+                var participants = new Participant[pr.ReadUInt8()];
+                for (int p = 0; p < participants.Length; ++p)
                     participants[p] = DeserializeParticipant(pr);
 
-                conversationParticipations[cp] = new ConversationParticipation
+                lists.ConversationParticipants[cp] = new ConversationParticipation
                 {
                     Conversation = conversation,
                     Participants = participants
                 };
             }
 
-            byte accountsCount = pr.ReadUInt8();
-            var accounts = new Account[accountsCount];
-            for (int a = 0; a < accountsCount; ++a)
-                accounts[a] = DeserializeAccount(pr);
+            lists.Accounts = new Account[pr.ReadUInt8()];
+            for (int a = 0; a < lists.Accounts.Length; ++a)
+                lists.Accounts[a] = DeserializeAccount(pr);
 
-            lists = new Lists
-            {
-                ConversationParticipants = conversationParticipations,
-                Accounts = accounts
-            };
+            return lists;
         }
 
         private static Conversation DeserializeConversation(PacketReader pr)
