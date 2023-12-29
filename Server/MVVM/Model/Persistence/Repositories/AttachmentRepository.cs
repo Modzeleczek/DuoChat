@@ -1,4 +1,4 @@
-﻿using Server.MVVM.Model.Persistence.DTO;
+using Server.MVVM.Model.Persistence.DTO;
 using Shared.MVVM.Model.SQLiteStorage;
 using Shared.MVVM.Model.SQLiteStorage.Repositories;
 using System.Data.SQLite;
@@ -8,7 +8,7 @@ namespace Server.MVVM.Model.Persistence.Repositories
     public class AttachmentRepository : Repository<AttachmentDto, ulong>
     {
         #region Fields
-        private const string TABLE = "Message";
+        private const string TABLE = "Attachment";
         private const string F_id = "id";
         private const string F_message_id = "message_id";
         private const string F_name = "name";
