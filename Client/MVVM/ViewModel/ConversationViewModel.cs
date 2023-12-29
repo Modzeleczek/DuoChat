@@ -76,6 +76,7 @@ namespace Client.MVVM.ViewModel
                 };
 
                 client.Request(new SendMessageUIRequest(outMessage));
+                Conversation.Draft.Content = string.Empty;
             });
 
             OpenMessageRecipients = new RelayCommand(obj =>
