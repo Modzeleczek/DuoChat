@@ -14,6 +14,13 @@ namespace Shared.MVVM.Model.Networking.Packets.ServerToClient.Message
             public string Name { get; set; } = null!;
         }
 
+        public class Recipient
+        {
+            public ulong AccountId { get; set; }
+            public byte HasReceived { get; set; }
+            public long ReceiveTime { get; set; }
+        }
+
         public class Message
         {
             public ulong Id { get; set; }
@@ -22,6 +29,7 @@ namespace Shared.MVVM.Model.Networking.Packets.ServerToClient.Message
             public long SendTime { get; set; }
             public byte[] EncryptedContent { get; set; } = null!;
             public AttachmentMetadata[] AttachmentMetadatas { get; set; } = null!;
+            public Recipient[] Recipients { get; set; } = null!;
         }
 
         public class List
@@ -72,6 +80,10 @@ namespace Shared.MVVM.Model.Networking.Packets.ServerToClient.Message
             pb.Append((ulong)message.AttachmentMetadatas.Length, 1);
             foreach (var attachmentMetadata in message.AttachmentMetadatas)
                 SerializeAttachmentMetadata(ref pb, attachmentMetadata);
+
+            pb.Append((ulong)message.Recipients.Length, 1);
+            foreach (var recipient in message.Recipients)
+                SerializeRecipient(ref pb, recipient);
         }
 
         private static void SerializeAttachmentMetadata(ref PacketBuilder pb,
@@ -82,6 +94,13 @@ namespace Shared.MVVM.Model.Networking.Packets.ServerToClient.Message
             // if (nameBytes.Length > 255) throw
             pb.Append((ulong)nameBytes.Length, 1);
             pb.Append(nameBytes);
+        }
+
+        private static void SerializeRecipient(ref PacketBuilder pb, Recipient recipient)
+        {
+            pb.Append(recipient.AccountId, ID_SIZE);
+            pb.Append(recipient.HasReceived, 1);
+            pb.Append((ulong)recipient.ReceiveTime, 8);
         }
 
         public static void Deserialize(PacketReader pr,
@@ -112,12 +131,16 @@ namespace Shared.MVVM.Model.Networking.Packets.ServerToClient.Message
                 SenderExists = pr.ReadUInt8(),
                 SenderId = pr.ReadUInt64(),
                 SendTime = (long)pr.ReadUInt64(),
-                EncryptedContent = pr.ReadBytes(pr.ReadUInt16()),
-                AttachmentMetadatas = new AttachmentMetadata[pr.ReadUInt8()]
+                EncryptedContent = pr.ReadBytes(pr.ReadUInt16())
             };
 
+            message.AttachmentMetadatas = new AttachmentMetadata[pr.ReadUInt8()];
             for (int i = 0; i < message.AttachmentMetadatas.Length; ++i)
                 message.AttachmentMetadatas[i] = DeserializeAttachmentMetadata(pr);
+
+            message.Recipients = new Recipient[pr.ReadUInt8()];
+            for (int i = 0; i < message.Recipients.Length; ++i)
+                message.Recipients[i] = DeserializeRecipient(pr);
 
             return message;
         }
@@ -125,6 +148,16 @@ namespace Shared.MVVM.Model.Networking.Packets.ServerToClient.Message
         private static AttachmentMetadata DeserializeAttachmentMetadata(PacketReader pr)
         {
             return new AttachmentMetadata { Id = pr.ReadUInt64(), Name = pr.ReadUtf8String(pr.ReadUInt8()) };
+        }
+
+        private static Recipient DeserializeRecipient(PacketReader pr)
+        {
+            return new Recipient
+            {
+                AccountId = pr.ReadUInt64(),
+                HasReceived = pr.ReadUInt8(),
+                ReceiveTime = (long)pr.ReadUInt64()
+            };
         }
     }
 }

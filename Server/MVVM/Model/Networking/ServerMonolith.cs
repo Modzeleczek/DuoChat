@@ -1,4 +1,4 @@
-using Shared.MVVM.Model.Cryptography;
+﻿using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking;
 using System;
 using System.Collections.Generic;
@@ -1092,8 +1092,8 @@ namespace Server.MVVM.Model.Networking
                 _storage.Database.Messages.GetOlderThan(client.Id, inFilter.ConversationId,
                 inFilter.MessageId, inFilter.MaxMessageCount);
             var dbMessageIds = dbMessages.Select(m => m.Id);
-            var dbEncMsgCps = SingleElementGroupBy(_storage.Database.EncryptedMessageCopies
-                .GetByRecipientAndMessageIds(client.Id, dbMessageIds), emc => emc.MessageId);
+            var dbEncMsgCps = GroupBy(_storage.Database.EncryptedMessageCopies
+                .GetByMessageIds(dbMessageIds), emc => emc.MessageId);
             var dbAttachments = GroupBy(_storage.Database.Attachments
                 .GetByMessageIds(dbMessageIds), att => att.MessageId);
 
@@ -1105,6 +1105,10 @@ namespace Server.MVVM.Model.Networking
 
             int i = 0;
             foreach (var dbMessage in dbMessages)
+            {
+                var dbEncMsgCp = dbEncMsgCps[dbMessage.Id];
+                var dbEncMsgCpForRequester = dbEncMsgCp.Single(emc => emc.RecipientId == client.Id);
+
                 outList.Messages[i++] = new MessagesList.Message
                 {
                     Id = dbMessage.Id,
@@ -1115,13 +1119,21 @@ namespace Server.MVVM.Model.Networking
                     SendTime = dbMessage.SendTime,
                     /* Wiadomość zawsze musi mieć zaszyfrowaną kopię treści przeznaczoną
                     dla użytkownika, który wysłał żądanie GetMessages. */
-                    EncryptedContent = dbEncMsgCps[dbMessage.Id].Content,
+                    EncryptedContent = dbEncMsgCpForRequester.Content,
                     // Obsługujemy sytuację, w której wiadomość nie ma załączników.
                     AttachmentMetadatas = dbAttachments.ContainsKey(dbMessage.Id)
                         ? dbAttachments[dbMessage.Id].Select(att =>
                             new MessagesList.AttachmentMetadata { Id = att.Id, Name = att.Name }).ToArray()
-                        : new MessagesList.AttachmentMetadata[0]
+                        : new MessagesList.AttachmentMetadata[0],
+                    Recipients = dbEncMsgCp.Select(emc => new MessagesList.Recipient
+                    {
+                        // Jeżeli odbiorca usunął konto, to jego EncryptedMessageCopy nie istnieje.
+                        AccountId = emc.RecipientId,
+                        HasReceived = (byte)(emc.ReceiveTime.HasValue ? 1 : 0),
+                        ReceiveTime = emc.ReceiveTime ?? 0
+                    }).ToArray()
                 };
+            }
 
             client.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Request);
             if (client.IsNotifiable)

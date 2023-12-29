@@ -37,13 +37,24 @@ namespace Client.MVVM.ViewModel
                 _conversation = value;
                 OnPropertyChanged();
 
-                if (!(Conversation is null) && Conversation.Messages.Count == 0)
+                if (Conversation is null)
+                    return;
+
+                uint count = 0;
+                if (Conversation.Messages.Count < MESSAGE_PAGE_SIZE)
+                    // Mamy mniej niż 1 stronę, czyli 10 wiadomości.
+                    count = MESSAGE_PAGE_SIZE;
+                else if (Conversation.UnreceivedMessagesCount > 0)
+                    // Mamy nieprzeczytane wiadomości.
+                    count = Conversation.UnreceivedMessagesCount;
+
+                if (count > 0)
                     _client.Request(new GetMessagesUIRequest(new GetMessages.Filter
                     {
                         ConversationId = Conversation.Id,
                         FindNewest = 1,
                         MessageId = 0,
-                        MaxMessageCount = MESSAGE_PAGE_SIZE
+                        MaxMessageCount = count
                     }));
 
                 // TODO: zapisywać w Conversation pozycję scrolla i tutaj ją przywracać.

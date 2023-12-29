@@ -50,6 +50,7 @@
   <l:Entry x:Key="Unread_messages" EN="Unread messages"
     PL="Nieprzeczytane wiadomości"/>
   <l:Entry x:Key="Sender_removed" EN="Sender removed" PL="Nadawca usunięty"/>
+  <l:Entry x:Key="Recipient_removed" EN="Recipient removed" PL="Odbiorca usunięty"/>
 
   <!-- klucze używane w plikach .cs - nie muszą być prawidłowymi nazwami zmiennych -->
   <l:Entry x:Key="Users" PL="Użytkownicy"/>

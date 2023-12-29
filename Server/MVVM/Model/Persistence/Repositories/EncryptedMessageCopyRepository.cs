@@ -12,9 +12,9 @@ namespace Server.MVVM.Model.Persistence.Repositories
         (ulong messageId, ulong recipientId)>
     {
         #region Fields
-        private const string TABLE = "EncryptedMessageCopy";
-        private const string F_message_id = "message_id";
-        private const string F_recipient_id = "recipient_id";
+        public const string TABLE = "EncryptedMessageCopy";
+        public const string F_message_id = "message_id";
+        public const string F_recipient_id = "recipient_id";
         private const string F_content = "content";
         private const string F_receive_time = "receive_time";
         #endregion
@@ -129,6 +129,12 @@ namespace Server.MVVM.Model.Persistence.Repositories
         {
             var query = $"SELECT * FROM {TABLE} WHERE {F_recipient_id} = {recipientId} " +
                 $"AND {F_message_id} IN ({string.Join(',', messageIds)});";
+            return ExecuteReader(query);
+        }
+
+        public IEnumerable<EncryptedMessageCopyDto> GetByMessageIds(IEnumerable<ulong> messageIds)
+        {
+            var query = $"SELECT * FROM {TABLE} WHERE {F_message_id} IN ({string.Join(',', messageIds)});";
             return ExecuteReader(query);
         }
     }

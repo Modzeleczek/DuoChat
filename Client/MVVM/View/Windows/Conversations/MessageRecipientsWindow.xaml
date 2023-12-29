@@ -75,7 +75,14 @@
                     FontSize="15"
                     FontWeight="SemiBold"
                     Foreground="{DynamicResource SecondForegroundColor}">
-                    <Run Text="{Binding Path=Participant.Login}" />
+                    <Run>
+                      <Run.Text>
+                        <PriorityBinding>
+                          <Binding Path="User.Login" />
+                          <Binding Path="D.Recipient_removed" Source="{x:Static l:Translator.Instance}" />
+                        </PriorityBinding>
+                      </Run.Text>
+                    </Run>
                     <Run Text=", " />
                     <Run Text="{Binding Source={x:Static l:Translator.Instance}, Path=D.received__}" />
                     <Run>

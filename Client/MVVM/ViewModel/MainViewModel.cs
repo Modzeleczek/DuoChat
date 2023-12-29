@@ -789,9 +789,17 @@ namespace Client.MVVM.ViewModel
             UIInvoke(() =>
             {
                 conversationObs.Participations.Add(cpObs);
+
+                // Uzupełniamy wiadomości, których dodany uczestnik jest nadawcą.
                 foreach (var messageObs in conversationObs.Messages
                     .Where(m => m.RemoteSenderId == cpObs.Participant.Id))
                     messageObs.Sender = cpObs.Participant;
+
+                // Uzupełniamy wiadomości, których dodany uczestnik jest odbiorcą.
+                foreach (var messageObs in conversationObs.Messages)
+                    foreach (var recipientObs in messageObs.Recipients
+                        .Where(r => r.RemoteRecipientId == cpObs.Participant.Id))
+                        recipientObs.User = cpObs.Participant;
             });
         }
 
@@ -872,10 +880,21 @@ namespace Client.MVVM.ViewModel
                 if (inParticipation.ParticipantId == SelectedAccount!.RemoteId)
                     Conversations.Remove(conversationObs);
                 else
-                    // Jeżeli weszliśmy w if i usunęliśmy konwersację, to już nie musimy usuwać wiadomości.
-                    foreach (var message in conversationObs.Messages
-                        .Where(m => m.RemoteSenderId == inParticipation.ParticipantId))
-                        message.Sender = null;
+                {
+                    /* Jeżeli weszliśmy w górny if i usunęliśmy całą konwersację, to już
+                    nie musimy usuwać wiadomości. */
+
+                    // Uzupełniamy wiadomości, których usunięty uczestnik jest nadawcą.
+                    foreach (var messageObs in conversationObs.Messages
+                        .Where(m => m.RemoteSenderId == cpObs.Participant.Id))
+                        messageObs.Sender = null;
+
+                    // Uzupełniamy wiadomości, których usunięty uczestnik jest odbiorcą.
+                    foreach (var messageObs in conversationObs.Messages)
+                        foreach (var recipientObs in messageObs.Recipients
+                            .Where(r => r.RemoteRecipientId == cpObs.Participant.Id))
+                            recipientObs.User = null;
+                }
             });
         }
         
@@ -897,6 +916,7 @@ namespace Client.MVVM.ViewModel
             if (inList.Messages.Length == 0)
                 // Serwer nie znalazł żadnych wiadomości pasujących do filtra z pakietu GetMessages.
                 return;
+            var convUsers = ListConversationUsers(conversationObs);
 
             var messagesObs = new Message[inList.Messages.Length];
             int i = 0;
@@ -916,16 +936,18 @@ namespace Client.MVVM.ViewModel
                     remoteSenderId = inMessage.SenderId;
                     /* SingleOrDefault zwróci null, jeżeli remoteSenderId
                     jest id nadawcy, który został usunięty z konwersacji. */
-                    senderObs = inMessage.SenderId == conversationObs.Owner.Id
-                        ? conversationObs.Owner : conversationObs.Participations.SingleOrDefault(
-                            p => p.Participant.Id == inMessage.SenderId)?.Participant;
+                    senderObs = convUsers.ContainsKey(inMessage.SenderId) ?
+                        convUsers[inMessage.SenderId] : null;
                 }
 
                 messagesObs[i++] = new Message(
                     inMessage.SenderId == SelectedAccount!.RemoteId ?
                         Message.Type.Sent : Message.Type.Received,
-                    conversationObs.Participations.Select(p =>
-                        new Recipient(p.Participant) { ReceiveTime = DateTime.UtcNow }).ToArray())
+                    inMessage.Recipients.Select(r => new Recipient(r.AccountId)
+                    {
+                        User = convUsers.ContainsKey(r.AccountId) ? convUsers[r.AccountId] : null,
+                        ReceiveTime = r.HasReceived != 0 ? r.ReceiveTime.ToUnixDateTime() : null
+                    }).ToArray())
                 {
                     Id = inMessage.Id,
                     RemoteSenderId = remoteSenderId,
@@ -972,6 +994,18 @@ namespace Client.MVVM.ViewModel
                         // messagesObs[^1] jest najstarszą z wiadomości od serwera.
                         conversationObs.Messages.Add(messagesObs[i]);
             });
+        }
+
+        private Dictionary<ulong, User> ListConversationUsers(Conversation conversation)
+        {
+            // Listujemy właściciela i uczestników konwersacji.
+            var users = new Dictionary<ulong, User>();
+            users.Add(conversation.Owner.Id, conversation.Owner);
+
+            foreach (var p in conversation.Participations)
+                if (!users.ContainsKey(p.ParticipantId))
+                    users.Add(p.Participant.Id, p.Participant);
+            return users;
         }
 
         private byte[] Decrypt(byte[] contentBytes)

@@ -4,7 +4,7 @@ using Shared.MVVM.Model.SQLiteStorage.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
-using System.Linq;
+using EMC = Server.MVVM.Model.Persistence.Repositories.EncryptedMessageCopyRepository;
 
 namespace Server.MVVM.Model.Persistence.Repositories
 {
@@ -110,35 +110,48 @@ namespace Server.MVVM.Model.Persistence.Repositories
             return ExecuteReader(query);
         }
 
-        public IEnumerable<MessageDto> GetNewest(ulong conversationId, int count)
+        public IEnumerable<MessageDto> GetNewest(ulong requesterId, ulong conversationId, uint count)
         {
-            // Zwraca count wiadomości w porządku od najnowszej do najstarszej.
-            var query = $"SELECT * FROM {TABLE} WHERE {F_conversation_id} = {conversationId} " +
-                $"ORDER BY {F_id} DESC LIMIT {count};";
-
-            /* // Zwraca count wiadomości w porządku od najstarszej do najnowszej.
-                "SELECT * FROM " +
-                $"(SELECT * FROM {TABLE} WHERE {F_conversation_id} = {conversationId} " +
-                $"ORDER BY {F_id} DESC LIMIT {count}) " +
-                $"ORDER BY {F_id} ASC;"; */
+            // Zwraca co najwyżej count wiadomości w porządku od najnowszej do najstarszej.
+            var query = @$"SELECT m.* FROM {TABLE} m 
+                WHERE (m.{F_sender_id} = {requesterId} OR EXISTS 
+                    (SELECT emc.{EMC.F_recipient_id} FROM {EMC.TABLE} emc 
+                    WHERE emc.{EMC.F_message_id} = m.{F_id} AND emc.{EMC.F_recipient_id} = {requesterId}))
+                AND {F_conversation_id} = {conversationId} ORDER BY m.{F_id} DESC LIMIT {count};";
 
             return ExecuteReader(query);
+
+            /* Alternatywa z łączeniem tabel
+            var query = $"SELECT m.* FROM {TABLE} m " +
+                $"INNER JOIN {EMC.TABLE} emc ON emc.{EMC.F_message_id} = m.{F_id} " +
+                $"WHERE (m.{F_sender_id} = {requesterId} OR emc.{EMC.F_recipient_id} = {requesterId}) " +
+                $"AND m.{F_conversation_id} = {conversationId} " +
+                $"ORDER BY m.{F_id} DESC LIMIT {count};";
+            
+            return ExecuteReader(query).DistinctBy(m => m.Id); */
         }
 
-        public IEnumerable<MessageDto> GetOlderThan(ulong conversationId, ulong messageId, int count)
+        public IEnumerable<MessageDto> GetOlderThan(ulong requesterId, ulong conversationId, ulong messageId,
+            uint count)
         {
-            // Zwraca count wiadomości w porządku od najstarszej do najnowszej.
-            var query = $"SELECT * FROM {TABLE} WHERE {F_conversation_id} = {conversationId} " +
-                $"AND {F_id} < {messageId} LIMIT {count};";
+            // Zwraca co najwyżej count wiadomości w porządku od najnowszej do najstarszej.
+            var query = @$"SELECT m.* FROM {TABLE} m 
+                WHERE (m.{F_sender_id} = {requesterId} OR EXISTS 
+                    (SELECT emc.{EMC.F_recipient_id} FROM {EMC.TABLE} emc 
+                    WHERE emc.{EMC.F_message_id} = m.{F_id} AND emc.{EMC.F_recipient_id} = {requesterId}))
+                AND {F_conversation_id} = {conversationId} AND m.{F_id} < {messageId} 
+                ORDER BY {F_id} DESC LIMIT {count}";
 
-            /* // Zwraca count wiadomości w porządku od najnowszej do najstarszej.
-                "SELECT * FROM " +
-                $"(SELECT * FROM {TABLE} WHERE {F_conversation_id} = {conversationId} " +
-                $"AND {F_id} < {messageId} LIMIT {count}) " +
-                $"ORDER BY {F_id} DESC;"; */
+            return ExecuteReader(query);
 
-            // Zamieniamy porządek na od najnowszej od najstarszej.
-            return ExecuteReader(query).OrderByDescending(m => m.Id);
+            /* Alternatywa z łączeniem tabel
+             var query = $"SELECT m.* FROM {TABLE} m " +
+                $"INNER JOIN {EMC.TABLE} emc ON emc.{EMC.F_message_id} = m.{F_id} " +
+                $"WHERE (m.{F_sender_id} = {requesterId} OR emc.{EMC.F_recipient_id} = {requesterId}) " +
+                $"AND m.{F_conversation_id} = {conversationId} AND m.{F_id} < {messageId} " +
+                $"ORDER BY {F_id} DESC LIMIT {count};";
+            
+             return ExecuteReader(query).DistinctBy(m => m.Id).OrderByDescending(m => m.Id); */
         }
     }
 }
