@@ -1,4 +1,4 @@
-﻿using Shared.MVVM.Model.Cryptography;
+using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking;
 using System;
 using System.Collections.Generic;
@@ -645,23 +645,22 @@ namespace Server.MVVM.Model.Networking
 
             /* Powiadamiamy wszystkich uczestników konwersacji i właściciela, który wywołał
             edycję konwersacji. */
-            var clientsById = GroupBy(_clients.Values, c => c.Id);
-            foreach (var p in participations)
-            {
-                if (!clientsById.TryGetValue(p.ParticipantId, out var list))
-                    // Uczestnik nie jest połączony z serwerem.
-                    continue;
-
-                // Każde Id powinno mieć dokładnie jednego klienta na liście.
-                var c = list.First!.Value;
-                if (c.IsNotifiable)
+            var clientsById = SingleElementGroupBy(_clients.Values, c => c.Id);
+            foreach (var recipientId in participations.Select(p => p.ParticipantId).Append(client.Id))
+                // Czy uczestnik jest połączony z serwerem i możliwy do powiadomienia?
+                if (clientsById.TryGetValue(recipientId, out var c) && c.IsNotifiable)
                     c.EnqueueToSend(EditedConversation.Serialize(_privateKey!, c.PublicKey!,
                         c.GenerateToken(), outConversation), EditedConversation.CODE);
-            }
+        }
 
-            if (client.IsNotifiable)
-                client.EnqueueToSend(EditedConversation.Serialize(_privateKey!, client.PublicKey!,
-                    client.GenerateToken(), outConversation), EditedConversation.CODE);
+        private Dictionary<K, V> SingleElementGroupBy<K, V>(IEnumerable<V> list, Func<V, K> keySelector)
+            where K : struct
+        {
+            // Zakładamy, że każdy klucz występuje tylko raz w list.
+            var dict = new Dictionary<K, V>();
+            foreach (var elem in list)
+                dict[keySelector(elem)] = elem;
+            return dict;
         }
 
         private void EnqueueRequestError(Client client, Packet.Codes faultyOperationCode, byte errorCode)
@@ -704,21 +703,13 @@ namespace Server.MVVM.Model.Networking
 
             client.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Request);
 
-            var clientsById = GroupBy(_clients.Values, c => c.Id);
-            foreach (var p in participations)
-            {
-                if (!clientsById.TryGetValue(p.ParticipantId, out var list))
-                    continue;
-
-                var c = list.First!.Value;
-                if (c.IsNotifiable)
+            /* Powiadamiamy wszystkich uczestników konwersacji i właściciela, który wywołał
+            usunięcie konwersacji. */
+            var clientsById = SingleElementGroupBy(_clients.Values, c => c.Id);
+            foreach (var recipientId in participations.Select(p => p.ParticipantId).Append(client.Id))
+                if (clientsById.TryGetValue(recipientId, out var c) && c.IsNotifiable)
                     c.EnqueueToSend(DeletedConversation.Serialize(_privateKey!, c.PublicKey!,
                         c.GenerateToken(), outConversationId), DeletedConversation.CODE);
-            }
-
-            if (client.IsNotifiable)
-                client.EnqueueToSend(DeletedConversation.Serialize(_privateKey!, client.PublicKey!,
-                    client.GenerateToken(), outConversationId), DeletedConversation.CODE);
         }
 
         private void HandleReceivedSearchUsers(Client client, PacketReader pr)
@@ -733,6 +724,7 @@ namespace Server.MVVM.Model.Networking
                 .Select(u => new FoundUsersList.User { Id = u.Id, Login = u.Login })
                 .ToArray();
 
+            // Powiadamiamy tylko użytkownika, który wywołał wyszukiwanie użytkowników.
             client.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Request);
             if (client.IsNotifiable)
                 client.EnqueueToSend(FoundUsersList.Serialize(_privateKey!, client.PublicKey!,
@@ -807,29 +799,16 @@ namespace Server.MVVM.Model.Networking
 
             client.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Request);
 
-            var clientsById = GroupBy(_clients.Values, c => c.Id);
-            foreach (var p in participations)
-            {
-                if (!clientsById.TryGetValue(p.ParticipantId, out var clientList))
-                    continue;
-
-                var c = clientList.First!.Value;
-                if (c.IsNotifiable)
+            // Powiadamiamy uczestników i właściciela konwersacji.
+            var clientsById = SingleElementGroupBy(_clients.Values, c => c.Id);
+            foreach (var recipientId in participations.Select(p => p.ParticipantId)
+                .Append(conversation.OwnerId))
+                if (clientsById.TryGetValue(recipientId, out var c) && c.IsNotifiable)
                     c.EnqueueToSend(AddedParticipation.Serialize(_privateKey!, c.PublicKey!,
                         c.GenerateToken(), outParticipation), AddedParticipation.CODE);
-            }
-
-            // Powiadamiamy właściciela konwersacji.
-            if (clientsById.TryGetValue(conversation.OwnerId, out var ownerClientList))
-            {
-                var c = ownerClientList.First!.Value;
-                if (c.IsNotifiable)
-                    c.EnqueueToSend(AddedParticipation.Serialize(_privateKey!, c.PublicKey!,
-                        c.GenerateToken(), outParticipation), AddedParticipation.CODE);
-            }
 
             // Powiadamiamy użytkownika dodanego do konwersacji.
-            if (clientsById.TryGetValue(participant.Id, out var addedParticipantClientList))
+            if (clientsById.TryGetValue(participant.Id, out var addedParticipantClient))
             {
                 // Dodany użytkownik jest połączony.
                 var dbOwner = _storage.Database.AccountsById.GetById(conversation.OwnerId);
@@ -837,13 +816,13 @@ namespace Server.MVVM.Model.Networking
                 participations = participations.Append(dto);
                 var dbParticipantAccounts = _storage.Database.AccountsById
                     .GetByIds(participations.Select(p => p.ParticipantId));
-                var dictParticipantAccounts = GroupBy(dbParticipantAccounts, a => a.Id);
+                var dictParticipantAccounts = SingleElementGroupBy(dbParticipantAccounts, a => a.Id);
 
                 var outParticipations = new AddedYouAsParticipant.Participation[participations.Count()];
                 int i = 0;
                 foreach (var p in participations)
                 {
-                    var account = dictParticipantAccounts[p.ParticipantId].First!.Value;
+                    var account = dictParticipantAccounts[p.ParticipantId];
                     outParticipations[i++] = new AddedYouAsParticipant.Participation
                     {
                         JoinTime = p.JoinTime,
@@ -876,7 +855,7 @@ namespace Server.MVVM.Model.Networking
                     }
                 };
 
-                var c = addedParticipantClientList.First!.Value;
+                var c = addedParticipantClient;
                 if (c.IsNotifiable)
                     c.EnqueueToSend(AddedYouAsParticipant.Serialize(_privateKey!, c.PublicKey!,
                         c.GenerateToken(), outYourParticipation), AddedYouAsParticipant.CODE);
@@ -929,26 +908,13 @@ namespace Server.MVVM.Model.Networking
 
             client.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Request);
 
-            var clientsById = GroupBy(_clients.Values, c => c.Id);
-            foreach (var p in participations)
-            {
-                if (!clientsById.TryGetValue(p.ParticipantId, out var list))
-                    continue;
-
-                var c = list.First!.Value;
-                if (c.IsNotifiable)
+            // Powiadamiamy uczestników i właściciela konwersacji.
+            var clientsById = SingleElementGroupBy(_clients.Values, c => c.Id);
+            foreach (var recipientId in participations.Select(p => p.ParticipantId)
+                .Append(conversation.OwnerId))
+                if (clientsById.TryGetValue(recipientId, out var c) && c.IsNotifiable)
                     c.EnqueueToSend(EditedParticipation.Serialize(_privateKey!, c.PublicKey!,
                         c.GenerateToken(), outParticipation), EditedParticipation.CODE);
-            }
-
-            // Powiadamiamy właściciela konwersacji.
-            if (clientsById.TryGetValue(conversation.OwnerId, out var ownerClientList))
-            {
-                var c = ownerClientList.First!.Value;
-                if (c.IsNotifiable)
-                    c.EnqueueToSend(EditedParticipation.Serialize(_privateKey!, c.PublicKey!,
-                        c.GenerateToken(), outParticipation), EditedParticipation.CODE);
-            }
         }
 
         private void HandleReceivedDeleteParticipation(Client client, PacketReader pr)
@@ -993,26 +959,13 @@ namespace Server.MVVM.Model.Networking
 
             client.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Request);
 
-            var clientsById = GroupBy(_clients.Values, c => c.Id);
-            foreach (var p in participations)
-            {
-                if (!clientsById.TryGetValue(p.ParticipantId, out var list))
-                    continue;
-
-                var c = list.First!.Value;
-                if (c.IsNotifiable)
+            // Powiadamiamy uczestników i właściciela konwersacji.
+            var clientsById = SingleElementGroupBy(_clients.Values, c => c.Id);
+            foreach (var recipientId in participations.Select(p => p.ParticipantId)
+                .Append(conversation.OwnerId))
+                if (clientsById.TryGetValue(recipientId, out var c) && c.IsNotifiable)
                     c.EnqueueToSend(DeletedParticipation.Serialize(_privateKey!, c.PublicKey!,
                         c.GenerateToken(), outParticipation), DeletedParticipation.CODE);
-            }
-
-            // Powiadamiamy właściciela konwersacji.
-            if (clientsById.TryGetValue(conversation.OwnerId, out var ownerClientList))
-            {
-                var c = ownerClientList.First!.Value;
-                if (c.IsNotifiable)
-                    c.EnqueueToSend(DeletedParticipation.Serialize(_privateKey!, c.PublicKey!,
-                        c.GenerateToken(), outParticipation), DeletedParticipation.CODE);
-            }
         }
 
         private void HandleReceivedSendMessage(Client client, PacketReader pr)
@@ -1095,18 +1048,13 @@ namespace Server.MVVM.Model.Networking
             client.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Request);
 
             // Powiadamiamy uczestników i właściciela konwersacji.
-            var clientsById = GroupBy(_clients.Values, c => c.Id);
+            var clientsById = SingleElementGroupBy(_clients.Values, c => c.Id);
             foreach (var recipientId in dbParticipations.Select(p => p.ParticipantId)
                 .Append(dbConversation.OwnerId))
-            {
-                if (!clientsById.TryGetValue(recipientId, out var list))
-                    continue;
-
-                var c = list.First!.Value;
-                if (c.IsNotifiable)
+                if (clientsById.TryGetValue(recipientId, out var c) && c.IsNotifiable)
                     c.EnqueueToSend(SentMessage.Serialize(_privateKey!, c.PublicKey!,
                         c.GenerateToken(), outMessageMetadata), SentMessage.CODE);
-            }
+
             // w odpowiedzi na request getmessage wysylamy wiadomosc i metadane zalacznikow (id, nazwa, rozmiar)
             // w odpowiedzi na request getattachment wysylamy dane zalacznika
         }
