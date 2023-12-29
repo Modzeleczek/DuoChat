@@ -32,7 +32,7 @@ namespace Client.MVVM.Model.Networking.UIRequests
             sb.AppendFormat($"\n\tRecipients.Length: {recipients.Length}");
             foreach (var rec in recipients)
             {
-                sb.AppendFormat($"\n\t\tParticipantId: {rec.ParticipantId}");
+                sb.AppendFormat($"\n\t\tAccountId: {rec.AccountId}");
                 sb.AppendFormat($"\n\t\tEncryptedContent: {rec.EncryptedContent.ToHexString()}");
 
                 var attachments = rec.Attachments;

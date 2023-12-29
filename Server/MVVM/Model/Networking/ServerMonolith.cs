@@ -1,4 +1,4 @@
-﻿using Shared.MVVM.Model.Cryptography;
+using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking;
 using System;
 using System.Collections.Generic;
@@ -1025,7 +1025,7 @@ namespace Server.MVVM.Model.Networking
                 var encryptedMessageCopyDto = new EncryptedMessageCopyDto
                 {
                     MessageId = messageDto.Id,
-                    RecipientId = recipient.ParticipantId,
+                    RecipientId = recipient.AccountId,
                     Content = recipient.EncryptedContent,
                     ReceiveTime = null
                 };
@@ -1038,7 +1038,7 @@ namespace Server.MVVM.Model.Networking
                     var encryptedAttachmentCopyDto = new EncryptedAttachmentCopyDto
                     {
                         AttachmentId = attachmentDtos[a].Id,
-                        RecipientId = recipient.ParticipantId,
+                        RecipientId = recipient.AccountId,
                         Content = attachment.EncryptedContent
                     };
                     _storage.Database.EncryptedAttachmentCopies.Add(encryptedAttachmentCopyDto);

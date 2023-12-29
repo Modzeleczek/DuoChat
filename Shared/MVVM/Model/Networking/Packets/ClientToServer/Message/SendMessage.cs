@@ -21,7 +21,7 @@ namespace Shared.MVVM.Model.Networking.Packets.ClientToServer.Message
 
         public class Recipient
         {
-            public ulong ParticipantId { get; set; }
+            public ulong AccountId { get; set; }
             public byte[] EncryptedContent { get; set; } = null!;
             public Attachment[] Attachments { get; set; } = null!;
         }
@@ -82,7 +82,7 @@ namespace Shared.MVVM.Model.Networking.Packets.ClientToServer.Message
 
         private static void SerializeRecipient(ref PacketBuilder pb, Recipient recipient)
         {
-            pb.Append(recipient.ParticipantId, ID_SIZE);
+            pb.Append(recipient.AccountId, ID_SIZE);
             // if (recipient.EncryptedContent.Length > 65535) throw
             pb.Append((ulong)recipient.EncryptedContent.Length, 2);
             pb.Append(recipient.EncryptedContent);
@@ -127,7 +127,7 @@ namespace Shared.MVVM.Model.Networking.Packets.ClientToServer.Message
         {
             var recipient = new Recipient
             {
-                ParticipantId = pr.ReadUInt64(),
+                AccountId = pr.ReadUInt64(),
                 EncryptedContent = pr.ReadBytes(pr.ReadUInt16()),
                 Attachments = new Attachment[attachmentCount]
             };

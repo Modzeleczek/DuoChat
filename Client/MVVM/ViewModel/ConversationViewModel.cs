@@ -85,7 +85,7 @@ namespace Client.MVVM.ViewModel
 
                     outRecipients[r++] = new SendMessage.Recipient
                     {
-                        ParticipantId = recipientObs.Id,
+                        AccountId = recipientObs.Id,
                         EncryptedContent = Encrypt(contentBytes, recipientObs.PublicKey),
                         Attachments = outAttachments
                     };
