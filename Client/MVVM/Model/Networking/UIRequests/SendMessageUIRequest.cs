@@ -20,25 +20,25 @@ namespace Client.MVVM.Model.Networking.UIRequests
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.AppendFormat($"Message.ConversationId {Message.ConversationId}");
+            sb.Append("SendMessage");
+            sb.AppendFormat($"\n\tConversationId: {Message.ConversationId}");
 
             var attachmentMetadatas = Message.AttachmentMetadatas;
-            sb.AppendFormat($"\nMessage.AttachmentMetadatas.Length: {attachmentMetadatas.Length}");
+            sb.AppendFormat($"\n\tAttachmentMetadatas.Length: {attachmentMetadatas.Length}");
             foreach (var attMetName in attachmentMetadatas.Select(attMet => attMet.Name))
-                sb.AppendFormat($"\n\tAttachmentMetadata.Name: {attMetName}");
+                sb.AppendFormat($"\n\t\tName: {attMetName}");
 
             var recipients = Message.Recipients;
-            sb.AppendFormat($"\nMessage.Recipients.Length: {recipients.Length}");
+            sb.AppendFormat($"\n\tRecipients.Length: {recipients.Length}");
             foreach (var rec in recipients)
             {
-                sb.AppendFormat($"\n\tRecipient.ParticipantId: {rec.ParticipantId}");
-                sb.AppendFormat($"\n\tRecipient.EncryptedContent: {rec.EncryptedContent.ToHexString()}");
+                sb.AppendFormat($"\n\t\tParticipantId: {rec.ParticipantId}");
+                sb.AppendFormat($"\n\t\tEncryptedContent: {rec.EncryptedContent.ToHexString()}");
 
                 var attachments = rec.Attachments;
-                sb.AppendFormat($"\n\tRecipient.Attachments.Length: {rec.Attachments.Length}");
+                sb.AppendFormat($"\n\t\tAttachments.Length: {rec.Attachments.Length}");
                 foreach (var attEncryptedContent in attachments.Select(att => att.EncryptedContent))
-                    sb.AppendFormat("\n\t\tAttachment.EncryptedContent: " +
-                        attEncryptedContent.ToHexString());
+                    sb.AppendFormat($"\n\t\t\tEncryptedContent: {attEncryptedContent.ToHexString()}");
             }
 
             return sb.ToString();
