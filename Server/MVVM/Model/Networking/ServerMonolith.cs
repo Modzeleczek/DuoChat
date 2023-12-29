@@ -1087,8 +1087,10 @@ namespace Server.MVVM.Model.Networking
             }
 
             var dbMessages = inFilter.FindNewest == 1 ?
-                _storage.Database.Messages.GetNewest(inFilter.ConversationId, 10) :
-                _storage.Database.Messages.GetOlderThan(inFilter.ConversationId, inFilter.MessageId, 10);
+                _storage.Database.Messages.GetNewest(client.Id, inFilter.ConversationId,
+                    inFilter.MaxMessageCount) :
+                _storage.Database.Messages.GetOlderThan(client.Id, inFilter.ConversationId,
+                inFilter.MessageId, inFilter.MaxMessageCount);
             var dbMessageIds = dbMessages.Select(m => m.Id);
             var dbEncMsgCps = SingleElementGroupBy(_storage.Database.EncryptedMessageCopies
                 .GetByRecipientAndMessageIds(client.Id, dbMessageIds), emc => emc.MessageId);

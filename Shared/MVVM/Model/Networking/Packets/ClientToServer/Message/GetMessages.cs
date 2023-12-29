@@ -18,6 +18,7 @@ namespace Shared.MVVM.Model.Networking.Packets.ClientToServer.Message
             public ulong ConversationId { get; set; }
             public byte FindNewest { get; set; } = 0;
             public ulong MessageId { get; set; }
+            public uint MaxMessageCount { get; set; }
         }
         #endregion
 
@@ -45,6 +46,7 @@ namespace Shared.MVVM.Model.Networking.Packets.ClientToServer.Message
             pb.Append(filter.ConversationId, ID_SIZE);
             pb.Append(filter.FindNewest, 1);
             pb.Append(filter.MessageId, ID_SIZE);
+            pb.Append(filter.MaxMessageCount, 4);
         }
 
         public static void Deserialize(PacketReader pr,
@@ -59,7 +61,8 @@ namespace Shared.MVVM.Model.Networking.Packets.ClientToServer.Message
             {
                 ConversationId = pr.ReadUInt64(),
                 FindNewest = pr.ReadUInt8(),
-                MessageId = pr.ReadUInt64()
+                MessageId = pr.ReadUInt64(),
+                MaxMessageCount = pr.ReadUInt32()
             };
         }
     }

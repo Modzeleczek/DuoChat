@@ -22,6 +22,7 @@ namespace Client.MVVM.Model.Networking.UIRequests
             sb.AppendFormat($"\n\tConversationId: {Filter.ConversationId}");
             sb.AppendFormat($"\n\tFindNewest: {Filter.FindNewest}");
             sb.AppendFormat($"\n\tMessageId: {Filter.MessageId}");
+            sb.AppendFormat($"\n\tMaxMessageCount: {Filter.MaxMessageCount}");
             return sb.ToString();
         }
     }

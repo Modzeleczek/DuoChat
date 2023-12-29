@@ -42,7 +42,8 @@ namespace Client.MVVM.ViewModel
                     {
                         ConversationId = Conversation.Id,
                         FindNewest = 1,
-                        MessageId = 0
+                        MessageId = 0,
+                        MaxMessageCount = MESSAGE_PAGE_SIZE
                     }));
 
                 // TODO: zapisywać w Conversation pozycję scrolla i tutaj ją przywracać.
@@ -51,6 +52,8 @@ namespace Client.MVVM.ViewModel
         #endregion
 
         #region Fields
+        // Liczba wiadomości na stronie.
+        private const uint MESSAGE_PAGE_SIZE = 10;
         private readonly ClientMonolith _client;
         #endregion
 
@@ -120,7 +123,8 @@ namespace Client.MVVM.ViewModel
                 {
                     ConversationId = Conversation!.Id,
                     FindNewest = 0,
-                    MessageId = Conversation.Messages[0].Id
+                    MessageId = Conversation.Messages[0].Id,
+                    MaxMessageCount = MESSAGE_PAGE_SIZE
                 }));
             });
         }
