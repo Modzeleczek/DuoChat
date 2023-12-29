@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Security;
 using System.Text;
 using System.Windows;
@@ -893,6 +894,9 @@ namespace Client.MVVM.ViewModel
                 Debug.WriteLine($"\t\tMessageId: {message.Id}");
 
             var conversationObs = Conversations.Single(c => c.Id == inList.ConversationId);
+            if (inList.Messages.Length == 0)
+                // Serwer nie znalazł żadnych wiadomości pasujących do filtra z pakietu GetMessages.
+                return;
 
             var messagesObs = new Message[inList.Messages.Length];
             int i = 0;
@@ -934,10 +938,39 @@ namespace Client.MVVM.ViewModel
                 };
             }
 
+            /* Nie szukamy miejsca dla każdej wiadomości od serwera indywidualnie, bo zakładamy, że są
+            spójnym ciągiem uporządkowanym według id. Nieoficjalny serwer może (choć nie powinien,
+            np. przy wyświetleniu wiadomości powinien wysłać dedykowane "odchudzone" powiadomienie
+            zamiast wysyłać jeszcze raz całą wiadomość) wysłać już istniejącą wiadomość i wtedy
+            trzeba znaleźć jej stary obiekt po id i go zamienić.
+
+            conversationObs.Messages[0] - najstarsza (na samej górze) wiadomość u klienta
+            conversationObs.Messages[^1] - najnowsza (na samym dole) wiadomość u klienta
+            messagesObs.Messages[0] - najnowsza (z największym Id) wiadomość od serwera
+            messagesObs.Messages[^1] - najstarsza (z najmniejszym Id) wiadomość od serwera */
+            bool addOlder;
+            if (conversationObs.Messages.Count == 0 || messagesObs[0].Id < conversationObs.Messages[0].Id)
+                /* Klient nie ma żadnych wiadomości lub najnowsza od serwera jest
+                starsza od najstarszej u klienta - dodajemy na górę widoku. */
+                addOlder = true;
+            else if (messagesObs[^1].Id > conversationObs.Messages[^1].Id)
+                // Najstarsza od serwera jest nowsza od najnowszej u klienta - dodajemy na dół widoku.
+                addOlder = false;
+            else
+                /* Nieprawdopodobne: przedział id wiadomości od serwera nie jest rozłączny z przedziałem
+                id wiadomości u klienta. */
+                throw new ProtocolViolationException("Server sent messages having non-contiguous id range.");
+
             UIInvoke(() =>
             {
-                foreach (var messageObs in messagesObs)
-                    conversationObs.Messages.Insert(0, messageObs);
+                if (addOlder)
+                    for (int i = 0; i < messagesObs.Length; ++i)
+                        // messagesObs[0] jest najnowszą z wiadomości od serwera.
+                        conversationObs.Messages.Insert(0, messagesObs[i]);
+                else
+                    for (int i = messagesObs.Length - 1; i > messagesObs.Length; --i)
+                        // messagesObs[^1] jest najstarszą z wiadomości od serwera.
+                        conversationObs.Messages.Add(messagesObs[i]);
             });
         }
 
