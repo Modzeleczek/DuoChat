@@ -15,7 +15,20 @@ namespace Client.MVVM.ViewModel.Observables.Messages
 
         public ulong Id { get; init; }
 
-        public User Sender { get; init; } = null!;
+        // Id nadawcy posiadane przez serwer.
+        public ulong? RemoteSenderId { get; init; } = null!;
+
+        // Nadawca wyświetlany w GUI.
+        private User? _sender = null!;
+        public User? Sender
+        {
+            get => _sender;
+            set
+            {
+                _sender = value;
+                OnPropertyChanged();
+            }
+        }
 
         public string PlainContent { get; init; } = null!;
 

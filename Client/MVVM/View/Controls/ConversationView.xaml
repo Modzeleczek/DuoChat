@@ -91,8 +91,14 @@
                       <Label Grid.Column="0"
                         VerticalAlignment="Center"
                         HorizontalContentAlignment="Right"
-                        FontWeight="SemiBold"
-                        Content="{Binding Sender.Login}" />
+                        FontWeight="SemiBold">
+                        <Label.Content>
+                          <PriorityBinding>
+                            <Binding Path="Sender.Login" />
+                            <Binding Source="{x:Static l:Translator.Instance}" Path="D.Sender_removed" />
+                          </PriorityBinding>
+                        </Label.Content>
+                      </Label>
                       <Label Grid.Column="1"
                         VerticalAlignment="Center"
                         HorizontalContentAlignment="Left"

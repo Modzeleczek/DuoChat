@@ -17,6 +17,7 @@ namespace Shared.MVVM.Model.Networking.Packets.ServerToClient.Message
         public class Message
         {
             public ulong Id { get; set; }
+            public byte SenderExists { get; set; }
             public ulong SenderId { get; set; }
             public long SendTime { get; set; }
             public byte[] EncryptedContent { get; set; } = null!;
@@ -61,6 +62,7 @@ namespace Shared.MVVM.Model.Networking.Packets.ServerToClient.Message
         private static void SerializeMessage(ref PacketBuilder pb, Message message)
         {
             pb.Append(message.Id, ID_SIZE);
+            pb.Append(message.SenderExists, 1);
             pb.Append(message.SenderId, ID_SIZE);
             pb.Append((ulong)message.SendTime, 8);
             // if (message.EncryptedContent.Length > 65535) throw
@@ -107,6 +109,7 @@ namespace Shared.MVVM.Model.Networking.Packets.ServerToClient.Message
             var message = new Message
             {
                 Id = pr.ReadUInt64(),
+                SenderExists = pr.ReadUInt8(),
                 SenderId = pr.ReadUInt64(),
                 SendTime = (long)pr.ReadUInt64(),
                 EncryptedContent = pr.ReadBytes(pr.ReadUInt16()),

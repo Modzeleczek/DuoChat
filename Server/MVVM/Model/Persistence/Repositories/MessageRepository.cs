@@ -1,6 +1,7 @@
 ﻿using Server.MVVM.Model.Persistence.DTO;
 using Shared.MVVM.Model.SQLiteStorage;
 using Shared.MVVM.Model.SQLiteStorage.Repositories;
+using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Linq;
@@ -57,11 +58,14 @@ namespace Server.MVVM.Model.Persistence.Repositories
 
         protected override MessageDto ReadOneEntity(SQLiteDataReader reader)
         {
+            object senderId = reader[F_sender_id];
+            ulong? senderIdUlong = senderId == DBNull.Value ? null : (ulong)(long)senderId;
+
             return new MessageDto
             {
                 Id = (ulong)(long)reader[F_id],
                 ConversationId = (ulong)(long)reader[F_conversation_id],
-                SenderId = (ulong)(long)reader[F_sender_id],
+                SenderId = senderIdUlong,
                 SendTime = (long)reader[F_send_time]
             };
         }

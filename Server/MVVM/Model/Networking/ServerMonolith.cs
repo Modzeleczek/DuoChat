@@ -1106,7 +1106,10 @@ namespace Server.MVVM.Model.Networking
                 outList.Messages[i++] = new MessagesList.Message
                 {
                     Id = dbMessage.Id,
-                    SenderId = dbMessage.SenderId,
+                    /* SenderId będzie NULLem tylko jeżeli nadawca bezpowrotnie usunie konto.
+                    Jeżeli usuniemy go z konwersacji, to SenderId wciąż nie będzie NULLem. */
+                    SenderExists = (byte)(dbMessage.SenderId.HasValue ? 1 : 0),
+                    SenderId = dbMessage.SenderId ?? 0,
                     SendTime = dbMessage.SendTime,
                     /* Wiadomość zawsze musi mieć zaszyfrowaną kopię treści przeznaczoną
                     dla użytkownika, który wysłał żądanie GetMessages. */

@@ -785,7 +785,13 @@ namespace Client.MVVM.ViewModel
                 IsAdministrator = inParticipation.IsAdministrator != 0
             };
 
-            UIInvoke(() => conversationObs.Participations.Add(cpObs));
+            UIInvoke(() =>
+            {
+                conversationObs.Participations.Add(cpObs);
+                foreach (var messageObs in conversationObs.Messages
+                    .Where(m => m.RemoteSenderId == cpObs.Participant.Id))
+                    messageObs.Sender = cpObs.Participant;
+            });
         }
 
         private void OnReceivedAddedYouAsParticipant(RemoteServer server,
@@ -864,6 +870,11 @@ namespace Client.MVVM.ViewModel
                 conversationObs.Participations.Remove(cpObs);
                 if (inParticipation.ParticipantId == SelectedAccount!.RemoteId)
                     Conversations.Remove(conversationObs);
+                else
+                    // Jeżeli weszliśmy w if i usunęliśmy konwersację, to już nie musimy usuwać wiadomości.
+                    foreach (var message in conversationObs.Messages
+                        .Where(m => m.RemoteSenderId == inParticipation.ParticipantId))
+                        message.Sender = null;
             });
         }
         
@@ -887,25 +898,39 @@ namespace Client.MVVM.ViewModel
             int i = 0;
             foreach (var inMessage in inList.Messages)
             {
-                var type = inMessage.SenderId == SelectedAccount!.RemoteId ?
-                    Message.Type.Sent : Message.Type.Received;
-                var recipientsObs = conversationObs.Participations.Select(p =>
-                    new Recipient(p.Participant) { ReceiveTime = DateTime.UtcNow }).ToArray();
-                var senderObs = inMessage.SenderId == conversationObs.Owner.Id
-                    ? conversationObs.Owner
-                    : conversationObs.Participations.Single(
-                        p => p.Participant.Id == inMessage.SenderId)?.Participant;
-                var attachmentsObs = new ObservableCollection<Attachment>(
-                    inMessage.AttachmentMetadatas.Select(am =>
-                        new Attachment { Id = am.Id, Name = am.Name }));
+                ulong? remoteSenderId;
+                User? senderObs;
+                /* SenderExists == 0 tylko jeżeli nadawca bezpowrotnie usunął konto.
+                Jeżeli tylko został usunięty z konwersacji, to wciąż SenderExists == 1. */
+                if (inMessage.SenderExists == 0)
+                {
+                    remoteSenderId = null;
+                    senderObs = null;
+                }
+                else
+                {
+                    remoteSenderId = inMessage.SenderId;
+                    /* SingleOrDefault zwróci null, jeżeli remoteSenderId
+                    jest id nadawcy, który został usunięty z konwersacji. */
+                    senderObs = inMessage.SenderId == conversationObs.Owner.Id
+                        ? conversationObs.Owner : conversationObs.Participations.SingleOrDefault(
+                            p => p.Participant.Id == inMessage.SenderId)?.Participant;
+                }
 
-                messagesObs[i++] = new Message(type, recipientsObs)
+                messagesObs[i++] = new Message(
+                    inMessage.SenderId == SelectedAccount!.RemoteId ?
+                        Message.Type.Sent : Message.Type.Received,
+                    conversationObs.Participations.Select(p =>
+                        new Recipient(p.Participant) { ReceiveTime = DateTime.UtcNow }).ToArray())
                 {
                     Id = inMessage.Id,
+                    RemoteSenderId = remoteSenderId,
                     Sender = senderObs,
                     PlainContent = Encoding.UTF8.GetString(Decrypt(inMessage.EncryptedContent)),
                     SendTime = inMessage.SendTime.ToUnixDateTime(),
-                    Attachments = attachmentsObs
+                    Attachments = new ObservableCollection<Attachment>(
+                        inMessage.AttachmentMetadatas.Select(am =>
+                            new Attachment { Id = am.Id, Name = am.Name }))
                 };
             }
 

@@ -9,7 +9,7 @@ namespace Server.MVVM.Model.Persistence.DTO
 
         public ulong ConversationId { get; set; } = 0;
 
-        public ulong SenderId { get; set; } = 0;
+        public ulong? SenderId { get; set; } = 0;
 
         public long SendTime { get; set; } = 0;
         #endregion
