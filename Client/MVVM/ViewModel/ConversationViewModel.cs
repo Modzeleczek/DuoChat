@@ -21,6 +21,7 @@ namespace Client.MVVM.ViewModel
         public RelayCommand SendDraft { get; }
         public RelayCommand OpenMessageRecipients { get; }
         public RelayCommand DownloadAttachment { get; }
+        public RelayCommand GetMoreMessages { get; }
         #endregion
 
         #region Properties
@@ -28,13 +29,36 @@ namespace Client.MVVM.ViewModel
         public Conversation? Conversation
         {
             get => _conversation;
-            set { _conversation = value; OnPropertyChanged(); }
+            set
+            {
+                if (value == Conversation)
+                    return;
+
+                _conversation = value;
+                OnPropertyChanged();
+
+                if (!(Conversation is null) && Conversation.Messages.Count == 0)
+                    _client.Request(new GetMessagesUIRequest(new GetMessages.Filter
+                    {
+                        ConversationId = Conversation.Id,
+                        FindNewest = 1,
+                        MessageId = 0
+                    }));
+
+                // TODO: zapisywać w Conversation pozycję scrolla i tutaj ją przywracać.
+            }
         }
+        #endregion
+
+        #region Fields
+        private readonly ClientMonolith _client;
         #endregion
 
         public ConversationViewModel(DialogWindow owner, ClientMonolith client)
             : base(owner)
         {
+            _client = client;
+
             SendDraft = new RelayCommand(_ =>
             {
                 /* Konwersacja nie może być null, bo wtedy
@@ -88,6 +112,16 @@ namespace Client.MVVM.ViewModel
             DownloadAttachment = new RelayCommand(obj =>
             {
                 var attachmentObs = (Attachment)obj!;
+            });
+
+            GetMoreMessages = new RelayCommand(_ =>
+            {
+                client.Request(new GetMessagesUIRequest(new GetMessages.Filter
+                {
+                    ConversationId = Conversation!.Id,
+                    FindNewest = 0,
+                    MessageId = Conversation.Messages[0].Id
+                }));
             });
         }
 

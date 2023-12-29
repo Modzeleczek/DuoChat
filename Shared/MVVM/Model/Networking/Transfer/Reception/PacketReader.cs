@@ -126,6 +126,15 @@ namespace Shared.MVVM.Model.Networking.Transfer.Reception
             return ret;
         }
 
+        public byte[] ReadBytesToEnd()
+        {
+            int remaining = Remaining;
+            var ret = new byte[remaining];
+            Buffer.BlockCopy(_packet, _byteIndex, ret, 0, remaining);
+            Proceed(remaining);
+            return ret;
+        }
+
         public Guid ReadGuid()
         {
             byte[] slice = new byte[16];

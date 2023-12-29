@@ -1,6 +1,7 @@
-using Server.MVVM.Model.Persistence.DTO;
+﻿using Server.MVVM.Model.Persistence.DTO;
 using Shared.MVVM.Model.SQLiteStorage;
 using Shared.MVVM.Model.SQLiteStorage.Repositories;
+using System.Collections.Generic;
 using System.Data.SQLite;
 
 namespace Server.MVVM.Model.Persistence.Repositories
@@ -91,6 +92,12 @@ namespace Server.MVVM.Model.Persistence.Repositories
         protected override string DeleteQuery()
         {
             return $"DELETE FROM {TABLE} WHERE {F_id} = @{F_id};";
+        }
+
+        public IEnumerable<AttachmentDto> GetByMessageIds(IEnumerable<ulong> messageIds)
+        {
+            var query = $"SELECT * FROM {TABLE} WHERE {F_message_id} IN ({string.Join(',', messageIds)});";
+            return ExecuteReader(query);
         }
     }
 }

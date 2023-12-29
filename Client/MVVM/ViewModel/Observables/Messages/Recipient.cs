@@ -12,7 +12,7 @@ namespace Client.MVVM.ViewModel.Observables.Messages
         public bool Received
         {
             get => _received;
-            set { _received = value; OnPropertyChanged(); }
+            private set { _received = value; OnPropertyChanged(); }
         }
 
         /* Binding w WPFie nie rozróżnia null od default przypisanego

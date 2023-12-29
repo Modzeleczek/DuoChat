@@ -3,6 +3,7 @@ using Shared.MVVM.Model.SQLiteStorage;
 using Shared.MVVM.Model.SQLiteStorage.Repositories;
 using System.Collections.Generic;
 using System.Data.SQLite;
+using System.Linq;
 
 namespace Server.MVVM.Model.Persistence.Repositories
 {
@@ -103,6 +104,37 @@ namespace Server.MVVM.Model.Persistence.Repositories
         {
             var query = $"SELECT * FROM {TABLE} WHERE {F_conversation_id} = {conversationId};";
             return ExecuteReader(query);
+        }
+
+        public IEnumerable<MessageDto> GetNewest(ulong conversationId, int count)
+        {
+            // Zwraca count wiadomości w porządku od najnowszej do najstarszej.
+            var query = $"SELECT * FROM {TABLE} WHERE {F_conversation_id} = {conversationId} " +
+                $"ORDER BY {F_id} DESC LIMIT {count};";
+
+            /* // Zwraca count wiadomości w porządku od najstarszej do najnowszej.
+                "SELECT * FROM " +
+                $"(SELECT * FROM {TABLE} WHERE {F_conversation_id} = {conversationId} " +
+                $"ORDER BY {F_id} DESC LIMIT {count}) " +
+                $"ORDER BY {F_id} ASC;"; */
+
+            return ExecuteReader(query);
+        }
+
+        public IEnumerable<MessageDto> GetOlderThan(ulong conversationId, ulong messageId, int count)
+        {
+            // Zwraca count wiadomości w porządku od najstarszej do najnowszej.
+            var query = $"SELECT * FROM {TABLE} WHERE {F_conversation_id} = {conversationId} " +
+                $"AND {F_id} < {messageId} LIMIT {count};";
+
+            /* // Zwraca count wiadomości w porządku od najnowszej do najstarszej.
+                "SELECT * FROM " +
+                $"(SELECT * FROM {TABLE} WHERE {F_conversation_id} = {conversationId} " +
+                $"AND {F_id} < {messageId} LIMIT {count}) " +
+                $"ORDER BY {F_id} DESC;"; */
+
+            // Zamieniamy porządek na od najnowszej od najstarszej.
+            return ExecuteReader(query).OrderByDescending(m => m.Id);
         }
     }
 }

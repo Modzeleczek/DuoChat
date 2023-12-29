@@ -1,4 +1,4 @@
-using Server.MVVM.Model.Persistence.DTO;
+﻿using Server.MVVM.Model.Persistence.DTO;
 using Shared.MVVM.Model.SQLiteStorage;
 using Shared.MVVM.Model.SQLiteStorage.Repositories;
 using System;
@@ -121,6 +121,14 @@ namespace Server.MVVM.Model.Persistence.Repositories
         {
             var query = $"SELECT * FROM {TABLE} WHERE {F_recipient_id} = {recipientId} " +
                 $"AND {F_receive_time} IS NULL AND {F_message_id} IN ({string.Join(',', messageIds)});";
+            return ExecuteReader(query);
+        }
+
+        public IEnumerable<EncryptedMessageCopyDto> GetByRecipientAndMessageIds(ulong recipientId,
+            IEnumerable<ulong> messageIds)
+        {
+            var query = $"SELECT * FROM {TABLE} WHERE {F_recipient_id} = {recipientId} " +
+                $"AND {F_message_id} IN ({string.Join(',', messageIds)});";
             return ExecuteReader(query);
         }
     }

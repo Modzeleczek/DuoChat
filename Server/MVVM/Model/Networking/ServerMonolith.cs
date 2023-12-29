@@ -1,4 +1,4 @@
-using Shared.MVVM.Model.Cryptography;
+﻿using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking;
 using System;
 using System.Collections.Generic;
@@ -473,6 +473,9 @@ namespace Server.MVVM.Model.Networking
                         break;
                     case Packet.Codes.SendMessage:
                         HandleReceivedSendMessage(client, pr);
+                        break;
+                    case Packet.Codes.GetMessages:
+                        HandleReceivedGetMessages(client, pr);
                         break;
                     default:
                         DisconnectThenNotify(client, UnexpectedPacketErrorMsg);
@@ -1057,6 +1060,68 @@ namespace Server.MVVM.Model.Networking
 
             // w odpowiedzi na request getmessage wysylamy wiadomosc i metadane zalacznikow (id, nazwa, rozmiar)
             // w odpowiedzi na request getattachment wysylamy dane zalacznika
+        }
+
+        private void HandleReceivedGetMessages(Client client, PacketReader pr)
+        {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {client}");
+
+            GetMessages.Deserialize(pr, out var inFilter);
+
+            if (!_storage.Database.Conversations.Exists(inFilter.ConversationId))
+            {
+                EnqueueRequestError(client, GetMessages.CODE,
+                    (byte)GetMessages.Errors.ConversationNotExists);
+                return;
+            }
+
+            var dbConversation = _storage.Database.Conversations.Get(inFilter.ConversationId);
+            var dbParticipations = _storage.Database.ConversationParticipations
+                .GetByConversationId(inFilter.ConversationId);
+            if (!dbParticipations.Any(p => p.ParticipantId == client.Id)
+                && dbConversation.OwnerId != client.Id)
+            {
+                EnqueueRequestError(client, GetMessages.CODE,
+                    (byte)GetMessages.Errors.YouNotBelongToConversation);
+                return;
+            }
+
+            var dbMessages = inFilter.FindNewest == 1 ?
+                _storage.Database.Messages.GetNewest(inFilter.ConversationId, 10) :
+                _storage.Database.Messages.GetOlderThan(inFilter.ConversationId, inFilter.MessageId, 10);
+            var dbMessageIds = dbMessages.Select(m => m.Id);
+            var dbEncMsgCps = SingleElementGroupBy(_storage.Database.EncryptedMessageCopies
+                .GetByRecipientAndMessageIds(client.Id, dbMessageIds), emc => emc.MessageId);
+            var dbAttachments = GroupBy(_storage.Database.Attachments
+                .GetByMessageIds(dbMessageIds), att => att.MessageId);
+
+            var outList = new MessagesList.List
+            {
+                ConversationId = inFilter.ConversationId,
+                Messages = new MessagesList.Message[dbMessages.Count()]
+            };
+
+            int i = 0;
+            foreach (var dbMessage in dbMessages)
+                outList.Messages[i++] = new MessagesList.Message
+                {
+                    Id = dbMessage.Id,
+                    SenderId = dbMessage.SenderId,
+                    SendTime = dbMessage.SendTime,
+                    /* Wiadomość zawsze musi mieć zaszyfrowaną kopię treści przeznaczoną
+                    dla użytkownika, który wysłał żądanie GetMessages. */
+                    EncryptedContent = dbEncMsgCps[dbMessage.Id].Content,
+                    // Obsługujemy sytuację, w której wiadomość nie ma załączników.
+                    AttachmentMetadatas = dbAttachments.ContainsKey(dbMessage.Id)
+                        ? dbAttachments[dbMessage.Id].Select(att =>
+                            new MessagesList.AttachmentMetadata { Id = att.Id, Name = att.Name }).ToArray()
+                        : new MessagesList.AttachmentMetadata[0]
+                };
+
+            client.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Request);
+            if (client.IsNotifiable)
+                client.EnqueueToSend(MessagesList.Serialize(_privateKey!, client.PublicKey!,
+                    client.GenerateToken(), outList), MessagesList.CODE);
         }
         #endregion
 

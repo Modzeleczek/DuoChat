@@ -65,7 +65,7 @@ namespace Client.MVVM.Model.Networking
         public event Event<EditedParticipation.Participation>? ReceivedEditedParticipation;
         public event Event<DeletedParticipation.Participation>? ReceivedDeletedParticipation;
         public event Event<SentMessage.MessageMetadata>? ReceivedSentMessage;
-        // public event Event<ReceivedMessage>? ReceivedReceivedMessage;
+        public event Event<MessagesList.List>? ReceivedMessagesList;
         #endregion
 
         public ClientMonolith()
@@ -454,6 +454,9 @@ namespace Client.MVVM.Model.Networking
                     case Packet.Codes.SentMessage:
                         HandleReceivedSentMessage(server, pr);
                         break;
+                    case Packet.Codes.MessagesList:
+                        HandleReceivedMessagesList(server, pr);
+                        break;
                     default:
                         DisconnectThenNotify(server, UnexpectedPacketErrorMsg);
                         break;
@@ -461,7 +464,7 @@ namespace Client.MVVM.Model.Networking
             }
             catch (Error e) { DisconnectThenNotify(server, e.Message); }
         }
-        
+
         private void HandleReceivedConversationsAndUsersLists(RemoteServer server, PacketReader pr)
         {
             Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {server}");
@@ -579,6 +582,15 @@ namespace Client.MVVM.Model.Networking
             ReceivedSentMessage?.Invoke(server, messageMetadata);
             server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Notification);
         }
+
+        private void HandleReceivedMessagesList(RemoteServer server, PacketReader pr)
+        {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {server}");
+
+            MessagesList.Deserialize(pr, out var list);
+            ReceivedMessagesList?.Invoke(server, list);
+            server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Notification);
+        }
         #endregion
 
         private void OnReceiveTimeout(ServerEvent @event)
@@ -660,6 +672,9 @@ namespace Client.MVVM.Model.Networking
                     break;
                 case DeleteParticipationUIRequest deleteParticipation:
                     DeleteParticipationUIRequest(deleteParticipation);
+                    break;
+                case GetMessagesUIRequest getMessages:
+                    GetMessagesUIRequest(getMessages);
                     break;
                 case SendMessageUIRequest sendMessage:
                     SendMessageUIRequest(sendMessage);
@@ -920,6 +935,19 @@ namespace Client.MVVM.Model.Networking
             server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Notification);
             server.EnqueueToSend(SendMessage.Serialize(_privateKey!, server.PublicKey!,
                 server.GenerateToken(), request.Message), SendMessage.CODE);
+        }
+
+        private void GetMessagesUIRequest(GetMessagesUIRequest request)
+        {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {request}");
+
+            if (_remoteServer is null)
+                return;
+            RemoteServer server = _remoteServer;
+
+            server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Notification);
+            server.EnqueueToSend(GetMessages.Serialize(_privateKey!, server.PublicKey!,
+                server.GenerateToken(), request.Filter), GetMessages.CODE);
         }
         #endregion
     }

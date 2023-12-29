@@ -55,7 +55,10 @@
       </Grid>
     </Border>
 
-    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+    <ScrollViewer Grid.Row="1"
+      x:Name="MessageScrollViewer"
+      ScrollChanged="MessageScrollViewer_ScrollChanged"
+      VerticalScrollBarVisibility="Auto">
       <!-- https://stackoverflow.com/a/33765748/14357934 -->
       <ItemsControl ItemsSource="{Binding Path=Conversation.Messages}">
         <ItemsControl.ItemTemplate>

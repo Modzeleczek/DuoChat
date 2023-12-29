@@ -6,6 +6,7 @@ using Client.MVVM.ViewModel.AccountActions;
 using Client.MVVM.ViewModel.Conversations;
 using Client.MVVM.ViewModel.LocalUsers;
 using Client.MVVM.ViewModel.Observables;
+using Client.MVVM.ViewModel.Observables.Messages;
 using Client.MVVM.ViewModel.ServerActions;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model.Cryptography;
@@ -13,6 +14,7 @@ using Shared.MVVM.Model.Networking.Packets.ServerToClient;
 using Shared.MVVM.Model.Networking.Packets.ServerToClient.Conversation;
 using Shared.MVVM.Model.Networking.Packets.ServerToClient.Message;
 using Shared.MVVM.Model.Networking.Packets.ServerToClient.Participation;
+using Shared.MVVM.Model.Networking.Transfer.Reception;
 using Shared.MVVM.View.Localization;
 using Shared.MVVM.View.Windows;
 using Shared.MVVM.ViewModel;
@@ -21,6 +23,7 @@ using Shared.MVVM.ViewModel.Results;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Security;
 using System.Text;
@@ -496,6 +499,7 @@ namespace Client.MVVM.ViewModel
             _client.ReceivedEditedParticipation += OnReceivedEditedParticipation;
             _client.ReceivedDeletedParticipation += OnReceivedDeletedParticipation;
             _client.ReceivedSentMessage += OnReceivedSentMessage;
+            _client.ReceivedMessagesList += OnReceivedMessagesList;
         }
 
         private void ShowLocalUsersDialog()
@@ -868,6 +872,55 @@ namespace Client.MVVM.ViewModel
             // Wątek Client.Process
             var conversationObs = Conversations.Single(c => c.Id == inMessageMetadata.ConversationId);
             UIInvoke(() => conversationObs.UnreceivedMessagesCount += 1);
+        }
+
+        private void OnReceivedMessagesList(RemoteServer server, MessagesList.List inList)
+        {
+            // Wątek Client.Process
+            Debug.WriteLine($"OnReceivedMessagesList\n\tConversationId: {inList.ConversationId}");
+            foreach (var message in inList.Messages)
+                Debug.WriteLine($"\t\tMessageId: {message.Id}");
+
+            var conversationObs = Conversations.Single(c => c.Id == inList.ConversationId);
+
+            var messagesObs = new Message[inList.Messages.Length];
+            int i = 0;
+            foreach (var inMessage in inList.Messages)
+            {
+                var type = inMessage.SenderId == SelectedAccount!.RemoteId ?
+                    Message.Type.Sent : Message.Type.Received;
+                var recipientsObs = conversationObs.Participations.Select(p =>
+                    new Recipient(p.Participant) { ReceiveTime = DateTime.UtcNow }).ToArray();
+                var senderObs = inMessage.SenderId == conversationObs.Owner.Id
+                    ? conversationObs.Owner
+                    : conversationObs.Participations.Single(
+                        p => p.Participant.Id == inMessage.SenderId)?.Participant;
+                var attachmentsObs = new ObservableCollection<Attachment>(
+                    inMessage.AttachmentMetadatas.Select(am =>
+                        new Attachment { Id = am.Id, Name = am.Name }));
+
+                messagesObs[i++] = new Message(type, recipientsObs)
+                {
+                    Id = inMessage.Id,
+                    Sender = senderObs,
+                    PlainContent = Encoding.UTF8.GetString(Decrypt(inMessage.EncryptedContent)),
+                    SendTime = inMessage.SendTime.ToUnixDateTime(),
+                    Attachments = attachmentsObs
+                };
+            }
+
+            UIInvoke(() =>
+            {
+                foreach (var messageObs in messagesObs)
+                    conversationObs.Messages.Insert(0, messageObs);
+            });
+        }
+
+        private byte[] Decrypt(byte[] contentBytes)
+        {
+            var decryptingPr = new PacketReader(contentBytes);
+            decryptingPr.Decrypt(SelectedAccount!.PrivateKey);
+            return decryptingPr.ReadBytesToEnd();
         }
         #endregion
     }
