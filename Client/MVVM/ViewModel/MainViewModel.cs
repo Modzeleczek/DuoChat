@@ -652,7 +652,7 @@ namespace Client.MVVM.ViewModel
                     Id = conversationModel.Id,
                     Owner = users[conversationModel.OwnerId],
                     Name = conversationModel.Name,
-                    UnreceivedMessagesCount = conversationModel.UnreceivedMessagesCount
+                    NewMessagesCount = conversationModel.NewMessagesCount
                 };
                 
                 foreach (var p in conversationParticipantModel.Participants)
@@ -903,7 +903,7 @@ namespace Client.MVVM.ViewModel
         {
             // Wątek Client.Process
             var conversationObs = Conversations.Single(c => c.Id == inMessageMetadata.ConversationId);
-            UIInvoke(() => conversationObs.UnreceivedMessagesCount += 1);
+            UIInvoke(() => conversationObs.NewMessagesCount += 1);
         }
 
         private void OnReceivedMessagesList(RemoteServer server, MessagesList.List inList)
@@ -1029,7 +1029,7 @@ namespace Client.MVVM.ViewModel
                 /* Jeżeli to aktywny użytkownik pobrał (wyświetlił) wiadomość,
                 to zmniejszamy licznik niepobranych. */
                 if (recipientObs.RemoteRecipientId == SelectedAccount!.RemoteId)
-                    conversationObs.UnreceivedMessagesCount -= 1;
+                    conversationObs.NewMessagesCount -= 1;
             });
         }
         #endregion

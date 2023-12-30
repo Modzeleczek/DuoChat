@@ -52,15 +52,15 @@
                     <Style TargetType="TextBlock">
                       <Setter Property="Visibility" Value="Visible" />
                       <Style.Triggers>
-                        <DataTrigger Binding="{Binding UnreceivedMessagesCount}" Value="0">
+                        <DataTrigger Binding="{Binding NewMessagesCount}" Value="0">
                           <Setter Property="Visibility" Value="Collapsed" />
                         </DataTrigger>
                       </Style.Triggers>
                     </Style>
                   </TextBlock.Style>
-                  <Run Text="{Binding Source={x:Static l:Translator.Instance}, Path=D.Unread_messages}" />
+                  <Run Text="{Binding Source={x:Static l:Translator.Instance}, Path=D.New_messages}" />
                   <Run Text=": " />
-                  <Run Text="{Binding UnreceivedMessagesCount}" />
+                  <Run Text="{Binding NewMessagesCount}" />
                 </TextBlock>
               </StackPanel>
               

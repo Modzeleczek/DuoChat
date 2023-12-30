@@ -1,4 +1,4 @@
-﻿using Shared.MVVM.Model.Cryptography;
+using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking;
 using System;
 using System.Collections.Generic;
@@ -525,8 +525,8 @@ namespace Server.MVVM.Model.Networking
                     Name = dbConversation.Name,
                     /* TODO: zoptymalizować, żeby nie pobierać wiadomości i ich
                     zaszyfrowanych kopii, tylko robić request z COUNT do SQLite */
-                    UnreceivedMessagesCount = (uint)_storage.Database.EncryptedMessageCopies
-                        .GetUnreceived(client.Id, dbMessages.Select(m => m.Id)).Count()
+                    NewMessagesCount = (uint)_storage.Database.EncryptedMessageCopies
+                        .GetNew(client.Id, dbMessages.Select(m => m.Id)).Count()
                 };
 
                 if (!dbParticsByConvId.TryGetValue(conversation.Id, out var dbParticipants))

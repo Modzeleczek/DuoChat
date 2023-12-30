@@ -1,4 +1,4 @@
-﻿using Server.MVVM.Model.Persistence.DTO;
+using Server.MVVM.Model.Persistence.DTO;
 using Shared.MVVM.Model.SQLiteStorage;
 using Shared.MVVM.Model.SQLiteStorage.Repositories;
 using System;
@@ -116,7 +116,7 @@ namespace Server.MVVM.Model.Persistence.Repositories
                 $"WHERE {F_message_id} = @{F_message_id} AND {F_recipient_id} = @{F_recipient_id};";
         }
 
-        public IEnumerable<EncryptedMessageCopyDto> GetUnreceived(ulong recipientId,
+        public IEnumerable<EncryptedMessageCopyDto> GetNew(ulong recipientId,
             IEnumerable<ulong> messageIds)
         {
             var query = $"SELECT * FROM {TABLE} WHERE {F_recipient_id} = {recipientId} " +

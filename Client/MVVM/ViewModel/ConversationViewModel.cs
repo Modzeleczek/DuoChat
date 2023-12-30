@@ -44,9 +44,9 @@ namespace Client.MVVM.ViewModel
                 if (Conversation.Messages.Count < MESSAGE_PAGE_SIZE)
                     // Mamy mniej niż 1 stronę, czyli 10 wiadomości.
                     count = MESSAGE_PAGE_SIZE;
-                else if (Conversation.UnreceivedMessagesCount > 0)
+                else if (Conversation.NewMessagesCount > 0)
                     // Mamy nieprzeczytane wiadomości.
-                    count = Conversation.UnreceivedMessagesCount;
+                    count = Conversation.NewMessagesCount;
 
                 if (count > 0)
                     _client.Request(new GetMessagesUIRequest(new GetMessages.Filter

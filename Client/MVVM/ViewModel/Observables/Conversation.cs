@@ -19,11 +19,11 @@ namespace Client.MVVM.ViewModel.Observables
 
         public Draft Draft { get; } = new Draft();
 
-        private uint _unreceivedMessagesCount = 0;
-        public uint UnreceivedMessagesCount
+        private uint _newMessagesCount = 0;
+        public uint NewMessagesCount
         {
-            get => _unreceivedMessagesCount;
-            set { _unreceivedMessagesCount = value; OnPropertyChanged(); }
+            get => _newMessagesCount;
+            set { _newMessagesCount = value; OnPropertyChanged(); }
         }
 
         public ObservableCollection<ConversationParticipation> Participations { get; } =
