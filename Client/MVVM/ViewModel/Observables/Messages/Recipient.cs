@@ -7,7 +7,7 @@ namespace Client.MVVM.ViewModel.Observables.Messages
     {
         #region Properties
         // Id odbiorcy posiadane przez serwer.
-        public ulong? RemoteRecipientId { get; }
+        public ulong RemoteRecipientId { get; }
 
         // Odbiorca wyświetlany w GUI.
         private User? _user = null!;
@@ -44,7 +44,7 @@ namespace Client.MVVM.ViewModel.Observables.Messages
         }
         #endregion
 
-        public Recipient(ulong? remoteRecipientId)
+        public Recipient(ulong remoteRecipientId)
         {
             RemoteRecipientId = remoteRecipientId;
         }
