@@ -14,7 +14,7 @@ namespace Shared.MVVM.Model.Networking.Packets
             RequestError = 8, AddedConversation = 9, EditedConversation = 10,
             DeletedConversation = 11, FoundUsersList = 12, AddedParticipation = 13,
             AddedYouAsParticipant = 14, EditedParticipation = 15, DeletedParticipation = 16,
-            SentMessage = 17, MessagesList = 18,
+            SentMessage = 17, MessagesList = 18, DisplayedMessage = 19,
 
             ClientIntroduction = 255, GetConversationsAndUsers = 254, AddConversation = 253,
             EditConversation = 252, DeleteConversation = 251, SearchUsers = 250,

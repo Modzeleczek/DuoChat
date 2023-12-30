@@ -137,5 +137,18 @@ namespace Server.MVVM.Model.Persistence.Repositories
             var query = $"SELECT * FROM {TABLE} WHERE {F_message_id} IN ({string.Join(',', messageIds)});";
             return ExecuteReader(query);
         }
+
+        public void SetAsReceived(ulong recipientId, IEnumerable<ulong> messageIds, long receiveTime)
+        {
+            var query = $"UPDATE {TABLE} SET {F_receive_time} = {receiveTime} " +
+                $"WHERE {F_recipient_id} = {recipientId} " +
+                $"AND {F_message_id} IN ({string.Join(',', messageIds)});";
+            using (var con = CreateConnection())
+            using (var cmd = new SQLiteCommand(query, con))
+            {
+                con.Open();
+                cmd.ExecuteNonQuery();
+            }
+        }
     }
 }

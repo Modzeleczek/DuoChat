@@ -66,6 +66,7 @@ namespace Client.MVVM.Model.Networking
         public event Event<DeletedParticipation.Participation>? ReceivedDeletedParticipation;
         public event Event<SentMessage.MessageMetadata>? ReceivedSentMessage;
         public event Event<MessagesList.List>? ReceivedMessagesList;
+        public event Event<DisplayedMessage.Display>? ReceivedDisplayedMessage;
         #endregion
 
         public ClientMonolith()
@@ -457,6 +458,9 @@ namespace Client.MVVM.Model.Networking
                     case Packet.Codes.MessagesList:
                         HandleReceivedMessagesList(server, pr);
                         break;
+                    case Packet.Codes.DisplayedMessage:
+                        HandleReceivedDisplayedMessage(server, pr);
+                        break;
                     default:
                         DisconnectThenNotify(server, UnexpectedPacketErrorMsg);
                         break;
@@ -589,6 +593,15 @@ namespace Client.MVVM.Model.Networking
 
             MessagesList.Deserialize(pr, out var list);
             ReceivedMessagesList?.Invoke(server, list);
+            server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Notification);
+        }
+
+        private void HandleReceivedDisplayedMessage(RemoteServer server, PacketReader pr)
+        {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {server}");
+
+            DisplayedMessage.Deserialize(pr, out var display);
+            ReceivedDisplayedMessage?.Invoke(server, display);
             server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Notification);
         }
         #endregion

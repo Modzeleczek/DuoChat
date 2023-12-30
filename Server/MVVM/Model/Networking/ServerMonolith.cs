@@ -1057,9 +1057,6 @@ namespace Server.MVVM.Model.Networking
                 if (clientsById.TryGetValue(recipientId, out var c) && c.IsNotifiable)
                     c.EnqueueToSend(SentMessage.Serialize(_privateKey!, c.PublicKey!,
                         c.GenerateToken(), outMessageMetadata), SentMessage.CODE);
-
-            // w odpowiedzi na request getmessage wysylamy wiadomosc i metadane zalacznikow (id, nazwa, rozmiar)
-            // w odpowiedzi na request getattachment wysylamy dane zalacznika
         }
 
         private void HandleReceivedGetMessages(Client client, PacketReader pr)
@@ -1076,10 +1073,10 @@ namespace Server.MVVM.Model.Networking
             }
 
             var dbConversation = _storage.Database.Conversations.Get(inFilter.ConversationId);
-            var dbParticipations = _storage.Database.ConversationParticipations
-                .GetByConversationId(inFilter.ConversationId);
-            if (!dbParticipations.Any(p => p.ParticipantId == client.Id)
-                && dbConversation.OwnerId != client.Id)
+            var dbConversationUserIds = _storage.Database.ConversationParticipations.GetByConversationId(
+                inFilter.ConversationId).Select(p => p.ParticipantId).Append(dbConversation.OwnerId)
+                .ToHashSet();
+            if (!dbConversationUserIds.Contains(client.Id))
             {
                 EnqueueRequestError(client, GetMessages.CODE,
                     (byte)GetMessages.Errors.YouNotBelongToConversation);
@@ -1103,11 +1100,15 @@ namespace Server.MVVM.Model.Networking
                 Messages = new MessagesList.Message[dbMessages.Count()]
             };
 
+            var toSetAsReceived = new LinkedList<(MessageDto msg, LinkedList<EncryptedMessageCopyDto> emcs,
+                EncryptedMessageCopyDto requesterEmc)>();
             int i = 0;
             foreach (var dbMessage in dbMessages)
             {
                 var dbEncMsgCp = dbEncMsgCps[dbMessage.Id];
                 var dbEncMsgCpForRequester = dbEncMsgCp.Single(emc => emc.RecipientId == client.Id);
+                if (!dbEncMsgCpForRequester.ReceiveTime.HasValue)
+                    toSetAsReceived.AddLast((dbMessage, dbEncMsgCp, dbEncMsgCpForRequester));
 
                 outList.Messages[i++] = new MessagesList.Message
                 {
@@ -1135,10 +1136,37 @@ namespace Server.MVVM.Model.Networking
                 };
             }
 
+            // Wysyłamy wiadomości do żądającego GetMessages.
             client.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Request);
             if (client.IsNotifiable)
                 client.EnqueueToSend(MessagesList.Serialize(_privateKey!, client.PublicKey!,
                     client.GenerateToken(), outList), MessagesList.CODE);
+
+            // Oznaczamy wiadomości jako odebrane.
+            long utcNow = DateTime.UtcNow.ToUnixTimestamp();
+            _storage.Database.EncryptedMessageCopies.SetAsReceived(client.Id,
+                toSetAsReceived.Select(msgEmcRequesterEmc => msgEmcRequesterEmc.msg.Id), utcNow);
+
+            // Powiadamiamy odbiorców (w tym żądającego) wiadomości o odebraniu ich przez żądającego.
+            var clientsById = SingleElementGroupBy(_clients.Values, c => c.Id);
+            foreach (var msgEmcRequesterEmc in toSetAsReceived)
+            {
+                var outDisplay = new DisplayedMessage.Display
+                {
+                    ConversationId = dbConversation.Id,
+                    MessageId = msgEmcRequesterEmc.msg.Id,
+                    RecipientId = msgEmcRequesterEmc.requesterEmc.RecipientId,
+                    ReceiveTime = utcNow
+                };
+
+                foreach (var recipientId in msgEmcRequesterEmc.emcs.Select(emc => emc.RecipientId)
+                    /* Powiadamiamy tylko odbiorców wiadomości, którzy są aktualnie
+                    uczestnikami lub właścicielem konwersacji. */
+                    .Where(dbConversationUserIds.Contains))
+                    if (clientsById.TryGetValue(recipientId, out var c) && c.IsNotifiable)
+                        c.EnqueueToSend(DisplayedMessage.Serialize(_privateKey!, c.PublicKey!,
+                            c.GenerateToken(), outDisplay), DisplayedMessage.CODE);
+            }
         }
         #endregion
 

@@ -501,6 +501,7 @@ namespace Client.MVVM.ViewModel
             _client.ReceivedDeletedParticipation += OnReceivedDeletedParticipation;
             _client.ReceivedSentMessage += OnReceivedSentMessage;
             _client.ReceivedMessagesList += OnReceivedMessagesList;
+            _client.ReceivedDisplayedMessage += OnReceivedDisplayedMessage;
         }
 
         private void ShowLocalUsersDialog()
@@ -1013,6 +1014,23 @@ namespace Client.MVVM.ViewModel
             var decryptingPr = new PacketReader(contentBytes);
             decryptingPr.Decrypt(SelectedAccount!.PrivateKey);
             return decryptingPr.ReadBytesToEnd();
+        }
+
+        private void OnReceivedDisplayedMessage(RemoteServer server, DisplayedMessage.Display inDisplay)
+        {
+            // Wątek Client.Process
+            var conversationObs = Conversations.Single(c => c.Id == inDisplay.ConversationId);
+            var messageObs = conversationObs.Messages.Single(m => m.Id == inDisplay.MessageId);
+            var recipientObs = messageObs.Recipients.Single(
+                r => r.RemoteRecipientId == inDisplay.RecipientId);
+            UIInvoke(() =>
+            {
+                recipientObs.ReceiveTime = inDisplay.ReceiveTime.ToUnixDateTime();
+                /* Jeżeli to aktywny użytkownik pobrał (wyświetlił) wiadomość,
+                to zmniejszamy licznik niepobranych. */
+                if (recipientObs.RemoteRecipientId == SelectedAccount!.RemoteId)
+                    conversationObs.UnreceivedMessagesCount -= 1;
+            });
         }
         #endregion
     }
