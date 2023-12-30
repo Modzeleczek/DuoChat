@@ -991,7 +991,7 @@ namespace Client.MVVM.ViewModel
                         // messagesObs[0] jest najnowszą z wiadomości od serwera.
                         conversationObs.Messages.Insert(0, messagesObs[i]);
                 else
-                    for (int i = messagesObs.Length - 1; i > messagesObs.Length; --i)
+                    for (int i = messagesObs.Length - 1; i >= 0; --i)
                         // messagesObs[^1] jest najstarszą z wiadomości od serwera.
                         conversationObs.Messages.Add(messagesObs[i]);
             });
