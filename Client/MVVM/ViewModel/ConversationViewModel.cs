@@ -120,7 +120,7 @@ namespace Client.MVVM.ViewModel
             OpenMessageRecipients = new RelayCommand(obj =>
             {
                 var messageObs = (Message)obj!;
-                MessageRecipientsViewModel.ShowDialog(window!, client, messageObs);
+                MessageRecipientsViewModel.ShowDialog(window!, messageObs);
             });
 
             DownloadAttachment = new RelayCommand(obj =>
