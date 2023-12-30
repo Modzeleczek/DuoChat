@@ -1,4 +1,4 @@
-using Shared.MVVM.Model.Cryptography;
+﻿using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking;
 using System;
 using System.Collections.Generic;
@@ -1148,6 +1148,13 @@ namespace Server.MVVM.Model.Networking
             var clientsById = SingleElementGroupBy(_clients.Values, c => c.Id);
             foreach (var msgEmcRequesterEmc in toSetAsReceived)
             {
+                /* Po wykonaniu SetAsReceived, w bazie mamy już zapisane czasy odbioru w rekordach
+                tabeli EncryptedMessageCopy odpowiadających requesterowi. Ustawiamy czas odbioru
+                jeszcze w EMCach, które mamy aktualnie w pamięci, aby na dole w foreach requester
+                był potraktowany jako jeden z tych, którzy już odebrali wiadomość i aby zostało do
+                niego wysłane powiadomienie DisplayedMessage o wiadomości którą właśnie sam wyświetlił. */
+                msgEmcRequesterEmc.requesterEmc.ReceiveTime = utcNow;
+
                 var outDisplay = new DisplayedMessage.Display
                 {
                     ConversationId = dbConversation.Id,
@@ -1156,10 +1163,11 @@ namespace Server.MVVM.Model.Networking
                     ReceiveTime = utcNow
                 };
 
-                foreach (var recipientId in msgEmcRequesterEmc.emcs.Select(emc => emc.RecipientId)
-                    /* Powiadamiamy tylko odbiorców wiadomości, którzy są aktualnie
-                    uczestnikami lub właścicielem konwersacji. */
-                    .Where(dbConversationUserIds.Contains))
+                foreach (var recipientId in msgEmcRequesterEmc.emcs.Where(emc =>
+                    /* Powiadamiamy tylko odbiorców wiadomości, którzy są aktualnie uczestnikami
+                    lub właścicielem konwersacji i sami już wyświetlili wiadomość. */
+                    dbConversationUserIds.Contains(emc.RecipientId) && emc.ReceiveTime.HasValue)
+                    .Select(emc => emc.RecipientId))
                     if (clientsById.TryGetValue(recipientId, out var c) && c.IsNotifiable)
                         c.EnqueueToSend(DisplayedMessage.Serialize(_privateKey!, c.PublicKey!,
                             c.GenerateToken(), outDisplay), DisplayedMessage.CODE);
