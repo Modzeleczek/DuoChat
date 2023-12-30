@@ -517,16 +517,13 @@ namespace Server.MVVM.Model.Networking
             int c = 0;
             foreach (var dbConversation in dbClientConversations)
             {
-                var dbMessages = _storage.Database.Messages.GetByConversationId(dbConversation.Id);
                 var conversation = new GotConversationsAndUsersLists.Conversation
                 {
                     Id = dbConversation.Id,
                     OwnerId = dbConversation.OwnerId,
                     Name = dbConversation.Name,
-                    /* TODO: zoptymalizować, żeby nie pobierać wiadomości i ich
-                    zaszyfrowanych kopii, tylko robić request z COUNT do SQLite */
-                    NewMessagesCount = (uint)_storage.Database.EncryptedMessageCopies
-                        .GetNew(client.Id, dbMessages.Select(m => m.Id)).Count()
+                    NewMessagesCount = _storage.Database.EncryptedMessageCopies.GetNewMessagesCount(
+                        dbConversation.Id, client.Id)
                 };
 
                 if (!dbParticsByConvId.TryGetValue(conversation.Id, out var dbParticipants))

@@ -11,9 +11,9 @@ namespace Server.MVVM.Model.Persistence.Repositories
     public class MessageRepository : Repository<MessageDto, ulong>
     {
         #region Fields
-        private const string TABLE = "Message";
-        private const string F_id = "id";
-        private const string F_conversation_id = "conversation_id";
+        public const string TABLE = "Message";
+        public const string F_id = "id";
+        public const string F_conversation_id = "conversation_id";
         private const string F_sender_id = "sender_id";
         private const string F_send_time = "send_time";
         #endregion
@@ -113,6 +113,8 @@ namespace Server.MVVM.Model.Persistence.Repositories
         public IEnumerable<MessageDto> GetNewest(ulong requesterId, ulong conversationId, uint count)
         {
             // Zwraca co najwyżej count wiadomości w porządku od najnowszej do najstarszej.
+            /* Sprawdzanie m.{F_sender_id} = {requesterId} jest redundantne, bo użytkownik
+            wysyła wiadomość też sam do siebie, więc zostanie obsłużony przez podzapytanie. */
             var query = @$"SELECT m.* FROM {TABLE} m 
                 WHERE (m.{F_sender_id} = {requesterId} OR EXISTS 
                     (SELECT emc.{EMC.F_recipient_id} FROM {EMC.TABLE} emc 

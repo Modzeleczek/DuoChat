@@ -1,10 +1,11 @@
-using Server.MVVM.Model.Persistence.DTO;
+﻿using Server.MVVM.Model.Persistence.DTO;
 using Shared.MVVM.Model.SQLiteStorage;
 using Shared.MVVM.Model.SQLiteStorage.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
+using M = Server.MVVM.Model.Persistence.Repositories.MessageRepository;
 
 namespace Server.MVVM.Model.Persistence.Repositories
 {
@@ -116,12 +117,39 @@ namespace Server.MVVM.Model.Persistence.Repositories
                 $"WHERE {F_message_id} = @{F_message_id} AND {F_recipient_id} = @{F_recipient_id};";
         }
 
-        public IEnumerable<EncryptedMessageCopyDto> GetNew(ulong recipientId,
-            IEnumerable<ulong> messageIds)
+        public uint GetNewMessagesCount(ulong conversationId, ulong recipientId)
         {
-            var query = $"SELECT * FROM {TABLE} WHERE {F_recipient_id} = {recipientId} " +
-                $"AND {F_receive_time} IS NULL AND {F_message_id} IN ({string.Join(',', messageIds)});";
-            return ExecuteReader(query);
+            // Id najstarszej nowej (niewyświetlonej) wiadomości.
+            var conversationMembershipCondition = $"(SELECT {M.F_conversation_id} FROM {M.TABLE} " +
+                $"WHERE {M.F_id} = emc.{F_message_id}) = {conversationId}";
+
+            var query1 = @$"SELECT MIN(emc.{F_message_id}) FROM {TABLE} emc 
+                WHERE {conversationMembershipCondition} 
+                AND {F_recipient_id} = {recipientId} AND {F_receive_time} IS NULL;";
+            long? firstNewMessageIdLong = ExecuteScalar(query1);
+            if (!firstNewMessageIdLong.HasValue)
+                // Nie ma żadnych nowych wiadomości.
+                return 0;
+
+            var query2 = @$"SELECT COUNT(emc.{F_message_id}) FROM {TABLE} emc
+                WHERE {conversationMembershipCondition} 
+                AND {F_recipient_id} = {recipientId} 
+                AND {F_message_id} >= {(ulong)firstNewMessageIdLong.Value};";
+            return (uint)ExecuteScalar(query2)!;
+        }
+
+        private long? ExecuteScalar(string query)
+        {
+            using (var con = CreateConnection())
+            using (var cmd = new SQLiteCommand(query, con))
+            {
+                con.Open();
+                object? result = cmd.ExecuteScalar();
+                if (result == DBNull.Value)
+                    // Zapytanie nic nie zwróciło.
+                    return null;
+                return (long)result;
+            }
         }
 
         public IEnumerable<EncryptedMessageCopyDto> GetByRecipientAndMessageIds(ulong recipientId,
