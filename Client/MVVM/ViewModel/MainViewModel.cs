@@ -10,6 +10,7 @@ using Client.MVVM.ViewModel.Observables.Messages;
 using Client.MVVM.ViewModel.ServerActions;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model.Cryptography;
+using Shared.MVVM.Model.Networking.Packets.ClientToServer.Message;
 using Shared.MVVM.Model.Networking.Packets.ServerToClient;
 using Shared.MVVM.Model.Networking.Packets.ServerToClient.Conversation;
 using Shared.MVVM.Model.Networking.Packets.ServerToClient.Message;
@@ -903,7 +904,19 @@ namespace Client.MVVM.ViewModel
         {
             // Wątek Client.Process
             var conversationObs = Conversations.Single(c => c.Id == inMessageMetadata.ConversationId);
-            UIInvoke(() => conversationObs.NewMessagesCount += 1);
+            UIInvoke(() =>
+            {
+                conversationObs.NewMessagesCount += 1;
+                if (ConversationVM.Conversation == conversationObs)
+                    // Mamy wyświetloną konwersację, w której ktoś wysłał wiadomość, więc od razu ją pobieramy.
+                    _client.Request(new GetMessagesUIRequest(new GetMessages.Filter
+                    {
+                        ConversationId = conversationObs.Id,
+                        FindNewest = 1,
+                        MessageId = 0,
+                        MaxMessageCount = 1
+                    }));
+            });
         }
 
         private void OnReceivedMessagesList(RemoteServer server, MessagesList.List inList)
@@ -1019,8 +1032,15 @@ namespace Client.MVVM.ViewModel
         private void OnReceivedDisplayedMessage(RemoteServer server, DisplayedMessage.Display inDisplay)
         {
             // Wątek Client.Process
+            /* Ignorujemy DisplayedMessage w sytuacji, kiedy ktoś wysłał wiadomość, ale my jeszcze
+            nie dostaliśmy SentMessage i jej nie pobraliśmy poprzez GetMessages -> MessagesList.
+            Po chwili powinniśmy wykonać GetMessages -> MessagesList i pobrać wiadomość razem
+            z timestampami odebrań przez odbiorców. */
             var conversationObs = Conversations.Single(c => c.Id == inDisplay.ConversationId);
-            var messageObs = conversationObs.Messages.Single(m => m.Id == inDisplay.MessageId);
+            var messageObs = conversationObs.Messages.SingleOrDefault(m => m.Id == inDisplay.MessageId);
+            if (messageObs is null)
+                // Aktualnie nie mamy w GUI pobranej wiadomości o id otrzymanym w pakiecie DisplayedMessage.
+                return;
             var recipientObs = messageObs.Recipients.Single(
                 r => r.RemoteRecipientId == inDisplay.RecipientId);
             UIInvoke(() =>
