@@ -11,7 +11,7 @@ namespace Server.MVVM.Model.Persistence.Repositories
     {
         #region Fields
         private const string TABLE = "EncryptedAttachmentCopy";
-        private const string F_attachment_id = "attachment_id ";
+        private const string F_attachment_id = "attachment_id";
         private const string F_recipient_id = "recipient_id";
         private const string F_content = "content";
 
