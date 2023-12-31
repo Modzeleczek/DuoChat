@@ -1,4 +1,4 @@
-﻿using Shared.MVVM.Model.Cryptography;
+using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking;
 using System;
 using System.Collections.Generic;
@@ -1034,7 +1034,7 @@ namespace Server.MVVM.Model.Networking
                 {
                     var encryptedAttachmentCopyDto = new EncryptedAttachmentCopyDto
                     {
-                        AttachmentId = attachmentDtos[a].Id,
+                        AttachmentId = attachmentDtos[a++].Id,
                         RecipientId = recipient.AccountId,
                         Content = attachment.EncryptedContent
                     };
