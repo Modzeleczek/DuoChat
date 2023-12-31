@@ -686,11 +686,11 @@ namespace Client.MVVM.Model.Networking
                 case DeleteParticipationUIRequest deleteParticipation:
                     DeleteParticipationUIRequest(deleteParticipation);
                     break;
-                case GetMessagesUIRequest getMessages:
-                    GetMessagesUIRequest(getMessages);
-                    break;
                 case SendMessageUIRequest sendMessage:
                     SendMessageUIRequest(sendMessage);
+                    break;
+                case GetMessagesUIRequest getMessages:
+                    GetMessagesUIRequest(getMessages);
                     break;
             }
         }
