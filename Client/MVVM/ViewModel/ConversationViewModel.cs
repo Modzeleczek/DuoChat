@@ -1,5 +1,6 @@
 using Client.MVVM.Model.Networking;
 using Client.MVVM.Model.Networking.UIRequests;
+using Client.MVVM.ViewModel.Conversations;
 using Client.MVVM.ViewModel.Observables;
 using Client.MVVM.ViewModel.Observables.Messages;
 using Shared.MVVM.Core;
@@ -22,6 +23,7 @@ namespace Client.MVVM.ViewModel
         public RelayCommand OpenMessageRecipients { get; }
         public RelayCommand DownloadAttachment { get; }
         public RelayCommand GetMoreMessages { get; }
+        public RelayCommand OpenAttachmentSelector { get; }
         #endregion
 
         #region Properties
@@ -150,6 +152,11 @@ namespace Client.MVVM.ViewModel
                     MessageId = Conversation.Messages[0].Id,
                     MaxMessageCount = MESSAGE_PAGE_SIZE
                 }));
+            });
+
+            OpenAttachmentSelector = new RelayCommand(_ =>
+            {
+                AttachmentSelectorViewModel.ShowDialog(window!, Conversation!.Draft);
             });
         }
 

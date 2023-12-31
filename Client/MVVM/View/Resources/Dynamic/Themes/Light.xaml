@@ -5,5 +5,6 @@
   <BitmapImage x:Key="AddButtonImage" UriSource="/MVVM/View/Icons/add.png" />
   <BitmapImage x:Key="CallButtonImage" UriSource="/MVVM/View/Icons/phone.png" />
   <BitmapImage x:Key="SendButtonImage" UriSource="/MVVM/View/Icons/send.png" />
+  <BitmapImage x:Key="AttachmentButtonImage" UriSource="/MVVM/View/Icons/attachment.png" />
 
 </ResourceDictionary>

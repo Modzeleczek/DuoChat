@@ -181,12 +181,18 @@
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="*"/>
         <ColumnDefinition Width="auto" />
+        <ColumnDefinition Width="auto" />
       </Grid.ColumnDefinitions>
 
       <TextBox Grid.Column="0"
         Style="{DynamicResource MessageBoxStyle}" />
 
       <Button Grid.Column="1"
+        Command="{Binding OpenAttachmentSelector}">
+        <Image Margin="4" Source="{DynamicResource AttachmentButtonImage}" />
+      </Button>
+
+      <Button Grid.Column="2"
         Command="{Binding SendDraft}">
         <Image Margin="4" Source="{DynamicResource SendButtonImage}" />
       </Button>
