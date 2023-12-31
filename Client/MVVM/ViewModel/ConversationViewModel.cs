@@ -40,13 +40,25 @@ namespace Client.MVVM.ViewModel
                 if (Conversation is null)
                     return;
 
-                uint count = 0;
-                if (Conversation.NewMessagesCount > 0)
-                    // Mamy nieprzeczytane wiadomości.
-                    count = Conversation.NewMessagesCount;
-                else if (Conversation.Messages.Count < MESSAGE_PAGE_SIZE)
+                uint count;
+                if (Conversation.Messages.Count < MESSAGE_PAGE_SIZE)
+                {
                     // Mamy mniej niż 1 stronę, czyli 10 wiadomości.
-                    count = MESSAGE_PAGE_SIZE;
+                    if (Conversation.NewMessagesCount > MESSAGE_PAGE_SIZE)
+                        // Mamy nieprzeczytane wiadomości i mamy ich więcej niż rozmiar strony.
+                        count = Conversation.NewMessagesCount;
+                    else
+                        count = MESSAGE_PAGE_SIZE;
+                }
+                else
+                {
+                    // Mamy przynajmniej 1 całą stronę (>= 10 wiadomości).
+                    if (Conversation.NewMessagesCount > 0)
+                        // Mamy jakiekolwiek nieprzeczytane wiadomości.
+                        count = Conversation.NewMessagesCount;
+                    else
+                        count = 0;
+                }
 
                 if (count > 0)
                     _client.Request(new GetMessagesUIRequest(new GetMessages.Filter
