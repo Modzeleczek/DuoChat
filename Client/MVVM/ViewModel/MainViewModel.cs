@@ -8,6 +8,7 @@ using Client.MVVM.ViewModel.LocalUsers;
 using Client.MVVM.ViewModel.Observables;
 using Client.MVVM.ViewModel.Observables.Messages;
 using Client.MVVM.ViewModel.ServerActions;
+using Microsoft.Win32;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking.Packets.ClientToServer.Message;
@@ -25,10 +26,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace Client.MVVM.ViewModel
@@ -503,6 +506,7 @@ namespace Client.MVVM.ViewModel
             _client.ReceivedSentMessage += OnReceivedSentMessage;
             _client.ReceivedMessagesList += OnReceivedMessagesList;
             _client.ReceivedDisplayedMessage += OnReceivedDisplayedMessage;
+            _client.ReceivedAttachmentContent += OnReceivedAttachmentContent;
         }
 
         private void ShowLocalUsersDialog()
@@ -1050,6 +1054,41 @@ namespace Client.MVVM.ViewModel
                 to zmniejszamy licznik niepobranych. */
                 if (recipientObs.RemoteRecipientId == SelectedAccount!.RemoteId)
                     conversationObs.NewMessagesCount -= 1;
+            });
+        }
+
+        private void OnReceivedAttachmentContent(RemoteServer server,
+            AttachmentContent.Attachment inAttachment)
+        {
+            // Wątek Client.Process
+            Task.Factory.StartNew(() =>
+            {
+                string path = inAttachment.Name;
+                UIInvoke(() =>
+                {
+                    /* Musi być w nowym tasku, żeby nie blokować wątku Client.Process bo przestałby on
+                    obsługiwać zdarzenia serwera. Jakbyśmy ten kod wywołali w UIInvoke, to to też zablokuje
+                    on Client.Process, bo ten będzie czekał na zakończenie wykonywania kodu z UIInvoke
+                    przez wątek GUI. */
+                    var d = Translator.Instance;
+                    var dialog = new SaveFileDialog()
+                    {
+                        Title = d["|Save attachment|"],
+                        InitialDirectory = App.FileDialogInitialDirectory,
+                        // Lista z rodzajem pliku do wyboru. Wyświetlamy tylko "Wszystkie pliki (*.*)".
+                        Filter = d["|All files|"] + " (*.*)|*.*",
+                        // Który rodzaj pliku z listy Filter ma być domyślnie zaznaczony (liczone od 1).
+                        FilterIndex = 1,
+                        FileName = path
+                    };
+
+                    if (dialog.ShowDialog() != true)
+                        // Użytkownik anulował zapisywanie.
+                        return;
+                    path = dialog.FileName;
+                });
+                App.UpdateFileDialogInitialDirectory(path);
+                File.WriteAllBytes(path, Decrypt(inAttachment.EncryptedContent));
             });
         }
         #endregion

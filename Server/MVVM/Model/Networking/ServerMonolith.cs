@@ -1,4 +1,4 @@
-using Shared.MVVM.Model.Cryptography;
+﻿using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking;
 using System;
 using System.Collections.Generic;
@@ -476,6 +476,9 @@ namespace Server.MVVM.Model.Networking
                         break;
                     case Packet.Codes.GetMessages:
                         HandleReceivedGetMessages(client, pr);
+                        break;
+                    case Packet.Codes.GetAttachment:
+                        HandleReceivedGetAttachment(client, pr);
                         break;
                     default:
                         DisconnectThenNotify(client, UnexpectedPacketErrorMsg);
@@ -1172,6 +1175,54 @@ namespace Server.MVVM.Model.Networking
                         c.EnqueueToSend(DisplayedMessage.Serialize(_privateKey!, c.PublicKey!,
                             c.GenerateToken(), outDisplay), DisplayedMessage.CODE);
             }
+        }
+
+        private void HandleReceivedGetAttachment(Client client, PacketReader pr)
+        {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {client}");
+
+            GetAttachment.Deserialize(pr, out var attachmentId);
+
+            if (!_storage.Database.Attachments.Exists(attachmentId))
+            {
+                EnqueueRequestError(client, GetAttachment.CODE,
+                    (byte)GetAttachment.Errors.AttachmentNotExists);
+                return;
+            }
+
+            var dbAttachment = _storage.Database.Attachments.Get(attachmentId);
+            var dbMessage = _storage.Database.Messages.Get(dbAttachment.MessageId);
+            var dbConversation = _storage.Database.Conversations.Get(dbMessage.ConversationId);
+            var dbConversationUserIds = _storage.Database.ConversationParticipations.GetByConversationId(
+                dbConversation.Id).Select(p => p.ParticipantId).Append(dbConversation.OwnerId).ToHashSet();
+            if (!dbConversationUserIds.Contains(client.Id))
+            {
+                EnqueueRequestError(client, GetAttachment.CODE,
+                    (byte)GetAttachment.Errors.YouNotBelongToConversation);
+                return;
+            }
+
+            if (!_storage.Database.EncryptedMessageCopies.Exists((dbMessage.Id, client.Id)))
+            {
+                EnqueueRequestError(client, GetAttachment.CODE,
+                    (byte)GetAttachment.Errors.YouNotRecipientOfMessage);
+                return;
+            }
+
+            /* Nieprawdopodobne: if (!_storage.Database.EncryptedAttachmentCopies.Exists((dbAttachment.Id,
+            client.Id))), bo istnieje EncryptedMessageCopy, czyli requester jest odbiorcą wiadomości. */
+            var eac = _storage.Database.EncryptedAttachmentCopies.Get((dbAttachment.Id, client.Id));
+            var outAttachment = new AttachmentContent.Attachment
+            {
+                Name = dbAttachment.Name,
+                EncryptedContent = eac.Content
+            };
+
+            // Wysyłamy załącznik do żądającego GetAttachment.
+            client.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Request);
+            if (client.IsNotifiable)
+                client.EnqueueToSend(AttachmentContent.Serialize(_privateKey!, client.PublicKey!,
+                    client.GenerateToken(), outAttachment), AttachmentContent.CODE);
         }
         #endregion
 

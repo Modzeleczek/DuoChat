@@ -22,6 +22,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ClientToServer\Conversation\AddConversation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ClientToServer\Conversation\DeleteConversation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ClientToServer\Conversation\EditConversation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ClientToServer\Message\GetAttachment.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ClientToServer\Message\GetMessages.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ClientToServer\Message\SendMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ClientToServer\Participation\AddParticipation.cs" />
@@ -33,6 +34,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ServerToClient\Conversation\EditedConversation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ServerToClient\FoundUsersList.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ServerToClient\GotConversationsAndUsersLists.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ServerToClient\Message\AttachmentContent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ServerToClient\Message\DisplayedMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ServerToClient\Message\MessagesList.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ServerToClient\Message\SentMessage.cs" />

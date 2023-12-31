@@ -138,6 +138,7 @@ namespace Client.MVVM.ViewModel
             DownloadAttachment = new RelayCommand(obj =>
             {
                 var attachmentObs = (Attachment)obj!;
+                _client.Request(new GetAttachmentUIRequest(attachmentObs.Id));
             });
 
             GetMoreMessages = new RelayCommand(_ =>

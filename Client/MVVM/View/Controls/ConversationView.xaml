@@ -154,17 +154,16 @@
                               </Style.Triggers>
                             </Style>
                           </Border.Style>
-                                  
+
                           <TextBlock
                             VerticalAlignment="Center"
                             FontSize="15"
                             FontWeight="SemiBold"
-                            Foreground="{DynamicResource SecondForegroundColor}">
+                            Foreground="{DynamicResource SecondForegroundColor}"
+                            TextTrimming="CharacterEllipsis">
+                            <!-- <Run Text="{Binding Path=PlainContent.Length, Mode=OneWay}" />
+                            <Run Text=", " /> -->
                             <Run Text="{Binding Name}" />
-                            <Run Text=", " />
-                            <Run Text="{Binding Type}" />
-                            <Run Text=", " />
-                            <Run Text="{Binding Path=PlainContent.Length, Mode=OneWay}" />
                           </TextBlock>
                         </Border>
                       </DataTemplate>

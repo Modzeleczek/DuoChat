@@ -271,6 +271,8 @@
     PL="Załącznik musi być mniejszy niż"/>
   <l:Entry x:Key="bytes" PL="bajtów"/>
   <l:Entry x:Key="reading" PL="odczytywania"/>
+  <l:Entry x:Key="Save attachment" PL="Zapisz załącznik"/>
+  <l:Entry x:Key="All files" PL="Wszystkie pliki"/>
 
   <!-- tylko do serwera -->
   <!-- klucze używane w plikach .xaml - muszą być prawidłowymi nazwami zmiennych -->

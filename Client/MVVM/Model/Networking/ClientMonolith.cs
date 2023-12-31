@@ -67,6 +67,7 @@ namespace Client.MVVM.Model.Networking
         public event Event<SentMessage.MessageMetadata>? ReceivedSentMessage;
         public event Event<MessagesList.List>? ReceivedMessagesList;
         public event Event<DisplayedMessage.Display>? ReceivedDisplayedMessage;
+        public event Event<AttachmentContent.Attachment>? ReceivedAttachmentContent;
         #endregion
 
         public ClientMonolith()
@@ -461,6 +462,9 @@ namespace Client.MVVM.Model.Networking
                     case Packet.Codes.DisplayedMessage:
                         HandleReceivedDisplayedMessage(server, pr);
                         break;
+                    case Packet.Codes.AttachmentContent:
+                        HandleReceivedAttachmentContent(server, pr);
+                        break;
                     default:
                         DisconnectThenNotify(server, UnexpectedPacketErrorMsg);
                         break;
@@ -604,6 +608,15 @@ namespace Client.MVVM.Model.Networking
             ReceivedDisplayedMessage?.Invoke(server, display);
             server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Notification);
         }
+
+        private void HandleReceivedAttachmentContent(RemoteServer server, PacketReader pr)
+        {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {server}");
+
+            AttachmentContent.Deserialize(pr, out var attachment);
+            ReceivedAttachmentContent?.Invoke(server, attachment);
+            server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Notification);
+        }
         #endregion
 
         private void OnReceiveTimeout(ServerEvent @event)
@@ -691,6 +704,9 @@ namespace Client.MVVM.Model.Networking
                     break;
                 case GetMessagesUIRequest getMessages:
                     GetMessagesUIRequest(getMessages);
+                    break;
+                case GetAttachmentUIRequest getAttachment:
+                    GetAttachmentUIRequest(getAttachment);
                     break;
             }
         }
@@ -961,6 +977,19 @@ namespace Client.MVVM.Model.Networking
             server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Notification);
             server.EnqueueToSend(GetMessages.Serialize(_privateKey!, server.PublicKey!,
                 server.GenerateToken(), request.Filter), GetMessages.CODE);
+        }
+
+        private void GetAttachmentUIRequest(GetAttachmentUIRequest request)
+        {
+            Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {request}");
+
+            if (_remoteServer is null)
+                return;
+            RemoteServer server = _remoteServer;
+
+            server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Notification);
+            server.EnqueueToSend(GetAttachment.Serialize(_privateKey!, server.PublicKey!,
+                server.GenerateToken(), request.AttachmentId), GetAttachment.CODE);
         }
         #endregion
     }
