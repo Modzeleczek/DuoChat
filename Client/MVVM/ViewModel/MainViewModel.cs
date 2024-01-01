@@ -333,7 +333,7 @@ namespace Client.MVVM.ViewModel
                 };
                 new FormWindow(window!, vm).ShowDialog();
                 if (vm.Result is Success success)
-                    Accounts.Add((Account)success.Data!);
+                    OrderedInsert((a, b) => a.Login.CompareTo(b.Login) > 0, Accounts, (Account)success.Data!);
             });
             EditAccount = new RelayCommand(obj =>
             {
@@ -738,7 +738,7 @@ namespace Client.MVVM.ViewModel
             UIInvoke(() =>
             {
                 // Aktualny użytkownik dodał konwersację.
-                Conversations.Add(new Conversation
+                OrderedInsert((a, b) => a.Id > b.Id, Conversations, new Conversation
                 {
                     Id = inConversation.Id,
                     Owner = owner,
@@ -746,6 +746,32 @@ namespace Client.MVVM.ViewModel
                     // Participations i Messages pozostają puste.
                 });
             });
+        }
+
+        private void OrderedInsert<T>(Func<T, T, bool> greaterThan, ObservableCollection<T> collection,
+            T newItem)
+        {
+            if (collection.Count == 0)
+            {
+                collection.Insert(0, newItem);
+                return;
+            }
+
+            int i = 0;
+            for (i = 0; i < collection.Count; ++i)
+            {
+                /* Liniowe wyszukiwanie indeksu, na który mamy wstawić. Możnaby wyszukiwać binarnie,
+                bo mamy uporządkowaną listę, ale ObservableCollection to chyba arraylista, więc i tak
+                po Insert będzie przesunięcie obiektów o złożoności liniowej. */
+                if (greaterThan(collection[i], newItem))
+                {
+                    collection.Insert(i, newItem);
+                    return;
+                }
+            }
+
+            // Jeżeli nie znajdziemy miejsca wewnątrz listy, to wstawiamy na końcu.
+            collection.Add(newItem);
         }
 
         private void OnReceivedEditedConversation(RemoteServer server,
@@ -794,7 +820,8 @@ namespace Client.MVVM.ViewModel
 
             UIInvoke(() =>
             {
-                conversationObs.Participations.Add(cpObs);
+                OrderedInsert((a, b) => a.Participant.Id > b.Participant.Id,
+                    conversationObs.Participations, cpObs);
 
                 // Uzupełniamy wiadomości, których dodany uczestnik jest nadawcą.
                 foreach (var messageObs in conversationObs.Messages
@@ -844,7 +871,7 @@ namespace Client.MVVM.ViewModel
                     IsAdministrator = p.IsAdministrator != 0
                 });
 
-            UIInvoke(() => Conversations.Add(conversationObs));
+            UIInvoke(() => OrderedInsert((a, b) => a.Id > b.Id, Conversations, conversationObs));
         }
 
         private Dictionary<ulong, User> ListKnownUsers()
