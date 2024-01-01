@@ -42,34 +42,63 @@ namespace Client.MVVM.ViewModel
                 if (Conversation is null)
                     return;
 
-                uint count;
-                if (Conversation.Messages.Count < MESSAGE_PAGE_SIZE)
+                GetMessagesUIRequest? request;
+                if (Conversation.NewMessagesCount > 0)
                 {
-                    // Mamy mniej niż 1 stronę, czyli 10 wiadomości.
-                    if (Conversation.NewMessagesCount > MESSAGE_PAGE_SIZE)
-                        // Mamy nieprzeczytane wiadomości i mamy ich więcej niż rozmiar strony.
-                        count = Conversation.NewMessagesCount;
-                    else
-                        count = MESSAGE_PAGE_SIZE;
-                }
-                else
-                {
-                    // Mamy przynajmniej 1 całą stronę (>= 10 wiadomości).
-                    if (Conversation.NewMessagesCount > 0)
-                        // Mamy jakiekolwiek nieprzeczytane wiadomości.
-                        count = Conversation.NewMessagesCount;
-                    else
-                        count = 0;
-                }
-
-                if (count > 0)
-                    _client.Request(new GetMessagesUIRequest(new GetMessages.Filter
+                    // Mamy nieprzeczytane wiadomości.
+                    if (Conversation.Messages.Count + Conversation.NewMessagesCount >= MESSAGE_PAGE_SIZE)
                     {
-                        ConversationId = Conversation.Id,
-                        FindNewest = 1,
-                        MessageId = 0,
-                        MaxMessageCount = count
-                    }));
+                        // Po pobraniu nieprzeczytanych będzie przynajmniej 1 strona.
+                        request = new GetMessagesUIRequest(new GetMessages.Filter
+                        {
+                            ConversationId = Conversation.Id,
+                            FindNewest = 1,
+                            MessageId = 0,
+                            MaxMessageCount = Conversation.NewMessagesCount
+                        });
+                    }
+                    else
+                    {
+                        /* Po pobraniu nieprzeczytanych nie będzie przynajmniej 1 strony.
+                        Pobieramy nieprzeczytane i próbujemy pobrać starsze.
+                        Usuwamy już posiadane, bo pobierzemy je jeszcze raz i żeby nie poleciało
+                        ProtocolViolationException. */
+                        Conversation.Messages.Clear();
+                        request = new GetMessagesUIRequest(new GetMessages.Filter
+                        {
+                            ConversationId = Conversation.Id,
+                            FindNewest = 1,
+                            MessageId = 0,
+                            MaxMessageCount = Conversation.NewMessagesCount + MESSAGE_PAGE_SIZE
+                        });
+                    }
+                }
+                // Nie mamy nieprzeczytanych wiadomości.
+                else if (Conversation.Messages.Count < MESSAGE_PAGE_SIZE)
+                {
+                    if (Conversation.Messages.Count > 0)
+                        request = new GetMessagesUIRequest(new GetMessages.Filter
+                        {
+                            ConversationId = Conversation.Id,
+                            FindNewest = 0,
+                            MessageId = Conversation.Messages[0].Id,
+                            MaxMessageCount = MESSAGE_PAGE_SIZE
+                        });
+                    else
+                        request = new GetMessagesUIRequest(new GetMessages.Filter
+                        {
+                            ConversationId = Conversation.Id,
+                            FindNewest = 1,
+                            MessageId = 0,
+                            MaxMessageCount = MESSAGE_PAGE_SIZE
+                        });
+                }
+                // Mamy przynajmniej 1 stronę i nie mamy nieprzeczytanych, więc nic nie robimy.
+                else
+                    request = null;
+
+                if (!(request is null))
+                    _client.Request(request);
 
                 // TODO: zapisywać w Conversation pozycję scrolla i tutaj ją przywracać.
             }
