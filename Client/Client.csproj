@@ -40,11 +40,19 @@
     <None Remove="MVVM\View\Fonts\RedHatDisplay-VariableFont_wght.ttf" />
     <None Remove="MVVM\View\Icons\add.png" />
     <None Remove="MVVM\View\Icons\attachment.png" />
-    <None Remove="MVVM\View\Icons\flag_of_poland.png" />
-    <None Remove="MVVM\View\Icons\flag_of_the_United_Kingdom.png" />
-    <None Remove="MVVM\View\Icons\logo.png" />
     <None Remove="MVVM\View\Icons\phone.png" />
     <None Remove="MVVM\View\Icons\send.png" />
+    <None Remove="MVVM\View\Icons\Dark\add.png" />
+    <None Remove="MVVM\View\Icons\Dark\attachment.png" />
+    <None Remove="MVVM\View\Icons\Dark\phone.png" />
+    <None Remove="MVVM\View\Icons\Dark\send.png" />
+    <None Remove="MVVM\View\Icons\flag_of_poland.png" />
+    <None Remove="MVVM\View\Icons\flag_of_the_United_Kingdom.png" />
+    <None Remove="MVVM\View\Icons\Light\add.png" />
+    <None Remove="MVVM\View\Icons\Light\attachment.png" />
+    <None Remove="MVVM\View\Icons\Light\phone.png" />
+    <None Remove="MVVM\View\Icons\Light\send.png" />
+    <None Remove="MVVM\View\Icons\logo.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -61,13 +69,17 @@
   <ItemGroup>
     <Resource Include="MVVM\View\Fonts\RedHatDisplay-Italic-VariableFont_wght.ttf" />
     <Resource Include="MVVM\View\Fonts\RedHatDisplay-VariableFont_wght.ttf" />
-    <Resource Include="MVVM\View\Icons\add.png" />
-    <Resource Include="MVVM\View\Icons\attachment.png" />
+    <Resource Include="MVVM\View\Icons\Dark\add.png" />
+    <Resource Include="MVVM\View\Icons\Dark\attachment.png" />
+    <Resource Include="MVVM\View\Icons\Dark\phone.png" />
+    <Resource Include="MVVM\View\Icons\Dark\send.png" />
     <Resource Include="MVVM\View\Icons\flag_of_poland.png" />
     <Resource Include="MVVM\View\Icons\flag_of_the_United_Kingdom.png" />
+    <Resource Include="MVVM\View\Icons\Light\add.png" />
+    <Resource Include="MVVM\View\Icons\Light\attachment.png" />
+    <Resource Include="MVVM\View\Icons\Light\phone.png" />
+    <Resource Include="MVVM\View\Icons\Light\send.png" />
     <Resource Include="MVVM\View\Icons\logo.png" />
-    <Resource Include="MVVM\View\Icons\phone.png" />
-    <Resource Include="MVVM\View\Icons\send.png" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
