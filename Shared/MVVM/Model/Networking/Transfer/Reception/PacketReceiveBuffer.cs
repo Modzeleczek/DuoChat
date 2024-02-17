@@ -205,7 +205,7 @@ namespace Shared.MVVM.Model.Networking.Transfer.Reception
                 uint lengthFromStart = contentEndIndexExclusive /* - 0 */;
                 packet = new byte[lengthToEnd + lengthFromStart];
                 Buffer.BlockCopy(_buffer, (int)contentBeginIndexInclusive, packet, 0, (int)lengthToEnd);
-                Buffer.BlockCopy(_buffer, 0, packet, 0, (int)lengthFromStart);
+                Buffer.BlockCopy(_buffer, 0, packet, (int)lengthToEnd, (int)lengthFromStart);
             }
 
             _lastReceivedPacket = packet;
