@@ -1,4 +1,4 @@
-﻿using Shared.MVVM.Core;
+using Shared.MVVM.Core;
 using System;
 using System.Diagnostics;
 using System.Net;
@@ -17,12 +17,12 @@ namespace Shared.MVVM.Model.Networking.Transfer.Reception
 
         #region Fields
         private const uint PREFIX_SIZE = SocketWrapper.PACKET_PREFIX_SIZE;
-        private const uint MAX_PACKET_SIZE = (1 << 20);
 
         private State _state = State.Prefix;
 
         // Bufor cykliczny.
-        private readonly byte[] _buffer = new byte[MAX_PACKET_SIZE];
+        private readonly byte[] _buffer;
+        private uint BufferUintLength => (uint)_buffer.Length;
         // Cykliczny indeks
         private uint _bufferIndex = 0;
         // Całkowita liczba odebranych bajtów
@@ -36,8 +36,9 @@ namespace Shared.MVVM.Model.Networking.Transfer.Reception
         private byte[]? _lastReceivedPacket = null;
         #endregion
 
-        public PacketReceiveBuffer()
+        public PacketReceiveBuffer(uint maxPacketSize = 1 << 20) // 1 MiB
         {
+            _buffer = new byte[maxPacketSize];
             Reset();
         }
 
@@ -64,7 +65,7 @@ namespace Shared.MVVM.Model.Networking.Transfer.Reception
             CancellationToken cancellationToken)
         {
             /* Pętla pozwala odbierać pakiety większe niż socket.ReceiveBufferSize,
-            natomiast wciąż nie większe niż MAX_PACKET_SIZE. */
+            natomiast wciąż nie większe niż BufferUintLength. */
             while (true)
             {
                 while (_nowInterpretedByteIndex != _receivedBytes)
@@ -100,9 +101,9 @@ namespace Shared.MVVM.Model.Networking.Transfer.Reception
         private void SocketReceive(IReceiveSocket socket, CancellationToken cancellationToken)
         {
             // Jeżeli doszliśmy do końca bufora, to wracamy na jego początek.
-            if (_bufferIndex == MAX_PACKET_SIZE)
+            if (_bufferIndex == BufferUintLength)
                 _bufferIndex = 0;
-            uint remainingBufferCapacity = MAX_PACKET_SIZE - _bufferIndex;
+            uint remainingBufferCapacity = BufferUintLength - _bufferIndex;
 
             ValueTask<int> valueTask = socket.ReceiveAsync(
                 new Memory<byte>(_buffer, (int)_bufferIndex, (int)remainingBufferCapacity),
@@ -111,7 +112,7 @@ namespace Shared.MVVM.Model.Networking.Transfer.Reception
             task.Wait();
 
             /* Dzięki ostatniemu parametrowi Memory i remainingBufferCapacity,
-            _bufferIndex zawsze jest mniejsze lub równe MAX_PACKET_SIZE.
+            _bufferIndex zawsze jest mniejsze lub równe BufferUintLength.
             Przesuwamy _bufferIndex i _receivedBytes o liczbę odebranych bajtów. */
             uint receivedBytes = (uint)task.Result;
 
@@ -151,7 +152,7 @@ namespace Shared.MVVM.Model.Networking.Transfer.Reception
             // Zamieniamy sieciową kolejność big-endian na kolejność hosta.
             uint prefixValue = (uint)IPAddress.NetworkToHostOrder(
                 (int)BitConverter.ToUInt32(_prefixBuffer, 0));
-            if (PREFIX_SIZE + prefixValue > MAX_PACKET_SIZE)
+            if (PREFIX_SIZE + prefixValue > BufferUintLength)
                 /* Klient nie mógł, tylko wykonując swój kod, stworzyć pakietu
                 o tak dużym rozmiarze, co oznacza, że ktoś sfabrykował pakiet. */
                 throw new Error("|Received packet with prefix value greater than max packet size|.");
@@ -178,10 +179,10 @@ namespace Shared.MVVM.Model.Networking.Transfer.Reception
         {
             /* // Zamiast tego można się posługiwać indeksami i licznikami typu unsigned.
             // https://stackoverflow.com/a/1082938
-            int r = linearIndex % MAX_PACKET_SIZE
-            return (r < 0 ? r + MAX_PACKET_SIZE : r) */
+            int r = linearIndex % BufferUintLength
+            return (r < 0 ? r + BufferUintLength : r) */
 
-            return linearIndex % MAX_PACKET_SIZE;
+            return linearIndex % BufferUintLength;
         }
 
         private void FlushPacket()
@@ -200,7 +201,7 @@ namespace Shared.MVVM.Model.Networking.Transfer.Reception
             }
             else
             {
-                uint lengthToEnd = MAX_PACKET_SIZE - contentBeginIndexInclusive;
+                uint lengthToEnd = BufferUintLength - contentBeginIndexInclusive;
                 uint lengthFromStart = contentEndIndexExclusive /* - 0 */;
                 packet = new byte[lengthToEnd + lengthFromStart];
                 Buffer.BlockCopy(_buffer, (int)contentBeginIndexInclusive, packet, 0, (int)lengthToEnd);
