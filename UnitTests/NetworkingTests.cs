@@ -1,4 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking.Transfer;
@@ -296,9 +296,9 @@ namespace UnitTests
         public void PacketReceiveBuffer_ReceiveUntilCompletedOrInterrupted_WhenBufferFull_ShouldReturnToBufferStart()
         {
             // Arrange
-            var packetReceiveBuffer = new PacketReceiveBuffer();
+            var packetReceiveBuffer = new PacketReceiveBuffer(1 << 16);
 
-            const int numberOfKeepAlives = 1 << 22;
+            const int numberOfKeepAlives = 1 << 18;
             int[] returnedByteCounts = new int[numberOfKeepAlives];
             byte[] byteStream = new byte[SocketWrapper.PACKET_PREFIX_SIZE * numberOfKeepAlives];
             for (int i = 0; i < numberOfKeepAlives; ++i)
