@@ -1,4 +1,5 @@
-﻿using Shared.MVVM.Model.Networking.Transfer.Transmission;
+﻿using Shared.MVVM.Core;
+using Shared.MVVM.Model.Networking.Transfer.Transmission;
 using System.Net.Sockets;
 
 namespace UnitTests.Mocks
@@ -21,6 +22,9 @@ namespace UnitTests.Mocks
         public ValueTask<int> SendAsync(ReadOnlyMemory<byte> buffer, SocketFlags socketFlags,
             CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+                throw new OperationCanceledException("SendSocketMock SendAsync canceled");
+
             if (_returnedByteCountIndex >= _returnedByteCounts.Length)
                 return new ValueTask<int>(0);
 
@@ -56,6 +60,11 @@ namespace UnitTests.Mocks
             }
 
             return new ValueTask<int>(returnedByteCount);
+        }
+
+        public byte[] GetSentBytes()
+        {
+            return ByteStream.Slice(0, _byteStreamIndex);
         }
     }
 }
