@@ -17,7 +17,7 @@ namespace Shared.MVVM.Model.Networking.Packets
             SentMessage = 17, MessagesList = 18, DisplayedMessage = 19, AttachmentContent = 20,
 
             ClientIntroduction = 255, GetConversationsAndUsers = 254, AddConversation = 253,
-            EditConversation = 252, DeleteConversation = 251, SearchUsers = 250,
+            EditConversation = 252, DeleteConversation = 251, FindUsers = 250,
             AddParticipation = 249, EditParticipation = 248, DeleteParticipation = 247,
             SendMessage = 246, GetMessages = 245, GetAttachment = 244
         }

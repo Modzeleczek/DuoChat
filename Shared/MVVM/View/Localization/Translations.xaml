@@ -32,6 +32,7 @@
   <l:Entry x:Key="Add_conversation" EN="Add conversation"
     PL="Dodaj konwersację"/>
   <l:Entry x:Key="Add_participant" EN="Add participant" PL="Dodaj uczestnika"/>
+  <l:Entry x:Key="Find_user" EN="Find user" PL="Znajdź użytkownika"/>
   <l:Entry x:Key="Conversation_details" EN="Conversation details"
     PL="Szczegóły konwersacji"/>
   <l:Entry x:Key="Remove" PL="Usuń"/>

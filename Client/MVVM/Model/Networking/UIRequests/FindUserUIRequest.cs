@@ -2,13 +2,13 @@
 
 namespace Client.MVVM.Model.Networking.UIRequests
 {
-    public class SearchUsersUIRequest : UIRequest
+    public class FindUserUIRequest : UIRequest
     {
         #region Properties
         public string LoginFragment { get; }
         #endregion
 
-        public SearchUsersUIRequest(string loginFragment)
+        public FindUserUIRequest(string loginFragment)
         {
             LoginFragment = loginFragment;
         }

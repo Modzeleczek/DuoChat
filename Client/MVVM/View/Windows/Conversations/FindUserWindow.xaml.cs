@@ -4,9 +4,9 @@ using System.Windows;
 
 namespace Client.MVVM.View.Windows.Conversations
 {
-    public partial class AddParticipantWindow : DialogWindow
+    public partial class FindUserWindow : DialogWindow
     {
-        public AddParticipantWindow(Window owner, AddParticipantViewModel dataContext)
+        public FindUserWindow(Window owner, FindUserViewModel dataContext)
             : base(owner, dataContext)
         {
             InitializeComponent();

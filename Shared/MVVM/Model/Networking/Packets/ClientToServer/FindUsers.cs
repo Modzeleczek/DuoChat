@@ -5,10 +5,10 @@ using System.Text;
 
 namespace Shared.MVVM.Model.Networking.Packets.ClientToServer
 {
-    public class SearchUsers : Packet
+    public class FindUsers : Packet
     {
         #region Fields
-        public const Codes CODE = Codes.SearchUsers;
+        public const Codes CODE = Codes.FindUsers;
         #endregion
 
         public static byte[] Serialize(PrivateKey senderPrivateKey, PublicKey receiverPublicKey,
@@ -32,5 +32,4 @@ namespace Shared.MVVM.Model.Networking.Packets.ClientToServer
             loginFragment = pr.ReadUtf8String(pr.ReadUInt8());
         }
     }
-
 }

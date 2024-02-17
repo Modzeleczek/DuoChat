@@ -459,8 +459,8 @@ namespace Server.MVVM.Model.Networking
                     case Packet.Codes.DeleteConversation:
                         HandleReceivedDeleteConversation(client, pr);
                         break;
-                    case Packet.Codes.SearchUsers:
-                        HandleReceivedSearchUsers(client, pr);
+                    case Packet.Codes.FindUsers:
+                        HandleReceivedFindUser(client, pr);
                         break;
                     case Packet.Codes.AddParticipation:
                         HandleReceivedAddParticipation(client, pr);
@@ -715,11 +715,11 @@ namespace Server.MVVM.Model.Networking
                         c.GenerateToken(), outConversationId), DeletedConversation.CODE);
         }
 
-        private void HandleReceivedSearchUsers(Client client, PacketReader pr)
+        private void HandleReceivedFindUser(Client client, PacketReader pr)
         {
             Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {client}");
 
-            SearchUsers.Deserialize(pr, out string loginFragment);
+            FindUsers.Deserialize(pr, out string loginFragment);
 
             // TODO: https://www.nuget.org/packages/Fastenshtein
             var users = _storage.Database.AccountsById.GetAll()

@@ -678,8 +678,8 @@ namespace Client.MVVM.Model.Networking
                 case StopProcess stopProcess:
                     StopProcessUIRequest(stopProcess);
                     break;
-                case SearchUsersUIRequest searchUsers:
-                    SearchUsersUIRequest(searchUsers);
+                case FindUserUIRequest findUser:
+                    FindUserUIRequest(findUser);
                     break;
                 case AddConversationUIRequest addConversation:
                     AddConversationUIRequest(addConversation);
@@ -830,7 +830,7 @@ namespace Client.MVVM.Model.Networking
             request.Callback?.Invoke();
         }
 
-        private void SearchUsersUIRequest(SearchUsersUIRequest request)
+        private void FindUserUIRequest(FindUserUIRequest request)
         {
             Debug.WriteLine($"{MethodBase.GetCurrentMethod().Name}, {request.LoginFragment}");
 
@@ -839,8 +839,8 @@ namespace Client.MVVM.Model.Networking
             RemoteServer server = _remoteServer;
 
             server.SetExpectedPacket(ReceivePacketOrder.ExpectedPackets.Notification);
-            server.EnqueueToSend(SearchUsers.Serialize(_privateKey!, server.PublicKey!,
-                server.GenerateToken(), request.LoginFragment), SearchUsers.CODE);
+            server.EnqueueToSend(FindUsers.Serialize(_privateKey!, server.PublicKey!,
+                server.GenerateToken(), request.LoginFragment), FindUsers.CODE);
         }
 
         private void AddConversationUIRequest(AddConversationUIRequest request)

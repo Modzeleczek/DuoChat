@@ -23,7 +23,7 @@ namespace Client.MVVM.ViewModel.Conversations
         {
             AddParticipant = new RelayCommand(_ =>
             {
-                var result = AddParticipantViewModel.ShowDialog(window!, client, activeAccount, conversation);
+                var result = FindUserViewModel.ShowDialog(window!, client, activeAccount, conversation);
                 if (!(result is Success success))
                     // Anulowanie
                     return;

@@ -6,14 +6,13 @@ using Shared.MVVM.Core;
 using Shared.MVVM.Model.Networking.Packets.ServerToClient;
 using Shared.MVVM.ViewModel;
 using Shared.MVVM.ViewModel.Results;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 
 namespace Client.MVVM.ViewModel.Conversations
 {
-    public class AddParticipantViewModel : WindowViewModel
+    public class FindUserViewModel : WindowViewModel // ConversationCancellableViewModel
     {
         #region Commands
         public RelayCommand SelectUser { get; }
@@ -29,7 +28,7 @@ namespace Client.MVVM.ViewModel.Conversations
                 _loginSearchText = value;
                 OnPropertyChanged();
 
-                _client.Request(new SearchUsersUIRequest(LoginSearchText));
+                _client.Request(new FindUserUIRequest(LoginSearchText));
             }
         }
 
@@ -42,7 +41,7 @@ namespace Client.MVVM.ViewModel.Conversations
         private readonly Conversation _conversation;
         #endregion
 
-        private AddParticipantViewModel(ClientMonolith client, Conversation conversation)
+        private FindUserViewModel(ClientMonolith client, Conversation conversation)
         {
             _client = client;
             _conversation = conversation;
@@ -73,8 +72,8 @@ namespace Client.MVVM.ViewModel.Conversations
         public static Result ShowDialog(Window owner, ClientMonolith client, Account activeAccount,
             Conversation conversation)
         {
-            var vm = new AddParticipantViewModel(client, conversation);
-            var win = new AddParticipantWindow(owner, vm);
+            var vm = new FindUserViewModel(client, conversation);
+            var win = new FindUserWindow(owner, vm);
             vm.RequestClose += () => win.Close();
             win.ShowDialog();
             return vm.Result;

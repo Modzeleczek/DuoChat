@@ -22,13 +22,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ClientToServer\Conversation\AddConversation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ClientToServer\Conversation\DeleteConversation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ClientToServer\Conversation\EditConversation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ClientToServer\FindUsers.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ClientToServer\Message\GetAttachment.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ClientToServer\Message\GetMessages.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ClientToServer\Message\SendMessage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ClientToServer\Participation\AddParticipation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ClientToServer\Participation\DeleteParticipation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ClientToServer\Participation\EditParticipation.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ClientToServer\SearchUsers.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ServerToClient\Conversation\AddedConversation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ServerToClient\Conversation\DeletedConversation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MVVM\Model\Networking\Packets\ServerToClient\Conversation\EditedConversation.cs" />

@@ -1,4 +1,4 @@
-﻿<w:DialogWindow x:Class="Client.MVVM.View.Windows.Conversations.AddParticipantWindow"
+﻿<w:DialogWindow x:Class="Client.MVVM.View.Windows.Conversations.FindUserWindow"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -8,8 +8,8 @@
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:w="clr-namespace:Shared.MVVM.View.Windows"
   xmlns:controls="clr-namespace:Client.MVVM.View.Controls"
-  x:Name="AddParticipantWindowName"
-  Title="{Binding Source={x:Static l:Translator.Instance}, Path=D.Add_participant}"
+  x:Name="FindUserWindowName"
+  Title="{Binding Source={x:Static l:Translator.Instance}, Path=D.Find_user}"
   Width="800"
   Height="450"
   x:ClassModifier="public"
@@ -22,7 +22,7 @@
   <i:Interaction.Triggers>
     <i:EventTrigger EventName="Loaded">
       <i:InvokeCommandAction Command="{Binding WindowLoaded}"
-        CommandParameter="{Binding ElementName=AddParticipantWindowName}" />
+        CommandParameter="{Binding ElementName=FindUserWindowName}" />
     </i:EventTrigger>
   </i:Interaction.Triggers>
   
@@ -46,7 +46,7 @@
         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center"
           Margin="15,0,15,0">
           <Label
-            Content="{Binding ElementName=AddParticipantWindowName, Path=Title}"
+            Content="{Binding ElementName=FindUserWindowName, Path=Title}"
             FontSize="14"
             FontWeight="SemiBold"
             Foreground="{DynamicResource FirstForegroundColor}" />
@@ -78,7 +78,7 @@
                   <i:Interaction.Triggers>
                     <i:EventTrigger EventName="MouseLeftButtonDown">
                       <i:InvokeCommandAction Command="{Binding Path=DataContext.SelectUser,
-                        ElementName=AddParticipantWindowName}" CommandParameter="{Binding}" />
+                        ElementName=FindUserWindowName}" CommandParameter="{Binding}" />
                     </i:EventTrigger>
                   </i:Interaction.Triggers>
 
