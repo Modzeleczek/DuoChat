@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Shared.MVVM.Core;
 using Shared.MVVM.Model.Cryptography;
 using System.Security.Cryptography;
 using System.Text;
@@ -139,6 +140,24 @@ namespace UnitTests
         }
 
         [TestMethod]
+        public void Aes_Decrypt_WhenCipherTextCannotBeDecryptedWithPublicKey_ShouldThrowError()
+        {
+            // Arrange
+            var (key, iv) = Aes.GenerateKeyIv();
+            byte[] plainText = new byte[] { 1, 2, 3, };
+            byte[] cipherText = Aes.Encrypt(key, iv, plainText);
+            byte[] invalidKey = key;
+            invalidKey[0] ^= 0b11111111;
+
+            // Act
+            var testDelegate = () => Aes.Decrypt(invalidKey, iv, cipherText);
+
+            // Assert
+            var ex = Assert.ThrowsException<Error>(testDelegate);
+            Assert.IsTrue(ex.Message.Contains("|Error occured while| |AES transforming.|"));
+        }
+
+        [TestMethod]
         public void Rsa_Encrypt_258BLongPublicKey_ShouldNotThrow()
         {
             using (var rng = RandomNumberGenerator.Create())
@@ -160,6 +179,56 @@ namespace UnitTests
                 Assert.AreEqual(258, publicKey.Length);
                 expPlain.BytesEqual(actPlain);
             }
+        }
+
+        [TestMethod]
+        public void Rsa_Sign_WhenDataNumericValueIsGreaterThanPrivateKeyModulus_ShouldThrowError()
+        {
+            // Arrange
+            var privateKey = PrivateKey.Random(2 * 8, 1 * 8);
+            byte[] data = new byte[] { 255, 255, 255, 255 };
+
+            // Act
+            var testDelegate = () => Rsa.Sign(privateKey, data);
+
+            // Assert
+            var ex = Assert.ThrowsException<Error>(testDelegate);
+            Assert.IsTrue(ex.Message.Contains("|Error occured while| |RSA signing|."));
+        }
+
+        [TestMethod]
+        public void Rsa_Encrypt_WhenPlainTextNumericValueIsGreaterThanPublicKeyModulus_ShouldThrowError()
+        {
+            // Arrange
+            var privateKey = PrivateKey.Random(2 * 8, 1 * 8);
+            var publicKey = privateKey.ToPublicKey();
+            byte[] plainText = new byte[] { 255, 255, 255, 255 };
+
+            // Act
+            var testDelegate = () => Rsa.Encrypt(publicKey, plainText);
+
+            // Assert
+            var ex = Assert.ThrowsException<Error>(testDelegate);
+            Assert.IsTrue(ex.Message.Contains("|Error occured while| |RSA encrypting.|"));
+        }
+
+        [TestMethod]
+        public void Rsa_Decrypt_WhenCipherTextCannotBeDecryptedWithPublicKey_ShouldThrowError()
+        {
+            // Arrange
+            var privateKey = PrivateKey.Random();
+            var publicKey = privateKey.ToPublicKey();
+            byte[] plainText = new byte[] { 1, 2, 3 };
+            byte[] cipherText = Rsa.Encrypt(publicKey, plainText);
+            for (int i = 0; i < cipherText.Length; ++i)
+                cipherText[i] ^= 0b11111111;
+
+            // Act
+            var testDelegate = () => Rsa.Decrypt(privateKey, cipherText);
+
+            // Assert
+            var ex = Assert.ThrowsException<Error>(testDelegate);
+            Assert.IsTrue(ex.Message.Contains("|Error occured while| |RSA decrypting.|"));
         }
     }
 }

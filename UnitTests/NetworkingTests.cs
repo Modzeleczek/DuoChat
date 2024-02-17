@@ -1,10 +1,11 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model.Cryptography;
 using Shared.MVVM.Model.Networking.Transfer;
 using Shared.MVVM.Model.Networking.Transfer.Reception;
 using Shared.MVVM.Model.Networking.Transfer.Transmission;
 using System.Net;
+using System.Text;
 using UnitTests.Mocks;
 
 namespace UnitTests
@@ -45,6 +46,25 @@ namespace UnitTests
             Console.WriteLine($"expected: {expPacket.ToHexString()}");
             Console.WriteLine($"actual: {actPacket.ToHexString()}");
 
+            expPacket.BytesEqual(actPacket);
+        }
+
+        [TestMethod]
+        public void PacketBuilder_Build_UnencryptedUnauthenticatedPacketAfterOnly1Append_ShouldReturnExpectedPacket()
+        {
+            // Arrange
+            PacketBuilder pb = new PacketBuilder();
+            byte[] expPacket = new byte[]
+            {
+                0x12, 0x34,
+                0x00, 0x0A, 0xBC, 0xDE
+            };
+
+            // Act
+            pb.Append(0x1234000ABCDE, 6);
+            byte[] actPacket = pb.Build();
+
+            // Assert
             expPacket.BytesEqual(actPacket);
         }
 
@@ -231,8 +251,8 @@ namespace UnitTests
             Console.WriteLine(actualPacket0!.ToHexString());
             Console.WriteLine(actualPacket1!.ToHexString());
 
-            byteStream.Slice(4, 4).BytesEqual(actualPacket0); // Pierwszy pakiet
-            byteStream.Slice(12, 2).BytesEqual(actualPacket1); // Drugi pakiet
+            byteStream.Slice(4, 4).BytesEqual(actualPacket0!); // Pierwszy pakiet
+            byteStream.Slice(12, 2).BytesEqual(actualPacket1!); // Drugi pakiet
         }
 
         [TestMethod]
@@ -321,6 +341,67 @@ namespace UnitTests
         }
 
         [TestMethod]
+        public void PacketReceiveBuffer_ReceiveUntilCompletedOrInterrupted_WhenSocketReturnsOnlyPacketPrefixOfValue0_ShouldCreatePacketOfLength0()
+        {
+            // Arrange
+            var packetReceiveBuffer = new PacketReceiveBuffer();
+
+            int[] returnedByteCounts = new int[] { 2, 1, 1 }; // 4 - rozmiar prefiksu
+            byte[] byteStream = new byte[] { 0, 0, 0, 0 }; // Sam prefiks
+            var socketMock = new ReceiveSocketMock(returnedByteCounts, byteStream);
+
+            // Act
+            byte[]? actualPacket = packetReceiveBuffer.ReceiveUntilCompletedOrInterrupted(
+                socketMock, CancellationToken.None);
+
+            // Assert
+            Assert.AreEqual(0, actualPacket?.Length);
+        }
+
+        [TestMethod]
+        public void PacketReceiveBuffer_ReceiveUntilCompletedOrInterrupted_WhenSocketReturnsTooBigPacketPrefix_ShouldThrowReceived_packet_with_prefix_value_greater_than_max_packet_size()
+        {
+            // Arrange
+            var packetReceiveBuffer = new PacketReceiveBuffer();
+
+            int[] returnedByteCounts = new int[] { 2, 1, 1 }; // 4 - rozmiar prefiksu
+            byte[] byteStream = new byte[] { 1, 3, 2, 1 }; // Za duża wartość prefiksu
+            var socketMock = new ReceiveSocketMock(returnedByteCounts, byteStream);
+
+            // Act
+            var testDelegate = () => packetReceiveBuffer.ReceiveUntilCompletedOrInterrupted(
+                socketMock, CancellationToken.None);
+
+            // Assert
+            var ex = Assert.ThrowsException<Error>(testDelegate);
+            Assert.AreEqual("|Received packet with prefix value greater than max packet size|.",
+                ex.Message);
+        }
+
+        [TestMethod]
+        public void PacketReceiveBuffer_ReceiveUntilCompletedOrInterrupted_WhenPacketStartsAtEndOfBufferAndEndsAtStartOfBuffer_ShouldCorrectlyReturnIt()
+        {
+            // Arrange
+            var packetReceiveBuffer = new PacketReceiveBuffer(9);
+
+            // Socket zwraca: keep alive, 3 bajty do końca bufora, 2 bajty na początku bufora
+            int[] returnedByteCounts = new int[] { 4, 5, 2 };
+            byte[] byteStream = new byte[] { 0, 0, 0, 0 /* pakiet 1 - keep alive. */,
+                0, 0, 0, 3, 0xAB, 0xCD, 0xEF /* pakiet 2 */ };
+            var socketMock = new ReceiveSocketMock(returnedByteCounts, byteStream);
+
+            // Act
+            byte[]? actualKeepAlive = packetReceiveBuffer.ReceiveUntilCompletedOrInterrupted(
+                socketMock, CancellationToken.None);
+            byte[]? actualOverlappingPacket = packetReceiveBuffer.ReceiveUntilCompletedOrInterrupted(
+                socketMock, CancellationToken.None);
+
+            // Assert
+            Assert.AreEqual(0, actualKeepAlive!.Length);
+            byteStream.Slice(8, 3).BytesEqual(actualOverlappingPacket!);
+        }
+
+        [TestMethod]
         public void PacketSendBuffer_SendUntilCompletedOrInterrupted_WhenGivenPackets_ShouldConsumeThem()
         {
             // Arrange
@@ -381,6 +462,222 @@ namespace UnitTests
 
             Console.WriteLine(actualPacket.ToHexString());
             expectedPacket.BytesEqual(actualPacket);
+        }
+
+        [TestMethod]
+        public void PacketReader_ReadUtf8String_ShouldReturnString()
+        {
+            // Arrange
+            string expString = "text";
+            var pb = new PacketBuilder();
+            pb.Append((ulong)expString.Length, sizeof(int));
+            pb.Append(Encoding.UTF8.GetBytes(expString));
+            var pr = new PacketReader(pb.Build());
+
+            // Act
+            string actString = pr.ReadUtf8String((int)pr.ReadUInt32());
+
+            // Assert
+            Assert.AreEqual(expString, actString);
+        }
+
+        [TestMethod]
+        public void PacketReader_ReadBytesToEnd_ShouldReturnAllPacketBytesBeginningFromTheCurrentPosition()
+        {
+            // Arrange
+            byte[] packet = new byte[] { 0, 1, 2, 3 };
+            var pr = new PacketReader(packet);
+
+            // Act
+            pr.ReadUInt16();
+            byte[] actReadToEnd = pr.ReadBytesToEnd();
+
+            // Assert
+            packet.Slice(2, 2).BytesEqual(actReadToEnd);
+        }
+
+        [TestMethod]
+        public void PacketReader_ReadGuid_ShouldReturnGuid()
+        {
+            // Arrange
+            Guid expGuid = Guid.NewGuid();
+            var pr = new PacketReader(expGuid.ToByteArray());
+
+            // Act
+            Guid actGuid = pr.ReadGuid();
+
+            // Assert
+            Assert.AreEqual(expGuid, actGuid);
+        }
+
+        [TestMethod]
+        public void PacketReader_ReadUInt64_ShouldReturnUInt64()
+        {
+            // Arrange
+            ulong expUInt64 = 15;
+            var pb = new PacketBuilder();
+            pb.Append(expUInt64, sizeof(ulong));
+            var pr = new PacketReader(pb.Build());
+
+            // Act
+            ulong actUInt64 = pr.ReadUInt64();
+
+            // Assert
+            Assert.AreEqual(expUInt64, actUInt64);
+        }
+
+        [TestMethod]
+        public void PacketSendBuffer_SendUntilCompletedOrInterrupted_WhenTriedToSendNewPacketBeforeCompletelySendingCurrentOne_ShouldThrowInvalidOperationException()
+        {
+            // Arrange
+            var packetSendBuffer = new PacketSendBuffer();
+
+            // Wysyłamy tylko prefiks i pierwsze 3 z 4 bajtów pakietu packet0.
+            int[] returnedByteCounts = new int[] { 4, 3 };
+            byte[] packet0 = new byte[] { 1, 2, 3, 4 };
+            byte[] packet1 = new byte[] { 1 };
+            var socketMock = new SendSocketMock(returnedByteCounts);
+
+            // Act
+            var testDelegate = () =>
+            {
+                var cts = new CancellationTokenSource();
+                /* SendUntilCompletedOrInterrupted dla packet0 kręci się w nieskończonej pętli,
+                bo mock socketa "wysłał" tylko 7/8 bajtów i potem zwraca 0 wysłanych bajtów. */
+                cts.CancelAfter(100);
+                try
+                {
+                    /* Po zcancelowaniu tokenu, SendUntilCompletedOrInterrupted rzuca wyjątek
+                    OperationCanceledException i zwraca sterowanie. */
+                    packetSendBuffer.SendUntilCompletedOrInterrupted(
+                        socketMock, cts.Token, packet0);
+                }
+                catch (OperationCanceledException) { }
+                // Nie skończyliśmy wysyłać packet0, ale zmieniamy na packet1 i próbujemy go wysyłać.
+                packetSendBuffer.SendUntilCompletedOrInterrupted(
+                    socketMock, CancellationToken.None, packet1);
+            };
+
+            // Assert
+            var ex = Assert.ThrowsException<InvalidOperationException>(testDelegate);
+            Assert.AreEqual("Tried to send a new packet before completely sending the previous one.",
+                ex.Message);
+        }
+
+        [TestMethod]
+        public void PacketSendBuffer_SendUntilCompletedOrInterrupted_WhenCanceledBeforeCalling_ShouldThrowInvalidOperationException()
+        {
+            // Arrange
+            var packetSendBuffer = new PacketSendBuffer();
+
+            int[] returnedByteCounts = new int[] { 4, 3 };
+            byte[] packet0 = new byte[] { 1, 2, 3, 4 };
+            byte[] packet1 = new byte[] { 1 };
+            var socketMock = new SendSocketMock(returnedByteCounts);
+
+            // Act
+            var testDelegate = () =>
+            {
+                var cts = new CancellationTokenSource();
+                cts.Cancel();
+                try
+                {
+                    packetSendBuffer.SendUntilCompletedOrInterrupted(
+                        socketMock, cts.Token, packet0);
+                }
+                catch (OperationCanceledException) { }
+                packetSendBuffer.SendUntilCompletedOrInterrupted(
+                    socketMock, CancellationToken.None, packet1);
+            };
+
+            // Assert
+            var ex = Assert.ThrowsException<InvalidOperationException>(testDelegate);
+            Assert.AreEqual("Tried to send a new packet before completely sending the previous one.",
+                ex.Message);
+        }
+
+        [TestMethod]
+        public void ByteArrayExtensions_BytesEqual_WhenParametersAreOfTypeIEnumerableAndHaveDifferentLengths_ShouldThrowAssertFailedException()
+        {
+            // Arrange
+            var a = (IEnumerable<byte>)new byte[] { 1, 2, 3 };
+            var b = (IEnumerable<byte>)new byte[] { 1, 2 };
+
+            // Act
+            var testDelegate = () =>
+            {
+                a.BytesEqual(b);
+            };
+
+            // Assert
+            var ex = Assert.ThrowsException<AssertFailedException>(testDelegate);
+            Assert.IsTrue(ex.Message.Contains("expected and actual have different lengths"));
+        }
+
+        [TestMethod]
+        public void PacketSendBuffer_Reset_WhenCalledAfterCancellingSendingDueToSocketRepeatedlyReturning0BytesSent_ShouldResetPacketSendBufferState()
+        {
+            // Arrange
+            var packetSendBuffer = new PacketSendBuffer();
+
+            byte[] packet = new byte[] { 1, 2, 3, 4 };
+            // Do socketu socketMock0 wysyłamy tylko prefiks i pierwsze 3 z 4 bajtów pakietu packet.
+            int[] returnedByteCounts0 = new int[] { 4, 3 };
+            var socketMock0 = new SendSocketMock(returnedByteCounts0);
+            // Do socketu socketMock1 wysyłamy prefiks i cały pakiet packet.
+            int[] returnedByteCounts1 = new int[] { 4, 4 };
+            var socketMock1 = new SendSocketMock(returnedByteCounts1);
+
+            // Act
+            var cts = new CancellationTokenSource();
+            cts.CancelAfter(100);
+            try
+            {
+                packetSendBuffer.SendUntilCompletedOrInterrupted(
+                    socketMock0, cts.Token, packet);
+            }
+            catch (OperationCanceledException) { }
+            packetSendBuffer.Reset();
+            packetSendBuffer.SendUntilCompletedOrInterrupted(
+                socketMock1, CancellationToken.None, packet);
+
+            // Assert
+            byte[] prefixBytes = new byte[] { 0, 0, 0, 4 };
+            prefixBytes.Concat(packet.Slice(0, 3)).BytesEqual(socketMock0.GetSentBytes());
+            prefixBytes.Concat(packet).BytesEqual(socketMock1.GetSentBytes());
+        }
+
+        [TestMethod]
+        public void PacketSendBuffer_Reset_WhenCalledAfterCancellingBeforeEvenCallingSend_ShouldResetPacketSendBufferState()
+        {
+            // Arrange
+            var packetSendBuffer = new PacketSendBuffer();
+
+            byte[] packet = new byte[] { 1, 2, 3, 4 };
+            int[] returnedByteCounts0 = new int[] { 4, 3 };
+            var socketMock0 = new SendSocketMock(returnedByteCounts0);
+            int[] returnedByteCounts1 = new int[] { 4, 4 };
+            var socketMock1 = new SendSocketMock(returnedByteCounts1);
+
+            // Act
+            var cts = new CancellationTokenSource();
+            cts.Cancel();
+            try
+            {
+                packetSendBuffer.SendUntilCompletedOrInterrupted(
+                    socketMock0, cts.Token, packet);
+            }
+            catch (OperationCanceledException) { }
+            packetSendBuffer.Reset();
+            packetSendBuffer.SendUntilCompletedOrInterrupted(
+                socketMock1, CancellationToken.None, packet);
+
+            // Assert
+            /* Nic się nie wyłało do socketMock0, bo zcancelowaliśmy
+            token jeszcze przed rozpoczęciem wysyłania. */
+            new byte[] { }.BytesEqual(socketMock0.GetSentBytes());
+            byte[] prefixBytes = new byte[] { 0, 0, 0, 4 };
+            prefixBytes.Concat(packet).BytesEqual(socketMock1.GetSentBytes());
         }
     }
 }
