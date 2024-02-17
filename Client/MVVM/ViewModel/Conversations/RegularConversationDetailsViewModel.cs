@@ -1,4 +1,4 @@
-﻿using Client.MVVM.Model.Networking;
+using Client.MVVM.Model.Networking;
 using Client.MVVM.Model.Networking.UIRequests;
 using Client.MVVM.View.Windows.Conversations;
 using Client.MVVM.ViewModel.Observables;
@@ -74,7 +74,6 @@ namespace Client.MVVM.ViewModel.Conversations
             client.ServerEndedConnection += OnServerEndedConnection;
             client.ReceivedDeletedConversation += OnReceivedDeletedConversation;
             client.ReceivedAddedParticipation += OnReceivedAddedParticipation;
-            // TODO: w EditedParticipation wyłączać i jeszcze raz włączać odpowiedni ViewModel, jeżeli odebrano/przyznano nam uprawnienia admina
             client.ReceivedEditedParticipation += OnReceivedEditedParticipation;
             client.ReceivedDeletedParticipation += OnReceivedDeletedParticipation;
         }
