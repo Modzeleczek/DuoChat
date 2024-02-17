@@ -246,7 +246,7 @@ namespace Shared.MVVM.Model.Cryptography
             try { q = Convert.FromBase64String(split[1]); }
             catch (FormatException e)
             {
-                return new Failure(e, "|Second| |number (q) " +
+                return new Failure(e, "|Second| |number| (q) " +
                     "|is not valid Base64 string.|");
             }
 
