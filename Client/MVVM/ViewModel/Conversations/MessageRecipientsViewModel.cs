@@ -1,12 +1,11 @@
 ﻿using Client.MVVM.Model.Networking;
 using Client.MVVM.View.Windows.Conversations;
-using Client.MVVM.ViewModel.Conversations;
 using Client.MVVM.ViewModel.Observables;
 using Client.MVVM.ViewModel.Observables.Messages;
 using Shared.MVVM.ViewModel.Results;
 using System.Windows;
 
-namespace Client.MVVM.ViewModel
+namespace Client.MVVM.ViewModel.Conversations
 {
     public class MessageRecipientsViewModel : ConversationCancellableViewModel
     {

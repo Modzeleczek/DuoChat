@@ -1,4 +1,4 @@
-﻿using Client.MVVM.ViewModel;
+﻿using Client.MVVM.ViewModel.Conversations;
 using Shared.MVVM.View.Windows;
 using System.Windows;
 
