@@ -1,11 +1,10 @@
-using Client.MVVM.Model.Networking;
+﻿using Client.MVVM.Model.Networking;
 using Client.MVVM.Model.Networking.UIRequests;
 using Client.MVVM.View.Windows.Conversations;
 using Client.MVVM.ViewModel.Observables;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model.Networking.Packets.ServerToClient.Participation;
 using Shared.MVVM.View.Windows;
-using Shared.MVVM.ViewModel;
 using Shared.MVVM.ViewModel.Results;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,14 +13,14 @@ using System.Windows;
 
 namespace Client.MVVM.ViewModel.Conversations
 {
-    public class RegularConversationDetailsViewModel : WindowViewModel
+    public class RegularConversationDetailsViewModel : ConversationCancellableViewModel
     {
         #region Commands
         public RelayCommand? LeaveConversation { get; protected set; }
         #endregion
 
         #region Properties
-        public Conversation Conversation { get; }
+        public Conversation Conversation { get => _conversation; }
 
         public ObservableCollection<ConversationParticipation> FilteredParticipations { get; } =
             new ObservableCollection<ConversationParticipation>();
@@ -47,16 +46,14 @@ namespace Client.MVVM.ViewModel.Conversations
         #region Fields
         protected readonly ClientMonolith _client;
         protected readonly Dictionary<ulong, User> _knownUsers;
-        private readonly Account _activeAccount;
         #endregion
 
-        protected RegularConversationDetailsViewModel(ClientMonolith client,
-            Dictionary<ulong, User> knownUsers, Account activeAccount, Conversation conversation)
+        protected RegularConversationDetailsViewModel(ClientMonolith client, Conversation conversation,
+            Dictionary<ulong, User> knownUsers)
+            : base(client, conversation)
         {
             _client = client;
             _knownUsers = knownUsers;
-            _activeAccount = activeAccount;
-            Conversation = conversation;
             SearchText = string.Empty;
 
             WindowLoaded = new RelayCommand(windowLoadedE =>
@@ -67,36 +64,18 @@ namespace Client.MVVM.ViewModel.Conversations
 
             LeaveConversation = new RelayCommand(_ =>
             {
-                _client.Request(new DeleteParticipationUIRequest(conversation.Id, activeAccount.RemoteId));
+                _client.Request(new DeleteParticipationUIRequest(conversation.Id, conversation.Parent.RemoteId));
             });
 
             client.ReceivedRequestError += OnReceivedRequestError;
-            client.ServerEndedConnection += OnServerEndedConnection;
-            client.ReceivedDeletedConversation += OnReceivedDeletedConversation;
             client.ReceivedAddedParticipation += OnReceivedAddedParticipation;
             client.ReceivedEditedParticipation += OnReceivedEditedParticipation;
-            client.ReceivedDeletedParticipation += OnReceivedDeletedParticipation;
         }
 
         private void OnReceivedRequestError(RemoteServer server, string errorMsg)
         {
             // Wątek Client.Process
             UIInvoke(() => Alert(errorMsg));
-        }
-
-        private void OnServerEndedConnection(RemoteServer server, string errorMsg)
-        {
-            // Wątek Client.Process
-            UIInvoke(Cancel);
-        }
-
-        private void OnReceivedDeletedConversation(RemoteServer server, ulong inConversationId)
-        {
-            // Wątek Client.Process
-            /* Ignorujemy powiadomienia o konwersacjach innych niż Conversation
-            do których należy aktualny (aktywny) użytkownik. */
-            if (inConversationId == Conversation.Id)
-                UIInvoke(Cancel);
         }
 
         private void OnReceivedAddedParticipation(RemoteServer server,
@@ -120,7 +99,7 @@ namespace Client.MVVM.ViewModel.Conversations
 
             UIInvoke(() =>
             {
-                if (inParticipation.ParticipantId == _activeAccount.RemoteId)
+                if (inParticipation.ParticipantId == Conversation.Parent.RemoteId)
                     /* Cancellation oznacza, że użytkownik zamknął okno lub zostało zamknięte w
                     którymś handlerze eventu. Success oznacza, że okno ma zostać otwarte ponownie,
                     bo aktywnemu użytkownikowi zmieniono uprawnienia. */
@@ -131,25 +110,15 @@ namespace Client.MVVM.ViewModel.Conversations
             });
         }
 
-        private void OnReceivedDeletedParticipation(RemoteServer server,
-            DeletedParticipation.Participation inParticipation)
+        protected override void OnDeletedNonActiveAccountParticipation()
         {
-            // Wątek Client.Process
-            if (inParticipation.ConversationId != Conversation.Id)
-                return;
-
-            UIInvoke(() =>
-            {
-                RefreshFilteredParticipations();
-                if (inParticipation.ParticipantId == _activeAccount.RemoteId)
-                    Cancel();
-            });
+            UIInvoke(RefreshFilteredParticipations);
         }
 
-        public static Result ShowDialog(Window owner, ClientMonolith client,
-            Dictionary<ulong, User> knownUsers, Account activeAccount, Conversation conversation)
+        public static Result ShowDialog(Window owner, ClientMonolith client, Conversation conversation,
+            Dictionary<ulong, User> knownUsers)
         {
-            var vm = new RegularConversationDetailsViewModel(client, knownUsers, activeAccount, conversation);
+            var vm = new RegularConversationDetailsViewModel(client, conversation, knownUsers);
             var win = new RegularConversationDetailsWindow(owner, vm);
             vm.RequestClose += win.Close;
             win.ShowDialog();

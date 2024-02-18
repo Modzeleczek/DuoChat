@@ -31,5 +31,12 @@ namespace Client.MVVM.ViewModel.Observables
 
         public ObservableCollection<Message> Messages { get; } =
             new ObservableCollection<Message>();
+
+        public Account Parent { get; }
+
+        public Conversation(Account parent)
+        {
+            Parent = parent;
+        }
     }
 }

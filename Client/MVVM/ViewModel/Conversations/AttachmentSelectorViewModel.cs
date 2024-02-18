@@ -1,9 +1,9 @@
-﻿using Client.MVVM.View.Windows.Conversations;
-using Client.MVVM.ViewModel.Observables.Messages;
+﻿using Client.MVVM.Model.Networking;
+using Client.MVVM.View.Windows.Conversations;
+using Client.MVVM.ViewModel.Observables;
 using Microsoft.Win32;
 using Shared.MVVM.Core;
 using Shared.MVVM.View.Localization;
-using Shared.MVVM.ViewModel;
 using Shared.MVVM.ViewModel.Results;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -11,7 +11,7 @@ using System.Windows;
 
 namespace Client.MVVM.ViewModel.Conversations
 {
-    public class AttachmentSelectorViewModel : WindowViewModel
+    public class AttachmentSelectorViewModel : ConversationCancellableViewModel
     {
         #region Commands
         public RelayCommand AddAttachments { get; }
@@ -22,9 +22,10 @@ namespace Client.MVVM.ViewModel.Conversations
         public ObservableCollection<string> AttachmentPaths { get; }
         #endregion
 
-        private AttachmentSelectorViewModel(Draft draft)
+        private AttachmentSelectorViewModel(ClientMonolith client, Conversation conversation)
+            : base(client, conversation)
         {
-            AttachmentPaths = draft.AttachmentPaths;
+            AttachmentPaths = conversation.Draft.AttachmentPaths;
 
             AddAttachments = new RelayCommand(_ =>
             {
@@ -61,9 +62,9 @@ namespace Client.MVVM.ViewModel.Conversations
             });
         }
 
-        public static Result ShowDialog(Window owner, Draft draft)
+        public static Result ShowDialog(Window owner, ClientMonolith client, Conversation conversation)
         {
-            var vm = new AttachmentSelectorViewModel(draft);
+            var vm = new AttachmentSelectorViewModel(client, conversation);
             var win = new AttachmentSelectorWindow(owner, vm);
             vm.RequestClose += () => win.Close();
             win.ShowDialog();

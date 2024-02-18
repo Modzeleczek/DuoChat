@@ -17,9 +17,9 @@ namespace Client.MVVM.ViewModel.Conversations
         public RelayCommand ToggleAdmin { get; }
         #endregion
 
-        private OwnerConversationDetailsViewModel(ClientMonolith client,
-            Dictionary<ulong, User> knownUsers, Account activeAccount, Conversation conversation)
-            : base(client, knownUsers, activeAccount, conversation)
+        private OwnerConversationDetailsViewModel(ClientMonolith client, Conversation conversation,
+            Dictionary<ulong, User> knownUsers)
+            : base(client, conversation, knownUsers)
         {
             // Właściciel nie ma przycisku do opuszczania konwersacji, bo nie może jej opuścić.
             LeaveConversation = null;
@@ -42,11 +42,10 @@ namespace Client.MVVM.ViewModel.Conversations
             });
         }
 
-        public new static Result ShowDialog(Window owner, ClientMonolith client,
-            Dictionary<ulong, User> knownUsers, Account activeAccount, Conversation conversation)
+        public new static Result ShowDialog(Window owner, ClientMonolith client, Conversation conversation,
+            Dictionary<ulong, User> knownUsers)
         {
-            var vm = new OwnerConversationDetailsViewModel(client, knownUsers,
-                activeAccount, conversation);
+            var vm = new OwnerConversationDetailsViewModel(client, conversation, knownUsers);
             var win = new OwnerConversationDetailsWindow(owner, vm);
             vm.RequestClose += win.Close;
             win.ShowDialog();

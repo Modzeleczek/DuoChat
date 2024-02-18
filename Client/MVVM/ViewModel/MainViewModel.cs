@@ -464,8 +464,7 @@ namespace Client.MVVM.ViewModel
                 if (SelectedAccount!.RemoteId == conversationObs.Owner.Id)
                 {
                     // Aktualny użytkownik jest właścicielem konwersacji.
-                    OwnerConversationDetailsViewModel.ShowDialog(window!, _client, knownUsers,
-                        SelectedAccount, conversationObs);
+                    OwnerConversationDetailsViewModel.ShowDialog(window!, _client, conversationObs, knownUsers);
                     return;
                 }
 
@@ -477,11 +476,11 @@ namespace Client.MVVM.ViewModel
                     p => p.ParticipantId == SelectedAccount.RemoteId && p.IsAdministrator);
                     result = userAdminParticipation is null ?
                         // Aktualny użytkownik nie jest administratorem konwersacji.
-                        RegularConversationDetailsViewModel.ShowDialog(window!, _client, knownUsers,
-                            SelectedAccount, conversationObs) :
+                        RegularConversationDetailsViewModel.ShowDialog(window!, _client, conversationObs,
+                        knownUsers) :
                         // Aktualny użytkownik jest administratorem konwersacji.
-                        AdminConversationDetailsViewModel.ShowDialog(window!, _client, knownUsers,
-                            SelectedAccount, conversationObs);
+                        AdminConversationDetailsViewModel.ShowDialog(window!, _client, conversationObs,
+                        knownUsers);
                 } while (!(result is Cancellation));
             });
 
@@ -652,7 +651,7 @@ namespace Client.MVVM.ViewModel
                 var conversationModel = conversationParticipantModel.Conversation;
                 /* Nawet jeżeli właściciel nie znajduje się w żadnej konwersacji wysłanej przez serwer,
                 to i tak powinien zostać przesłany. */
-                var conversation = new Conversation
+                var conversation = new Conversation(SelectedAccount!)
                 {
                     Id = conversationModel.Id,
                     Owner = users[conversationModel.OwnerId],
@@ -738,7 +737,7 @@ namespace Client.MVVM.ViewModel
             UIInvoke(() =>
             {
                 // Aktualny użytkownik dodał konwersację.
-                OrderedInsert((a, b) => a.Id > b.Id, Conversations, new Conversation
+                OrderedInsert((a, b) => a.Id > b.Id, Conversations, new Conversation(SelectedAccount!)
                 {
                     Id = inConversation.Id,
                     Owner = owner,
@@ -853,7 +852,7 @@ namespace Client.MVVM.ViewModel
                         IsBlocked = false // Do usunięcia
                     });
 
-            var conversationObs = new Conversation
+            var conversationObs = new Conversation(SelectedAccount!)
             {
                 Id = yourParticipation.Conversation.Id,
                 Owner = knownUsers[yourParticipation.Conversation.Owner.Id],

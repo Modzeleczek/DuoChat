@@ -5,7 +5,6 @@ using Client.MVVM.ViewModel.Observables;
 using Shared.MVVM.Core;
 using Shared.MVVM.ViewModel.Results;
 using System.Collections.Generic;
-using System.Linq;
 using System.Windows;
 
 namespace Client.MVVM.ViewModel.Conversations
@@ -17,13 +16,13 @@ namespace Client.MVVM.ViewModel.Conversations
         public RelayCommand RemoveParticipant { get; }
         #endregion
 
-        protected AdminConversationDetailsViewModel(ClientMonolith client,
-            Dictionary<ulong, User> knownUsers, Account activeAccount, Conversation conversation)
-            : base(client, knownUsers, activeAccount, conversation)
+        protected AdminConversationDetailsViewModel(ClientMonolith client, Conversation conversation,
+            Dictionary<ulong, User> knownUsers)
+            : base(client, conversation, knownUsers)
         {
             AddParticipant = new RelayCommand(_ =>
             {
-                var result = FindUserViewModel.ShowDialog(window!, client, activeAccount, conversation);
+                var result = FindUserViewModel.ShowDialog(window!, client, conversation);
                 if (!(result is Success success))
                     // Anulowanie
                     return;
@@ -40,11 +39,10 @@ namespace Client.MVVM.ViewModel.Conversations
             });
         }
 
-        public new static Result ShowDialog(Window owner, ClientMonolith client,
-            Dictionary<ulong, User> knownUsers, Account activeAccount, Conversation conversation)
+        public new static Result ShowDialog(Window owner, ClientMonolith client, Conversation conversation,
+            Dictionary<ulong, User> knownUsers)
         {
-            var vm = new AdminConversationDetailsViewModel(client, knownUsers,
-                activeAccount, conversation);
+            var vm = new AdminConversationDetailsViewModel(client, conversation, knownUsers);
             var win = new AdminConversationDetailsWindow(owner, vm);
             vm.RequestClose += win.Close;
             win.ShowDialog();

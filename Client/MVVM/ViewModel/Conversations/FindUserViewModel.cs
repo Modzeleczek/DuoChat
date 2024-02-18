@@ -4,7 +4,6 @@ using Client.MVVM.View.Windows.Conversations;
 using Client.MVVM.ViewModel.Observables;
 using Shared.MVVM.Core;
 using Shared.MVVM.Model.Networking.Packets.ServerToClient;
-using Shared.MVVM.ViewModel;
 using Shared.MVVM.ViewModel.Results;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -12,7 +11,7 @@ using System.Windows;
 
 namespace Client.MVVM.ViewModel.Conversations
 {
-    public class FindUserViewModel : WindowViewModel // ConversationCancellableViewModel
+    public class FindUserViewModel : ConversationCancellableViewModel
     {
         #region Commands
         public RelayCommand SelectUser { get; }
@@ -38,18 +37,17 @@ namespace Client.MVVM.ViewModel.Conversations
 
         #region Fields
         private readonly ClientMonolith _client;
-        private readonly Conversation _conversation;
         #endregion
 
         private FindUserViewModel(ClientMonolith client, Conversation conversation)
+            : base(client, conversation)
         {
             _client = client;
-            _conversation = conversation;
 
             SelectUser = new RelayCommand(obj =>
                 OnRequestClose(new Success((User)obj!)));
 
-            _client.ReceivedUsersList += OnReceivedUsersLists;
+            client.ReceivedUsersList += OnReceivedUsersLists;
         }
 
         private void OnReceivedUsersLists(RemoteServer server, FoundUsersList.User[] users)
@@ -69,8 +67,7 @@ namespace Client.MVVM.ViewModel.Conversations
             });
         }
 
-        public static Result ShowDialog(Window owner, ClientMonolith client, Account activeAccount,
-            Conversation conversation)
+        public static Result ShowDialog(Window owner, ClientMonolith client, Conversation conversation)
         {
             var vm = new FindUserViewModel(client, conversation);
             var win = new FindUserWindow(owner, vm);

@@ -156,14 +156,14 @@ namespace Client.MVVM.ViewModel
                     Recipients = outRecipients
                 };
 
-                client.Request(new SendMessageUIRequest(outMessage));
+                _client.Request(new SendMessageUIRequest(outMessage));
                 Conversation.Draft.Content = string.Empty;
             });
 
             OpenMessageRecipients = new RelayCommand(obj =>
             {
                 var messageObs = (Message)obj!;
-                MessageRecipientsViewModel.ShowDialog(window!, messageObs);
+                MessageRecipientsViewModel.ShowDialog(window!, _client, Conversation!, messageObs);
             });
 
             DownloadAttachment = new RelayCommand(obj =>
@@ -174,7 +174,7 @@ namespace Client.MVVM.ViewModel
 
             GetMoreMessages = new RelayCommand(_ =>
             {
-                client.Request(new GetMessagesUIRequest(new GetMessages.Filter
+                _client.Request(new GetMessagesUIRequest(new GetMessages.Filter
                 {
                     ConversationId = Conversation!.Id,
                     FindNewest = 0,
@@ -185,7 +185,7 @@ namespace Client.MVVM.ViewModel
 
             OpenAttachmentSelector = new RelayCommand(_ =>
             {
-                AttachmentSelectorViewModel.ShowDialog(window!, Conversation!.Draft);
+                AttachmentSelectorViewModel.ShowDialog(window!, _client, Conversation!);
             });
         }
 
